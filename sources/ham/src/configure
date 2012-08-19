@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# Call the 'configure' script located in 'builds/unix'.
+#
+# This should re-generate the following files:
+#
+#   Makefile
+#   patchlevel.h
+#
+cd builds/unix
+chmod +x ./configure
+./configure "$@"
+
+# eof

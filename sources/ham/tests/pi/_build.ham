@@ -1,0 +1,3 @@
+PROG = pi ;
+Main $(PROG) : pi.c ;
+RunExe Run_$(PROG) : $(PROG) ;

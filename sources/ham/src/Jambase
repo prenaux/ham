@@ -1,0 +1,7 @@
+if ! $(HAMBASE) || $(HAMBASE) = "" {
+  HAMBASE = $(HAM_HOME)/rules/base.ham ;
+}
+if ! $(HAMBASE) || ! [ FExists $(HAMBASE) ] {
+  EXIT "Can't find HAMBASE: " $(HAMBASE) ;
+}
+include $(HAMBASE) ;
