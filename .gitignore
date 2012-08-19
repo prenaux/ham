@@ -24,7 +24,6 @@
 *.stackdump
 
 # Ham
-bin/nt-x86/ham.exe
 sources/ham/tests/*/*.exe
 
 # Redist
