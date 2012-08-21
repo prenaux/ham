@@ -88,13 +88,9 @@ $ '
 }
 
 ########################################################################
-##  HAM_HOME
+##  Environments
 ########################################################################
-export HAM_HOME=`unxpath $HAM_HOME`
-
-########################################################################
-##  HAM_OS
-########################################################################
+# Set HAM_OS first, its used by the script commands
 if [[ $OS == Windows* ]]; then
     export HAM_OS=NT
     export HAM_BIN_LOA=nt-x86
@@ -103,7 +99,5 @@ else
     # exit 1
 fi
 
-########################################################################
-##  PATH
-########################################################################
-export PATH=$HAM_HOME/bin:$HAM_HOME/bin/nt-x86
+# Make sure HAM_HOME has the proper unix format
+export HAM_HOME=`unxpath $HAM_HOME`
