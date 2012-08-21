@@ -1,0 +1,35 @@
+Import log.ham ;
+
+TK_ENV_FILE = toolkit-$(HAM_TOOLSET_NAME).ham ;
+Import $(TK_ENV_FILE) : "E/Can't find toolkit's configuration for toolset:" $(TK_ENV_FILE:B:S) ;
+
+#----------------------------------------------------------------------
+#     LOA
+#----------------------------------------------------------------------
+if ! $(LOA_LINKER) {
+  tkFatal "LOA_LINKER not defined !" ;
+}
+if ! $(LOA_OS) {
+  tkFatal "LOA_OS not defined !" ;
+}
+if ! $(LOA_ARCH) {
+  tkFatal "LOA_ARCH not defined !" ;
+}
+
+LIBS_LOA = $(LOA_LINKER)-$(LOA_OS)-$(LOA_ARCH) ;
+BIN_LOA = $(LOA_OS)-$(LOA_ARCH) ;
+
+#----------------------------------------------------------------------
+#     DEFINES
+#----------------------------------------------------------------------
+BUILD ?= rel ;
+
+switch $(BUILD) {
+  case rel :
+  case dbg : DEBUG = 1 ;
+  case * : tkFatal "Unknown BUILD type:" $(BUILD) ;
+}
+
+#----------------------------------------------------------------------
+#     INFO
+#----------------------------------------------------------------------
