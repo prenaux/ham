@@ -1,38 +1,8 @@
-#
 # /+\
 #  +\    Copyright 1993-2002 Christopher Seiwald and Perforce Software, Inc.
 # \+/
 #
 # This file is part of Jam - see jam.c for Copyright information.
-#
-
-## PIERRE ##
-#
-# This is now _base.ham, included in the built-in Jambase so that we
-# don't have to rebuild ham everytime we change _base.ham which can
-# happen frequently when porting to new platforms.
-#
-# Added :/ & :\ to variables that converts \ and / characters to the
-# platform's path separator
-#
-# Added HDROPENED which is set by headers1 before parsing a header
-# file.  To be used in the HdrRule
-#
-# DEPHDRS which is a list of directories which are used ONLY by
-# HDRSEARCH in the default HdrRule
-#
-# Added Erlang compilation support, .erl files to .beam with variables :
-# SUFBEAM
-# ERLC
-#
-
-# ERLFLAGS
-# ERLOPTIM
-# ERLHDRS
-# ERLPATH
-# ERLDEFS
-# ERLSHELL
-# ERLSHELLW
 #
 
 #
@@ -86,11 +56,9 @@
 # C++ obj.o : source.cc ;       .cc -> .o
 # Clean clean : sources ;       remove sources with 'jam clean'
 # File dest : source ;          copy file
-# Fortran obj.o : source.f ;        .f -> .o
 # GenFile source.c : program args ; make custom file
 # HardLink target : source ;        make link from source to target
 # HdrRule source : headers ;        handle #includes
-# Lex source.c : source.l ;     .l -> .c
 # Library lib : source ;        archive library from compiled sources
 # LibraryFromObjects lib : objects ;    archive library from objects
 # LinkLibraries images : libraries ;    bag libraries onto Mains
@@ -113,7 +81,6 @@
 # Shell exe : source ;          make a shell executable
 # Undefines images : symbols ;      save undef's for linking
 # UserObject object : source ;      handle unknown suffixes for Object
-# Yacc source.c : source.y ;        .y -> .c
 #
 # Utility rules that have no side effects (not supported):
 #
@@ -405,12 +372,9 @@
 #     A pattern cannot contain embedded zeros. Use z instead.
 #
 
-# jambase version
-JAMBASEDATE = 2008.11.22 ;
-
-#
-# Initialize variables
-#
+#----------------------------------------------------------------------
+#     Basic variables
+#----------------------------------------------------------------------
 if $(LINT_C) && $(LINT_H) {
   # CAN_LINT = 1 ;
   CAN_LINT = 0 ; # Lint breaks Flymake for Android build...
@@ -419,656 +383,64 @@ if ( $(FLYMAKE) = 1 ) && ( $(CAN_LINT) = 1 ) {
   LINT_OBJECTS = 1 ;
 }
 
-switch $(HAM_TOOLSET) {
-  case GCC :
-    # Empty...
-  case MINGW :
-    NT = 1 ;
-    WINDOWS = 1 ;
-    if $(HAM_TOOLSET_NAME) = GCC4_X86 {
-      OSPLAT = X86 ;
-    }
-    else if $(HAM_TOOLSET_NAME) = GCC4_X64 {
-      OSPLAT = X64 ;
-    }
-  case VISUALC :
-    NT = 1 ;
-    WINDOWS = 1 ;
-    if $(HAM_TOOLSET_NAME) = VC9_X86 || $(HAM_TOOLSET_NAME) = VC10_X86 {
-      OSPLAT = X86 ;
-    }
-    else if $(HAM_TOOLSET_NAME) = VC9_X64 || $(HAM_TOOLSET_NAME) = VC10_X64 {
-      OSPLAT = X64 ;
-    }
-  case EMBGCC :
-    EMBGCC = 1 ;
-  case IOS :
-    IOS = 1 ;
-  case ANDROID :
-    ANDROID = 1 ;
-  case JSCC :
-    JSCC = 1 ;
-  case * :
-  {
-    Echo  "Ham cannot be run because no known compilation toolset is setup." ;
-    Exit  ;
-  }
-}
-if $(NT) {
-  ENVPATHSEP = ";" ;
-}
-else {
-  ENVPATHSEP ?= ":" ;
-}
-
-######################################################################
-#
-#   C/C++ -> JavaScript compiler
-#
-######################################################################
-if $(JSCC) = 1 {
-  if ! $(EMSCRIPTEN_ROOT) {
-    Exit "EMSCRIPTEN_ROOT not defined with JSCC toolset !" ;
-  }
-  if ! $(AGLDEVENVSRC) {
-    Exit "AGLDEVENVSRC not defined with JSCC toolset !" ;
-  }
-  if ! $(WORKTEMP) {
-    Exit "WORKTEMP not defined with JSCC toolset !" ;
+#----------------------------------------------------------------------
+#     Import rules
+#----------------------------------------------------------------------
+rule ImportBuildPath {
+  if [ FExists $(<) ] {
+    return $(<) ;
   }
 
-  if $(JSCC_EMU) {
-    if $(JSCC_EMU) = VC10 {
-      MSVCNT ?= $(MSVCDIR) ;
-      AR     ?= lib ;
-      CC     = $(HAM_CL) -nologo ;
-      C++    = $(HAM_CL) -nologo ;
-      LINK   = $(HAM_LINK) -nologo -INCREMENTAL:NO ;
-      LINKLIBS += user32.lib gdi32.lib ;
-      SUFLIB ?= .lib ;
-      SUFDLL ?= .dll ;
-    }
-    else if $(JSCC_EMU) = CLANG {
-      AR        = ar ru ;
-      CC        = clang -m32 -isystem$(INCLUDE) ;
-      C++       = clang++ -m32 -isystem$(INCLUDE) ;
-      LINK      = clang++ -static -static-libstdc++ -static-libgcc -m32 -isystem$(INCLUDE) -L$(LIB) ;
-    }
-    else if $(JSCC_EMU) = GCC {
-      AR        = ar ru ;
-      CC        = gcc -m32 -I$(INCLUDE) ;
-      C++       = g++ -m32 -I$(INCLUDE) ;
-      LINK      = g++ -static -static-libstdc++ -static-libgcc -m32 -I$(INCLUDE) -L$(LIB) ;
+  PATH = $(HAM_HOME)/rules/$(<) ;
+  if ! [ FExists $(PATH) ] {
+    if $(>) {
+      EXIT $(>) ;
     }
     else {
-      EXIT "Unknown JSCC_EMU: " $(JSCC_EMU) ;
+      EXIT "E/Can't find import:" $(PATH) ;
     }
   }
-  else {
-    AR        = $(EMSCRIPTEN_ROOT)/emar ru ;
-    CC        = $(AGLDEVENVSRC)/scripts/ni-jscc ;
-    C++       = $(AGLDEVENVSRC)/scripts/ni-js++ ;
-    LINK      = $(AGLDEVENVSRC)/scripts/ni-jsld ;
-  }
 
-  CCFLAGS = -DJSCC -D__JSCC__ ;
-  if $(JSCC_EMU) {
-    CCFLAGS += -D__JSCC_EMU__ ;
-  }
-  else {
-    CCFLAGS += -D__JSCC_WEB__ ;
-  }
-  C++FLAGS = $(CCFLAGS) ;
-
-  if $(JSCC_EMU) = VC10 {
-  }
-  else {
-    CCFLAGS += -fvisibility=hidden ;
-    C++FLAGS += $(CCFLAGS) -fno-rtti -fno-exceptions ;
-  }
-
-  LINKLIBS  ?= ;
-  OPTIM     ?= ;
-  if $(JSCC_EMU) {
-    SUFEXE    = .exe ;
-  }
-  else {
-    SUFEXE    ?= .html ;
-  }
-  SUFOBJ    ?= .o ;
-  SUFLIB    ?= .a ;
-  SUFDLL    ?= .so ;
-  SLASH     ?= / ;
-}
-######################################################################
-#
-#   Embedded Linux (STi7108)
-#
-######################################################################
-else if $(EMBGCC) = 1 {
-  if ! $(EMB_DEVICE) {
-    Exit "EMB_DEVICE not defined with EMBGCC toolset !" ;
-  }
-  if ! $(EMB_ARCH) {
-    Exit "EMB_ARCH not defined with EMBGCC toolset !" ;
-  }
-  if ! $(GCCBASE) {
-    Exit "GCCBASE not defined with EMBGCC toolset !" ;
-  }
-  if ! $(GCCEXEBASE) {
-    Exit "GCCEXEBASE not defined with EMBGCC toolset !" ;
-  }
-
-  CC        ?= $(GCCEXEBASE)gcc ;
-  AR        ?= $(GCCEXEBASE)ar -ru ;
-  C++       ?= $(CC) ;
-  LINK      ?= $(CC) ;
-
-  PICFLAGS = -fpic ;
-
-  EMBGCC_PP_ARGS =
-  -g
-  -D__EMBGCC__
-  -D__LITTLE_ENDIAN__
-  -finput-charset=UTF-8
-  -Wall
-  -Wno-psabi
-  -Wno-trigraphs
-  -Wno-sign-compare
-  -Wno-unknown-pragmas
-  -Wno-switch
-  -Wno-comment
-  -Wno-unused
-  -Wno-uninitialized
-  ;
-
-  EMBGCC_CC_ARGS += -fpic -fvisibility=hidden ;
-  EMBGCC_CPP_ARGS = -fno-rtti -fno-exceptions -Wno-reorder ;
-
-  EMBGCC_LINK_BASE_ARGS = -L$(ADRDIRNDKUSR)/lib ;
-  EMBGCC_LINK_EXE_ARGS = $(EMBGCC_LINK_BASE_ARGS) ;
-  EMBGCC_LINK_DLL_ARGS = $(EMBGCC_LINK_BASE_ARGS) -Wl,-shared ;
-  SYSTEM_LINKLIBS = -lc -lstdc++ -lm -ldl -lpthread ;
-
-  CCFLAGS   ?= $(EMBGCC_PP_ARGS) $(EMBGCC_CC_ARGS) ;
-  C++FLAGS  ?= $(CCFLAGS) $(EMBGCC_CPP_ARGS) ;
-  LINKFLAGS ?= ;
-  LINKLIBS  ?= ;
-  OPTIM     ?= ;
-  SUFEXE    = .html ;
-  SUFOBJ    = .o ;
-  SUFLIB    = .a ;
-  SUFDLL    = .so ;
-  PREFIXDLL = lib ;
-  SLASH     = / ;
-}
-######################################################################
-#
-#   Embedded Linux (STi7108)
-#
-######################################################################
-else if $(EMBGCC) = 1 {
-  if ! $(EMB_DEVICE) {
-    Exit "EMB_DEVICE not defined with EMBGCC toolset !" ;
-  }
-  if ! $(EMB_ARCH) {
-    Exit "EMB_ARCH not defined with EMBGCC toolset !" ;
-  }
-  if ! $(GCCBASE) {
-    Exit "GCCBASE not defined with EMBGCC toolset !" ;
-  }
-  if ! $(GCCEXEBASE) {
-    Exit "GCCEXEBASE not defined with EMBGCC toolset !" ;
-  }
-
-  CC        ?= $(GCCEXEBASE)gcc ;
-  AR        ?= $(GCCEXEBASE)ar -ru ;
-  C++       ?= $(CC) ;
-  LINK      ?= $(CC) ;
-
-  PICFLAGS = -fpic ;
-
-  EMBGCC_PP_ARGS =
-  -g
-  -D__EMBGCC__
-  -D__LITTLE_ENDIAN__
-  -finput-charset=UTF-8
-  -Wall
-  -Wno-psabi
-  -Wno-trigraphs
-  -Wno-sign-compare
-  -Wno-unknown-pragmas
-  -Wno-switch
-  -Wno-comment
-  -Wno-unused
-  -Wno-uninitialized
-  ;
-
-  EMBGCC_CC_ARGS += -fpic -fvisibility=hidden ;
-  EMBGCC_CPP_ARGS = -fno-rtti -fno-exceptions -Wno-reorder ;
-
-  EMBGCC_LINK_BASE_ARGS = -L$(ADRDIRNDKUSR)/lib ;
-  EMBGCC_LINK_EXE_ARGS = $(EMBGCC_LINK_BASE_ARGS) ;
-  EMBGCC_LINK_DLL_ARGS = $(EMBGCC_LINK_BASE_ARGS) -Wl,-shared ;
-  SYSTEM_LINKLIBS = -lc -lstdc++ -lm -ldl -lpthread ;
-
-  CCFLAGS   ?= $(EMBGCC_PP_ARGS) $(EMBGCC_CC_ARGS) ;
-  C++FLAGS  ?= $(CCFLAGS) $(EMBGCC_CPP_ARGS) ;
-  LINKFLAGS ?= ;
-  LINKLIBS  ?= ;
-  OPTIM     ?= ;
-  SUFEXE    = ;
-  SUFOBJ    = .o ;
-  SUFLIB    = .a ;
-  SUFDLL    = .so ;
-  PREFIXDLL = lib ;
-  SLASH     = / ;
-}
-######################################################################
-#
-#   IOS (iPhone/iPad)
-#
-######################################################################
-else if $(IOS) = 1 {
-  if ! $(IOS_ARCH) {
-    Exit "IOS_ARCH not set while using IOS toolset !" ;
-  }
-  if ! $(IOS_PLAT) {
-    Exit "IOS_PLAT not set while using IOS toolset !" ;
-  }
-  if ! $(IOS_DEVDIR) {
-    Exit "IOS_DEVDIR not set while using IOS toolset !" ;
-  }
-  if ! $(IOS_TARGET) {
-    Exit "IOS_TARGET not set while using IOS toolset !" ;
-  }
-  if ! $(IOS_SDKROOT) {
-    Exit "IOS_SDKROOT not set while using IOS toolset !" ;
-  }
-  if ! $(IOS_AR) {
-    Exit "IOS_AR not set while using IOS toolset !" ;
-  }
-  if ! $(IOS_CC) {
-    Exit "IOS_CC not set while using IOS toolset !" ;
-  }
-
-  AR        = $(IOS_AR) -ru ;
-  CC        = $(IOS_CC) ;
-  C++       = $(IOS_CC) ;
-  LINK      = $(IOS_CC) ;
-
-  CCFLAGS =
-    -DIPHONE
-    -D__IOS__
-    -fconstant-cfstrings
-    -fno-strict-aliasing
-    -Wno-trigraphs
-    -pipe
-    -mdynamic-no-pic
-    -fvisibility=hidden
-    -fpascal-strings
-    -fmessage-length=0
-  ;
-  if $(IOS_STDTOOLCHAIN) = 1 {
-    CCFLAGS +=
-    -arch $(IOS_ARCH)
-    -isysroot $(IOS_SDKROOT)
-    ;
-  }
-  else {
-    CCFLAGS =
-    -I$(GCCDIR)/sys/usr/include/c++/4.2.1
-    -I$(GCCDIR)/sys/usr/include/c++/4.2.1/armv6-apple-darwin9
-    -I$(GCCDIR)/lib/gcc/arm-apple-darwin9/4.2.1/include
-    $(CCFLAGS) ;
-  }
-  if $(IOS_STDTOOLCHAIN) = 1 {
-    LINKFLAGS =
-    -arch $(IOS_ARCH)
-    -isysroot $(IOS_SDKROOT)
-    -fvisibility=hidden
-    -Wl,-dead_strip
-    ;
-  }
-  else {
-    LINKFLAGS =
-    -framework CoreFoundation
-    -framework Foundation
-    -framework UIKit
-    -framework OpenGLES
-    -framework QuartzCore
-    -lstdc++
-    ;
-  }
-
-  if $(HAM_TOOLSET_NAME) = IOS_SIM {
-    CCFLAGS += -DTARGET_OS_IPHONE -DTARGET_IPHONE_SIMULATOR -D__IOS_SIM__ -D__IPHONE_OS_VERSION_MIN_REQUIRED=20000 -mmacosx-version-min=10.5 ;
-  }
-  else if $(HAM_TOOLSET_NAME) = IOS_HW {
-    CCFLAGS += -DTARGET_OS_IPHONE -D__IOS_HW__ ;
-    if $(IOS_STDTOOLCHAIN) = 1 {
-      CCFLAGS += -miphoneos-version-min=$(IOS_TARGET) ;
-      LINKFLAGS += -miphoneos-version-min=$(IOS_TARGET) ;
-    }
-  }
-  else {
-    Exit "Invalid HAM_TOOLSET_NAME !" ;
-  }
-  C++FLAGS  = $(CCFLAGS) -fno-rtti -fno-exceptions -fvisibility-inlines-hidden ;
-  LINKLIBS  ?= ;
-  OPTIM     ?= ;
-  SUFEXE    = .$(IOS_ARCH) ;
-  SUFOBJ    = .o ;
-  SUFLIB    = .a ;
-  SUFDLL    = .dylib ;
-  SLASH     = / ;
-}
-######################################################################
-#
-#   Android
-#
-######################################################################
-else if $(ANDROID) = 1 {
-  if ! $(ADRDIRNDK) {
-    Exit "ADRDIRNDK not set while using ANDROID NDK toolset !" ;
-  }
-  ADRDIRNDK = $(ADRDIRNDK:/) ;
-
-  if ! $(ADRDIRNDKUSR) {
-    Exit "ADRDIRNDKUSR not set while using ANDROID NDK toolset !" ;
-  }
-  ADRDIRNDKUSR = $(ADRDIRNDKUSR:/) ;
-
-  if ! $(ADRGCCDIR) {
-    Exit "ADRGCCDIR not set while using ANDROID NDK toolset !" ;
-  }
-  ADRGCCDIR = $(ADRGCCDIR:/) ;
-
-  if ! $(ADRGCCVER) {
-    Exit "ADRGCCVER not set while using ANDROID NDK toolset !" ;
-  }
-  ADRGCCVER = $(ADRGCCVER:/) ;
-
-  if ! $(GCCDIR) {
-    Exit "GCCDIR not set while using ANDROID NDK toolset !" ;
-  }
-  GCCDIR = $(GCCDIR:/) ;
-
-  if ! $(GCCVER) {
-    Exit "GCCVER not set while using ANDROID NDK toolset !" ;
-  }
-  GCCVER = $(GCCVER:/) ;
-
-  if ! $(GCCEXEBASE) {
-    Exit "GCCEXEBASE not set while using ANDROID NDK toolset !" ;
-  }
-
-  if $(SYSROOT) {
-    CC        ?= $(GCCEXEBASE)gcc --sysroot=$(SYSROOT) ;
-  }
-  else {
-    CC        ?= $(GCCEXEBASE)gcc ;
-  }
-  AR        ?= $(GCCEXEBASE)ar -ru ;
-  C++       ?= $(CC) ;
-  LINK      ?= $(CC) ;
-
-  PICFLAGS = -fpic ;
-
-  ANDROID_CC_ARGS =
-  -g
-  -fpic
-  -fno-strict-aliasing
-  -mthumb-interwork
-  -ffunction-sections
-  -funwind-tables
-  -fstack-protector
-  -fno-short-enums
-  -fvisibility=hidden
-  -D__ARM_ARCH_5__
-  -D__ARM_ARCH_5T__
-  -D__ARM_ARCH_5E__
-  -D__ARM_ARCH_5TE
-  -DANDROID
-  -D__LITTLE_ENDIAN__
-  -I$(ADRDIRNDKUSR)/include
-  -finput-charset=UTF-8
-  -Werror -Wall
-  -Wno-psabi -Wno-trigraphs -Wno-sign-compare
-  -Wno-unknown-pragmas -Wno-switch -Wno-comment
-  -Wno-unused -Wno-uninitialized
-  ;
-
-  switch $(HAM_TOOLSET_VER)
-  {
-      ## ARMv5TE no FPU
-    case ARMv5 :
-      ANDROID_CC_ARGS +=
-      -D__CPU_ARMv5__
-      -march=armv5te
-      -mtune=xscale
-      -msoft-float
-      -DaglAtomicC
-      -mthumb
-      ;
-      ## ARM6+ VFP (TC8900, Qualcomm 7227, ...)
-    case ARMv6 :
-      ANDROID_CC_ARGS +=
-      -D__CPU_ARMv6__
-      -march=armv6
-      -mfpu=vfp
-      -mfloat-abi=softfp
-      ;
-      ## ARM7A VFPv3 (Cortex A8, NVidia Tegra 2, HTC Desire, ...)
-    case ARMv7A :
-      ANDROID_CC_ARGS +=
-      -D__CPU_ARMv7A__
-      -march=armv7-a
-      -mfpu=vfpv3
-      -mfloat-abi=softfp
-      ;
-      ANDROID_LINK_BASE_ARGS = -Wl,--fix-cortex-a8 ;
-      ## ARM7N ARMV7A + NEON
-    case ARMv7N :
-      ANDROID_CC_ARGS +=
-      -D__CPU_ARMv7N__
-      -D__CPU_ARM_NEON__
-      -march=armv7-a
-      -mfpu=neon
-      -mfloat-abi=softfp
-      ;
-      ANDROID_LINK_BASE_ARGS = -Wl,--fix-cortex-a8 ;
-    case * :
-      Exit "Invalid Android Toolset version '" $(HAM_TOOLSET_VER) "' !" ;
-  }
-  ANDROID_CPP_ARGS +=
-  -fno-rtti -fno-exceptions
-  -Wno-reorder # Warnings valid for C++ only
-  ;
-
-  ANDROID_LINK_BASE_ARGS +=
-  -L$(ADRDIRNDKUSR)/lib
-  -nostdlib
-  ;
-
-  ANDROID_LINK_EXE_ARGS = $(ANDROID_LINK_BASE_ARGS)
-  -ffunction-sections
-  -fdata-sections
-  -Bdynamic
-  -Wl,-dynamic-linker,//system/bin/linker
-  -Wl,--gc-sections
-  -Wl,-z,nocopyreloc
-  -Wl,--no-undefined
-  -Wl,-rpath-link=$(ADRDIRNDKUSR)/lib
-  $(ADRDIRNDKUSR)/lib/crtend_android.o
-  $(ADRDIRNDKUSR)/lib/crtbegin_dynamic.o
-  ;
-
-  ANDROID_LINK_DLL_ARGS = $(ANDROID_LINK_BASE_ARGS)
-  -ffunction-sections
-  -fdata-sections
-  -Wl,--gc-sections
-  -Wl,-z,nocopyreloc
-  -Wl,--no-undefined
-  -Wl,-shared,-Bsymbolic
-  -Wl,--no-whole-archive
-  -Wl,-rpath-link=$(ADRDIRNDKUSR)/lib
-  ;
-
-  SYSTEM_LINKLIBS = $(ADRGCCDIR)/lib/gcc/$(GCCBASE)/$(ADRGCCVER)/libgcc.a -llog -lc -lstdc++ -lm -ldl ;
-
-  CCFLAGS   ?= $(ANDROID_CC_ARGS) ;
-  C++FLAGS  ?= $(CCFLAGS) $(ANDROID_CPP_ARGS) ;
-  LINKFLAGS ?= ;
-  LINKLIBS  ?= ;
-  OPTIM     ?= ;
-  SUFEXE    = .arm ;
-  SUFOBJ    = .o ;
-  SUFLIB    = .a ;
-  SUFDLL    = .so ;
-  PREFIXDLL = lib ;
-  SLASH     = / ;
-}
-######################################################################
-#
-#   NT (Windows)
-#
-######################################################################
-else if $(NT) = 1
-{
-  SLASH   ?= / ;
-  SUFLIB  ?= .lib ;
-  SUFOBJ  ?= .obj ;
-  SUFEXE  ?= .exe ;
-  SUFDLL  ?= .dll ;
-  ERLSHELLW ?= werl ;
-  CHMOD   ?= chmod ;
-
-  if $(OSPLAT) = X64 {
-    YASM = "yasm_x64" ;
-	YASMFLAGS   = "-m amd64 -f coff" ;
-  }
-  else {
-    YASM = "yasm_x86" ;
-	YASMFLAGS   = "-m x86 -f coff" ;
-  }
-
-  if $(HAM_TOOLSET) = CLANG
-  {
-    CC_BASE = -I$(INCLUDE) -DCLANG_NT -D_MSC_VER=1500 ; # -Wno-missing-declarations -Wno-invalid-token-paste -Wno-unused-value ;
-	AR              ?= ar -ru ;
-	CC              ?= clang $(CC_BASE)  ;
-	CCFLAGS         ?= "" ;
-	C++             ?= clang $(CC_BASE) ;
-	C++FLAGS        ?= $(CCFLAGS) ;
-	LINK            ?= gcc -L$(LIB) -DCLANG_NT ;
-	LINKFLAGS       ?= ;
-	LINKLIBS        ?= ;
-	OPTIM           ?= ;
-	SUFOBJ          = .o ;
-	SUFLIB          = .a ;
-	SLASH           = / ;
-  }
-  else if $(HAM_TOOLSET) = VISUALC
-  {
-    # CC_ISCLANG   = 1 ;
-
-	# Visual C++ 6.0 uses MSVCDIR
-	MSVCNT      ?= $(MSVCDIR) ;
-	# bury IA64 in the path for the SDK
-	local I ; if $(OSPLAT) = IA64 { I = ia64/ ; } else { I = "" ; }
-	AR          ?= lib ;
-
-    if ! ( $(FLYMAKE) = 1 ) {
-      # Errors with absolute file path
-      HAM_CL = $(HAM_CL) -FC ;
-    }
-
-    if $(CC_ISCLANG) = 1 {
-      CC          ?= clang ;
-      CCFLAGS     = -Wno-microsoft -Wno-unused-value ;
-    }
-    else {
-      CC          ?= $(HAM_CL) -nologo ;
-      CCFLAGS     ?= ;
-    }
-    C++FLAGS    ?= ;
-	C++         ?= $(HAM_CL) -nologo ;
-	LINK        ?= $(HAM_LINK) -nologo -INCREMENTAL:NO ;
-	LINKFLAGS   ?= "" ;
-	LINKLIBS    ?= oldnames.lib kernel32.lib ;
-	OPTIM       ?= "" ;
-	STDHDRS     ?= $(VISUALC)/include ;
-	UNDEFFLAG   ?= "-u _" ;
-  }
-  else if $(HAM_TOOLSET) = INTELC
-  {
-	if ! $(VISUALC)
-	{
-	  Echo "As a special exception, when using the Intel C++ compiler, you need" ;
-	  Echo "to define the VISUALC environment variable to indicate the location" ;
-	  Echo "of your Visual C++ installation. Aborting.." ;
-	  Exit ;
-	}
-
-	AR          ?= lib ;
-	CC          ?= icl -nologo ;
-	CCFLAGS     ?= "" ;
-	C++         ?= $(CC) ;
-	C++FLAGS    ?= $(CCFLAGS) ;
-	LINK        ?= xilink -nologo ;
-	LINKFLAGS   ?= "" ;
-	LINKLIBS    ?= advapi32.lib oldnames.lib kernel32.lib ;
-	OPTIM       ?= "" ;
-	STDHDRS     ?= $(INTELC)/include $(VISUALC)/include ;
-	UNDEFFLAG   ?= "-u _" ;
-  }
-  else if $(HAM_TOOLSET) = MINGW
-  {
-	AR              ?= ar -ru ;
-	CC              ?= gcc ;
-	CCFLAGS         ?= "" ;
-	C++             ?= gcc ;
-	C++FLAGS        ?= $(CCFLAGS) ;
-	LINK            ?= gcc ;
-	LINKFLAGS       ?= -mconsole ;
-	LINKLIBS        ?= "" ;
-	OPTIM           ?= ;
-	SUFOBJ           = .o ;
-	SUFLIB           = .a ;
-	SLASH            = / ;
-	#       NOARSCAN        ?= true ;
-  }
-  else if $(HAM_TOOLSET) = DIGITALMARS
-  {
-	AR              ?= lib -c ;
-	CC              ?= dmc ;
-	CCFLAGS         ?= "" ;
-	C++             ?= $(CC) ;
-	C++FLAGS        ?= $(CCFLAGS) ;
-	LINK            ?= link /nologo ;
-	LINKFLAGS       ?= "/EXETYPE:NT /NOMAP" ;
-	LINKLIBS        ?= USER32.LIB KERNEL32.LIB GDI32.LIB ;
-	OPTIM           ?= ;
-	NOARSCAN         = true ;
-	PICFLAGS         = -mn -WD ;
-  }
-
-  STDHRS ?= "" ;
+  return $(PATH) ;
 }
 
-# shared library object file suffix. We assume that it is identical
-# than the normal one
+rule ImportIsImported {
+  if ! $(IMPORTED_$(<)) {
+    return ;
+  }
+  return 1 ;
+}
+
+rule ImportMarkImported {
+  IMPORTED_$(<) = 1 ;
+}
+
+rule Import {
+  PATH = [ ImportBuildPath $(<) ] ;
+  if [ ImportIsImported $(PATH) ] {
+    # ECHO "I/Already imported: " $(PATH) ;
+  }
+  else {
+    ECHO "I/Importing:" $(PATH) ;
+    ImportMarkImported $(PATH) ;
+    include $(PATH) ;
+  }
+}
+
+#----------------------------------------------------------------------
+#     Toolset
+#----------------------------------------------------------------------
+if ! $(HAM_TOOLSET) {
+  EXIT "F/HAM_TOOLSET not set !" ;
+}
+Import base-$(HAM_TOOLSET).ham ;
+
+#----------------------------------------------------------------------
+#     General defaults; a lot like UNIX
+#----------------------------------------------------------------------
 PREFIXDLL ?= "" ;
 SUFDLLOBJ ?= $(SUFOBJ) ;
-SUFDLL ?= $(SUFLIB) ;
-
-# the D compiler
-DC ?= dmd ;
-
-#
-# General defaults; a lot like UNIX
-#
+SUFDLL    ?= $(SUFLIB) ;
 
 AR      ?= ar ru ;
 AS      ?= as ;
@@ -1089,13 +461,10 @@ DOTDOT      ?= .. ;
 EXEMODE     ?= 711 ;
 FILEMODE    ?= 644 ;
 FILEMODERO  ?= -w ;
-FORTRAN     ?= f77 ;
-FORTRANFLAGS    ?= ;
 HDRS        ?= ;
 INSTALLGRIST    ?= installed ;
 JAMFILE     ?= _build.ham ;
 JAMRULES    ?= _rules.ham ;
-LEX     ?= ;
 LIBDIR      ?= /usr/local/lib ;
 LINK        ?= $(CC) ;
 LINKFLAGS   ?= ;
@@ -1121,19 +490,6 @@ SUFEXE      ?= "" ;
 SUFLIB      ?= .a ;
 SUFOBJ      ?= .o ;
 UNDEFFLAG   ?= "-u _" ;
-YACC        ?= ;
-YACCGEN     ?= ;
-YACCFILES   ?= ;
-YACCFLAGS   ?= ;
-ERLC        ?= erlc ;
-SUFBEAM     ?= .beam ;
-ERLFLAGS    ?= -Wall ;
-ERLOPTIM    ?= ;
-ERLPATH     ?= ;
-ERLHDRS     ?= ;
-ERLSHELL    ?= erl ;
-ERLSHELLW   ?= erl ;
-ERLDEFS     ?= ;
 RCFLAGS     ?= ;
 SUFAQO      ?= .aq ;
 SUFJAVAC    ?= .class ;
@@ -1202,49 +558,6 @@ rule Bulk
   {
 	File $(i:D=$(<)) : $(i) ;
   }
-}
-
-
-# /Dc object : source ;
-#
-# Compile the file source into object, usin the D compiler $(DC), its
-# flags $(DCFLAGS) and $(DOPTIM)
-# Called by the @Object rule
-#
-# Do not call this rule directly, since _object_ and _source_ may have
-# have platform-specific file extensions
-#
-rule Dc
-{
-  Depends $(<) : $(>) ;
-
-  # Just to clarify here: this sets the per-target DCFLAGS to
-  # be the current value of (global) DCFLAGS and SUBDIRDCFLAGS.
-
-  DCFLAGS on $(<) += $(DCFLAGS) $(SUBDIRDCFLAGS) ;
-}
-
-# /Erl object : source ;
-#
-# Compile the file source into beam, using the Erlang compiler $(ERLC), its
-# flags $(ERLFLAGS) and $(ERLOPTIM)
-# Called by the @Object rule
-#
-# Do not call this rule directly, since _object_ and _source_ may have
-# have platform-specific file extensions
-#
-rule Erl
-{
-  Depends $(<) : $(>) ;
-
-#   echo "ERLHDRS: " $(ERLHDRS) ;
-
-  # Just to clarify here: this sets the per-target ERLFLAGS to
-  # be the current value of (global) ERLFLAGS and SUBDIRERLFLAGS.
-
-  ERLFLAGS on $(<) += $(ERLFLAGS) $(SUBDIRERLFLAGS) ;
-  ERLDEFS on $(<) += $(ERLDEFS) ;
-  ERLHDRS on $(<) = [ FIncludesDash $(SEARCH_SOURCE) $(ERLHDRS) $(SUBDIRHDRS) $(HDRS) ] ;
 }
 
 # /Cc object : source ;
@@ -1356,18 +669,6 @@ rule Cp
   Depends $(<) : $(>) ;
 }
 
-# /Fortran object : source ;
-#
-# Compile the Fortran source file _source_. Called by the @Object rule
-#
-# Do not call this rule directly, since _obj_ and _source_ may have
-# have platform-specific file extensions
-#
-rule Fortran
-{
-  Depends $(<) : $(>) ;
-}
-
 # /GenFile target : image sources ;
 #
 # Runs the command "_image_ _target_ _sources_" to create _target_ from
@@ -1462,19 +763,6 @@ rule HdrRule
   HDRSCAN on $(s) = $(HDRSCAN) ;
   HDRRULE on $(s) = $(HDRRULE) ;
   HDRGRIST on $(s) = $(HDRGRIST) ;
-}
-
-# /Lex source.c : source.l ;
-#
-# Process the lex source file _source.l_ and rename the lex.yy.c
-# to _source.c_ . Called by the @Object rule
-#
-rule Lex
-{
-  LexMv $(<) : $(>) ;
-  Depends $(<) : $(>) ;
-  MakeLocate $(<) : $(LOCATE_SOURCE) ;
-  Clean clean : $(<) ;
 }
 
 # /Library  library : sources : objs ;
@@ -1678,9 +966,7 @@ rule SharedLibraryFromObjects
 	MakeLocate $(_implib)        : $(LOCATE_TARGET) ;
 	MakeLocate $(_implib:S=.exp) : $(LOCATE_TARGET) ;
 
-	if $(HAM_TOOLSET) in VISUALC DIGITALMARS {
-	  SharedLink-$(HAM_TOOLSET) $(_l) : $(_s) : $(_implib) ;
-	}
+    SharedLink $(_l) : $(_s) : $(_implib) ;
 
 	DllLink $(_l) : $(_s) ;
   }
@@ -1690,68 +976,6 @@ rule SharedLibraryFromObjects
 	Exit "Please contact the Ham maintainer for help" ;
   }
 }
-
-
-# Since building shared libraries is so different depending on the
-# compiler being used, I've broken this task into compiler-specific
-# ones
-#
-#
-
-# This contains the Visual C++ specific rule used to build a DLL
-# and its import library
-#
-rule SharedLink-VISUALC
-{
-  # get rid of the '.exp/.ilk' files when cleaning
-  #
-  Clean  clean : $(3:S=.exp) ;
-  Clean  clean : $(3:S=.ilk) ;
-}
-
-
-rule SharedLink-BORLANDC
-{
-  local  _implib  = $(3) ;
-
-  LINKFLAGS on $(<) += /x /Gn /Tpd ;
-  LINKLIBS on $(<) = $(LINKLIBS) $(ILINKLIBS) ;
-
-  # Generate import library with the IMPLIB tool !!
-  #
-  DllImplib $(_implib) : $(<) ;
-  Depends   $(_implib) : $(<) ;
-  Depends   lib        : $(_implib) ;
-
-  # clean the TDS file, since the compiler refuses to not generate it !
-  MakeLocate $(<:S=.tds) : $(LOCATE_TARGET) ;
-  Clean  clean : $(<:S=.tds) ;
-}
-
-rule SharedLink-WATCOM
-{
-  #Echo "Sorry, but building DLLs with Watcom isn't supported by this tool" ;
-  #Echo "this comes from the fact that the Watcom linker isn't capable of"  ;
-  #Echo "using normal .def files" ;
-  #Exit ;
-
-  local  _implib  = $(3) ;
-
-  IMPLIB on $(<) = $(_implib) ;
-
-  # clean the TDS file, since the compiler refuses to not generate it !
-  MakeLocate $(<:S=.tds) : $(LOCATE_TARGET) ;
-  Clean  clean : $(<:S=.tds) ;
-}
-
-
-rule SharedLink-DIGITALMARS
-{
-  #Echo "Sorry, but building DLLs with Digital Mars isn't supported at the" ;
-  #Echo "moment, please contact the FT-Jam maintainers" ;
-  #Exit ;
-}
-
 
 # /Link  image : objects ;
 #
@@ -2036,19 +1260,9 @@ rule Object
     case .c++ : C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
     case .C++ : C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
     case .mm  : C++ $(<) : $(>) ;
-    case .d :   Dc $(<) : $(>) ;
-    case .erl : Erl $(<:S=$(SUFBEAM)) : $(>) ;
-    case .f :   Fortran $(<) : $(>) ;
-    case .l :   Cc $(<) : $(<:S=.c) ;
-      Lex $(<:S=.c) : $(>) ;
-    case .s :   As $(<) : $(>) ;
-    case .y :   Cc $(<) : $(<:S=$(YACCGEN)) ;
-      Yacc $(<:S=$(YACCGEN)) : $(>) ;
+    case .s :
+      As $(<) : $(>) ;
     case .rc :  ResourceCompiler $(<) : $(>) ;
-    case .acc : Acc $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
-    case .aq :  AqCompiler $(<:S=$(SUFAQO)) : $(>) ;
-    case .aqw :  AqCompiler $(<:S=$(SUFAQO)) : $(>) ;
-    case .aqp :  AqCompiler $(<:S=$(SUFAQO)) : $(>) ;
     case * :    UserObject $(<) : $(>) ;
   }
 }
@@ -2089,48 +1303,6 @@ rule ObjectCC++Flags
 {
   ObjectCcFlags $(<) : $(>) ;
   ObjectC++Flags $(<) : $(>) ;
-}
-
-# /ObjectErlOptim  sources : flags ;
-#
-# this rule is used to add compiler optimization flags to the compilation of
-# specific Erlang sources files.
-#
-rule ObjectErlOptim
-{
-  ERLOPTIM on [ FGristFiles $(<:S=$(SUFBEAM)) ] += $(>) ;
-}
-
-# /ObjectErlFlags  sources : flags ;
-#
-# this rule is used to add compiler flags to the compilation of
-# specific Erlang sources files.
-#
-rule ObjectErlFlags
-{
-  ERLFLAGS on [ FGristFiles $(<:S=$(SUFBEAM)) ] += $(>) ;
-}
-
-# /ObjectErlPath  sources : paths ;
-#
-# this rule is used to add code paths to the compilation of
-# specific Erlang source files
-#
-rule ObjectErlPath
-{
-  local s = [ FGristFiles $(<:S=$(SUFBEAM)) ] ;
-  ERLPATH on $(s) += $(>) ;
-}
-
-# /ObjectErlHdrs  sources : paths ;
-#
-# this rule is used to add include paths to the compilation of
-# specific Erlang source files
-#
-rule ObjectErlHdrs
-{
-  local s = [ FGristFiles $(<:S=$(SUFBEAM)) ] ;
-  ERLHDRS on $(s) += $(>) ;
 }
 
 # /ObjectDefines  objects : macros ;
@@ -2276,7 +1448,6 @@ rule SharedObjects
     CC on $(<:S=$(SUFOBJ))      = "$(libtool) --mode=compile $(CC) -dynamic" ;
   }
 }
-
 
 rule RmTemps
 {
@@ -2523,11 +1694,6 @@ rule SubDirDcFlags
   SUBDIRDCFLAGS += $(<) ;
 }
 
-rule SubDirErlFlags
-{
-  SUBDIRERLFLAGS += $(<) ;
-}
-
 rule SubDirCcFlags
 {
   SUBDIRCCFLAGS += $(<) ;
@@ -2547,7 +1713,6 @@ rule SubDirCC++Flags
 rule SubDirHdrs
 {
   SUBDIRHDRS += [ FDirName $(<) ] ;
-  ERLHDRS += [ FDirName $(<)/include ] ;
 }
 
 rule SubInclude
@@ -2594,49 +1759,6 @@ rule Undefines
 rule UserObject
 {
   Exit "Unknown suffix on" $(>) "- see UserObject rule in Jamfile(5)." ;
-}
-
-rule Yacc
-{
-  local _h ;
-
-  _h = $(<:BS=.h) ;
-
-  # Some places don't have a yacc.
-
-  MakeLocate $(<) $(_h) : $(LOCATE_SOURCE) ;
-
-  if $(YACC)
-  {
-	Depends $(<) $(_h) : $(>) ;
-	Yacc1 $(<) $(_h) : $(>) ;
-	YaccMv $(<) $(_h) : $(>) ;
-	Clean clean : $(<) $(_h) ;
-  }
-
-  # make sure someone includes $(_h) else it will be
-  # a deadly independent target
-
-  Includes $(<) : $(_h) ;
-}
-
-# aglCPP compiler
-rule Acc
-{
-  local _h ;
-  _h = [ FDirName $(SUBDIR) $(>:BS=.acc.hpp) ] ;
-  local _cpp ;
-  _cpp = [ FDirName $(SUBDIR) $(>:BS=.acc.cxx) ] ;
-
-  Depends $(_cpp) $(_h) : $(>) ;
-  Includes $(_cpp) : $(_h) ;
-  C++ $(<) : $(_cpp) ;
-
-  RmTemps $(<) : $(_h) $(_cpp) ;
-}
-actions Acc
-{
-  aglCPP -e $(>)
 }
 
 #
@@ -2688,7 +1810,6 @@ rule FGristSourceFiles
 	return $(_o) ;
   }
 }
-
 
 rule FReverse
 {
@@ -2867,74 +1988,9 @@ rule FSubDirAbsName {
   return [ FDirName $(TOP_DIR) $(d) ] ;
 }
 
-if $(OS2)
-{
-  rule FQuote { return "\"$(<)\"" ; }
-  rule FIncludes { return /I$(<) ; }
-}
-# else if $(NT) && $(HAM_TOOLSET) != MINGW
-# {
-#   rule FDefines { return /D$(<) ; }
-#   rule FIncludes { return /I$(<) ; }
-# }
-
-else if $(MAC)
-{
-  rule FQuote { return "\"$(<)\"" ; }
-  rule FDefines { return "-define '$(<)'" ; }
-  rule FIncludes { return "\"$(<:J=,)\"" ; }
-}
-
-else if $(VMS)
-{
-  rule FQuote { return "\"\"\"$(<)\"\"\"" ; }
-  rule FDefines { return "/define=( $(<:J=,) )" ; }
-  rule FIncludes { return "/inc=( $(<:J=,) )" ; }
-
-  rule FDirName
-  {
-	local _s _i ;
-
-	# Turn individual elements in $(<) into a usable path.
-
-	if ! $(<)
-	{
-	  _s = $(DOT) ;
-	}
-	else
-	{
-	  # This handles the following cases:
-	  #   a -> [.a]
-	  #   a b c -> [.a.b.c]
-	  #   x: -> x:
-	  #   x: a -> x:[a]
-	  #   x:[a] b -> x:[a.b]
-
-	  switch $(<[1])
-	  {
-		case *:* :     _s = $(<[1]) ;
-		case \\[*\\] : _s = $(<[1]) ;
-		case * :       _s = [.$(<[1])] ;
-	  }
-
-	  for _i in [.$(<[2-])]
-	  {
-		_s = $(_i:R=$(_s)) ;
-	  }
-	}
-
-	return $(_s) ;
-  }
-}
-
 #
-# Actions
+# Default actions
 #
-
-#
-# First the defaults
-#
-
 actions updated together piecemeal Archive
 {
   $(AR) $(<) $(>)
@@ -2987,16 +2043,6 @@ actions LintH
   $(LINT_H) $(LINT_HDRS) $(>) ; $(LINT_CANNOT_FAIL)
 }
 
-actions Dc
-{
-  $(DC) -c -of$(<) $(DCFLAGS) $(DOPTIM) $(>)
-}
-
-actions Erl
-{
-  $(ERLC) $(ERLFLAGS) $(ERLOPTIM) $(ERLHDRS) -D$(ERLDEFS) -pa$(ERLPATH) -o$(<:D) $(>)
-}
-
 actions Chgrp
 {
   $(CHGRP) $(GROUP) $(<)
@@ -3032,14 +2078,16 @@ actions FilePreserve
   $(CP_PRESERVE) $(>) $(<)
 }
 
-actions GenFile1
-{
-  $(>[1]) $(<) $(>[2-])
+if $(UNIX) {
+  actions GenFile1 {
+    PATH="$PATH:."
+    $(>[1]) $(<) $(>[2-])
+  }
 }
-
-actions Fortran
-{
-  $(FORTRAN) $(FORTRANFLAGS) -o $(<) $(>)
+else {
+  actions GenFile1 {
+    $(>[1]) $(<) $(>[2-])
+  }
 }
 
 actions HardLink
@@ -3047,32 +2095,9 @@ actions HardLink
   $(RM) $(<) && $(LN) $(>) $(<)
 }
 
-actions Lex
-{
-  $(LEX) $(>)
-}
-
-actions LexMv
-{
-  $(MV) lex.yy.c $(<)
-}
-
 actions Link bind NEEDLIBS
 {
   $(LINK) $(LINKFLAGS) -o $(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
-}
-
-if $(OS) = MACOSX {
-  actions DllLink bind NEEDLIBS
-  {
-    $(LINK) $(LINKFLAGS) -dynamiclib -fPIC -fvisibility=hidden -o $(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
-  }
-}
-else {
-  actions DllLink bind NEEDLIBS
-  {
-    $(LINK) $(LINKFLAGS) -fvisibility=hidden -shared -o $(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
-  }
 }
 
 actions MkDir1
@@ -3103,350 +2128,6 @@ actions Shell
 actions SoftLink
 {
   $(RM) $(<) && $(LN) -s $(>) $(<)
-}
-
-actions Yacc1
-{
-  $(YACC) $(YACCFLAGS) $(>)
-}
-
-actions YaccMv
-{
-  $(MV) $(YACCFILES).c $(<[1])
-  $(MV) $(YACCFILES).h $(<[2])
-}
-
-#
-# RELOCATE - for compilers with broken -o flags
-#
-
-if $(RELOCATE)
-{
-  actions C++
-  {
-	$(C++) -c $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) $(>)
-  }
-
-  actions Cc
-  {
-	$(CC) -c $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) $(>)
-  }
-
-  actions ignore CcMv
-  {
-	[ $(<) != $(>:BS=$(SUFOBJ)) ] && $(MV) $(>:BS=$(SUFOBJ)) $(<)
-  }
-}
-
-#
-# NOARUPDATE - can't update an archive
-#
-
-if $(NOARUPDATE)
-{
-  actions Archive
-  {
-	$(AR) $(<) $(>)
-  }
-}
-
-#
-# UNIX specific actions
-#
-
-if $(UNIX)
-{
-  actions GenFile1
-  {
-    PATH="$PATH:."
-    $(>[1]) $(<) $(>[2-])
-  }
-}
-
-if $(ANDROID)
-{
-  ADR_LIBS  = [ FDirName $(ADRDIR) adds/lib/a16 ] ;
-
-  actions together piecemeal Archive
-  {
-    $(AR) $(<) $(>:T)
-  }
-
-  actions Cc
-  {
-    $(CC) -c -o $(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) $(>)
-  }
-
-  actions C++
-  {
-    $(C++) -c -o $(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) $(>)
-  }
-
-  #     actions Link bind NEEDLIBS
-  #     {
-    #       $(LINK) --entry=_start -Bsymbolic --no-undefined --dynamic-linker //system/bin/linker -nostdlib -rpath //system/lib -rpath $(ADR_LIBS) -L $(ADR_LIBS) -o $(<) $(UNDEFS) $(>) $(NEEDLIBS) -lm -lc -lstdc++ -lui $(LINKLIBS)
-  #     }
-
-  actions Link bind NEEDLIBS
-  {
-    $(LINK) $(LINKFLAGS) $(ANDROID_LINK_EXE_ARGS) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
-  }
-  actions DllLink bind IMPLIBNAME
-  {
-    $(LINK) $(LINKFLAGS) $(ANDROID_LINK_DLL_ARGS) $(>) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
-  }
-}
-
-#
-# NT specific actions
-#
-
-else if $(NT)
-{
-  actions ResourceCompiler
-  {
-	rc -fo $(<) $(CCHDRS) $(RCFLAGS) $(>)
-  }
-
-  if $(JSCC_EMU) = VC10 ||  $(HAM_TOOLSET) = VISUALC || $(HAM_TOOLSET) = INTELC
-  {
-    actions Archive
-	{
-	  $(AR) -NOLOGO -WX:NO -out:$(<) $(>)
-	}
-
-    if $(CC_ISCLANG) = 1 {
-      actions Cc
-      {
-        $(CC) -c -o $(<) $(CCFLAGS) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) -I$(AGLDEVENV)/vc9/include $(>)
-      }
-      actions Link bind NEEDLIBS
-      {
-        $(LINK) -FORCE -ignore:4006 $(LINKFLAGS) -DEBUG -out:$(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
-      }
-
-      actions DllLink bind NEEDLIBS IMPLIBNAME
-      {
-        $(LINK) -FORCE -ignore:4006 $(LINKFLAGS) -DLL -IMPLIB:$(IMPLIBNAME) -DEBUG -out:$(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
-      }
-    }
-    else {
-      actions Cc
-      {
-        $(CC) -c -Fo$(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) -Tc$(>)
-      }
-      actions Link bind NEEDLIBS
-      {
-        $(LINK) $(LINKFLAGS) -DEBUG -out:$(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
-      }
-      actions DllLink bind NEEDLIBS IMPLIBNAME
-      {
-        $(LINK) $(LINKFLAGS) -DLL -IMPLIB:$(IMPLIBNAME) -DEBUG -out:$(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
-      }
-    }
-
-	actions C++
-	{
-	  $(C++) -c -Fo$(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) -Tp$(>)
-	}
-  }
-  else if $(HAM_TOOLSET) = MINGW
-  {
-	actions together piecemeal Archive
-	{
-	  $(AR) $(<) $(>:T)
-	}
-
-	actions Cc
-	{
-	  $(CC) -c -o $(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) $(>)
-	}
-
-	actions C++
-	{
-	  $(C++) -c -o $(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) $(>)
-	}
-
-	actions DllLink bind IMPLIBNAME
-	{
-	  $(LINK) $(LINKFLAGS) -shared -o $(<) $(>) -Wl,--out-implib,$(IMPLIBNAME) $(LINKLIBS) $(SYSTEM_LINKLIBS)
-	}
-  }
-  else if $(HAM_TOOLSET) = DIGITALMARS
-  {
-	actions together piecemeal Archive
-	{
-	  $(AR) $(<) $(>)
-	}
-
-	actions Cc
-	{
-	  $(CC) -c $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -o$(<) -I$(STDHDRS) $(>)
-	}
-
-	actions C++
-	{
-	  $(C++) -c $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -o$(<) -I$(STDHDRS) $(>)
-	}
-
-	# note: we don't generate MAP files here !
-	actions Link bind NEEDLIBS
-	{
-	  $(LINK) $(LINKFLAGS) $(>),$(<),NUL, $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
-	}
-
-	# note: we don't generate MAP files here !
-	actions DllLink bind NEEDLIBS IMPLIBNAME
-	{
-	  $(LINK) $(LINKFLAGS) /IMPLIB:$(IMPLIBNAME) $(>) , $(<) ,NUL, $(LINKLIBS:E) $(NEEDLIBS:E)
-	}
-
-	actions Shell
-	{
-	  $(CP) $(>) $(<)
-	}
-  }
-}
-
-#
-# OS2 specific actions
-#
-
-else if $(OS2)
-{
-  if $(HAM_TOOLSET) = WATCOM
-  {
-	actions together piecemeal Archive
-	{
-	  $(AR) -q $(<) +-$(>)
-	}
-
-	actions Cc
-	{
-	  $(CC) /Fo=$(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) $(>)
-	}
-
-	actions C++
-	{
-	  $(C++) /Fo=$(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) $(>)
-	}
-
-	actions Link bind NEEDLIBS
-	{
-	  $(LINK) -q $(LINKFLAGS) /Fe=$(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
-	}
-
-	actions Shell
-	{
-	  $(CP) $(>) $(<)
-	}
-  }
-  else if $(HAM_TOOLSET) = EMX
-  {
-	actions together piecemeal Archive
-	{
-	  $(AR) $(<) $(>:T)
-	}
-
-	actions Cc
-	{
-	  $(CC) -c -o $(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) $(>)
-	}
-
-	actions C++
-	{
-	  $(C++) -c -o $(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) $(>)
-	}
-  }
-}
-
-#
-# VMS specific actions
-#
-
-else if $(VMS)
-{
-  actions updated together piecemeal Archive
-  {
-	lib/replace $(<) $(>[1]) ,$(>[2-])
-  }
-
-  actions Cc
-  {
-	$(CC)/obj=$(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) $(>)
-  }
-
-  actions C++
-  {
-	$(C++)/obj=$(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) $(>)
-  }
-
-  actions piecemeal together existing Clean
-  {
-	$(RM) $(>[1]);* ,$(>[2-]);*
-  }
-
-  actions together quietly CreLib
-  {
-	if f$search("$(<)") .eqs. "" then lib/create $(<)
-  }
-
-  actions GenFile1
-  {
-	mcr $(>[1]) $(<) $(>[2-])
-  }
-
-  actions Link bind NEEDLIBS
-  {
-	$(LINK)/exe=$(<) $(LINKFLAGS) $(>:J=,) ,$(NEEDLIBS)/lib ,$(LINKLIBS) $(SYSTEM_LINKLIBS)
-  }
-
-  actions quietly updated piecemeal together RmTemps
-  {
-	$(RM) $(>[1]);* ,$(>[2-]);*
-  }
-
-  actions Shell
-  {
-	$(CP) $(>) $(<)
-  }
-}
-
-#
-# Mac specifc actions
-#
-
-else if $(MAC)
-{
-  actions together Archive
-  {
-	$(LINK) -library -o $(<) $(>)
-  }
-
-  actions Cc
-  {
-	set -e MWCincludes $(CCHDRS)
-	$(CC) -o $(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(>)
-  }
-
-  actions C++
-  {
-	set -e MWCincludes $(CCHDRS)
-	$(CC) -o $(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(>)
-  }
-
-  actions Link bind NEEDLIBS
-  {
-	$(LINK) -o $(<) $(LINKFLAGS) $(>) $(NEEDLIBS) "$(LINKLIBS)"
-  }
-}
-
-if $(WIN98)
-{
-  actions existing Clean
-  {
-	del $(>)
-  }
 }
 
 #
@@ -3537,12 +2218,6 @@ rule TargetLinkLibs
 {
   LINKLIBS on $(<) ?= $(LINKLIBS) ;
   LINKLIBS on $(<) += $(>) ;
-}
-
-rule ResourceCompiler
-{
-  DEPENDS $(<) : $(>) ;
-  Clean clean : $(<) ;
 }
 
 # FileExists File
@@ -3687,6 +2362,28 @@ rule ListAddBackOnce {
   return [ ListAddBack $(<) : $(>) ] ;
 }
 
+#----------------------------------------------------------------------
+#     VarOn
+#----------------------------------------------------------------------
+# VarOnGet VARNAME ONWHAT
+rule VarOnGet_ {
+  return $($(<)) ;
+}
+rule VarOnGet {
+  return [ on $(2) VarOnGet_ $(1) ] ;
+}
+
+# VarOnAddToFront VARNAME ONWHAT TOADD
+rule VarOnAddToFront {
+  # ECHO "# VAR: " $(1) ;
+  # ECHO "# ON: " $(2) ;
+  # ECHO "# TOADD: " $(3) ;
+  $(1) on $(2) = $(3) [ VarOnGet $(1) : $(2) ] ;
+}
+
+#----------------------------------------------------------------------
+#     Run
+#----------------------------------------------------------------------
 rule RunExe {
   DEPENDS $(<) : $(>) ;
   if ! $(3) {
@@ -3706,8 +2403,12 @@ actions RunExe {
   ./$(>)$(SUFEXE)
 }
 
-#
-# Now include the user's Jamfile.
-#
+#----------------------------------------------------------------------
+#     Include the toolset's base rules
+#----------------------------------------------------------------------
+Import base-$(HAM_TOOLSET)-rules.ham ;
 
+#----------------------------------------------------------------------
+#     Include the user's Hamfile
+#----------------------------------------------------------------------
 include $(JAMFILE) ;

@@ -1,0 +1,45 @@
+NT = 1 ;
+WINDOWS = 1 ;
+if $(HAM_TOOLSET_NAME) = VC9_X86 || $(HAM_TOOLSET_NAME) = VC10_X86 {
+  OSPLAT = X86 ;
+}
+else if $(HAM_TOOLSET_NAME) = VC9_X64 || $(HAM_TOOLSET_NAME) = VC10_X64 {
+  OSPLAT = X64 ;
+}
+
+SLASH   ?= / ;
+SUFLIB  ?= .lib ;
+SUFOBJ  ?= .obj ;
+SUFEXE  ?= .exe ;
+SUFDLL  ?= .dll ;
+CHMOD   ?= chmod ;
+
+if $(OSPLAT) = X64 {
+  YASM = "yasm_x64" ;
+  YASMFLAGS   = "-m amd64 -f coff" ;
+}
+else {
+  YASM = "yasm_x86" ;
+  YASMFLAGS   = "-m x86 -f coff" ;
+}
+
+if ! $(HAM_CL) {
+  EXIT "F/HAM_CL not defined !" ;
+}
+if ! ( $(FLYMAKE) = 1 ) {
+  # Errors with absolute file path
+  HAM_CL = $(HAM_CL) -FC ;
+}
+
+AR ?= lib ;
+
+CC          ?= $(HAM_CL) -nologo ;
+CCFLAGS     ?= ;
+C++FLAGS    ?= ;
+C++         ?= $(HAM_CL) -nologo ;
+LINK        ?= $(HAM_LINK) -nologo -INCREMENTAL:NO ;
+LINKFLAGS   ?= "" ;
+LINKLIBS    ?= oldnames.lib kernel32.lib ;
+OPTIM       ?= "" ;
+STDHDRS     ?= $(VISUALC)/include ;
+UNDEFFLAG   ?= "-u _" ;

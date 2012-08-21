@@ -1,0 +1,7 @@
+Import log.ham ;
+
+rule AssertEq {
+  if $(<) != $(>) {
+    logFatal "ASSERT:" $(<) "!=" $(>) ;
+  }
+}

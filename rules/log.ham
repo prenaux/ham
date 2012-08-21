@@ -1,0 +1,29 @@
+LOG_LEVEL ?= 0 ;
+
+rule logDebug {
+  if $(LOG_LEVEL) <= 0 {
+    ECHO "D/" $(<) ;
+  }
+}
+
+rule logInfo {
+  if $(LOG_LEVEL) <= 1 {
+    ECHO "I/" $(<) ;
+  }
+}
+
+rule logWarn {
+  if $(LOG_LEVEL) <= 2 {
+    ECHO "W/" $(<) ;
+  }
+}
+
+rule logError {
+  if $(LOG_LEVEL) <= 3 {
+    ECHO "E/" $(<) ;
+  }
+}
+
+rule logFatal {
+  EXIT "F/" $(<) ;
+}

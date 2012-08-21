@@ -1,0 +1,34 @@
+rule SharedLink {
+  # get rid of the '.exp/.ilk' files when cleaning
+  Clean  clean : $(3:S=.exp) ;
+  Clean  clean : $(3:S=.ilk) ;
+}
+
+rule ResourceCompiler {
+  DEPENDS $(<) : $(>) ;
+  Clean clean : $(<) ;
+}
+
+actions ResourceCompiler {
+  rc -fo $(<) $(CCHDRS) $(RCFLAGS) $(>)
+}
+
+actions Archive {
+  $(AR) -NOLOGO -WX:NO -out:$(<) $(>)
+}
+
+actions Cc {
+  $(CC) -c -Fo$(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) -Tc$(>)
+}
+
+actions C++ {
+  $(C++) -c -Fo$(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) -Tp$(>)
+}
+
+actions Link bind NEEDLIBS {
+  $(LINK) $(LINKFLAGS) -DEBUG -out:$(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+}
+
+actions DllLink bind NEEDLIBS IMPLIBNAME {
+  $(LINK) $(LINKFLAGS) -DLL -IMPLIB:$(IMPLIBNAME) -DEBUG -out:$(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+}
