@@ -1,0 +1,24 @@
+Import assert.ham ;
+
+ALPHA = "aaa" ;
+BETA = "bbb" ;
+ECHO "ALPHA:" $(ALPHA) ;
+ECHO "BETA:" $(BETA:) ;
+
+# If the variable is not set on the specified target returns the global value
+AssertEq "aaa" : [ VarOnGet ALPHA : squirrel ] ;
+AssertEq "bbb" : [ VarOnGet BETA : squirrel ] ;
+
+ALPHA on foo = "alpha" ;
+ECHO "ALPHA on foo:" [ VarOnGet ALPHA : foo ] ;
+AssertEq "alpha" : [ VarOnGet ALPHA : foo ] ;
+BETA on foo = "beta" ;
+ECHO "BETA on foo:" [ VarOnGet BETA : foo ] ;
+AssertEq "beta" : [ VarOnGet BETA : foo ] ;
+
+ALPHA on bar = "A" ;
+ECHO "ALPHA on bar:" [ VarOnGet ALPHA : bar ] ;
+AssertEq "A" : [ VarOnGet ALPHA : bar ] ;
+BETA on bar = "B" ;
+ECHO "BETA on bar:" [ VarOnGet BETA : bar ] ;
+AssertEq "B" : [ VarOnGet BETA : bar ] ;

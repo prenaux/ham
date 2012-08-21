@@ -1,0 +1,13 @@
+Import log.ham ;
+Import assert.ham ;
+
+ECHO "===============================" ;
+ECHO "=== Ham Libraries UnitTests ===" ;
+ECHO "===============================" ;
+
+TEST_FILES = [ GLOB . : "test_[^.]*\.ham" ] ;
+
+for F in $(TEST_FILES) {
+  ECHO "===== Running:" $(F) ;
+  include $(F) ;
+}
