@@ -37,7 +37,7 @@
 ;;  To add font-lock support for Ham files, simply add the line
 ;;  (require 'ham-mode) to your .emacs file. Make sure generic-mode.el
 ;;  is visible in your load-path as well.
-;;  
+;;
 ;; *****************************************************************************
 
 
@@ -51,7 +51,7 @@
   (require 'generic))
 
 (defun ham-mode-quote-keywords (keywords)
-  "Returns a list of expressions that match each element in KEYWORDS. 
+  "Returns a list of expressions that match each element in KEYWORDS.
 For generic-mode, each element is quoted. For generic, each element is unchanged."
   (if (featurep 'generic-mode)
       (mapcar 'regexp-quote keywords)
@@ -71,9 +71,9 @@ For generic-mode, each element is quoted. For generic, each element is unchanged
 
     ; Ham keywords
 	(generic-make-keywords-list
-	 (list "actions" "bind" "case" "default" "else" "existing" "for" "if" 
+	 (list "actions" "bind" "case" "default" "else" "existing" "for" "if"
 		   "ignore" "in" "include" "local" "on" "piecemeal" "quietly" "rule" "switch"
-		   "together" "updated")
+		   "together" "updated" "return")
 	 'font-lock-keyword-face)
 
 	; Ham built-in variables
@@ -98,7 +98,7 @@ For generic-mode, each element is quoted. For generic, each element is unchanged
 
 	; Hambase rules
 	(generic-make-keywords-list
-	 (ham-mode-quote-keywords 
+	 (ham-mode-quote-keywords
           (list
            "Archive" "As" "Bulk" "Cc" "CcMv" "C++" "Chgrp" "Chmod" "Chown" "Clean" "CreLib"
            "Depends" "File" "Fortran" "GenFile" "GenFile1" "HardLink"
@@ -112,7 +112,7 @@ For generic-mode, each element is quoted. For generic, each element is unchanged
            "addDirName" "makeCommon" "makeDirName" "makeGrist" "makeGristedName" "makeRelPath"
            "makeString" "makeSubDir" "makeSuffixed" "unmakeDir"))
 	 'font-lock-function-name-face)
-	
+
 	; Hambase built-in targets
 	(generic-make-keywords-list
 	 (list
@@ -154,7 +154,7 @@ For generic-mode, each element is quoted. For generic, each element is unchanged
   (modify-syntax-entry ?+ "w")
   (modify-syntax-entry ?# "<")
   (modify-syntax-entry ?\n ">")
-  (setq imenu-generic-expression 
+  (setq imenu-generic-expression
         '(("Rules" "^rule\\s-+\\([A-Za-z0-9_]+\\)" 1)
           ("Actions" "^actions\\s-+\\([A-Za-z0-9_]+\\)" 1)))
   (imenu-add-to-menubar "Ham")
@@ -197,7 +197,7 @@ For generic-mode, each element is quoted. For generic, each element is unchanged
       (skip-chars-backward "^{}")
       (unless (bobp)
         (backward-char)
-        (setq l (cond 
+        (setq l (cond
                  ((eq (char-after) ?{) (1- l))
                  ((eq (char-after) ?}) (1+ l))
                  )))
@@ -208,7 +208,7 @@ For generic-mode, each element is quoted. For generic, each element is unchanged
 (defun ham-indent-level ()
   (save-excursion
     (let ((p (point))
-          ind 
+          ind
           (is-block-start nil)
           (is-block-end nil)
           (is-case nil)
@@ -216,7 +216,7 @@ For generic-mode, each element is quoted. For generic, each element is unchanged
           switch-ind)
       ;; see what's on this line
       (beginning-of-line)
-      (setq is-block-end (looking-at "^[^{\n]*}\\s-*$")) 
+      (setq is-block-end (looking-at "^[^{\n]*}\\s-*$"))
       (setq is-block-start (looking-at ".*{\\s-*$"))
       (setq is-case (looking-at "\\s-*case.*:"))
 
@@ -224,7 +224,7 @@ For generic-mode, each element is quoted. For generic, each element is unchanged
       (if (ham-goto-block-start)
           (setq ind 0)
         (setq ind (+ (current-indentation) ham-indent-size)))
-      
+
       ;; increase indent in switch statements (not cases)
       (setq is-switch (re-search-backward "^\\s-*switch" (- (point) 100) t))
       (when (and is-switch (not (or is-block-end is-case)))
@@ -235,9 +235,9 @@ For generic-mode, each element is quoted. For generic, each element is unchanged
                          ham-indent-size)
                     (+ ind ham-indent-size)))
         )
-    
-      ;; indentation of this line is ham-indent-size more than that of the 
-      ;; previous block 
+
+      ;; indentation of this line is ham-indent-size more than that of the
+      ;; previous block
       (cond (is-block-start  ind)
             (is-block-end    (- ind ham-indent-size))
             (is-case         ind)
