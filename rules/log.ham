@@ -6,24 +6,34 @@ rule logDebug {
   }
 }
 
-rule logInfo {
+rule logVerbose {
   if $(LOG_LEVEL) <= 1 {
+    ECHO "V/" $(<) ;
+  }
+}
+
+rule logInfo {
+  if $(LOG_LEVEL) <= 2 {
     ECHO "I/" $(<) ;
   }
 }
 
 rule logWarn {
-  if $(LOG_LEVEL) <= 2 {
+  if $(LOG_LEVEL) <= 3 {
     ECHO "W/" $(<) ;
   }
 }
 
 rule logError {
-  if $(LOG_LEVEL) <= 3 {
+  if $(LOG_LEVEL) <= 4 {
     ECHO "E/" $(<) ;
   }
 }
 
 rule logFatal {
   EXIT "F/" $(<) ;
+}
+
+rule logVar {
+  logDebug $(<) "=" $($(<)) ;
 }

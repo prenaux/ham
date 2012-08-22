@@ -1,4 +1,8 @@
 Import log.ham ;
+Import assert.ham ;
+
+AssertVarDefined HAM_TOOLSET_NAME ;
+AssertVarDefined HAM_TOOLSET_VER ;
 
 TK_ENV_FILE = toolkit-$(HAM_TOOLSET_NAME).ham ;
 Import $(TK_ENV_FILE) : "E/Can't find toolkit's configuration for toolset:" $(TK_ENV_FILE:B:S) ;
@@ -6,15 +10,9 @@ Import $(TK_ENV_FILE) : "E/Can't find toolkit's configuration for toolset:" $(TK
 #----------------------------------------------------------------------
 #     LOA
 #----------------------------------------------------------------------
-if ! $(LOA_LINKER) {
-  tkFatal "LOA_LINKER not defined !" ;
-}
-if ! $(LOA_OS) {
-  tkFatal "LOA_OS not defined !" ;
-}
-if ! $(LOA_ARCH) {
-  tkFatal "LOA_ARCH not defined !" ;
-}
+AssertVarDefined LOA_LINKER ;
+AssertVarDefined LOA_OS ;
+AssertVarDefined LOA_ARCH ;
 
 LIBS_LOA = $(LOA_LINKER)-$(LOA_OS)-$(LOA_ARCH) ;
 BIN_LOA = $(LOA_OS)-$(LOA_ARCH) ;
@@ -22,7 +20,8 @@ BIN_LOA = $(LOA_OS)-$(LOA_ARCH) ;
 #----------------------------------------------------------------------
 #     DEFINES
 #----------------------------------------------------------------------
-BUILD ?= rel ;
+BUILD ?= dbg ;
+logVar BUILD ;
 
 switch $(BUILD) {
   case rel :
@@ -30,6 +29,667 @@ switch $(BUILD) {
   case * : tkFatal "Unknown BUILD type:" $(BUILD) ;
 }
 
+if $(FLYMAKE) = 1 {
+  DEFINES += _FLYMAKE ;
+}
+if $(DEBUG) = 1 {
+  DEFINES += _DEBUG ;
+}
+else {
+  DEFINES += NDEBUG ;
+}
+if $(REDIST) = 1 {
+  DEFINES += _REDIST ;
+}
+if $(PROFILER) = 1 {
+  DEFINES += _PROFILER ;
+}
+if $(NO_PROFILER) = 1 {
+  DEFINES += _NO_PROFILER ;
+}
+
+if $(BUILD) = rel {
+  BUILDEXT = $(LOA_ARCH) ;
+}
+else {
+  BUILDEXT = $(LOA_ARCH)_$(BUILD) ;
+}
+logVar BUILDEXT ;
+
+# Lint, on by default in debug build
+LINT ?= $(DEBUG) ;
+logVar LINT ;
+
+#----------------------------------------------------------------------
+#     DIRECTORIES
+#----------------------------------------------------------------------
+# Standard directories and the cache file
+TEMPDIR ?= [ FDirName $(HOME) .ham ] ;
+BASEOBJDIR ?= [ FDirName $(TEMPDIR) obj ] ;
+HCACHEFILE ?= [ FDirName $(TEMPDIR) _cache.ham ] ;
+
+# Should be defined in the toolkit's _rules.ham
+AssertVarDefined TK_DIR ;
+AssertVarDefined TOP_DIR ;
+
+TK_DIR_SOURCES ?= [ FDirName $(TK_DIR) sources ] ;
+logVar TK_DIR_SOURCES ;
+MakeLocate tkdir : $(TK_DIR_SOURCES) ;
+AssertEq $(TK_DIR_SOURCES) : $(TOP_DIR) ;
+
+TK_DIR_REDIST ?= [ FDirName $(TK_DIR) redist ] ;
+logVar TK_DIR_REDIST ;
+MakeLocate tkdir : $(TK_DIR_REDIST) ;
+
+TK_DIR_DOCS ?= [ FDirName $(TK_DIR_REDIST) docs ] ;
+logVar TK_DIR_DOCS ;
+MakeLocate tkdir : $(TK_DIR_DOCS) ;
+
+TK_DIR_BIN ?= [ FDirName $(TK_DIR_REDIST) bin $(BIN_LOA) ] ;
+logVar TK_DIR_BIN ;
+MakeLocate tkdir : $(TK_DIR_BIN) ;
+
+TK_DIR_INCLUDE ?= [ FDirName $(TK_DIR_REDIST) include ] ;
+logVar TK_DIR_INCLUDE ;
+MakeLocate tkdir : $(TK_DIR_INCLUDE) ;
+
+TK_DIR_LIBS ?= [ FDirName $(TK_DIR_REDIST) libs $(LIBS_LOA) ] ;
+logVar TK_DIR_LIBS ;
+MakeLocate tkdir : $(TK_DIR_LIBS) ;
+
+NOTFILE tkdir ;
+NOUPDATE tkdir ;
+DEPENDS all : tkdir ;
+
+MakeLocate tkdir : $(TEMPDIR) ;
+MakeLocate tkdir : $(BASEOBJDIR) ;
+
 #----------------------------------------------------------------------
 #     INFO
 #----------------------------------------------------------------------
+logVerbose "### BUILD ENV ###" ;
+logVerbose "- Platform : "$(OS)" ($(OSPLAT))" ;
+logVerbose "- LOA      : "$(LIBS_LOA) ;
+logVerbose "- Toolset  : "$(HAM_TOOLSET_NAME)" ("$(HAM_TOOLSET_VER)")" ;
+
+#----------------------------------------------------------------------
+#     BASE STUFF
+#----------------------------------------------------------------------
+# This is necessary to support includes where the include file name is the same
+# in multiple folders. (as is stdafx.h)
+rule tkHdrGrist {
+  HDRGRIST = $(SUBDIR) ;
+}
+SUBDIRRULES += tkHdrGrist ;
+
+# Return source files with the given extension
+# EXAMPLE: GlobAllSrc DIR : cpp h asm ;
+rule GlobAllSrcWithDir {
+  return [ GLOB [ FDirName $(<) ] : "[^.]*."$(>) ] ;
+}
+
+rule GlobAllSrc {
+  local r ;
+  local t = [ GlobAllSrcWithDir $(<) : $(>) ] ;
+  for _i in $(t) {
+	r += $(_i:B)$(_i:S) ;
+  }
+  return $(r) ;
+}
+
+rule Touch {
+}
+actions Touch {
+  touch $(<)
+}
+
+# tkFile TARGET : SOURCE : DEP
+rule tkFileCopy {
+  if $(<) != $(>) {
+    DEPENDS $(<) : $(>) ;
+  }
+  MakeDir $(<) : $(<:D) ;
+  File $(<) : $(>) ;
+  if $(3) {
+    DEPENDS $(3) : $(<) ;
+  }
+}
+
+# tkFile TARGET : SOURCE : OUTDIR
+rule tkFile {
+  if $(<) != $(>) {
+    DEPENDS $(<) : $(>) ;
+  }
+  local p = [ FDirName $(3) $(<) ] ;
+  MakeDir $(>) : $(p:D) ;
+  File $(p) : $(>) ;
+  DEPENDS $(p) : $(>) ;
+  return $(p) ;
+}
+
+# Append the specified files to the specified target.
+# The target should have already been build.
+rule tkFileAppend {
+  DEPENDS $(<) : $(>) ;
+}
+actions tkFileAppend {
+  echo - Appending [$(>)] to [$(<)]
+  mv $(<) _temp_
+  cat _temp_ $(>) > $(<)
+  rm _temp_
+}
+
+#----------------------------------------------------------------------
+#     API Copy
+#----------------------------------------------------------------------
+
+# tkAPICopy TARGET : MODULE : RELDIRS
+rule tkAPICopy {
+  local r ;
+  for _i in $(3) {
+    if $(_i) = . { _i = ; }
+    local base = [ FDirName $(SUBDIR) API $(2) ] ;
+    local dir = [ FDirName $(base) $(_i) ] ;
+    local idir = [ FDirName $(2) $(_i) ] ;
+    local ddir = [ FDirName $(TK_DIR_INCLUDE) $(idir) ] ;
+    local srcs = [ GlobAllSrc $(dir) : c cxx cpp h hxx hpp __h ] ;
+#     ECHO "Dir: " $(dir) ;
+#     ECHO "DDir: " $(ddir) ;
+#     ECHO "RDir: " $(rdir) ;
+#     ECHO "SUB: " $(SUBDIR) ;
+    MakeLocate $(<)_dir : $(ddir) ;
+    NotFile $(<)_dir ;
+    NoUpdate $(<)_dir ;
+    for _j in $(srcs) {
+      local s = [ FDirName $(dir) $(_j) ] ;
+      local d = [ FDirName $(ddir) $(_j) ] ;
+      if $(d:S) = ".__h" {
+        d = $(d:S="") ;
+      }
+      reld = [ FDirName $(idir) $(d:B)$(d:S) ] ;
+      reld = "<"$(SUBDIR)">"$(reld) ; # Our own grist...
+      s = [ FGristFiles $(s) ] ;
+      d = [ FGristFiles $(d) ] ;
+      DEPENDS $(d) : $(<)_dir ;
+      FilePreserveRO $(d) : $(s) ;
+      INCLUDES $(d) : $(s) ;
+      INCLUDES $(reld) : $(s) ;
+      r += $(d) ;
+#       ECHO "$(d:S) $(s) -> $(d)" ;
+#       ECHO "REL: $(reld)" ;
+      DEPENDS $(<) : $(d) ;
+    }
+  }
+  DEPENDS API : $(<) ;
+  DEPENDS moduledef : API ;
+  return $(r) ;
+}
+
+#----------------------------------------------------------------------
+#     Compilation setup
+#----------------------------------------------------------------------
+HDRS += $(TK_DIR_INCLUDE) ;
+Import toolkit-cpp.ham ;
+
+#----------------------------------------------------------------------
+#     Packages
+#----------------------------------------------------------------------
+if $(OSX) || $(IOS) {
+  DEFAULT_PKGSRC_EXT = cpp c acc m mm ;
+}
+else {
+  DEFAULT_PKGSRC_EXT = cpp c acc ;
+}
+
+# tkPkgSrc Extensions ;
+# If extensions is not specified defaults to cpp/cc/c.
+# Includes the _$PACKAGE_ModuleDef.cpp file.
+rule tkPkgSrc {
+  local ext = $(<) ;
+  if ! $(<) {
+    ext = $(DEFAULT_PKGSRC_EXT) ;
+  }
+  local s = [ GlobSrc $(SUBDIR) : $(ext) ] ;
+  if $(PKGGROUP) = modules ||
+     $(PKGGROUP) = modulelibs
+  {
+    s = _$(PACKAGE)_ModuleDef.cpp $(s) ;
+  }
+  return $(s) ;
+}
+
+# tkPkgSrcSubDirList d1..dn : files ;
+rule tkPkgSrcSubDirLst {
+  return [ SrcSubDir $(PACKAGE) : $(<) : $(OBJDIR) : $(>) ] ;
+}
+
+# tkPkgSrcSubDir d1..dn : exts ;
+# If extensions is not specified defaults to cpp/cc/c.
+rule tkPkgSrcSubDir {
+  local ext = $(>) ;
+  if ! $(>) { ext = $(DEFAULT_PKGSRC_EXT) ; }
+  return [ SrcSubDirGlob $(PACKAGE) : $(<) : $(OBJDIR) : $(ext) ] ;
+}
+rule tkPkgSrcSubDirNoHdrs {
+  local ext = $(>) ;
+  if ! $(>) { ext = $(DEFAULT_PKGSRC_EXT) ; }
+  return [ SrcSubDirGlobNoHdrs $(PACKAGE) : $(<) : $(OBJDIR) : $(ext) ] ;
+}
+
+# tkPkgHdrs Dir ;
+# Dir is relative to TK_DIR/include/agl
+rule tkPkgHdrs {
+  local d = [ FDirName $(SUBDIR) API $(<) ] ;
+  return [ GlobSrc $(d) : h ] ;
+}
+
+# tkLinkLibs TARGET : LIB : DIR ;
+# LIB is a library contained in the SDK's library folder.
+rule tkLinkLibs {
+  if $(PKGTYPE) != library {
+    local dir = $(3) ;
+    dir ?= $(TK_DIR_LIBS) ;
+    local l = [ FDirName $(dir) $(>)_$(BUILDEXT)$(SUFLIB) ] ;
+    if ! ( $(NO_DEPS) = 1 ) {
+      DEPENDS $(<) : $(l) ;
+    }
+    VarOnAddToFront LINKLIBS : $(<) : $(l) ;
+    # [ VarAddToFront LINKLIBS $(<) $(l) ] ;
+    # LINKLIBS on $(<) += $(l) ;
+    # ECHO "LINKLIBS: " [ VarOnGet LINKLIBS : $(<) ] ;
+  }
+}
+
+# tkPkgLinkLibs LIB ;
+rule tkPkgLinkLibs
+{
+  tkLinkLibs $(PKGTARGET) : $(<) ;
+}
+
+rule tkLinkDll {
+  # ECHO "tkLinkDll $(<) : $(>) " ;
+  tkLinkLibs $(<) : $(>) ;
+  if $(HAM_TOOLSET) = VISUALC {
+    LINKFLAGS on $(<) += -DELAYLOAD:$(>)_$(BUILDEXT)$(SUFDLL) ;
+  }
+}
+
+# tkDefPackage name : version : type : output/final directory : customsuffix ;
+rule tkDefPackage
+{
+  # Clear global variables...
+  API = ;
+  IDLS = ;
+  SRC = ;
+  ALLSRC = ;
+  BUILD_SRC = ;
+  SRC_EXTRA = ;
+  OBJS_EXTRA = ;
+  # Setup package variables
+  PACKAGE = $(1) ;
+  PACKAGE_DIR = [ FSubDirAbsName ] ;
+  VERSION = $(2) ;
+  PKGVER  = $(PACKAGE)-$(VERSION) ;
+  OUTDIR  = [ FDirName $(4) ] ;
+  PKGOPTIM = ;
+  PKGGROUP = $(3) ;
+  if $(PKGGROUP) = jar {
+    OBJDIR = [ FDirName $(BASEOBJDIR) $(TK_NAME:L)-jvm $(PACKAGE) ] ;
+    PKGBUILD = $(PACKAGE) ;
+    PKGTARGET = $(PKGBUILD:S=.jar) ;
+    PKGTYPE = jar ;
+    DEPENDS modplugs : $(PKGGROUP) ;
+  }
+  else {
+    OBJDIR = [ FDirName $(BASEOBJDIR) $(TK_NAME:L)-$(LIBS_LOA)-$(BUILD) $(PACKAGE) ] ;
+    PKGBUILD = $(PACKAGE)_$(BUILDEXT) ;
+    if $(PKGGROUP) = $(PKGGROUP) = modules || $(PKGGROUP) = dll || $(PKGGROUP) = dylib {
+      PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
+      PKGTARGET = $(PKGBUILD:S=$(SUFDLL)) ;
+      PKGTYPE = dll ;
+      DEPENDS modplugs : $(PKGGROUP) ;
+    }
+    else if $(PKGGROUP) = libs || $(PKGGROUP) = modulelibs {
+      PKGTARGET = $(PKGBUILD:S=$(SUFLIB)) ;
+      PKGTYPE = library ;
+      DEPENDS modplugs : $(PKGGROUP) ;
+    }
+    else if $(PKGGROUP) = rawbin || $(PKGGROUP) = tools || $(PKGGROUP) = tests {
+      PKGTARGET = $(PKGBUILD:S=$(SUFEXE)) ;
+      PKGTYPE = binary ;
+      if $(PKGGROUP) = rawbin {
+        File [ FDirName $(OUTDIR:/) $(PACKAGE:S=$(SUFEXE)) ] : $(PKGTARGET:/) ;
+      }
+    }
+    else {
+      PKGTARGET = $(PKGBUILD:S=$(5)) ;
+      PKGTYPE = $(PKGGROUP) ;
+    }
+    LINKFLAGS on $(PKGTARGET) ?= $(LINKFLAGS) ;
+    LINKLIBS on $(PKGTARGET) ?= $(LINKLIBS) ;
+  }
+
+  if $(5) {
+    PKGTARGETF = $(PKGTARGET:S=$(5)) ;
+    logVerbose "- Custom Extension $(cpSrc) -> $(cpDst)" ;
+  }
+  else {
+    PKGTARGETF = $(PKGTARGET) ;
+  }
+
+  # Target directory
+  LOCATE_TARGET = $(OBJDIR) ;
+  MakeLocate $(PKGTARGET) : $(OUTDIR) ;
+  MakeLocate $(PKGTARGET) : $(OBJDIR) ;
+  DEPENDS $(PKGTARGET) : tkdir ;
+
+  logVerbose "[ $(PKGBUILD) - $(VERSION) : $(PKGGROUP) [$(PKGTYPE)] ]" ;
+  logVerbose "- Platform    : $(OS) ($(OSPLAT))" ;
+  logVerbose "- Defines     :" $(DEFINES) ;
+  logVerbose "- ObjDir      : $(OBJDIR)" ;
+  logVerbose "- OutDir      : $(OUTDIR)" ;
+  logVerbose "- Target      : $(PKGTARGET)" ;
+  logVerbose "- Target File : $(PKGTARGETF)" ;
+}
+
+# tkDefModuleEx module_name : version : outdir : depdir : group ;
+rule tkDefModuleEx
+{
+  if $(NO_DLL) && $(5) != modulelibs {
+    EXIT "DLL Not Supported !" ;
+  }
+
+  tkDefPackage $(1) : $(2) : $(5) : $(3) ;
+  if $(4) {
+    DEPHDRS += [ FDirName $(TK_DIR_INCLUDE) agl $(4) ] ;
+  }
+  MODXML = [ FSubDirAbsName "_"$(PACKAGE)"_Desc.xml" ] ;
+  Clean clean : $(MODXML) ;
+}
+
+# tkDefModule module_name : version : (depdir) ;
+rule tkDefModule {
+  if $(NO_DLL) = 1 {
+    tkDefModuleEx $(<) : $(>) : $(TK_DIR_LIBS) : $(3) : modulelibs ;
+    DEPENDS modules : modulelibs ;
+  }
+  else {
+    tkDefModuleEx $(<) : $(>) : $(TK_DIR_BIN) : $(3) : modules ;
+  }
+}
+
+# tkDefModuleTest module_name : version ;
+rule tkDefModuleTest
+{
+  tkDefPackage $(1) : $(2) : tests : $(TK_DIR_BIN) ;
+}
+
+# tkDefLib lib_name : version ;
+rule tkDefLib
+{
+  tkDefPackage $(1) : $(2) : libs : $(TK_DIR_LIBS) ;
+}
+
+# tkDefDylib lib_name : version ;
+rule tkDefDylib
+{
+  tkDefPackage $(1) : $(2) : dylib : $(TK_DIR_LIBS) ;
+  for _l in $(3) {
+    tkLinkLibs $(PKGTARGET) : $(_l) ;
+  }
+}
+
+# tkDefTest test_name : version : static link libs for NO_DLL mode ;
+rule tkDefTest
+{
+  tkDefPackage $(1) : $(2) : tests : $(TK_DIR_BIN) ;
+  if $(NO_DLL) = 1 {
+    for _l in $(3) {
+      tkLinkLibs $(PKGTARGET) : $(_l) ;
+    }
+  }
+}
+
+# tkDefTool tool_name : version : static link libs for NO_DLL mode : destDir ;
+rule tkDefTool
+{
+  local destDir = $(TK_DIR_BIN) ;
+  if $(4) {
+    destDir = $(4) ;
+  }
+  tkDefPackage $(1) : $(2) : tools : $(destDir) ;
+  if $(NO_DLL) = 1 {
+    for _l in $(3) {
+      tkLinkLibs $(PKGTARGET) : $(_l) ;
+    }
+  }
+}
+
+# tkDepends target : depend_on : dira dirb
+rule tkDepends
+{
+  if $(NO_DEPS) = 1 { return ; }
+  if [ IncludeOnce $(3) ] = 0 {
+    SubInclude $(3) ;
+  }
+  DEPENDS $(<) : $(>) ;
+}
+rule tkDepModule
+{
+  tkDepends $(<) : $(>) : TOP modules $(>) src ;
+}
+rule tkDepTool
+{
+  tkDepends $(<) : $(>) : TOP tools $(>) src ;
+}
+rule tkDepLib
+{
+  tkDepends $(<) : $(>) : TOP libs $(>) src ;
+}
+
+# tkBuildPackage SOURCES : options : CHK_SOURCES : NOPCH-SOURCES : EXTRA_OBJS : MODDEPS_FOR_LIBLINK ;
+# REM: Requires tkDefPackage to have been called first (or any of the tkDef* rule).
+rule tkBuildPackage
+{
+  local NOAUTOBUILD = 0 ;
+  local _exsrc = $(3) ; # Only applies the flags, not included directly into the final target
+  local _src = $(<) ;
+  local _nopchsrc = $(4) ;
+  local _extra_objs = $(5) ;
+  local _ei = 0 ;
+  local _pch = ;
+  local _implib = 0 ;
+  local _cpredist = 1 ;
+  local _pdb = 1 ;
+  local _libsys = 0 ;
+  local _console = 0 ;
+  local _jni = 0 ;
+  local _exc = 0 ;
+  local _unicode = 0 ;
+
+  if $(BUILD_JNI) = 1 {
+    _jni = 1 ;
+  }
+
+  if $(ALL_SRC_USE_PCH) = 1 {
+    # We include all files as 'pch' if not using GCC
+    _src += $(_nopchsrc) ;
+    _nopchsrc = ;
+  }
+
+  OPT_CRTDLL = 0 ;
+  OPT_MINSIZE = 0 ;
+  OPT_NOOPT = 0 ;
+  OPT_RTTI = 0 ;
+  ### Parse options ###
+  for _i in $(>) {
+	switch $(_i) {
+	# Use precompiled header, should be the first option if specified
+	case pch :
+	  if $(SUFPCH) && ( ! ( $(NO_PCH) = 1 ) )  && ( ( ! $(FLYMAKE) ) || $(FLYMAKE_PCH) = 1 ) {
+		# Use _exsrc
+        _pch = [ tkC++Pch PCH_$(PACKAGE) : stdafx.cpp : $(_src) $(_exsrc) : $(_nopchsrc) : $(>) ] ;
+		# _exsrc += stdafx.cpp ;
+	  }
+    # Compile JNI
+    case jni :
+      _jni = 1 ;
+    case nojni :
+      _jni = 0 ;
+	# Require exceptions
+	case exc :
+        if ( ! ( $(NO_EXCEPTION) = 1 ) ) {
+          _exc = 1 ;
+          tkC++Exceptions $(_exsrc) $(_src) $(_nopchsrc) ;
+        }
+    # Can lint
+    case lint :
+      if $(LINT) = 1 {
+        tkCC++Lint $(_exsrc) $(_src) $(_nopchsrc) ;
+      }
+	# Dont call CC++Build automatically
+    case noautobuild :
+	  NOAUTOBUILD = 1 ;
+    # No CRT DLL
+    case nocrt :
+      OPT_CRTDLL = 2 ;
+	# Use the CRT DLL
+	case crtdll :
+	  OPT_CRTDLL = 1 ;
+	# Min size optimization
+	case minsz :
+	  OPT_MINSIZE = 1 ;
+    # No optimization
+    case noopt :
+      OPT_NOOPT = 1 ;
+    # Copy the implib of DLLs to the library output folder (NT only)
+    case implib :
+      _implib = 1 ;
+    # Dont copy the output in the redist directory
+    case noredist :
+      _cpredist = 0 ;
+    # Dont copy the pdb in the redist directory
+    case nopdb :
+      _pdb = 0 ;
+    # Enable RTTI
+    case rtti :
+      OPT_RTTI = 1 ;
+    # Console application
+    case console :
+      _console = 1 ;
+    # Unicode (UTF16) application
+    case unicode :
+      _unicode = 1 ;
+    case * :
+      ECHO "Unknown Build Option : " $(_i) ;
+	}
+  }
+
+  local _allsrc = $(_exsrc) $(_src) $(_nopchsrc) ;
+  if $(_unicode) = 1 {
+    ObjectDefines $(_allsrc)  : _UNICODE UNICODE ;
+  }
+  else {
+    ObjectDefines $(_allsrc) : _UTF8 UTF8 ;
+  }
+  if $(_exc) = 0 {
+    tkNoC++Exceptions $(_allsrc) ;
+  }
+  logVerbose "- Build options of '$(PKGTARGET)' : " $(>) ;
+
+  if $(NOAUTOBUILD) = 0 {
+	tkCC++Build $(_exsrc) $(_src) $(_nopchsrc) ;
+  }
+  ObjectOptimFlags $(_exsrc) $(_src) $(_nopchsrc) : $(PKGOPTIM) ;
+  OPTIM on $(_pch) = $(PKGOPTIM) ;
+
+  ### Main build output ###
+  _src += $(_nopchsrc) ;
+
+  local is_exe = 0 ;
+  local t = $(PKGBUILD) ;
+  if $(PKGTYPE) = dll || $(PKGTYPE) = jni || $(PKGTYPE) = dylib {
+    ObjectDefines $(_allsrc) : _TARGET_DLL ;
+	SharedLibrary $(t) : $(_src) : : : $(_extra_objs) ;
+  }
+  else if $(PKGTYPE) = library {
+    ObjectDefines $(_allsrc) : _TARGET_LIB ;
+	Library $(t) : $(_src) : $(_extra_objs) ;
+  }
+  else {
+	is_exe = 1 ;
+    ObjectDefines $(_allsrc) : _TARGET_EXE ;
+	Main $(t) : $(_src) : $(_extra_objs) ;
+    if $(OSX) {
+	  LINKFLAGS on $(PKGTARGETF) += -fvisibility=hidden ;
+    }
+	else if $(EMB_DEVICE) {
+	  LINKFLAGS on $(PKGTARGETF) += -fvisibility=hidden ;
+    }
+	else if $(UNIX) {
+	  LINKFLAGS on $(PKGTARGETF) += -Wl,-export-dynamic -fvisibility=hidden ;
+	}
+  }
+
+  if $(OSX) {
+  }
+  else if $(UNIX) && $(_console) != 1 && ! $(ANDROID) && ! $(EMB_DEVICE) {
+    LINKLIBS on $(PKGTARGETF) ?= $(LINKLIBS) ;
+    LINKLIBS on $(PKGTARGETF) += -lGL -lX11 ;
+  }
+
+  ### Copy into the redist/output directory ###
+  local d = $(PKGTARGET) ;
+  DEPENDS $(d) : tkdir ;
+  local f = ;
+  if $(_cpredist) = 1 {
+    local p = [ tkFile $(PKGTARGETF) : $(d) : $(OUTDIR) ] ;
+    if $(is_exe) {
+      MODE on $(p) = $(EXEMODE) ;
+      Chmod $(p) ;
+    }
+    f += $(p) ;
+  }
+  else {
+    f += $(d) ;
+  }
+  if $(SUFPDB) && $(_pdb) = 1 {
+    local srcPDB = [ FDirName $(LOCATE_TARGET) $(d:S=$(SUFPDB)) ] ;
+    local dstPDB = [ FDirName $(OUTDIR) $(d:S=$(SUFPDB)) ] ;
+    DEPENDS $(srcPDB) : $(d) ;
+    Touch $(d) ; # We need the libs to look like they have been built
+    Touch $(srcPDB) ;     # after the DLL so that the dependency check doesnt always
+                             # think that they are older (and so needs to be rebuilt)
+    File $(dstPDB) : $(srcPDB) ;
+#     Touch $(dstPDB) ;
+    f += $(dstPDB) ;
+  }
+
+  ### Package deps ###
+  if $(_implib) = 1 && $(NT) && ! $(ANDROID) && ! $(IOS) {
+    local defFile = [ FDirName $(SUBDIR) _$(PACKAGE)_$(OSPLAT:L)_$(BUILD).def ] ;
+    DEPENDS $(PKGTARGETF) : $(defFile) ;
+    LINKFLAGS on $(PKGTARGET) ?= $(LINKFLAGS) ;
+    LINKFLAGS on $(PKGTARGET) += -DEF:$(defFile) ;
+    local impLib = $(PKGTARGETF:S=$(SUFLIB)) ;
+    local srcLib = [ FDirName $(OBJDIR) $(impLib) ] ;
+    local dstLib = [ FDirName $(TK_DIR_LIBS) $(impLib) ] ;
+    DEPENDS $(srcLib) : $(PKGTARGET) ;
+    File $(dstLib) : $(srcLib) ;
+    Touch $(dstLib) ; # We need the libs to look like they have been built
+    Touch $(srcLib) ; # after the DLL so that the dependency check doesnt always
+                         # think that they are older (and so needs to be rebuilt)
+    f += $(dstLib) ;
+  }
+
+  DEPENDS $(PACKAGE) : $(f) ;
+  NotFile $(PACKAGE) ;
+  DEPENDS $(PKGGROUP) : $(PACKAGE) ;  # Group's deps
+
+  ### All files ###
+  local _all = $(_src) $(_exsrc) $(_nopchsrc) ;
+
+  ObjectHdrs $(_all) : [ FDirName $(TK_DIR_INCLUDE) ] ;
+
+  return $(_all) ;
+}

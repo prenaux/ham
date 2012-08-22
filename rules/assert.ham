@@ -5,3 +5,9 @@ rule AssertEq {
     logFatal "ASSERT:" $(<) "!=" $(>) ;
   }
 }
+
+rule AssertVarDefined {
+  if ! $($(<)) {
+    logFatal "ASSERT:" $(<) "variable not defined !" ;
+  }
+}

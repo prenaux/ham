@@ -1,0 +1,29 @@
+# Enable lint/analyze on the C/C++ source code
+rule tkCC++Lint
+{
+  Echo "WARN: tkCC++Lint not defined for this toolset ($(AGL_TOOLSET))" ;
+}
+# Used on C++ sources that require exceptions handling
+# REM: The precompiled header file should be included to have the same flags
+rule tkC++Exceptions
+{
+  Echo "WARN: tkC++Exceptions not defined for this toolset ($(AGL_TOOLSET))" ;
+}
+rule tkNoC++Exceptions
+{
+  Echo "WARN: tkNoC++Exceptions not defined for this toolset ($(AGL_TOOLSET))" ;
+}
+
+# Used on C++ sources to enable the use of a precompilhed header.
+# Precompiled header for C sources is not supported.
+rule tkC++Pch
+{
+  Echo "WARN: tkC++Pch not defined for this toolset ($(AGL_TOOLSET))" ;
+}
+# Set the Build flags for C and C++ files.
+rule tkCC++Build
+{
+  Echo "WARN: tkCC++Build not defined for this toolset ($(AGL_TOOLSET))" ;
+}
+
+Import toolkit-cpp-$(HAM_TOOLSET_NAME).ham ;

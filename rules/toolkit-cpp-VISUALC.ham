@@ -1,0 +1,253 @@
+LINKLIBS += winmm.lib gdi32.lib user32.lib shell32.lib ;
+SUFPCH = .pch ;
+
+CC_ADD_FLAGS = -Zc:forScope -W4 ;
+if $(FLYMAKE) = 1 {
+  CC_ADD_FLAGS += -WL ;
+}
+CC_ADD_FLAGS +=
+# ERROR: warning C4172: returning address of local variable or temporary.
+-we4172
+# ERROR: warning C4715: 'xxx' : not all control paths return a value.
+-we4715
+# ERROR: warning C6011: Dereferencing NULL pointer 'xxx'.
+-we6011
+# DISABLE: warning C4100: 'xxx' : unreferenced formal parameter.
+-wd4100
+# DISABLE: warning C4355: 'this' : used in base member initializer list.
+-wd4355
+# DISABLE: warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning).
+-wd4800
+# DISABLE: warning C6031: Return value ignored: '_xxx'.
+-wd6031
+# DISABLE: warning C4510: 'xxx' : constructor could not be generated.
+-wd4510
+# DISABLE: warning C4512: 'xxx' : assignment operator could not be generated.
+-wd4512
+# DISABLE: warning C4610: 'xxx' can never be instantiated - user defined constructor required.
+-wd4610
+# DISABLE: warning C4201: nonstandard extension used : nameless struct/union.
+-wd4201
+# DISABLE: warning C4127: conditional expression is constant.
+-wd4127
+# DISABLE: warning C4245: conversion from 'xxx' to 'yyy', signed/unsigned mismatch.
+-wd4245
+# DISABLE: warning C4505: 'xxx' : unreferenced local function has been removed.
+-wd4505
+# DISABLE: warning C4244: 'initializing' : conversion from '' to 'xxx', possible loss of data.
+# Enum to int generates the warning.
+-wd4244
+# DISABLE: warning C6384: Dividing sizeof a pointer by another value.
+# COUNT_OF() generates the warning.
+-wd6384
+# DISABLE: warning C4996: 'xxx': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _xxx.
+-wd4996
+# DISABLE: warning C6326: Potential comparison of a constant with another constant
+-wd6326
+# DISABLE: warning C6316: Incorrect operator: tested expression is constant and non-zero. Use bitwise-and to determine whether bits are set.
+# Generate by FLAG_TEST(x,XYZ|ABC)
+-wd6316
+;
+CCFLAGS += $(CC_ADD_FLAGS) ;
+C++FLAGS += $(CC_ADD_FLAGS) ;
+
+# tkC++PchObject PCH : CPP : HDR : PCH ;
+rule tkC++PchObject
+{
+  MakeLocate $(<) : $(LOCATE_TARGET) ;
+  SEARCH on $(>) = $(SEARCH_SOURCE) ;
+
+  local _pch = $(4) ;
+  local _cpp = $(>) ;
+  local _hdr = $(3) ;
+  local _obj = $(_cpp:S=$(SUFOBJ)) ;
+
+  INCLUDES $(_pch) : $(_cpp) ;
+  MakeLocate $(_pch) : $(LOCATE_TARGET) ;
+  ObjectC++Flags $(_cpp) : -Yc"$(_hdr)" -Fp"$(_pch)" ;
+}
+
+# tkC++Pch TARGET : <pch>.cpp : [pchdep-sources] : [nopchdep-sources]
+rule tkC++Pch
+{
+  local _src = ;
+  local _extrasrc = ;
+  for _i in $(3) {
+    if $(_i) = $(>) { continue ; }
+    _src += [ FGristFiles $(_i) ] ;
+  }
+  for _i in $(4) {
+    if $(_i) = $(>) { continue ; }
+    _extrasrc += [ FGristFiles $(_i) ] ;
+  }
+
+  local _pch = $(>:S=$(SUFPCH)) ;
+  local _pchTarget = [ FDirName $(LOCATE_TARGET) $(>:S=$(SUFPCH)) ] ;
+  local _cpp = [ FGristFiles $(>) ] ;
+  local _hdr = $(>:S=.h) ;
+  local _obj = $(_cpp:S=$(SUFOBJ)) ;
+
+  tkC++PchObject $(_pch) : $(_cpp) : $(_hdr) : $(_pchTarget) ;
+
+  INCLUDES $(<) : $(_cpp) ;
+  DEPENDS $(<) : $(_obj) ;
+  NotFile $(<) ;
+  NoUpdate $(<) ;
+
+  Clean clean : $(_pchTarget) ;
+  DEPENDS pch : $(<) ;
+
+  ObjectC++Flags $(_src) : -Yu"$(_hdr)" -Fp"$(_pchTarget)" ;
+  DEPENDS $(_src:S=$(SUFOBJ)) : $(<) ;
+  DEPENDS $(_extrasrc:S=$(SUFOBJ)) : $(<) ;
+
+  logVerbose "- PCH:" $(_pchTarget) ;
+  return $(PCH) ;
+}
+
+rule tkCC++Build
+{
+  local strOpt = "" ;
+
+  # Clean the .ilk file...
+  local ILK = [ FDirName $(LOCATE_TARGET) $(PKGBUILD:S=.ilk) ] ;
+  Clean clean : $(ILK) ;
+  # Enable string pooling
+  ObjectOptimFlags $(<) : -Gy- ;
+  # Make sure link flags are set...
+  LINKFLAGS on $(PKGTARGETF) ?= $(LINKFLAGS) ;
+  # Functions folding, reduces size of the DLLs quite a lot
+  if ! ( $(DEBUG) = 1 ) && ! ( $(OPT_NOOPT) = 1 ) {
+    LINKFLAGS on $(PKGTARGETF) += -OPT:REF,ICF=3 ;
+    LINKFLAGS on $(PKGTARGETF) += -INCREMENTAL:NO ;
+  }
+  # No Win98
+  # LINKFLAGS += -OPT:NOWIN98 ; # Deprecated in VC9
+  # Large Address Aware...
+  if ! ( $(NO_LAA) = 1 ) {
+    LINKFLAGS on $(PKGTARGETF) += -LARGEADDRESSAWARE ;
+  }
+  if $(OSPLAT) = X64 {
+    ObjectOptimFlags $(<) : -bigobj ;
+  }
+
+  # RTTI
+  if $(OPT_RTTI) = 1 || $(DEBUG) = 1 {
+    ObjectOptimFlags $(<) : -GR ;
+    strOpt += "(RTTI) " ;
+  }
+  else {
+    ObjectOptimFlags $(<) : -GR- ;
+  }
+
+  # Set the debug infos generation
+  if ! $(REDIST) {
+    SUFPDB = .pdb ;
+    PDB = [ FDirName $(LOCATE_TARGET) $(PKGBUILD:S=.pdb) ] ;
+    ObjectOptimFlags $(<) : -Zi -Fd\"$(PDB)\" ;
+    Clean clean : $(PDB) ;
+    strOpt += "(PDB) " ;
+  }
+
+  # Set the optimization flags
+  if ! $(DEBUG) {
+    ObjectOptimFlags $(<) : -GF ;
+    if $(CC_ISCLANG) = 1 {
+      ObjectCcFlags $(<) : -O2 ;
+    }
+    if $(OPT_NOOPT) = 1 {
+      ObjectOptimFlags $(<) : -Od ;
+      strOpt += "(OptNone) " ;
+    }
+    else if $(OPT_MINSIZE) = 1 {
+      ObjectOptimFlags $(<) : -O1 ;
+      strOpt += "(OptMinSize) " ;
+    }
+    else {
+      ObjectOptimFlags $(<) : -O2 -Ob2 -Oi ;
+      # if $(EMBEDDED) != 1 && ! ( $(PKGTYPE) = library ) {
+        # ObjectOptimFlags $(<) : -GL ;
+      # }
+      strOpt += "(OptMaxSpeed) " ;
+      LINKFLAGS on $(PKGTARGETF) ?= $(LINKFLAGS) ;
+      # if $(EMBEDDED) != 1 {
+        # LINKFLAGS on $(PKGTARGETF) += -LTCG ;
+      # }
+    }
+    #         if $(OSPLAT:L) = x86 {
+      #           ObjectOptimFlags $(<) : -arch:SSE2 ;
+      #           strOpt += "(OptSSE2) " ;
+    #         }
+    if $(AGL_TOOLSET_VER) >= 9 {
+      ObjectOptimFlags $(<) : -GS- ;  # Disable buffer security check
+      strOpt += "(NoBufferSecurity) " ;
+    }
+  }
+  # Set debug-only flags
+  else {
+    if $(CC_ISCLANG) = 1 {
+      ObjectCcFlags $(<) : -O0 ;
+    }
+    ObjectOptimFlags $(<) : -Od -RTC1 -GS ;
+    # ObjectOptimFlags $(<) : -RTCc ; # Checks invalid cast to smaller type
+    strOpt += "(DebugOnly) " ;
+  }
+
+  # Set the run-time lib flags
+  if $(OPT_CRTDLL) = 2 {
+    ObjectOptimFlags $(<) : -Zl ;
+    strOpt += "(NOCRT) " ;
+  }
+  else if $(OPT_CRTDLL) = 1 {
+    if $(DEBUG) {
+      ObjectOptimFlags $(<) : -MDd ;
+      strOpt += "(CRT-DLL-MT-DBG) " ;
+    }
+    else {
+      ObjectOptimFlags $(<) : -MD ;
+      strOpt += "(CRT-DLL-MT-REL) " ;
+    }
+  }
+  else {
+    if $(DEBUG) {
+      ObjectOptimFlags $(<) : -MTd ;
+      strOpt += "(CRT-STATIC-MT-DBG) " ;
+    }
+    else {
+      ObjectOptimFlags $(<) : -MT ;
+      strOpt += "(CRT-STATIC-MT-REL) " ;
+    }
+  }
+  strOpt += "(StringPooling) " ;
+  logVerbose "- CC++Build: " $(strOpt) ;
+}
+
+rule tkC++Exceptions
+{
+  if $(EMBEDDED) != 1 {
+    ObjectOptimFlags $(<) : -EHa ;
+    logVerbose "- C++ Exceptions" ;
+  }
+  else {
+    logVerbose "- No Exceptions in Embedded mode" ;
+  }
+}
+
+rule tkNoC++Exceptions {
+  ObjectDefines $(<) : _HAS_EXCEPTIONS=0 ;
+}
+
+rule tkCC++Lint
+{
+  local F =
+  -D_LINT
+  # threat all warnings as error
+  -WX
+  # one-line error message
+  -WL
+  ;
+  if $(AGL_TOOLSET_VER) >= 10 {
+    F += -analyze ;
+  }
+  ObjectOptimFlags $(<) : $(F) ;
+}

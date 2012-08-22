@@ -418,10 +418,10 @@ rule ImportMarkImported {
 rule Import {
   PATH = [ ImportBuildPath $(<) ] ;
   if [ ImportIsImported $(PATH) ] {
-    # ECHO "I/Already imported: " $(PATH) ;
+    # ECHO "I/ Already imported: " $(PATH) ;
   }
   else {
-    ECHO "I/Importing:" $(PATH) ;
+    ECHO "I/ Importing:" $(PATH) ;
     ImportMarkImported $(PATH) ;
     include $(PATH) ;
   }
