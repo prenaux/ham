@@ -1,0 +1,4 @@
+The following authors have all licensed their contributions to 'Ham' under the
+licensing terms detailed in LICENSE.txt.
+
+* Pierre Renaux <pierre@talansoft.com>
