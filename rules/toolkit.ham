@@ -77,23 +77,19 @@ logVar TK_DIR_SOURCES ;
 MakeLocate tkdir : $(TK_DIR_SOURCES) ;
 AssertEq $(TK_DIR_SOURCES) : $(TOP_DIR) ;
 
-TK_DIR_REDIST ?= [ FDirName $(TK_DIR) redist ] ;
-logVar TK_DIR_REDIST ;
-MakeLocate tkdir : $(TK_DIR_REDIST) ;
-
-TK_DIR_DOCS ?= [ FDirName $(TK_DIR_REDIST) docs ] ;
+TK_DIR_DOCS ?= [ FDirName $(TK_DIR) docs ] ;
 logVar TK_DIR_DOCS ;
 MakeLocate tkdir : $(TK_DIR_DOCS) ;
 
-TK_DIR_BIN ?= [ FDirName $(TK_DIR_REDIST) bin $(BIN_LOA) ] ;
+TK_DIR_BIN ?= [ FDirName $(TK_DIR) bin $(BIN_LOA) ] ;
 logVar TK_DIR_BIN ;
 MakeLocate tkdir : $(TK_DIR_BIN) ;
 
-TK_DIR_INCLUDE ?= [ FDirName $(TK_DIR_REDIST) include ] ;
+TK_DIR_INCLUDE ?= [ FDirName $(TK_DIR) include ] ;
 logVar TK_DIR_INCLUDE ;
 MakeLocate tkdir : $(TK_DIR_INCLUDE) ;
 
-TK_DIR_LIBS ?= [ FDirName $(TK_DIR_REDIST) libs $(LIBS_LOA) ] ;
+TK_DIR_LIBS ?= [ FDirName $(TK_DIR) libs $(LIBS_LOA) ] ;
 logVar TK_DIR_LIBS ;
 MakeLocate tkdir : $(TK_DIR_LIBS) ;
 
