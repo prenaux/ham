@@ -1,0 +1,42 @@
+Import assert.ham ;
+
+RUN_DIR ?= . ;
+RUN_SYMBOLS_DIR ?= . ;
+RUN_EXE_SUFFIX ?= $(SUFEXE) ;
+
+rule runInDebugger_ {
+  if $(3) {
+    RUN_DIR on $(<) = $(3) ;
+  }
+  else {
+    RUN_DIR on $(<) = $(RUN_DIR) ;
+  }
+  if ! [ VarOnGet RUN_DIR : $(<) ] {
+    logFatal "RUN_DIR not set on:" $(<) ;
+  }
+
+  DEPENDS $(<) : $(>) ;
+}
+rule runInDebugger {
+  runInDebugger_ Debug_$(<) : $(<) : $(2) ;
+}
+
+rule runInDir_ {
+  if $(3) {
+    RUN_DIR on $(<) = $(3) ;
+  }
+  else {
+    RUN_DIR on $(<) = $(RUN_DIR) ;
+  }
+  if ! [ VarOnGet RUN_DIR : $(<) ] {
+    logFatal "RUN_DIR not set on:" $(<) ;
+  }
+
+  DEPENDS $(<) : $(>) ;
+}
+rule runInDir {
+  runInDir_ Run_$(<) : $(<) : $(2) ;
+  runInDebugger $(<) : $(2) ;
+}
+
+Import run-$(OS)-$(TARGET_OS).ham ;

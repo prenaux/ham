@@ -1,5 +1,6 @@
 Import log.ham ;
 Import assert.ham ;
+Import run.ham ;
 
 AssertVarDefined HAM_TOOLSET_NAME ;
 AssertVarDefined HAM_TOOLSET_VER ;
@@ -99,6 +100,12 @@ DEPENDS all : tkdir ;
 
 MakeLocate tkdir : $(TEMPDIR) ;
 MakeLocate tkdir : $(BASEOBJDIR) ;
+
+# Setup the run directories
+RUN_DIR = $(TK_DIR_BIN) ;
+RUN_SYMBOLS_DIR ?= $(TK_DIR_BIN) ;
+RUN_EXE_SUFFIX = _$(BUILDEXT)$(SUFEXE) ;
+AssertVarDefined RUN_EXE_SUFFIX ;
 
 #----------------------------------------------------------------------
 #     INFO

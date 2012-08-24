@@ -499,6 +499,8 @@ HDRPATTERN =
 
 OSFULL = $(OS)$(OSVER)$(OSPLAT) $(OS)$(OSPLAT) $(OS)$(OSVER) $(OS) ;
 
+TARGET_OS ?= $(OS) ;
+
 #
 # Base dependencies - first for "bootstrap" kinds of rules
 #

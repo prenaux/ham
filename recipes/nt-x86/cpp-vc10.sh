@@ -12,6 +12,17 @@ fi
 echo "I/Found VC++ in '$MSVCDIR'"
 
 ########################################################################
+##  Find devenv.exe to setup RUN_DEBUGGER
+########################################################################
+export RUN_DEBUGGER="${MSVCDIR}/../Common7/IDE/devenv.exe"
+if [ ! -f "$RUN_DEBUGGER" ]; then
+	echo "E/Can't find debugger 'devenv.exe' for $TAG"
+else
+    echo "I/Found VC++ debugger in '$RUN_DEBUGGER'"
+fi
+export RUN_DEBUGGER_PARAMS=-debugexe
+
+########################################################################
 ##  Find gacutil.exe to setup WINSDKDIR
 ########################################################################
 export WINSDKDIR="`unxpath "$PROGRAMFILES\\Microsoft SDKs\\Windows\\v7.0A"`"
