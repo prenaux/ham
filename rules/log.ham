@@ -1,31 +1,31 @@
-LOG_LEVEL ?= 0 ;
+# LOG is defined in base.ham
 
 rule logDebug {
-  if $(LOG_LEVEL) <= 0 {
+  if $(LOG) <= 0 {
     ECHO "D/" $(<) ;
   }
 }
 
 rule logVerbose {
-  if $(LOG_LEVEL) <= 1 {
+  if $(LOG) <= 1 {
     ECHO "V/" $(<) ;
   }
 }
 
 rule logInfo {
-  if $(LOG_LEVEL) <= 2 {
+  if $(LOG) <= 2 {
     ECHO "I/" $(<) ;
   }
 }
 
 rule logWarn {
-  if $(LOG_LEVEL) <= 3 {
+  if $(LOG) <= 3 {
     ECHO "W/" $(<) ;
   }
 }
 
 rule logError {
-  if $(LOG_LEVEL) <= 4 {
+  if $(LOG) <= 4 {
     ECHO "E/" $(<) ;
   }
 }

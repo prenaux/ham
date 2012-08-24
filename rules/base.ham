@@ -375,6 +375,14 @@
 #----------------------------------------------------------------------
 #     Basic variables
 #----------------------------------------------------------------------
+# Logging level
+# 0 - Debug
+# 1 - Verbose
+# 2 - Info
+# 3 - Warnings
+# 4 - Errors
+LOG ?= 2 ;
+
 if $(LINT_C) && $(LINT_H) {
   # CAN_LINT = 1 ;
   CAN_LINT = 0 ; # Lint breaks Flymake for Android build...
@@ -418,10 +426,14 @@ rule ImportMarkImported {
 rule Import {
   PATH = [ ImportBuildPath $(<) ] ;
   if [ ImportIsImported $(PATH) ] {
-    # ECHO "I/ Already imported: " $(PATH) ;
+    if $(LOG) <= 0 {
+      ECHO "D/ Already imported: " $(PATH) ;
+    }
   }
   else {
-    ECHO "I/ Importing:" $(PATH) ;
+    if $(LOG) <= 0 {
+      ECHO "D/ Importing:" $(PATH) ;
+    }
     ImportMarkImported $(PATH) ;
     include $(PATH) ;
   }
