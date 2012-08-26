@@ -1,0 +1,3 @@
+#!bash
+. ham-bash-lib.sh
+$HAM_HOME/bin/$HAM_BIN_LOA/genuuid $*
