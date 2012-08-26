@@ -2212,7 +2212,7 @@ rule SrcSubDirGlobNoHdrs
 # Return source files with the given extension
 # REM: Excludes files starting with an underscore or a dot,
 #      they are considered hidden/auto-generated.
-# EXAMPLE: GlobSrc DIR : cpp h asm ;
+# EXAMPLE: GlobSrc DIR : cpp h asm : basepattern ;
 rule GlobSrcWithDir
 {
   return [ GLOB [ FDirName $(<) ] : "[^_.]*."$(>) ] ;
@@ -2374,6 +2374,23 @@ rule ListAddBackOnce {
     return $(<) ;
   }
   return [ ListAddBack $(<) : $(>) ] ;
+}
+
+rule ListFilter LIST : INCLUDE : EXCLUDE {
+  local t = [ Match "("$(2)")" : $(1) ] ;
+  if $(3) {
+    local r = ;
+    for i in $(t) {
+      # ECHO "I:" $(3) ":" $(i) ":" [ Match "("$(3)")" : $(i) ] ;
+      if [ Match "("$(3)")" : $(i) ] = "" {
+        r += $(i) ;
+      }
+    }
+    return $(r) ;
+  }
+  else {
+    return $(t) ;
+  }
 }
 
 #----------------------------------------------------------------------
