@@ -246,7 +246,7 @@ rule tkCC++Lint
   # one-line error message
   -WL
   ;
-  if $(AGL_TOOLSET_VER) >= 10 {
+  if $(HAM_TOOLSET_VER) >= 10 {
     F += -analyze ;
   }
   ObjectOptimFlags $(<) : $(F) ;

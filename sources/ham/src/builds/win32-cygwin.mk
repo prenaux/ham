@@ -10,7 +10,7 @@
 #
 # note that the resulting executable will only be usable
 # under Cygwin, since it will output Unix commands. I.e.
-# it will _not_ use AGL_TOOLSET and won't be able to compile
+# it will _not_ use HAM_TOOLSET and won't be able to compile
 # with Mingw, Visual C++, Borland C++ and other native
 # Win32 compilers
 #

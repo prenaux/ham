@@ -157,15 +157,15 @@ III.5. Library scanning bug fix:
 IV. Jambase improvements:
 -------------------------
 
-IV.1. Compiler selection through the AGL_TOOLSET:
+IV.1. Compiler selection through the HAM_TOOLSET:
 -------------------------------------------------
 
 on Windows and OS/2 only, FTJam selects the compiler like Classic Jam
 by exploring the environment, looking for specific variables.
 
-However, it none is found, it looks for the AGL_TOOLSET variable and
+However, it none is found, it looks for the HAM_TOOLSET variable and
 use it to select the toolset being used. This list is displayed by Jam
-when AGL_TOOLSET is undefined or set to an unsupported value (see next
+when HAM_TOOLSET is undefined or set to an unsupported value (see next
 chapter).
 
 Nothing is changed on Unix and other platforms.
@@ -175,9 +175,9 @@ IV.2. Improved compiler support:
 ---------------------------------
 
 FTJam supports a lot more compiler than Classic Jam. Here's a table
-that maps values of AGL_TOOLSET to the corresponding compiler on Windows:
+that maps values of HAM_TOOLSET to the corresponding compiler on Windows:
 
-     AGL_TOOLSET  Toolset Description
+     HAM_TOOLSET  Toolset Description
 
      BORLANDC     Borland C++
      VISUALC      Microsoft Visual C++

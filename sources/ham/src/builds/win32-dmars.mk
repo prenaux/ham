@@ -3,14 +3,14 @@
 # To use it, you must be in the top Ham source directory,
 # have the compiler in your path, and call:
 #
-#  set AGL_TOOLSET=DIGITALMARS
+#  set HAM_TOOLSET=DIGITALMARS
 #  make -f builds\win32-dmars.mk
 #
 # the program "ham.exe" will be created in a new directory
 # named "bin.ntx86"
 #
 CC        = dmc
-CFLAGS    = -DNT 
+CFLAGS    = -DNT
 TARGET    = -o ham0.exe
 #LINKLIBS = oldnames.lib kernel32.lib libc.lib
 

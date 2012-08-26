@@ -3,7 +3,7 @@
 # To use it, you must be in the top Jam source directory,
 # have GCC compiler in your current path, and call:
 #
-#    set AGL_TOOLSET=MINGW
+#    set HAM_TOOLSET=MINGW
 #    make -f builds/win32-gcc.mk
 #
 # the program "jam.exe" will be created in the new

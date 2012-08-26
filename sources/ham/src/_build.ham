@@ -42,7 +42,7 @@ else       { LOCATE_TARGET ?= bin.$(OSFULL[1]:L) ; }
 if ! $(NT) && $(MINGW)
 {
   NT = 1 ;
-  AGL_TOOLSET = MINGW ;
+  HAM_TOOLSET = MINGW ;
 }
 
 if $(NT) 	{
@@ -53,7 +53,7 @@ else if $(OS2)
   # special case for OS/2: when compiling with GCC/EMX, we use
   # "fileunix.c" instead of "fileos2.c"
   code = execunix.c pathunix.c ;
-  if $(AGL_TOOLSET) = EMX
+  if $(HAM_TOOLSET) = EMX
   {
     CCFLAGS += -D__OS2__ ;
     code += fileunix.c ;
@@ -97,7 +97,7 @@ if $(DEBUG)
 
 if $(OS) = NT
 {
-  switch $(AGL_TOOLSET)
+  switch $(HAM_TOOLSET)
   {
     case MINGW       : CCFLAGS += -DNT ;
     case LCC         : CCFLAGS += -DNT ;
@@ -157,7 +157,7 @@ Library libjam.a :
 
 # Strip the Ham executable on Mingw
 #
-if $(AGL_TOOLSET) = MINGW
+if $(HAM_TOOLSET) = MINGW
 {
   actions  Strip
   {
