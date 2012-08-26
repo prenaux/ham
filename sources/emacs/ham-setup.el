@@ -32,6 +32,15 @@
 (OSX
  (setq explicit-ham-shell-file-name "/bin/bash"))
 
+(defmacro PrognInHamShell (&rest x)
+  (setq prev-shell-file-name shell-file-name)
+  (setq shell-file-name explicit-ham-shell-file-name)
+  (let ((result (cons 'progn x)))
+    (setq shell-file-name prev-shell-file-name)
+    result))
+
+(setq shell-file-name explicit-ham-shell-file-name)
+
 ;; (setq explicit-bash-ham-startfile "")
 
 (setq explicit-bash-ham-args
@@ -109,3 +118,11 @@
 (add-to-list 'auto-mode-alist '("\\Hamfile\\'" . ham-mode))
 (add-to-list 'auto-mode-alist '("\\Hamrules\\'" . ham-mode))
 (add-to-list 'auto-mode-alist '("\\Hambase\\'" . ham-mode))
+
+;;;======================================================================
+;;; -ham-shell command line argument
+;;;======================================================================
+(defun argument-ham-shell-fn (switch)
+  (ham-shell))
+
+(add-to-list 'command-switch-alist '("-ham-shell" . argument-ham-shell-fn))
