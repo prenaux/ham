@@ -27,7 +27,7 @@ logVar BUILD ;
 switch $(BUILD) {
   case rel :
   case dbg : DEBUG = 1 ;
-  case * : tkFatal "Unknown BUILD type:" $(BUILD) ;
+  case * : logFatal "Unknown BUILD type:" $(BUILD) ;
 }
 
 if $(FLYMAKE) = 1 {
@@ -72,11 +72,6 @@ HCACHEFILE ?= [ FDirName $(TEMPDIR) _cache.ham ] ;
 # Should be defined in the toolkit's _rules.ham
 AssertVarDefined TK_DIR ;
 AssertVarDefined TOP_DIR ;
-
-TK_DIR_SOURCES ?= [ FDirName $(TK_DIR) sources ] ;
-logVar TK_DIR_SOURCES ;
-MakeLocate tkdir : $(TK_DIR_SOURCES) ;
-AssertEq $(TK_DIR_SOURCES) : $(TOP_DIR) ;
 
 TK_DIR_DOCS ?= [ FDirName $(TK_DIR) docs ] ;
 logVar TK_DIR_DOCS ;
@@ -188,6 +183,7 @@ actions tkFileAppend {
 
 # tkAPICopy TARGET : MODULE : RELDIRS
 rule tkAPICopy {
+  local TARGET = API_$(<) ;
   local r ;
   for _i in $(3) {
     if $(_i) = . { _i = ; }
@@ -200,9 +196,9 @@ rule tkAPICopy {
 #     ECHO "DDir: " $(ddir) ;
 #     ECHO "RDir: " $(rdir) ;
 #     ECHO "SUB: " $(SUBDIR) ;
-    MakeLocate $(<)_dir : $(ddir) ;
-    NotFile $(<)_dir ;
-    NoUpdate $(<)_dir ;
+    MakeLocate $(TARGET)_dir : $(ddir) ;
+    NotFile $(TARGET)_dir ;
+    NoUpdate $(TARGET)_dir ;
     for _j in $(srcs) {
       local s = [ FDirName $(dir) $(_j) ] ;
       local d = [ FDirName $(ddir) $(_j) ] ;
@@ -213,18 +209,46 @@ rule tkAPICopy {
       reld = "<"$(SUBDIR)">"$(reld) ; # Our own grist...
       s = [ FGristFiles $(s) ] ;
       d = [ FGristFiles $(d) ] ;
-      DEPENDS $(d) : $(<)_dir ;
+      DEPENDS $(d) : $(TARGET)_dir ;
       FilePreserveRO $(d) : $(s) ;
       INCLUDES $(d) : $(s) ;
       INCLUDES $(reld) : $(s) ;
       r += $(d) ;
 #       ECHO "$(d:S) $(s) -> $(d)" ;
 #       ECHO "REL: $(reld)" ;
-      DEPENDS $(<) : $(d) ;
+      DEPENDS $(TARGET) : $(d) ;
     }
   }
-  DEPENDS API : $(<) ;
-  DEPENDS moduledef : API ;
+  DEPENDS $(<) : $(TARGET) ;
+  DEPENDS $(API) : $(TARGET) ;
+  return $(r) ;
+}
+
+# tkIncludeCopy TARGET : FILES
+rule tkIncludeCopy {
+  local TARGET = API_$(<) ;
+  local r = ;
+
+  local DEST_DIR = [ FDirName $(TK_DIR_INCLUDE) ] ;
+  MakeLocate $(TARGET)_dir : $(DEST_DIR) ;
+  NotFile $(TARGET)_dir ;
+  NoUpdate $(TARGET)_dir ;
+
+  for _i in $(>) {
+    local DEST = [ FDirName $(DEST_DIR) $(_i) ] ;
+    local SRC = [ FDirName $(SUBDIR) $(_i) ] ;
+    SRC = [ FGristFiles $(SRC) ] ;
+    DEST = [ FGristFiles $(DEST) ] ;
+
+    DEPENDS $(DEST) : $(TARGET)_dir ;
+    FilePreserveRO $(DEST) : $(SRC) ;
+    DEPENDS $(TARGET) : $(DEST) ;
+
+    r += $(DEST) ;
+    Clean clean : $(DEST) ;
+  }
+  DEPENDS $(<) : $(TARGET) ;
+  DEPENDS API : $(TARGET) ;
   return $(r) ;
 }
 
@@ -469,25 +493,12 @@ rule tkDefTool
 }
 
 # tkDepends target : depend_on : dira dirb
-rule tkDepends
-{
+rule tkDepends {
   if $(NO_DEPS) = 1 { return ; }
   if [ IncludeOnce $(3) ] = 0 {
     SubInclude $(3) ;
   }
   DEPENDS $(<) : $(>) ;
-}
-rule tkDepModule
-{
-  tkDepends $(<) : $(>) : TOP modules $(>) src ;
-}
-rule tkDepTool
-{
-  tkDepends $(<) : $(>) : TOP tools $(>) src ;
-}
-rule tkDepLib
-{
-  tkDepends $(<) : $(>) : TOP libs $(>) src ;
 }
 
 # tkBuildPackage SOURCES : options : CHK_SOURCES : NOPCH-SOURCES : EXTRA_OBJS : MODDEPS_FOR_LIBLINK ;
