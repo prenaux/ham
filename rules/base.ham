@@ -2261,7 +2261,8 @@ rule TestFileExists
 rule IncludeOnce {
   if $(NO_ONCEGUARD) { return 0 ; }
   local dir = [ FDirName $(<) ] ;
-  local inList = [ ListContains $(dir) : $(ONCE_LIST) ] ;
+  local inList = [ ListContains $(ONCE_LIST) : $(dir) ] ;
+  # ECHO "IncludeOnce=" $(inList) "-" $(dir) "?" $(ONCE_LIST) ;
   if $(inList) = 1 { return 1 ; }
   return 0 ;
 }
