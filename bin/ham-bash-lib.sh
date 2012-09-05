@@ -81,7 +81,7 @@ thisscriptdir() {
 
 update_prompt() {
     export PS1='
-\[\033[35m$HAM_TOOLSET_NAME\033[0m\] \[\033[33m\w\033[0m\] (\[\033[32m$USERNAME\033[0m\])
+\[\033[35m$HAM_TOOLSET_NAME\033[0m\] \w (\[\033[32m$USERNAME\033[0m\])
 $ '
 	# echo -e "\033]0;`pwd`\007"
     # export PS1="${AGL_TOOLSET_NAME}\$ "
