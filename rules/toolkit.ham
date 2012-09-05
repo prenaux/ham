@@ -56,6 +56,7 @@ else {
   BUILDEXT = $(LOA_ARCH)_$(BUILD) ;
 }
 logVar BUILDEXT ;
+DEFINES += _BUILDEXT="\\\"$(BUILDEXT)\\\"" ;
 
 # Lint, on by default in debug build
 LINT ?= $(DEBUG) ;
@@ -220,7 +221,7 @@ rule tkAPICopy {
     }
   }
   DEPENDS $(<) : $(TARGET) ;
-  DEPENDS $(API) : $(TARGET) ;
+  DEPENDS API : $(TARGET) ;
   return $(r) ;
 }
 
@@ -262,10 +263,10 @@ Import toolkit-cpp.ham ;
 #     Packages
 #----------------------------------------------------------------------
 if $(OSX) || $(IOS) {
-  DEFAULT_PKGSRC_EXT = cpp c acc m mm ;
+  DEFAULT_PKGSRC_EXT = cpp c cc acc m mm ;
 }
 else {
-  DEFAULT_PKGSRC_EXT = cpp c acc ;
+  DEFAULT_PKGSRC_EXT = cpp c cc acc ;
 }
 
 # tkPkgSrc Extensions ;
@@ -451,6 +452,17 @@ rule tkDefModuleTest
   tkDefPackage $(1) : $(2) : tests : $(TK_DIR_BIN) ;
 }
 
+# tkDefDLL lib_name : version ;
+rule tkDefDLL
+{
+  if $(NO_DLL) = 1 {
+    tkDefPackage $(1) : $(2) : libs : $(TK_DIR_LIBS) ;
+  }
+  else {
+    tkDefPackage $(1) : $(2) : dll : $(TK_DIR_BIN) ;
+  }
+}
+
 # tkDefLib lib_name : version ;
 rule tkDefLib
 {
@@ -489,6 +501,14 @@ rule tkDefTool
     for _l in $(3) {
       tkLinkLibs $(PKGTARGET) : $(_l) ;
     }
+  }
+}
+
+# tkIncludeDep dira dirb
+rule tkIncludeDep {
+  if $(NO_DEPS) = 1 { return ; }
+  if [ IncludeOnce $(1) ] = 0 {
+    SubInclude $(1) ;
   }
 }
 
