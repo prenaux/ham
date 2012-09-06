@@ -1,12 +1,15 @@
 actions runInDir_ {
-  cd $(RUN_DIR)
-  echo "=== Running:" $(>)$(RUN_EXE_SUFFIX)
-  ./$(>)$(RUN_EXE_SUFFIX) $(A0) $(A1) $(A2) $(A3) $(A4) $(A5) $(A6) $(A7) $(A8) $(A9) $(A10) $(A11) $(A12) $(A13) $(A14) $(A15) $(A16) $(FIXTURE)
+  echo "=== Running:" $(RUN_EXE)
+  cd $(WORK_DIR)
+  pwd
+  "$(RUN_EXE)" $(A0) $(A1) $(A2) $(A3) $(A4) $(A5) $(A6) $(A7) $(A8) $(A9) $(A10) $(A11) $(A12) $(A13) $(A14) $(A15) $(A16) $(FIXTURE)
 }
 actions runInDebugger_
 {
-  cd $(RUN_DIR)
+  echo "=== Debugging:" $(RUN_EXE)
+  cd $(WORK_DIR)
+  pwd
   export _NT_SYMBOL_PATH="$(RUN_SYMBOLS_DIR)"
   echo "=== Debugging:" $(>)$(RUN_EXE_SUFFIX)
-  "$RUN_DEBUGGER" $RUN_DEBUGGER_PARAMS $(DBG0) $(DBG1) $(DBG2) $(DBG3) $(DBG4) $(DBG5) ./$(>)$(RUN_EXE_SUFFIX) $(A0) $(A1) $(A2) $(A3) $(A4) $(A5) $(A6) $(A7) $(FIXTURE) & true
+  "$RUN_DEBUGGER" $RUN_DEBUGGER_PARAMS $(DBG0) $(DBG1) $(DBG2) $(DBG3) $(DBG4) $(DBG5) $(RUN_EXE) $(A0) $(A1) $(A2) $(A3) $(A4) $(A5) $(A6) $(A7) $(FIXTURE) & true
 }

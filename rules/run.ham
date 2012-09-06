@@ -4,39 +4,43 @@ RUN_DIR ?= . ;
 RUN_SYMBOLS_DIR ?= . ;
 RUN_EXE_SUFFIX ?= $(SUFEXE) ;
 
+# runInDebugger_ TARGET : WHAT : INDIR : PARAMS
 rule runInDebugger_ {
   if $(3) {
-    RUN_DIR on $(<) = $(3) ;
+    WORK_DIR on $(<) = $(3) ;
   }
   else {
-    RUN_DIR on $(<) = $(RUN_DIR) ;
+    WORK_DIR on $(<) = $(RUN_DIR) ;
   }
-  if ! [ VarOnGet RUN_DIR : $(<) ] {
-    logFatal "RUN_DIR not set on:" $(<) ;
-  }
+  RUN_EXE on $(<) = [ FDirName $(RUN_DIR) $(>)$(RUN_EXE_SUFFIX) ] ;
+  PARAMS on $(<) = $(4) ;
 
   DEPENDS $(<) : $(>) ;
 }
+
+# runInDebugger WHAT : INDIR : PARAMS ;
 rule runInDebugger {
-  runInDebugger_ Debug_$(<) : $(<) : $(2) ;
+  runInDebugger_ Debug_$(<) : $(<) : $(2) : $(3) ;
 }
 
+# runInDir_ TARGET : WHAT : INDIR : PARAMS
 rule runInDir_ {
   if $(3) {
-    RUN_DIR on $(<) = $(3) ;
+    WORK_DIR on $(<) = $(3) ;
   }
   else {
-    RUN_DIR on $(<) = $(RUN_DIR) ;
+    WORK_DIR on $(<) = $(RUN_DIR) ;
   }
-  if ! [ VarOnGet RUN_DIR : $(<) ] {
-    logFatal "RUN_DIR not set on:" $(<) ;
-  }
+  RUN_EXE on $(<) = [ FDirName $(RUN_DIR) $(>)$(RUN_EXE_SUFFIX) ] ;
+  PARAMS on $(<) = $(4) ;
 
   DEPENDS $(<) : $(>) ;
 }
+
+# runInDir WHAT : INDIR : PARAMS ;
 rule runInDir {
-  runInDir_ Run_$(<) : $(<) : $(2) ;
-  runInDebugger $(<) : $(2) ;
+  runInDir_ Run_$(<) : $(<) : $(2) : $(3) ;
+  runInDebugger $(<) : $(2) : $(3) ;
 }
 
 Import run-$(OS)-$(TARGET_OS).ham ;
