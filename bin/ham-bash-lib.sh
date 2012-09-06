@@ -94,9 +94,17 @@ $ '
 if [[ $OS == Windows* ]]; then
     export HAM_OS=NT
     export HAM_BIN_LOA=nt-x86
+    if [ -z $HOME ]; then
+        export HOME=`unxpath $USERPROFILE`
+    fi
 else
     echo "W/Unknown OS"
     # exit 1
+fi
+
+if [[ -z $HOME ]]; then
+    echo "E/HOME not set !"
+    exit 1
 fi
 
 # Make sure HAM_HOME has the proper unix format

@@ -1,0 +1,10 @@
+#!/bin/bash
+. ham-bash-setenv.sh
+. ham-toolset-import.sh $1
+if [ $? != 0 ]; then
+    echo "E/Toolset '$1' setup failed !"
+    return 1
+else
+    echo "I/Toolset '$1' setup successfull."
+    update_prompt
+fi
