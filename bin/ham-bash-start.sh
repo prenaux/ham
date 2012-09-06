@@ -2,6 +2,8 @@ if [[ -z $HAM_HOME ]]; then
     echo "E/HAM_HOME not set !"
     exit 1
 fi
+
+export BASH_START_PATH=$PATH
 . $HAM_HOME/bin/ham-bash-lib.sh
 . $HAM_HOME/bin/ham-bash-setenv.sh
 

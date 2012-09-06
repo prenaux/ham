@@ -1,6 +1,15 @@
 TAG=VC10-x86
 echo I/Setting up $TAG
 
+case $HAM_OS in
+    NT*)
+        ;;
+    *)
+        echo "E/Toolset: Unsupported host OS"
+        return 1
+        ;;
+esac
+
 ########################################################################
 ##  Find cl.exe to setup MSVCDIR
 ########################################################################
@@ -37,7 +46,8 @@ echo "I/Found WindowsSDK in '$WINSDKDIR'"
 ########################################################################
 export HAM_TOOLSET=VISUALC
 export HAM_TOOLSET_VER=10
-export HAM_TOOLSET_NAME=VC10_X86
+export HAM_TOOLSET_NAME=msvc_10_x86
+export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}
 
 export PATH="${WINSDKDIR}/bin":"${MSVCDIR}/bin":"${MSVCDIR}/../Common7/IDE":${PATH}
 export INCLUDE="`nativedir \"${WINSDKDIR}/include\"`;`nativedir \"${MSVCDIR}/include\"`"
@@ -47,4 +57,11 @@ export HAM_CL="\"$MSVCDIR/bin/cl.exe\""
 export HAM_LINK="\"$MSVCDIR/bin/link.exe\""
 export HAM_CROSS=
 
-return 0
+VER="--- Microsoft Visual C++ ------------------------
+`cl 2>&1 >/dev/null`"
+if [ $? != 0 ]; then
+    echo "E/Can't get version."
+    return 1
+fi
+export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
+$VER"

@@ -13,17 +13,25 @@ toolset_import() {
 toolset_dl() {
     export CWD=`pwd`
     export DIR=${HAM_HOME}/toolsets/$1
-    export ARCH_URL="http://localhost:8123/data/toolsets/$2.7z"
-    # export ARCH_URL="$3"
+    export ARCH_URL1="http://localhost:8123/data/toolsets/$2.7z"
+    export ARCH_URL2="https://github.com/downloads/prenaux/ham/$2.7z"
     export DLFILENAME="_$2.7z"
     cd ${DIR}
     if [ ! -e "$DLFILENAME" ]; then
-        echo "... Downloading ${ARCH_URL}"
-        wget --no-check-certificate $ARCH_URL -O"$DLFILENAME"
-        if [ $? != 0 ]; then echo "Download failed !"; return 1; fi
+        echo "... Trying download from ${ARCH_URL1}"
+        wget -c --no-check-certificate $ARCH_URL1 -O"$DLFILENAME.wget"
+        if [ $? != 0 ]; then
+            echo "... Trying download from ${ARCH_URL2}"
+            wget -c --no-check-certificate $ARCH_URL2 -O"$DLFILENAME.wget"
+            if [ $? != 0 ]; then
+                echo "Download failed !"
+                return 1;
+            fi
+        fi
+        mv "$DLFILENAME.wget" "$DLFILENAME"
     fi
-    echo "... Extracting"
-    7z x -y $DLFILENAME | grep -v -e "\(Extracting\|^$\)" -
+    echo "... Extracting $DLFILENAME"
+    7z x -y $DLFILENAME | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
     cd ${CWD}
 }
 

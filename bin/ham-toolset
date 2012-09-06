@@ -1,5 +1,19 @@
 #!/bin/bash
 . ham-bash-setenv.sh
+export HAM_TOOLSET_VERSIONS=""
+toolset_info() {
+    echo ""
+    echo "=== Main Toolset ======================================"
+    echo ""
+    echo "HAM_TOOLSET = ${HAM_TOOLSET}"
+    echo "HAM_TOOLSET_VER = ${HAM_TOOLSET_VER}"
+    echo "HAM_TOOLSET_NAME = ${HAM_TOOLSET_NAME}"
+    echo "HAM_TOOLSET_DIR = ${HAM_TOOLSET_DIR}"
+    echo ""
+    echo "=== Tools Version ====================================="
+    echo "$HAM_TOOLSET_VERSIONS"
+    echo "======================================================="
+}
 . ham-toolset-import.sh $1
 if [ $? != 0 ]; then
     echo "E/Toolset '$1' setup failed !"
@@ -8,3 +22,4 @@ else
     echo "I/Toolset '$1' setup successfull."
     update_prompt
 fi
+toolset_info

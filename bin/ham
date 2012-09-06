@@ -1,4 +1,4 @@
-#!bash
+#!/bin/bash
 if [[ -z $HAM_HOME ]]; then
     echo "E/HAM_HOME not set !"
     exit 1
@@ -6,15 +6,7 @@ fi
 . $HAM_HOME/bin/ham-bash-setenv.sh
 if [[ -z $HAM_TOOLSET ]]; then
     echo "W/HAM_TOOLSET not set, will try to setup the default one..."
-    case $HAM_OS in
-        NT)
-            . $HAM_HOME/recipes/nt-x86/cpp-vc10.sh
-            ;;
-        *)
-            echo "E/Can't setup a default HAM_TOOLSET on this platform."
-            exit 1
-            ;;
-    esac
+    . ham-toolset default
     errcheck $? ham "Can't setup the default toolset."
 fi
 

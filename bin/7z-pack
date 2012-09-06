@@ -1,0 +1,4 @@
+#!/bin/bash
+export ARCH=$1
+shift
+7z a -mx=9 -ms=on -mhc=on -mtc=off -xr\!*/.git/* ./$ARCH $*
