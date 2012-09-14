@@ -21,12 +21,14 @@ BIN_LOA = $(LOA_OS)-$(LOA_ARCH) ;
 #----------------------------------------------------------------------
 #     DEFINES
 #----------------------------------------------------------------------
-BUILD ?= dbg ;
+BUILD ?= da ;
 logVar BUILD ;
 
+BUILDEXT_RA = $(LOA_ARCH)_ra ;
+BUILDEXT_DA = $(LOA_ARCH)_da ;
 switch $(BUILD) {
-  case rel :
-  case dbg : DEBUG = 1 ;
+  case ra :
+  case da : DEBUG = 1 ;
   case * : logFatal "Unknown BUILD type:" $(BUILD) ;
 }
 
@@ -49,12 +51,7 @@ if $(NO_PROFILER) = 1 {
   DEFINES += _NO_PROFILER ;
 }
 
-if $(BUILD) = rel {
-  BUILDEXT = $(LOA_ARCH) ;
-}
-else {
-  BUILDEXT = $(LOA_ARCH)_$(BUILD) ;
-}
+BUILDEXT = $(LOA_ARCH)_$(BUILD) ;
 logVar BUILDEXT ;
 DEFINES += _BUILDEXT="\\\"$(BUILDEXT)\\\"" ;
 
@@ -305,7 +302,7 @@ rule tkPkgSrcSubDirNoHdrs {
 }
 
 # tkPkgHdrs Dir ;
-# Dir is relative to TK_DIR/include/agl
+# Dir is relative to TK_DIR/include
 rule tkPkgHdrs {
   local d = [ FDirName $(SUBDIR) API $(<) ] ;
   return [ GlobSrc $(d) : h ] ;
@@ -329,8 +326,7 @@ rule tkLinkLibs {
 }
 
 # tkPkgLinkLibs LIB ;
-rule tkPkgLinkLibs
-{
+rule tkPkgLinkLibs {
   tkLinkLibs $(PKGTARGET) : $(<) ;
 }
 
@@ -340,6 +336,10 @@ rule tkLinkDll {
   if $(HAM_TOOLSET) = VISUALC {
     LINKFLAGS on $(<) += -DELAYLOAD:$(>)_$(BUILDEXT)$(SUFDLL) ;
   }
+}
+
+rule tkPkgLinkDll {
+  tkLinkDll $(PKGTARGET) : $(<) ;
 }
 
 # tkDefPackage name : version : type : output/final directory : customsuffix ;

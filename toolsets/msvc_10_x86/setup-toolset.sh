@@ -23,7 +23,8 @@ echo "I/Found VC++ in '$MSVCDIR'"
 ########################################################################
 ##  Find devenv.exe to setup RUN_DEBUGGER
 ########################################################################
-export RUN_DEBUGGER="${MSVCDIR}/../Common7/IDE/devenv.exe"
+export MSVC_IDE_DIR="${MSVCDIR}/../Common7/IDE"
+export RUN_DEBUGGER="${MSVC_IDE_DIR}/devenv.exe"
 if [ ! -f "$RUN_DEBUGGER" ]; then
 	echo "E/Can't find debugger 'devenv.exe' for $TAG"
 else
@@ -49,7 +50,7 @@ export HAM_TOOLSET_VER=10
 export HAM_TOOLSET_NAME=msvc_10_x86
 export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}
 
-export PATH="${WINSDKDIR}/bin":"${MSVCDIR}/bin":"${MSVCDIR}/../Common7/IDE":${PATH}
+export PATH="${WINSDKDIR}/bin":"${MSVCDIR}/bin":"${MSVC_IDE_DIR}":${PATH}
 export INCLUDE="`nativedir \"${WINSDKDIR}/include\"`;`nativedir \"${MSVCDIR}/include\"`"
 export LIB="`nativedir \"${WINSDKDIR}/lib\"`;`nativedir \"${MSVCDIR}/lib\"`"
 

@@ -3,7 +3,7 @@
 # path setup
 case $HAM_OS in
     NT*)
-        . ham-toolset msvc_10_x86
+        . ham-toolset-import.sh msvc_10_x86
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

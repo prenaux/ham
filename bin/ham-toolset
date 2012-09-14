@@ -2,15 +2,16 @@
 . ham-bash-setenv.sh
 export HAM_TOOLSET_VERSIONS=""
 toolset_info() {
-    echo ""
+    echo "======================================================="
     echo "=== Main Toolset ======================================"
-    echo ""
+    echo "======================================================="
     echo "HAM_TOOLSET = ${HAM_TOOLSET}"
     echo "HAM_TOOLSET_VER = ${HAM_TOOLSET_VER}"
     echo "HAM_TOOLSET_NAME = ${HAM_TOOLSET_NAME}"
     echo "HAM_TOOLSET_DIR = ${HAM_TOOLSET_DIR}"
-    echo ""
+    echo "======================================================="
     echo "=== Tools Version ====================================="
+    echo -n "======================================================="
     echo "$HAM_TOOLSET_VERSIONS"
     echo "======================================================="
 }
@@ -20,6 +21,6 @@ if [ $? != 0 ]; then
     return 1
 else
     echo "I/Toolset '$1' setup successfull."
+    toolset_info
     update_prompt
 fi
-toolset_info
