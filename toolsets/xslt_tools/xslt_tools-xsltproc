@@ -1,0 +1,4 @@
+#!/bin/sh
+. ham-bash-lib.sh
+xsltproc $*
+exit $?

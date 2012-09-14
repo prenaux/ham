@@ -1,0 +1,15 @@
+#!/bin/sh
+. ham-bash-lib.sh
+if [ -e "${1}" ]; then
+    XSLTPATH=$1
+else
+    XSLTPATH=`nativedir $AGLDEVENVSRC`/scripts_gen/$1.xslt
+fi
+if [ -z "$3" ]; then
+    OUTPUT=
+else
+    OUTPUT="-o:$3"
+fi
+# echo "XSLT2: $2 -> '$(basename ${XSLTPATH})' -> $OUTPUT"
+xslt_tools-saxon -s:$2 -versionmsg:off -warnings:silent -xsl:$XSLTPATH $OUTPUT
+exit $?
