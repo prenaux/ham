@@ -1,9 +1,9 @@
 #!/bin/bash
-
 toolset_import gcc_470
 if [ $? != 0 ]; then return 1; fi
 
 # toolset
+export HAM_TOOLSET_IS_SETUP_CLANG_31=1
 export HAM_TOOLSET=CLANG
 export HAM_TOOLSET_VER=31
 export HAM_TOOLSET_NAME=clang_31

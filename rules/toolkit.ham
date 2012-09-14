@@ -175,6 +175,33 @@ actions tkFileAppend {
   rm _temp_
 }
 
+# FlyMakeSetup TARGET : CHK_SOURCES : (noremovetemp) ;
+rule FlyMakeSetup
+{
+  if $(FLYMAKE_DONE) { return ; }
+
+  local MAKEFILE = [ FDirName $(SUBDIR) Makefile ] ;
+  if ! [ FExists $(MAKEFILE) ] {
+	FEcho $(MAKEFILE) : ".PHONY: check-syntax" : create nl ;
+	FEcho $(MAKEFILE) : "check-syntax:" : nl ;
+	local DOLLAR = $ ;
+    FEcho $(MAKEFILE) : "	ham-env Flymake -d0 -sFLYMAKE=1 -sCHK_SOURCES=$(DOLLAR)(CHK_SOURCES) check-syntax" : nl ;
+    ECHO "== Writing Flymake Makefile : " $(MAKEFILE) ;
+  }
+
+  if $(>) {
+    NOTFILE $(<) ;
+    local s = [ FGristFiles [ FTarget $(>) ] ] ;
+    Objects $(>) ;
+    DEPENDS $(<) : $(s) ;
+    if $(3) = noremovetemp {
+      RmTemps $(<) : $(s) ;
+    }
+  }
+
+  FLYMAKE_DONE = 1 ;
+}
+
 #----------------------------------------------------------------------
 #     API Copy
 #----------------------------------------------------------------------
@@ -521,6 +548,13 @@ rule tkDepends {
   DEPENDS $(<) : $(>) ;
 }
 
+rule tkDepends+Package {
+  NotFile $(<)_$(PACKAGE) ;
+  DEPENDS $(<)_$(PACKAGE) : $(>) ;
+  DEPENDS $(<) : $(<)_$(PACKAGE) ;
+  DEPENDS $(PACKAGE) : $(<)_$(PACKAGE) ;
+}
+
 # tkBuildPackage SOURCES : options : CHK_SOURCES : NOPCH-SOURCES : EXTRA_OBJS : MODDEPS_FOR_LIBLINK ;
 # REM: Requires tkDefPackage to have been called first (or any of the tkDef* rule).
 rule tkBuildPackage
@@ -719,6 +753,9 @@ rule tkBuildPackage
   DEPENDS $(PACKAGE) : $(f) ;
   NotFile $(PACKAGE) ;
   DEPENDS $(PKGGROUP) : $(PACKAGE) ;  # Group's deps
+
+  ### Flymake ###
+  FlyMakeSetup check-syntax : $(_exsrc) ;
 
   ### All files ###
   local _all = $(_src) $(_exsrc) $(_nopchsrc) ;

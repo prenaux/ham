@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # toolset
+export HAM_TOOLSET_IS_SETUP_GCC_470=1
 export HAM_TOOLSET=GCC
 export HAM_TOOLSET_VER=470
 export HAM_TOOLSET_NAME=gcc_470

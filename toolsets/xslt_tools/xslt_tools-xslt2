@@ -3,7 +3,8 @@
 if [ -e "${1}" ]; then
     XSLTPATH=$1
 else
-    XSLTPATH=`nativedir $AGLDEVENVSRC`/scripts_gen/$1.xslt
+    echo "Can't find XSLT: $1"
+    exit 1
 fi
 if [ -z "$3" ]; then
     OUTPUT=

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # toolset
+export HAM_TOOLSET_IS_SETUP_NODEJS_081=1
 export HAM_TOOLSET=NODEJS
 export HAM_TOOLSET_VER=081
 export HAM_TOOLSET_NAME=nodejs_081

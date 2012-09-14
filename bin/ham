@@ -3,8 +3,8 @@ if [[ -z $HAM_HOME ]]; then
     echo "E/HAM_HOME not set !"
     exit 1
 fi
-. $HAM_HOME/bin/ham-bash-setenv.sh
 if [[ -z $HAM_TOOLSET ]]; then
+    . $HAM_HOME/bin/ham-bash-setenv.sh
     echo "W/HAM_TOOLSET not set, will try to setup the default one..."
     . ham-toolset default
     errcheck $? ham "Can't setup the default toolset."

@@ -15,12 +15,16 @@ toolset_info() {
     echo "$HAM_TOOLSET_VERSIONS"
     echo "======================================================="
 }
-. ham-toolset-import.sh $1
-if [ $? != 0 ]; then
-    echo "E/Toolset '$1' setup failed !"
-    return 1
-else
-    echo "I/Toolset '$1' setup successfull."
-    toolset_info
-    update_prompt
-fi
+
+for ARG in "$@"
+do
+    . ham-toolset-import.sh $ARG
+    if [ $? != 0 ]; then
+        echo "E/Toolset '$ARG' setup failed !"
+        return 1
+    else
+        echo "I/Toolset '$ARG' setup successfull."
+    fi
+done
+toolset_info
+update_prompt

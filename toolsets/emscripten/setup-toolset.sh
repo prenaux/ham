@@ -5,12 +5,13 @@ toolset_import clang_31
 if [ $? != 0 ]; then return 1; fi
 toolset_import nodejs_081
 if [ $? != 0 ]; then return 1; fi
-toolset_import java_jre6
+toolset_import java_jdk16
 if [ $? != 0 ]; then return 1; fi
 toolset_import python_26
 if [ $? != 0 ]; then return 1; fi
 
 # toolset
+export HAM_TOOLSET_IS_SETUP_EMSCRIPTEN=1
 export HAM_TOOLSET=EMSCRIPTEN
 export HAM_TOOLSET_VER=2
 export HAM_TOOLSET_NAME=emscripten

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # toolset
+export HAM_TOOLSET_IS_SETUP_PYTHON_26=1
 export HAM_TOOLSET=PYTHON
 export HAM_TOOLSET_VER=26
 export HAM_TOOLSET_NAME=python_26

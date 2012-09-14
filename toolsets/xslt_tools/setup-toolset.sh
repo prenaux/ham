@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # toolset
+export HAM_TOOLSET_IS_SETUP_XSLT_TOOLS=1
 export HAM_TOOLSET=XSLT_TOOLS
 export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=xslt_tools
