@@ -72,84 +72,85 @@ LIST *builtin_subst( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_subst_literalize( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_math( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_split( PARSE *parse, LOL *args, int *jmp );
+LIST *builtin_absolutepath( PARSE *parse, LOL *args, int *jmp );
 
 int glob( const char *s, const char *c );
 
 void
 load_builtins()
 {
-    bindrule( "Always" )->procedure = 
-    bindrule( "ALWAYS" )->procedure = 
+    bindrule( "Always" )->procedure =
+    bindrule( "ALWAYS" )->procedure =
 	parse_make( builtin_flags, P0, P0, P0, C0, C0, T_FLAG_TOUCHED );
 
-    bindrule( "Depends" )->procedure = 
-    bindrule( "DEPENDS" )->procedure = 
+    bindrule( "Depends" )->procedure =
+    bindrule( "DEPENDS" )->procedure =
 	parse_make( builtin_depends, P0, P0, P0, C0, C0, 0 );
 
-    bindrule( "echo" )->procedure = 
-    bindrule( "Echo" )->procedure = 
-    bindrule( "ECHO" )->procedure = 
+    bindrule( "echo" )->procedure =
+    bindrule( "Echo" )->procedure =
+    bindrule( "ECHO" )->procedure =
 	parse_make( builtin_echo, P0, P0, P0, C0, C0, 0 );
 
-    bindrule( "fecho" )->procedure = 
-    bindrule( "FEcho" )->procedure = 
-    bindrule( "FECHO" )->procedure = 
+    bindrule( "fecho" )->procedure =
+    bindrule( "FEcho" )->procedure =
+    bindrule( "FECHO" )->procedure =
 	parse_make( builtin_fecho, P0, P0, P0, C0, C0, T_FLAG_TOUCHED );
 
-    bindrule( "fexists" )->procedure = 
-	bindrule( "FExists" )->procedure = 
-	bindrule( "FEXISTS" )->procedure = 
+    bindrule( "fexists" )->procedure =
+	bindrule( "FExists" )->procedure =
+	bindrule( "FEXISTS" )->procedure =
 	parse_make( builtin_fexists, P0, P0, P0, C0, C0, 0 );
 
-    bindrule( "fisdir" )->procedure = 
-    bindrule( "FIsDir" )->procedure = 
-    bindrule( "FISDIR" )->procedure = 
+    bindrule( "fisdir" )->procedure =
+    bindrule( "FIsDir" )->procedure =
+    bindrule( "FISDIR" )->procedure =
     parse_make( builtin_fisdir, P0, P0, P0, C0, C0, 0 );
 
-    bindrule( "exit" )->procedure = 
-    bindrule( "Exit" )->procedure = 
-    bindrule( "EXIT" )->procedure = 
+    bindrule( "exit" )->procedure =
+    bindrule( "Exit" )->procedure =
+    bindrule( "EXIT" )->procedure =
 	parse_make( builtin_exit, P0, P0, P0, C0, C0, 0 );
 
-    bindrule( "Glob" )->procedure = 
-    bindrule( "GLOB" )->procedure = 
+    bindrule( "Glob" )->procedure =
+    bindrule( "GLOB" )->procedure =
 	parse_make( builtin_glob, P0, P0, P0, C0, C0, 0 );
 
-    bindrule( "GlobString" )->procedure = 
-    bindrule( "GLOBSTRING" )->procedure = 
+    bindrule( "GlobString" )->procedure =
+    bindrule( "GLOBSTRING" )->procedure =
     parse_make( builtin_globstring, P0, P0, P0, C0, C0, 0 );
 
-    bindrule( "Includes" )->procedure = 
-    bindrule( "INCLUDES" )->procedure = 
+    bindrule( "Includes" )->procedure =
+    bindrule( "INCLUDES" )->procedure =
 	parse_make( builtin_depends, P0, P0, P0, C0, C0, 1 );
 
-    bindrule( "Leaves" )->procedure = 
-    bindrule( "LEAVES" )->procedure = 
+    bindrule( "Leaves" )->procedure =
+    bindrule( "LEAVES" )->procedure =
 	parse_make( builtin_flags, P0, P0, P0, C0, C0, T_FLAG_LEAVES );
 
-    bindrule( "NoCare" )->procedure = 
-    bindrule( "NOCARE" )->procedure = 
+    bindrule( "NoCare" )->procedure =
+    bindrule( "NOCARE" )->procedure =
 	parse_make( builtin_flags, P0, P0, P0, C0, C0, T_FLAG_NOCARE );
 
-    bindrule( "NOTIME" )->procedure = 
-    bindrule( "NotFile" )->procedure = 
-    bindrule( "NOTFILE" )->procedure = 
+    bindrule( "NOTIME" )->procedure =
+    bindrule( "NotFile" )->procedure =
+    bindrule( "NOTFILE" )->procedure =
 	parse_make( builtin_flags, P0, P0, P0, C0, C0, T_FLAG_NOTFILE );
 
-    bindrule( "NoUpdate" )->procedure = 
-    bindrule( "NOUPDATE" )->procedure = 
+    bindrule( "NoUpdate" )->procedure =
+    bindrule( "NOUPDATE" )->procedure =
 	parse_make( builtin_flags, P0, P0, P0, C0, C0, T_FLAG_NOUPDATE );
 
-    bindrule( "Temporary" )->procedure = 
-    bindrule( "TEMPORARY" )->procedure = 
+    bindrule( "Temporary" )->procedure =
+    bindrule( "TEMPORARY" )->procedure =
 	parse_make( builtin_flags, P0, P0, P0, C0, C0, T_FLAG_TEMP );
 
-    bindrule( "HdrMacro" )->procedure = 
-    bindrule( "HDRMACRO" )->procedure = 
+    bindrule( "HdrMacro" )->procedure =
+    bindrule( "HDRMACRO" )->procedure =
 	parse_make( builtin_hdrmacro, P0, P0, P0, C0, C0, 0 );
 
-    bindrule( "Bash" )->procedure = 
-    bindrule( "Bash" )->procedure = 
+    bindrule( "Bash" )->procedure =
+    bindrule( "Bash" )->procedure =
     parse_make( builtin_bash, P0, P0, P0, C0, C0, 0 );
 
 	bindrule( "Subst" )->procedure =
@@ -166,13 +167,17 @@ load_builtins()
 
 	bindrule( "Split" )->procedure =
 		parse_make( builtin_split, P0, P0, P0, C0, C0, 0 );
+
+	bindrule( "GetAbsolutePath" )->procedure =
+        bindrule( "GETABSOLUTEPATH" )->procedure =
+		parse_make( builtin_absolutepath, P0, P0, P0, C0, C0, 0 );
 }
 
 /*
  * builtin_depends() - DEPENDS/INCLUDES rule
  *
- * The DEPENDS builtin rule appends each of the listed sources on the 
- * dependency list of each of the listed targets.  It binds both the 
+ * The DEPENDS builtin rule appends each of the listed sources on the
+ * dependency list of each of the listed targets.  It binds both the
  * targets and sources as TARGETs.
  */
 
@@ -211,7 +216,7 @@ builtin_depends(
 /*
  * builtin_echo() - ECHO rule
  *
- * The ECHO builtin rule echoes the targets to the user.  No other 
+ * The ECHO builtin rule echoes the targets to the user.  No other
  * actions are taken.
  */
 
@@ -229,7 +234,7 @@ builtin_echo(
 /*
  * builtin_fecho() - FECHO file : TEXT : [create|append(default)|nl]
  *
- * The FECHO builtin rule echoes the sources to the target files. No other 
+ * The FECHO builtin rule echoes the sources to the target files. No other
  * actions are taken.
  *
  */
@@ -270,7 +275,7 @@ builtin_fecho(
 		else {
 			printf("warning: fecho: can't open file '%s' !\n",t->boundname);
 		}
-	}	
+	}
 
 	return L0;
 }
@@ -290,7 +295,7 @@ builtin_fexists(
 {
 	LIST *targets = lol_get( args, 0 );
 	LIST *l;
-	time_t time;	
+	time_t time;
 	for( l = targets; l; l = list_next( l ) )
 	{
 		int r;
@@ -299,7 +304,7 @@ builtin_fexists(
 		r = file_time(t->boundname,&time);
 		if (r < 0)
 			return L0;
-	} 
+	}
 	return list_new(L0,"1",0);
 }
 
@@ -318,7 +323,7 @@ builtin_fisdir(
 {
 	LIST *targets = lol_get( args, 0 );
 	LIST *l;
-	time_t time;	
+	time_t time;
 	for( l = targets; l; l = list_next( l ) )
 	{
         struct stat statbuf;
@@ -329,7 +334,7 @@ builtin_fisdir(
         if (!(statbuf.st_mode&S_IFDIR)) {
             return L0;
         }
-	} 
+	}
 	return list_new(L0,"1",0);
 }
 
@@ -444,7 +449,7 @@ builtin_globstring(
 {
 	LIST *targets = lol_get( args, 0 );
 	LIST *l, *r;
-	time_t time;	
+	time_t time;
 	for (l = targets; l; l = list_next( l ))
 	{
         struct stat statbuf;
@@ -581,8 +586,8 @@ LIST *builtin_subst_literalize( PARSE	*parse, LOL	*args, int	*jmp )
 		for ( patternString = pattern->string; *patternString; ++patternString )
 		{
 			if ( *patternString == '('  ||  *patternString == ')'  ||  *patternString == '.'  ||
-					*patternString == '%'  ||  *patternString == '+'  ||  *patternString == '-'  ||  
-					*patternString == '*'  ||  *patternString == '?'  ||  *patternString == '['  ||  
+					*patternString == '%'  ||  *patternString == '+'  ||  *patternString == '-'  ||
+					*patternString == '*'  ||  *patternString == '?'  ||  *patternString == '['  ||
 					*patternString == ']'  ||  *patternString == '^'  ||  *patternString == '$' )
 			{
 				buffer_addchar( &patternBuff, '%' );
@@ -750,6 +755,47 @@ builtin_split(
         }
         if ( ptr > lastPtr )
             result = list_new( result, lastPtr, 0 );
+    }
+
+	buffer_free( &buff );
+    return  result;
+}
+
+#ifdef OS_NT
+#include <windows.h>
+#pragma comment(lib,"kernel32.lib")
+static int _GetAbsolutePath(const char* input, BUFFER* buff) {
+    TCHAR buffer[_MAX_PATH] = {0};
+    TCHAR* bufferFile;
+    buffer_reset(buff);
+    if (GetFullPathNameA(input,_MAX_PATH,buffer,&bufferFile)) {
+        buffer_addstring(buff,buffer,_tcslen(buffer));
+        buffer_addchar(buff,0);
+        return 1;
+    }
+    return 0;
+}
+#else
+#error "_GetAbsolutePath not implemented on this platform !"
+#endif
+
+LIST *
+builtin_absolutepath(
+	PARSE	*parse,
+	LOL	*args,
+	int	*jmp )
+{
+    LIST*	input  = lol_get( args, 0 );
+    LIST*	result = L0;
+	char	token[256];
+	BUFFER  buff;
+	buffer_init( &buff );
+
+    for ( ; input; input = input->next ) {
+		const char* ptr = input->string;
+        if (_GetAbsolutePath(input->string,&buff)) {
+            result = list_new( result, buffer_ptr( &buff ), 0 );
+        }
     }
 
 	buffer_free( &buff );

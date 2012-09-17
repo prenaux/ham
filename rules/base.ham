@@ -2160,6 +2160,12 @@ rule SETUID { Setuid $(<) ; }
 rule SHELL { Shell $(<) : $(>) ; }
 rule UNDEFINES { Undefines $(<) : $(>) ; }
 
+# The the absolute path of the specified path, using / as file separator
+rule FGetAbsolutePath {
+  local D = [ GetAbsolutePath $(1) ] ;
+  return $(D:/) ;
+}
+
 # FDirNameFiles DIR : FILES
 rule FDirNameFiles {
   local t ;

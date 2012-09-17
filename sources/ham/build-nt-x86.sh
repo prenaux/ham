@@ -1,6 +1,6 @@
 #!bash
 . ham-bash-lib.sh
-. $HAM_HOME/recipes/nt-x86/cpp-vc10.sh
+. $HAM_HOME/toolsets/msvc_10_x86/setup-toolset.sh
 errcheck $? build-ham-nt-x86 "Can't setup VC10"
 
 cd src

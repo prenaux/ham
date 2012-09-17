@@ -1,3 +1,10 @@
+if ! [ FExists $(TK_DIR) ] {
+  EXIT "E/TK_DIR doesn't exist:" $(TK_DIR) ;
+}
+if ! [ FExists $(TOP_DIR) ] {
+  EXIT "E/TOP_DIR doesn't exist:" $(TOP_DIR) ;
+}
+
 Import log.ham ;
 Import assert.ham ;
 Import run.ham ;
@@ -360,6 +367,10 @@ rule tkPkgLinkLibs {
 rule tkLinkDll {
   # ECHO "tkLinkDll $(<) : $(>) " ;
   tkLinkLibs $(<) : $(>) ;
+  local l = [ FDirName $(dir) $(>)_$(BUILDEXT)$(SUFDLL) ] ;
+  if ! ( $(NO_DEPS) = 1 ) {
+    DEPENDS $(<) : $(l) ;
+  }
   if $(HAM_TOOLSET) = VISUALC {
     LINKFLAGS on $(<) += -DELAYLOAD:$(>)_$(BUILDEXT)$(SUFDLL) ;
   }
