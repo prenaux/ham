@@ -21,6 +21,17 @@
 (defconst HAM_HOME (ham-getenv "HAM_HOME"))
 
 ;;;======================================================================
+;;; Flymake
+;;;======================================================================
+(defun flymake-get-make-cmdline (source base-dir)
+  (string-match "src/\\(.*\\)\\." source)
+  (list (concat (getenv "HAM_HOME") "/bin/ham")
+	    (list "FLYMAKE=1"
+              (concat "CHK_SOURCES=" source)
+              (concat "FLYMAKE_BASEDIR=" base-dir)
+              "check-syntax")))
+
+;;;======================================================================
 ;;; Ham shell
 ;;;======================================================================
 (require 'ham-shell)

@@ -383,6 +383,12 @@
 # 4 - Errors
 LOG ?= 2 ;
 
+if $(FLYMAKE) = 1 {
+  LINT ?= 0 ;
+  FLYMAKE_PCH ?= 0 ;
+  ECHO "I/Flymake build" ;
+}
+
 if $(LINT_C) && $(LINT_H) {
   # CAN_LINT = 1 ;
   CAN_LINT = 0 ; # Lint breaks Flymake for Android build...
@@ -2440,6 +2446,27 @@ rule RunExe {
 actions RunExe {
   cd $(WORKDIR)
   ./$(>)$(SUFEXE)
+}
+
+#----------------------------------------------------------------------
+#     Flymake
+#----------------------------------------------------------------------
+# FlyMakeSetup TARGET : CHK_SOURCES : (noremovetemp) ;
+rule FlyMakeSetup
+{
+  if $(FLYMAKE_DONE) { return ; }
+
+  if $(>) {
+    NOTFILE $(<) ;
+    local s = [ FGristFiles [ FTarget $(>) ] ] ;
+    Objects $(>) ;
+    DEPENDS $(<) : $(s) ;
+    if $(3) = noremovetemp {
+      RmTemps $(<) : $(s) ;
+    }
+  }
+
+  FLYMAKE_DONE = 1 ;
 }
 
 #----------------------------------------------------------------------
