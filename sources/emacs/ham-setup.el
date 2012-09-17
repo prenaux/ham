@@ -80,12 +80,12 @@
   "Various commands pre-processing before sending to shell."
   (cond
    ;; Checking for clear command and execute it.
-   ((string-match "^[ \t]*clear[ \t]*$" command)
+   ((string-match "^[ \t]*:?clear[ \t]*$" command)
     (comint-send-string proc "\n")
     (erase-buffer)
     )
    ;; Checking for clear command and execute it.
-   ((string-match "^[ \t]*clear[        ;& \t]*.*$" command)
+   ((string-match "^[ \t]*:?clear[        ;& \t]*.*$" command)
     (erase-buffer)
     (comint-simple-send proc command))
    ;; Checking for man command and execute it.

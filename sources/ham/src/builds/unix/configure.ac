@@ -1,4 +1,4 @@
-dnl This file is part of the agl Ham project.
+dnl This file is part of the Ham project.
 dnl
 dnl Process this file with autoconf to produce a configure script.
 dnl

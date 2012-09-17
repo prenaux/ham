@@ -380,7 +380,6 @@ Thus, this does not include the shell's current directory.")
     ("^\\[WARNING\\].*$" . font-lock-builtin-face)
     ("^\\[INFO\\].*$" . font-lock-keyword-face)
     ("^\\[DEBUG\\].*$" . font-lock-preprocessor-face)
-    ("^V/aglSendDebugString.*$" . font-lock-string-face)
     ("^D/.*$" . font-lock-preprocessor-face)
     ("^V/.*$" . font-lock-type-face)
     ("^E/.*$" . font-lock-constant-face)
@@ -419,7 +418,7 @@ Thus, this does not include the shell's current directory.")
 
 (put 'ham-shell-mode 'mode-class 'special)
 
-(define-derived-mode ham-shell-mode comint-mode "aglShell"
+(define-derived-mode ham-shell-mode comint-mode "hamShell"
   "Major mode for interacting with an inferior shell.\\<ham-shell-mode-map>
 \\[comint-send-input] after the end of the process' output sends the text from
     the end of process to the end of the current line.
