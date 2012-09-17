@@ -1,0 +1,65 @@
+#!/bin/bash
+. ham-bash-lib.sh
+
+REPOFILE=$1
+case "${REPOFILE}" in
+    *_repo*)
+        echo "== Repo: $REPOFILE"
+        shift
+        if [ ! -e "$REPOFILE" ]; then
+            REPOFILE=$WORK/../$REPOFILE
+        fi
+        ;;
+    *)
+        if [ -e ./_repos ]; then
+            REPOFILE=`pwd`/_repos
+            echo "== Current Dir Repo: $REPOFILE"
+        else
+            REPOFILE=$WORK/../Users/$USERNAME/_repos
+            echo "== User Repo: $REPOFILE"
+        fi
+        ;;
+esac
+
+echo "... $REPOFILE:" $REPOFILE
+
+if [ ! -e "$REPOFILE" ]
+then
+    echo "# Can't find Repo list !"
+    exit 1
+fi
+
+CMD=$1
+shift
+
+pushd $WORK/..
+
+cat $REPOFILE |
+while read REPO
+do
+    if [ ${REPO:0:1} != "#" -a ${REPO:0:2} != "//" ]; then
+        arr=(${REPO//;/ })
+
+        # echo "ARR: " ${arr[0]} " -> " ${arr[1]}
+        REPO=${arr[0]}
+        REMOTE=${arr[1]}
+        if [ -z $REMOTE ]; then
+            REMOTE=$REPO
+            echo "::: $REPO :::"
+        else
+            echo "::: $REPO ($REMOTE) :::"
+        fi
+
+        mkdir -p $REPO
+        pushd ${REPO} > /dev/null
+        errcheck $? git_repos "can't move to repo's folder !"
+        ARGS0=${*/__REPO__/$REPO}
+        ARGS=${ARGS0/__REMOTE__/$REMOTE}
+        # echo "Runing: $CMD $ARGS"
+        $CMD $ARGS
+        RET=$?
+        popd > /dev/null
+    fi
+done
+
+echo "== Done."

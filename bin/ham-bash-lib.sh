@@ -102,6 +102,12 @@ else
     # exit 1
 fi
 
+if [[ -z $WORK ]]; then
+    export WORK=`nativedir $HAM_HOME/..`
+    export WORK=`unxpath $WORK`
+    echo "W/WORK not set, set to '$WORK' by default."
+fi
+
 if [[ -z $HOME ]]; then
     echo "E/HOME not set !"
     exit 1
