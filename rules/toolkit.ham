@@ -719,7 +719,13 @@ rule tkBuildPackage
 
   ### Package deps ###
   if $(_implib) = 1 && $(NT) && ! $(ANDROID) && ! $(IOS) {
-    local defFile = [ FDirName $(SUBDIR) _$(PACKAGE)_$(OSPLAT:L)_$(BUILD).def ] ;
+    local defFile ;
+    if $(BUILD_JNI) = 1 {
+      defFile = [ FDirName $(SUBDIR) _$(PACKAGE)_$(OSPLAT:L)_$(BUILD)_jni.def ] ;
+    }
+    else {
+      defFile = [ FDirName $(SUBDIR) _$(PACKAGE)_$(OSPLAT:L)_$(BUILD).def ] ;
+    }
     DEPENDS $(PKGTARGETF) : $(defFile) ;
     LINKFLAGS on $(PKGTARGET) ?= $(LINKFLAGS) ;
     LINKFLAGS on $(PKGTARGET) += -DEF:$(defFile) ;
