@@ -1,0 +1,92 @@
+TK_SRC_WORK_DIR ?= $(WORK) ;
+
+# tkImportDoCopy TKIMPORT_TARGET : SRCPATH : DIR
+rule tkImportDoCopy {
+  # ECHO "I/Import $(2) to $(3)" ;
+  if ! [ FExists $(2) ] {
+    EXIT "F/Cannot import $(2) to $(3) !" ;
+  }
+  local p = [ tkFile $(2:BS) : $(2) : $(3) ] ;
+  DEPENDS $(1) : $(p) ;
+  DEPENDS tkimport : $(p) ;
+  return $(p) ;
+}
+
+rule tkImportGetExePath {
+  local buildExt = $(3) ;
+  if ! $(buildExt) {
+    buildExt = $(BUILDEXT) ;
+  }
+  local srcTkDirBin = [ FDirName $(TK_SRC_WORK_DIR) $(<) bin $(BIN_LOA) ] ;
+  local srcPath = [ FDirName $(srcTkDirBin) $(>)_$(buildExt)$(SUFEXE) ] ;
+  return $(srcPath) ;
+}
+
+rule tkImportGetDllPath {
+  local buildExt = $(3) ;
+  if ! $(buildExt) {
+    buildExt = $(BUILDEXT) ;
+  }
+  local srcTkDirBin = [ FDirName $(TK_SRC_WORK_DIR) $(<) bin $(BIN_LOA) ] ;
+  local srcPath = [ FDirName $(srcTkDirBin) $(>)_$(buildExt)$(SUFDLL) ] ;
+  return $(srcPath) ;
+}
+
+rule tkImportGetLibPath {
+  local buildExt = $(3) ;
+  if ! $(buildExt) {
+    buildExt = $(BUILDEXT) ;
+  }
+  local srcTkDirLib = [ FDirName $(TK_SRC_WORK_DIR) $(<) libs $(LIBS_LOA) ] ;
+  local srcPath = [ FDirName $(srcTkDirLib) $(>)_$(buildExt)$(SUFLIB) ] ;
+  return $(srcPath) ;
+}
+
+# tkImportExe SrcToolkit : ExeName : BUILDEXT ;
+# imports an executable program from another toolkit
+rule tkImportExe {
+  local srcPath = [ tkImportGetExePath $(<) : $(>) : $(3) ] ;
+  tkImportDoCopy tkimport_exe
+  : $(srcPath)
+  : $(TK_DIR_BIN) ;
+
+  # Has a .pdb attached to it ?
+  if [ FExists $(srcPath:S=.pdb) ] {
+    tkImportDoCopy tkimport_exe
+    : $(srcPath:S=.pdb)
+    : $(TK_DIR_BIN) ;
+  }
+}
+
+# tkImportDll SrcToolkit : DllName : BUILDEXT ;
+# imports a dll from another toolkit
+rule tkImportDll {
+  local srcPath = [ tkImportGetDllPath $(<) : $(>) : $(3) ] ;
+  tkImportDoCopy tkimport_dll
+  : $(srcPath)
+  : $(TK_DIR_BIN) ;
+
+  # Has a .pdb attached to it ?
+  if [ FExists $(srcPath:S=.pdb) ] {
+    tkImportDoCopy tkimport_dll
+    : $(srcPath:S=.pdb)
+    : $(TK_DIR_BIN) ;
+  }
+
+  # Has an implib ?
+  local libPath = [ tkImportGetLibPath $(<) : $(>) : $(3) ] ;
+  if [ FExists $(libPath) ] {
+    tkImportDoCopy tkimport_dll
+    : $(libPath)
+    : $(TK_DIR_LIBS) ;
+  }
+}
+
+# tkImportLib SrcToolkit : LibName : BUILDEXT ;
+# imports a lib from another toolkit
+rule tkImportLib {
+  local srcPath = [ tkImportGetLibPath $(<) : $(>) : $(3) ] ;
+  tkImportDoCopy tkimport_lib
+  : $(srcPath)
+  : $(TK_DIR_LIBS) ;
+}

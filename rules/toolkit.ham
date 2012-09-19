@@ -31,6 +31,9 @@ BIN_LOA = $(LOA_OS)-$(LOA_ARCH) ;
 BUILD ?= da ;
 logVar BUILD ;
 
+BUILDEXT = $(LOA_ARCH)_$(BUILD) ;
+logVar BUILDEXT ;
+
 BUILDEXT_RA = $(LOA_ARCH)_ra ;
 BUILDEXT_DA = $(LOA_ARCH)_da ;
 switch $(BUILD) {
@@ -58,8 +61,6 @@ if $(NO_PROFILER) = 1 {
   DEFINES += _NO_PROFILER ;
 }
 
-BUILDEXT = $(LOA_ARCH)_$(BUILD) ;
-logVar BUILDEXT ;
 DEFINES += _BUILDEXT="\\\"$(BUILDEXT)\\\"" ;
 
 # Lint, on by default in debug build
@@ -338,8 +339,10 @@ rule tkPkgLinkLibs {
 }
 
 rule tkLinkDll {
-  # ECHO "tkLinkDll $(<) : $(>) " ;
   tkLinkLibs $(<) : $(>) ;
+
+  local dir = $(3) ;
+  dir ?= $(TK_DIR_BIN) ;
   local l = [ FDirName $(dir) $(>)_$(BUILDEXT)$(SUFDLL) ] ;
   if ! ( $(NO_DEPS) = 1 ) {
     DEPENDS $(<) : $(l) ;
@@ -553,7 +556,6 @@ rule tkBuildPackage
   local _implib = 0 ;
   local _cpredist = 1 ;
   local _pdb = 1 ;
-  local _libsys = 0 ;
   local _console = 0 ;
   local _jni = 0 ;
   local _exc = 0 ;
@@ -705,6 +707,7 @@ rule tkBuildPackage
   else {
     f += $(d) ;
   }
+
   if $(SUFPDB) && $(_pdb) = 1 {
     local srcPDB = [ FDirName $(LOCATE_TARGET) $(d:S=$(SUFPDB)) ] ;
     local dstPDB = [ FDirName $(OUTDIR) $(d:S=$(SUFPDB)) ] ;
@@ -719,6 +722,7 @@ rule tkBuildPackage
 
   ### Package deps ###
   if $(_implib) = 1 && $(NT) && ! $(ANDROID) && ! $(IOS) {
+
     local defFile ;
     if $(BUILD_JNI) = 1 {
       defFile = [ FDirName $(SUBDIR) _$(PACKAGE)_$(OSPLAT:L)_$(BUILD)_jni.def ] ;
@@ -727,16 +731,17 @@ rule tkBuildPackage
       defFile = [ FDirName $(SUBDIR) _$(PACKAGE)_$(OSPLAT:L)_$(BUILD).def ] ;
     }
     DEPENDS $(PKGTARGETF) : $(defFile) ;
-    LINKFLAGS on $(PKGTARGET) ?= $(LINKFLAGS) ;
-    LINKFLAGS on $(PKGTARGET) += -DEF:$(defFile) ;
     local impLib = $(PKGTARGETF:S=$(SUFLIB)) ;
     local srcLib = [ FDirName $(OBJDIR) $(impLib) ] ;
     local dstLib = [ FDirName $(TK_DIR_LIBS) $(impLib) ] ;
+    LINKFLAGS on $(PKGTARGET) ?= $(LINKFLAGS) ;
+    LINKFLAGS on $(PKGTARGET) += -IMPLIB:$(srcLib) ;
+    LINKFLAGS on $(PKGTARGET) += -DEF:$(defFile) ;
     DEPENDS $(srcLib) : $(PKGTARGET) ;
     File $(dstLib) : $(srcLib) ;
     Touch $(dstLib) ; # We need the libs to look like they have been built
     Touch $(srcLib) ; # after the DLL so that the dependency check doesnt always
-                         # think that they are older (and so needs to be rebuilt)
+                      # think that they are older (and so needs to be rebuilt)
     f += $(dstLib) ;
   }
 

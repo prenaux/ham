@@ -29,6 +29,6 @@ actions Link bind NEEDLIBS {
   $(LINK) $(LINKFLAGS) -DEBUG -out:$(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
 }
 
-actions DllLink bind NEEDLIBS IMPLIBNAME {
-  $(LINK) $(LINKFLAGS) -DLL -IMPLIB:$(IMPLIBNAME) -DEBUG -out:$(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+actions DllLink bind NEEDLIBS {
+  $(LINK) $(LINKFLAGS) -DLL -DEBUG -out:$(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
 }
