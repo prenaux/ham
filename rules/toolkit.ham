@@ -42,6 +42,17 @@ switch $(BUILD) {
   case * : logFatal "Unknown BUILD type:" $(BUILD) ;
 }
 
+# Make sure the Features set is valid...
+if $(FEATURES) = "" {
+  FEATURES = ;
+}
+if $(EMBEDDED) = 1 {
+  FEATURES ?= 20 ;
+}
+else {
+  FEATURES ?= 30 ;
+}
+
 if $(FLYMAKE) = 1 {
   DEFINES += _FLYMAKE ;
 }
@@ -97,7 +108,9 @@ MakeLocate tkdir : $(TK_DIR_LIBS) ;
 
 NOTFILE tkdir ;
 NOUPDATE tkdir ;
-DEPENDS all : tkdir ;
+NOTFILE tkimport ;
+NOUPDATE tkimport ;
+DEPENDS all : tkdir tkimport ;
 
 MakeLocate tkdir : $(TEMPDIR) ;
 MakeLocate tkdir : $(BASEOBJDIR) ;
@@ -424,6 +437,7 @@ rule tkDefPackage
   MakeLocate $(PKGTARGET) : $(OUTDIR) ;
   MakeLocate $(PKGTARGET) : $(OBJDIR) ;
   DEPENDS $(PKGTARGET) : tkdir ;
+  DEPENDS $(PKGTARGET) : tkimport ;
 
   logVerbose "[ $(PKGBUILD) - $(VERSION) : $(PKGGROUP) [$(PKGTYPE)] ]" ;
   logVerbose "- Platform    : $(OS) ($(OSPLAT))" ;
