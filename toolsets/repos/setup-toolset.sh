@@ -11,7 +11,7 @@ export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/repos
 case $HAM_OS in
     NT*)
         export REPOS_DIR=${HAM_TOOLSET_DIR}/nt-x86/
-        export PATH=${HAM_TOOLSET_DIR}/:${PATH}:${REPOS_DIR}/git/bin/
+        export PATH=${HAM_TOOLSET_DIR}/:${PATH}:${REPOS_DIR}/git/bin/:${REPOS_DIR}/svn/bin/
         if [ ! -e "$REPOS_DIR" ]; then
             toolset_dl repos repos_nt-x86
             if [ ! -e "$REPOS_DIR" ]; then
@@ -28,7 +28,9 @@ esac
 
 VER="--- repos ------------------------
 --- git ---
-`git --version`"
+`git --version`
+--- svn ---
+`svn --version | grep ' version'`"
 if [ $? != 0 ]; then
     echo "E/Can't get version."
     return 1
