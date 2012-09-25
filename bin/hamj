@@ -6,8 +6,8 @@ fi
 if [[ -z $HAM_TOOLSET ]]; then
     . $HAM_HOME/bin/ham-bash-setenv.sh
     echo "W/HAM_TOOLSET not set, will try to setup the default one..."
-    . ham-toolset default
-    errcheck $? ham "Can't setup the default toolset."
+    . ham-toolset defaultj
+    errcheck $? ham "Can't setup the default java toolset."
 fi
 
 # find the _build.ham file

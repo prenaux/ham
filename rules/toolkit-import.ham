@@ -2,7 +2,6 @@ TK_SRC_WORK_DIR ?= $(WORK) ;
 
 # tkImportDoCopy TKIMPORT_TARGET : SRCPATH : DIR
 rule tkImportDoCopy {
-  # ECHO "I/Import $(2) to $(3)" ;
   if ! [ FExists $(2) ] {
     EXIT "F/Cannot import $(2) to $(3) !" ;
   }
@@ -32,6 +31,16 @@ rule tkImportGetDllPath {
   return $(srcPath) ;
 }
 
+rule tkImportGetJarPath {
+  local buildExt = $(3) ;
+  if ! $(buildExt) {
+    buildExt = $(BUILDEXT) ;
+  }
+  local srcTkDirJar = [ FDirName $(TK_SRC_WORK_DIR) $(<) libs jars ] ;
+  local srcPath = [ FDirName $(srcTkDirJar) $(>).jar ] ;
+  return $(srcPath) ;
+}
+
 rule tkImportGetLibPath {
   local buildExt = $(3) ;
   if ! $(buildExt) {
@@ -46,15 +55,17 @@ rule tkImportGetLibPath {
 # imports an executable program from another toolkit
 rule tkImportExe {
   local srcPath = [ tkImportGetExePath $(<) : $(>) : $(3) ] ;
-  tkImportDoCopy tkimport_exe
+  local r = [ tkImportDoCopy tkimport_exe
   : $(srcPath)
-  : $(TK_DIR_BIN) ;
+  : $(TK_DIR_BIN) ] ;
+  DEPENDS $(>) : $(r) ;
 
   # Has a .pdb attached to it ?
   if [ FExists $(srcPath:S=.pdb) ] {
-    tkImportDoCopy tkimport_exe
+    local r [ tkImportDoCopy tkimport_exe
     : $(srcPath:S=.pdb)
-    : $(TK_DIR_BIN) ;
+    : $(TK_DIR_BIN) ] ;
+    DEPENDS $(>) : $(r) ;
   }
 }
 
@@ -62,23 +73,26 @@ rule tkImportExe {
 # imports a dll from another toolkit
 rule tkImportDll {
   local srcPath = [ tkImportGetDllPath $(<) : $(>) : $(3) ] ;
-  tkImportDoCopy tkimport_dll
+  local r = [ tkImportDoCopy tkimport_dll
   : $(srcPath)
-  : $(TK_DIR_BIN) ;
+  : $(TK_DIR_BIN) ] ;
+  DEPENDS $(>) : $(r) ;
 
   # Has a .pdb attached to it ?
   if [ FExists $(srcPath:S=.pdb) ] {
-    tkImportDoCopy tkimport_dll
+    local r [ tkImportDoCopy tkimport_dll
     : $(srcPath:S=.pdb)
-    : $(TK_DIR_BIN) ;
+    : $(TK_DIR_BIN) ] ;
+    DEPENDS $(>) : $(r) ;
   }
 
   # Has an implib ?
   local libPath = [ tkImportGetLibPath $(<) : $(>) : $(3) ] ;
   if [ FExists $(libPath) ] {
-    tkImportDoCopy tkimport_dll
+    local r = [ tkImportDoCopy tkimport_dll
     : $(libPath)
-    : $(TK_DIR_LIBS) ;
+    : $(TK_DIR_LIBS) ] ;
+    DEPENDS $(>) : $(r) ;
   }
 }
 
@@ -86,7 +100,18 @@ rule tkImportDll {
 # imports a lib from another toolkit
 rule tkImportLib {
   local srcPath = [ tkImportGetLibPath $(<) : $(>) : $(3) ] ;
-  tkImportDoCopy tkimport_lib
+  local r = [ tkImportDoCopy tkimport_lib
   : $(srcPath)
-  : $(TK_DIR_LIBS) ;
+  : $(TK_DIR_LIBS) ] ;
+  DEPENDS $(>) : $(r) ;
+}
+
+# tkImportJar SrcToolkit : JarName : BUILDEXT ;
+# imports a jar from another toolkit
+rule tkImportJar {
+  local srcPath = [ tkImportGetJarPath $(<) : $(>) : $(3) ] ;
+  local r = [ tkImportDoCopy tkimport_jar
+  : $(srcPath)
+  : $(TK_DIR_JARS) ] ;
+  DEPENDS $(>) : $(r) ;
 }
