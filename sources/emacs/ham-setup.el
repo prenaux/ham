@@ -27,8 +27,9 @@
 
 (defun ham-flymake-get-ham-cmdline (source base-dir)
   (string-match "src/\\(.*\\)\\." source)
-  (list (concat (getenv "HAM_HOME") "/bin/hamj")
-	    (list "FLYMAKE=1"
+  (list (concat (getenv "HAM_HOME") "/bin/ham")
+	    (list "-Tdefaultj"
+              "FLYMAKE=1"
               (concat "CHK_SOURCES=" source)
               (concat "FLYMAKE_BASEDIR=" base-dir)
               "check-syntax")))

@@ -8,6 +8,7 @@ rule tkImportDoCopy {
   local p = [ tkFile $(2:BS) : $(2) : $(3) ] ;
   DEPENDS $(1) : $(p) ;
   DEPENDS tkimport : $(p) ;
+  DEPENDS pass1 : tkimport ;
   return $(p) ;
 }
 

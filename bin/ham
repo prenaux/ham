@@ -3,17 +3,24 @@ if [[ -z $HAM_HOME ]]; then
     echo "E/HAM_HOME not set !"
     exit 1
 fi
-if [[ -z $HAM_TOOLSET ]]; then
-    . $HAM_HOME/bin/ham-bash-setenv.sh
-    echo "W/HAM_TOOLSET not set, will try to setup the default one..."
-    . ham-toolset default
-    errcheck $? ham "Can't setup the default toolset."
-fi
+. $HAM_HOME/bin/ham-bash-lib.sh
+export HAM_CMD="$HAM_HOME/bin/$HAM_BIN_LOA/ham"
 
-# find the _build.ham file
-export BUILD_HAM_DIR=`ham-search-build-ham.sh`
-if [[ -z $BUILD_HAM_DIR ]]; then
-    echo "E/Can't find _build.ham !"
+# the help
+usage() {
+    echo "usage: ham [ options ] targets..."
+    echo "version:" `${HAM_CMD} -v`
+    echo ""
+    echo "-h             This help message"
+    echo "-B target      Run ham once before with the specified target"
+    echo "-T toolset     Add a toolset to import"
+    echo "               (can be specified multiple times)"
+    echo "-D directory   Add a directory/toolkit to build"
+    echo "               \$WORK/directory will be checked if the directory doesn't exist"
+    echo "               (can be specified multiple times)"
+    echo ""
+    "${HAM_CMD}" -? | grep "^[- ]"
+
     if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
         # sourced...
         return 1
@@ -21,8 +28,99 @@ if [[ -z $BUILD_HAM_DIR ]]; then
         # regular call
         exit 1
     fi
+}
+
+# Check that there is at least one argument...
+if [ $# = 0 ]; then
+    echo "E/No argument specified"
+    echo ""
+    usage
 fi
 
-pushd $BUILD_HAM_DIR
-$HAM_HOME/bin/$HAM_BIN_LOA/ham $*
-popd
+# process the arguments
+_ARG_DIRECTORIES=()
+while getopts :T:D:B:v OPT
+do
+    case "$OPT" in
+        h)
+            usage
+            ;;
+        \?)
+            usage
+            ;;
+        v)
+            "$HAM_CMD" -v
+            if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+                return 0
+            else
+                exit 0
+            fi
+            ;;
+        T)
+            _ARG_TOOLSET="$_ARG_TOOLSET $OPTARG"
+            # echo "_ARG_TOOLSET:" $_ARG_TOOLSET
+            ;;
+        D)
+            _ARG_DIRECTORY=$OPTARG
+            if [[ ! -e "$_ARG_DIRECTORY" ]]; then
+                _ARG_DIRECTORY="$WORK/$_ARG_DIRECTORY/sources"
+                if [[ ! -e "$_ARG_DIRECTORY" ]]; then
+                    echo "E/Can't find directory '$OPTARG'"
+                    usage
+                fi
+                _ARG_DIRECTORIES+=($_ARG_DIRECTORY)
+            fi
+            ;;
+        B)
+            _ARG_BUILD_BEFORE=$OPTARG
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+if [[ "$_ARG_TOOLSET" != "" ]]; then
+    . $HAM_HOME/bin/ham-bash-setenv.sh
+    . ham-toolset $_ARG_TOOLSET
+    errcheck $? ham "Can't setup the '$_ARG_TOOLSET' toolset."
+fi
+
+if [[ -z $HAM_TOOLSET ]]; then
+    echo "E/No toolset set, you can set one with the -T flag or '. ham-toolset' ..."
+    usage
+fi
+
+hamIn() {
+    export CWD=`pwd`
+    export DIR="$1"
+    shift
+    if [[ "$CWD" != "$DIR" ]]; then
+        pushd $DIR
+    fi
+    if [[ "$_ARG_BUILD_BEFORE" != "" ]]; then
+        "$HAM_CMD" $_ARG_BUILD_BEFORE
+    fi
+    "$HAM_CMD" $*
+    if [[ "$CWD" != "$DIR" ]]; then
+        popd
+    fi
+}
+
+if [[ "$_ARG_DIRECTORY" != "" ]]; then
+    for dir in "${_ARG_DIRECTORIES[@]}"; do
+        hamIn $dir $*
+    done
+else
+    # find the _build.ham file
+    export BUILD_HAM_DIR=`ham-search-build-ham.sh`
+    if [[ -z $BUILD_HAM_DIR ]]; then
+        echo "E/Can't find _build.ham !"
+        if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        # sourced...
+            return 1
+        else
+        # regular call
+            exit 1
+        fi
+    fi
+    hamIn $BUILD_HAM_DIR
+fi

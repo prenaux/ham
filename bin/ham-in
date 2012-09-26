@@ -1,5 +1,0 @@
-#!/bin/bash
-DIR=$1
-shift
-pushd $DIR
-$HAM_HOME/bin/ham $*
