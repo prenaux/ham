@@ -14,8 +14,15 @@ fi
 export BUILD_HAM_DIR=`ham-search-build-ham.sh`
 if [[ -z $BUILD_HAM_DIR ]]; then
     echo "E/Can't find _build.ham !"
-    exit 1
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        # sourced...
+        return 1
+    else
+        # regular call
+        exit 1
+    fi
 fi
-pushd $BUILD_HAM_DIR
 
+pushd $BUILD_HAM_DIR
 $HAM_HOME/bin/$HAM_BIN_LOA/ham $*
+popd
