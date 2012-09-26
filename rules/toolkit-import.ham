@@ -115,3 +115,9 @@ rule tkImportJar {
   : $(TK_DIR_JARS) ] ;
   DEPENDS $(>) : $(r) ;
 }
+
+# tkImportJar SrcToolkit : BaseName ;
+rule tkImportDllAndJar {
+  tkImportDll $(<) : $(>) ;
+  tkImportJar $(<) : $(>)_jvm ;
+}
