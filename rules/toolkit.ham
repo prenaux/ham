@@ -1,3 +1,6 @@
+if ! $(TK_NAME) {
+  EXIT "E/TK_NAME not set !" ;
+}
 if ! [ FExists $(TK_DIR) ] {
   EXIT "E/TK_DIR doesn't exist:" $(TK_DIR) ;
 }
@@ -8,6 +11,10 @@ if ! [ FExists $(TOP_DIR) ] {
 Import log.ham ;
 Import assert.ham ;
 Import run.ham ;
+
+REDIST_TOP_DIR = $(TK_DIR) ;
+REDIST_NAME = $(TK_NAME) ;
+Import redist.ham ;
 
 AssertVarDefined HAM_TOOLSET_NAME ;
 AssertVarDefined HAM_TOOLSET_VER ;
@@ -28,7 +35,7 @@ BIN_LOA = $(LOA_OS)-$(LOA_ARCH) ;
 #----------------------------------------------------------------------
 #     DEFINES
 #----------------------------------------------------------------------
-BUILD ?= da ;
+BUILD ?= ra ;
 logVar BUILD ;
 
 BUILDEXT = $(LOA_ARCH)_$(BUILD) ;
@@ -81,10 +88,6 @@ logVar LINT ;
 #----------------------------------------------------------------------
 #     DIRECTORIES
 #----------------------------------------------------------------------
-# Standard directories and the cache file
-TEMPDIR ?= [ FDirName $(HOME) .ham ] ;
-BASEOBJDIR ?= [ FDirName $(TEMPDIR) obj ] ;
-HCACHEFILE ?= [ FDirName $(TEMPDIR) _cache.ham ] ;
 
 # Should be defined in the toolkit's _rules.ham
 AssertVarDefined TK_DIR ;
@@ -226,6 +229,7 @@ rule tkAPICopy {
       }
       reld = [ FDirName $(idir) $(d:B)$(d:S) ] ;
       reld = "<"$(SUBDIR)">"$(reld) ; # Our own grist...
+      redistAddFile $(d) : header ;
       s = [ FGristFiles $(s) ] ;
       d = [ FGristFiles $(d) ] ;
       DEPENDS $(d) : $(TARGET)_dir ;
@@ -256,6 +260,9 @@ rule tkIncludeCopy {
   for _i in $(>) {
     local DEST = [ FDirName $(DEST_DIR) $(_i) ] ;
     local SRC = [ FDirName $(SUBDIR) $(_i) ] ;
+
+    redistAddFile $(DEST) : header ;
+
     SRC = [ FGristFiles $(SRC) ] ;
     DEST = [ FGristFiles $(DEST) ] ;
 
@@ -717,9 +724,11 @@ rule tkBuildPackage
       Chmod $(p) ;
     }
     f += $(p) ;
+    redistAddFile $(p) : $(PKGGROUP) ;
   }
   else {
     f += $(d) ;
+    redistAddFile $(d) : $(PKGGROUP) ;
   }
 
   if $(SUFPDB) && $(_pdb) = 1 {
@@ -773,3 +782,8 @@ rule tkBuildPackage
 
   return $(_all) ;
 }
+
+#----------------------------------------------------------------------
+#     Redist
+#----------------------------------------------------------------------
+redistBuild redist-dll : modules : $(LOA_OS)-$(LOA_ARCH)_$(BUILD) ;

@@ -2470,6 +2470,13 @@ rule FlyMakeSetup
 }
 
 #----------------------------------------------------------------------
+#     Standard directories and the cache file
+#----------------------------------------------------------------------
+TEMPDIR ?= [ FDirName $(HOME) .ham ] ;
+BASEOBJDIR ?= [ FDirName $(TEMPDIR) obj ] ;
+HCACHEFILE ?= [ FDirName $(TEMPDIR) _cache.ham ] ;
+
+#----------------------------------------------------------------------
 #     Include the toolset's base rules
 #----------------------------------------------------------------------
 Import base-$(HAM_TOOLSET)-rules.ham ;

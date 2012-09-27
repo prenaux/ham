@@ -11,15 +11,26 @@ usage() {
     echo "usage: ham [ options ] targets..."
     echo "version:" `${HAM_CMD} -v`
     echo ""
+    echo "ham launch script:"
     echo "-h             This help message"
     echo "-B target      Run ham once before with the specified target"
     echo "-T toolset     Add a toolset to import"
     echo "               (can be specified multiple times)"
-    echo "-D directory   Add a directory/toolkit to build"
-    echo "               \$WORK/directory will be checked if the directory doesn't exist"
+    echo "-D directory   Add a toolkit to build - the toolkit should be in $WORK"
     echo "               (can be specified multiple times)"
+    echo "--             Following dash '-' parameters will be passed to ham"
     echo ""
+    echo "ham process:"
     "${HAM_CMD}" -? | grep "^[- ]"
+    echo ""
+    echo "example:"
+    echo "  # Build all in the release build"
+    echo "  ham BUILD=ra all"
+    echo "  # Build all in the current toolkit, displaying all the commands"
+    echo "  ham -T defaultj -- -dx all"
+    echo "  # Build all in the niLang & niSDK toolkits"
+    echo "  ham -T defaultj -D niLang -D niSDK all"
+    echo ""
 
     if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
         # sourced...
@@ -61,15 +72,12 @@ do
             # echo "_ARG_TOOLSET:" $_ARG_TOOLSET
             ;;
         D)
-            _ARG_DIRECTORY=$OPTARG
+            _ARG_DIRECTORY="$WORK/$OPTARG/sources"
             if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                _ARG_DIRECTORY="$WORK/$_ARG_DIRECTORY/sources"
-                if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                    echo "E/Can't find directory '$OPTARG'"
-                    usage
-                fi
-                _ARG_DIRECTORIES+=($_ARG_DIRECTORY)
+                echo "E/Can't find directory '$OPTARG'"
+                usage
             fi
+            _ARG_DIRECTORIES+=($_ARG_DIRECTORY)
             ;;
         B)
             _ARG_BUILD_BEFORE=$OPTARG
@@ -99,6 +107,7 @@ hamIn() {
     if [[ "$_ARG_BUILD_BEFORE" != "" ]]; then
         "$HAM_CMD" $_ARG_BUILD_BEFORE
     fi
+    echo "$HAM_CMD" $*
     "$HAM_CMD" $*
     if [[ "$CWD" != "$DIR" ]]; then
         popd
@@ -122,5 +131,5 @@ else
             exit 1
         fi
     fi
-    hamIn $BUILD_HAM_DIR
+    hamIn $BUILD_HAM_DIR $*
 fi

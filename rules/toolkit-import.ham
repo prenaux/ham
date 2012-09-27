@@ -3,7 +3,14 @@ TK_SRC_WORK_DIR ?= $(WORK) ;
 # tkImportDoCopy TKIMPORT_TARGET : SRCPATH : DIR
 rule tkImportDoCopy {
   if ! [ FExists $(2) ] {
-    EXIT "F/Cannot import $(2) to $(3) !" ;
+    local destFile = [ FDirName $(3) $(2:BS) ] ;
+    if [ FExists $(destFile) ] {
+      ECHO "W/Import: cannot import, using existing $(destFile)." ;
+      return $(destFile) ;
+    }
+    else {
+      EXIT "F/Cannot import $(2) to $(3) !" ;
+    }
   }
   local p = [ tkFile $(2:BS) : $(2) : $(3) ] ;
   DEPENDS $(1) : $(p) ;
@@ -78,6 +85,7 @@ rule tkImportDll {
   : $(srcPath)
   : $(TK_DIR_BIN) ] ;
   DEPENDS $(>) : $(r) ;
+  redistAddFile $(r) : modules ;
 
   # Has a .pdb attached to it ?
   if [ FExists $(srcPath:S=.pdb) ] {
@@ -115,6 +123,7 @@ rule tkImportJar {
   : $(srcPath)
   : $(TK_DIR_JARS) ] ;
   DEPENDS $(>) : $(r) ;
+  redistAddFile $(r) : jar ;
 }
 
 # tkImportJar SrcToolkit : BaseName ;
