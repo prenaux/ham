@@ -35,7 +35,12 @@ BIN_LOA = $(LOA_OS)-$(LOA_ARCH) ;
 #----------------------------------------------------------------------
 #     DEFINES
 #----------------------------------------------------------------------
-BUILD ?= ra ;
+if $(FLYMAKE) = 1 {
+  BUILD ?= da ;
+}
+else {
+  BUILD ?= ra ;
+}
 logVar BUILD ;
 
 BUILDEXT = $(LOA_ARCH)_$(BUILD) ;

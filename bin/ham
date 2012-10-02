@@ -109,6 +109,7 @@ hamIn() {
     fi
     echo "$HAM_CMD" $*
     "$HAM_CMD" $*
+    errcheck $? ham "Build in $DIR failed."
     if [[ "$CWD" != "$DIR" ]]; then
         popd
     fi
