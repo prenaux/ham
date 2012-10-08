@@ -30,7 +30,7 @@ VER="--- repos ------------------------
 --- git ---
 `git --version`
 --- svn ---
-`svn --version | grep ' version'`"
+`svn --version | grep 'Slik'`"
 if [ $? != 0 ]; then
     echo "E/Can't get version."
     return 1
