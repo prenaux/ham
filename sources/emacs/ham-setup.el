@@ -183,7 +183,7 @@
 (require 'ham-shell)
 
 (Windows
- (setq explicit-ham-shell-file-name (concat HAM_HOME "/bin/nt-x86/bash.exe")))
+ (setq explicit-ham-shell-file-name (concat HAM_HOME "/bin/ham-shell.cmd")))
 (Linux
  (setq explicit-ham-shell-file-name "/bin/bash"))
 (OSX
