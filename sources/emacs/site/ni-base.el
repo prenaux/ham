@@ -5,6 +5,7 @@
       (replace-regexp-in-string "\\\\" "/" (getenv str))
     ""))
 
+(defconst ENV_WORK (agl-getenv "WORK"))
 (defconst ENV_DEVENV (agl-getenv "EMACS_DEVENV"))
 
 (defconst ENV_DEVENV_EMACS_SCRIPTS (concat ENV_DEVENV "/sources/emacs/site"))

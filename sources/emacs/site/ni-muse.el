@@ -10,16 +10,6 @@
 (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/muse/contrib"))
 (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/muse/experimental"))
 
-(Windows
- (setenv "TEXLIVE" "L:")
- (setenv "TEXOS" "win32")
- (setenv "TEXROOT" (concat (getenv "EMACS_DEVENV") "/tex"))
- (setenv "TLROOT" (concat (getenv "EMACS_DEVENV") "/tex"))
- (setenv "TEXMFTEMP" (concat (getenv "EMACS_DEVENV") "/tex/temp"))
- (setenv "TEXMFVAR" (concat (getenv "EMACS_DEVENV") "/tex/texmf-var"))
- (setenv "TEXMFCNF" (concat (getenv "EMACS_DEVENV") "/tex/texmf-var/web2c"))
- (ni-add-to-PATH-back (concat (getenv "TEXLIVE") "/bin/win32")))
-
 (require 'muse)
 (require 'muse-mode)
 (require 'muse-colors)

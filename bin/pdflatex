@@ -1,0 +1,3 @@
+#!bash
+. ham-toolset tex > NUL
+$TEXISO_BIN/pdflatex $*
