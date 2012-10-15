@@ -10,6 +10,21 @@
 (require 'ni-ham)
 
 ;;;======================================================================
+;;; Font
+;;;======================================================================
+(NotBatchMode
+ (agl-begin-time-block "Set Font")
+
+ (Windows
+  (set-face-attribute 'default nil :family "Consolas" :height 105 :weight 'bold)
+  )
+
+ (Linux
+  (setq default-frame-alist
+        '((font . "-*-Consolas-*-r-*-*-11-108-120-120-c-*-*-*"))))
+ )
+
+;;;======================================================================
 ;;; Easy input of math symbols
 ;;;======================================================================
 (require 'xmsi-math-symbols-input)

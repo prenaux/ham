@@ -1026,20 +1026,6 @@ LIST defaults to all existing live buffers."
 ) ;; End of NotBatchMode
 
 ;;;======================================================================
-;;; Font
-;;;======================================================================
-(NotBatchMode
- (agl-begin-time-block "Set Font")
-
- (Windows
-  (setq default-frame-alist
-        '((font . "-*-Consolas-*-r-*-*-15-108-120-120-c-*-*-*"))))
- (Linux
-  (setq default-frame-alist
-        '((font . "-*-Consolas-*-r-*-*-15-108-120-120-c-*-*-*"))))
-)
-
-;;;======================================================================
 ;;; Overlays
 ;;;======================================================================
 (NotBatchMode
