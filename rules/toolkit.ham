@@ -586,6 +586,7 @@ rule tkBuildPackage
   local _jni = 0 ;
   local _exc = 0 ;
   local _unicode = 0 ;
+  local _stamp = "" ;
 
   if $(BUILD_JNI) = 1 {
     _jni = 1 ;
@@ -606,7 +607,7 @@ rule tkBuildPackage
 	switch $(_i) {
 	# Use precompiled header, should be the first option if specified
 	case pch :
-	  if $(SUFPCH) && ( ! ( $(NO_PCH) = 1 ) )  && ( ( ! $(FLYMAKE) ) || $(FLYMAKE_PCH) = 1 ) {
+	  if $(SUFPCH) && ( ! ( $(NO_PCH) = 1 ) )  && ( ( ! $(FLYMAKE) ) || ( $(FLYMAKE_PCH) = 1 ) ) {
 		# Use _exsrc
         _pch = [ tkC++Pch PCH_$(PACKAGE) : stdafx.cpp : $(_src) $(_exsrc) : $(_nopchsrc) : $(>) ] ;
 		# _exsrc += stdafx.cpp ;
@@ -660,6 +661,11 @@ rule tkBuildPackage
     # Unicode (UTF16) application
     case unicode :
       _unicode = 1 ;
+    # Output to a stamped target if STAMP is not empty
+    case stamp :
+      if $(STAMP) {
+        _stamp = -$(STAMP) ;
+      }
     case * :
       ECHO "Unknown Build Option : " $(_i) ;
 	}
@@ -723,7 +729,7 @@ rule tkBuildPackage
   DEPENDS $(d) : tkdir ;
   local f = ;
   if $(_cpredist) = 1 {
-    local p = [ tkFile $(PKGTARGETF) : $(d) : $(OUTDIR) ] ;
+    local p = [ tkFile $(PKGTARGETF:B)$(_stamp)$(PKGTARGETF:S) : $(d) : $(OUTDIR) ] ;
     if $(is_exe) {
       MODE on $(p) = $(EXEMODE) ;
       Chmod $(p) ;
@@ -738,7 +744,7 @@ rule tkBuildPackage
 
   if $(SUFPDB) && $(_pdb) = 1 {
     local srcPDB = [ FDirName $(LOCATE_TARGET) $(d:S=$(SUFPDB)) ] ;
-    local dstPDB = [ FDirName $(OUTDIR) $(d:S=$(SUFPDB)) ] ;
+    local dstPDB = [ FDirName $(OUTDIR) $(d:B)$(_stamp)$(SUFPDB) ] ;
     DEPENDS $(srcPDB) : $(d) ;
     Touch $(d) ; # We need the libs to look like they have been built
     Touch $(srcPDB) ;     # after the DLL so that the dependency check doesnt always

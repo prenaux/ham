@@ -74,8 +74,14 @@ do
         D)
             _ARG_DIRECTORY="$WORK/$OPTARG/sources"
             if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                echo "E/Can't find directory '$OPTARG'"
-                usage
+                _ARG_DIRECTORY="${OPTARG}sources"
+                if [[ ! -e "$_ARG_DIRECTORY" ]]; then
+                    _ARG_DIRECTORY="$OPTARG/sources"
+                    if [[ ! -e "$_ARG_DIRECTORY" ]]; then
+                        echo "E/Can't find directory '$OPTARG'"
+                        usage
+                    fi
+                fi
             fi
             _ARG_DIRECTORIES+=($_ARG_DIRECTORY)
             ;;
