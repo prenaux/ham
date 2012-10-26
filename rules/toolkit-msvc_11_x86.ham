@@ -8,7 +8,7 @@ LOA_LINKER = vc11 ;
 #----------------------------------------------------------------------
 #     DEFINES
 #----------------------------------------------------------------------
-DEFINES += WIN32 _WINDOWS __WIN32__ HAS_CPPAMP ;
+DEFINES += WIN32 _WINDOWS __WIN32__ HAS_CPPAMP HAS_PPL ;
 # The secure CRT (_s methods) are MSVC specific so we can't use them
 # since they are not portable.
 DEFINES += _CRT_SECURE_NO_WARNINGS ;
