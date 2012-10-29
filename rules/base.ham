@@ -383,8 +383,9 @@
 # 4 - Errors
 LOG ?= 2 ;
 
+LINT ?= 0 ;
+
 if $(FLYMAKE) = 1 {
-  LINT ?= 0 ;
   FLYMAKE_PCH ?= 0 ;
   ECHO "I/Flymake build" ;
 }
@@ -2087,6 +2088,12 @@ actions piecemeal together existing Clean
 actions Cp
 {
   $(CP) $(>) $(<)
+}
+
+rule Touch {
+}
+actions Touch {
+  touch $(<)
 }
 
 actions File

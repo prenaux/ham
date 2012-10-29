@@ -162,19 +162,13 @@ rule GlobAllSrc {
   return $(r) ;
 }
 
-rule Touch {
-}
-actions Touch {
-  touch $(<)
-}
-
 # tkFile TARGET : SOURCE : DEP
 rule tkFileCopy {
   if $(<) != $(>) {
     DEPENDS $(<) : $(>) ;
   }
   MakeDir $(<) : $(<:D) ;
-  File $(<) : $(>) ;
+  FilePreserve $(<) : $(>) ;
   if $(3) {
     DEPENDS $(3) : $(<) ;
   }
@@ -187,7 +181,7 @@ rule tkFile {
   }
   local p = [ FDirName $(3) $(<) ] ;
   MakeDir $(>) : $(p:D) ;
-  File $(p) : $(>) ;
+  FilePreserve $(p) : $(>) ;
   DEPENDS $(p) : $(>) ;
   return $(p) ;
 }
@@ -372,9 +366,6 @@ rule tkLinkDll {
   if ! ( $(NO_DEPS) = 1 ) {
     DEPENDS $(<) : $(l) ;
   }
-  if $(HAM_TOOLSET) = VISUALC {
-    LINKFLAGS on $(<) += -DELAYLOAD:$(>)_$(BUILDEXT)$(SUFDLL) ;
-  }
 }
 
 rule tkPkgLinkDll {
@@ -425,7 +416,7 @@ rule tkDefPackage
       PKGTARGET = $(PKGBUILD:S=$(SUFEXE)) ;
       PKGTYPE = binary ;
       if $(PKGGROUP) = rawbin {
-        File [ FDirName $(OUTDIR:/) $(PACKAGE:S=$(SUFEXE)) ] : $(PKGTARGET:/) ;
+        FilePreserve [ FDirName $(OUTDIR:/) $(PACKAGE:S=$(SUFEXE)) ] : $(PKGTARGET:/) ;
       }
     }
     else {
@@ -746,11 +737,7 @@ rule tkBuildPackage
     local srcPDB = [ FDirName $(LOCATE_TARGET) $(d:S=$(SUFPDB)) ] ;
     local dstPDB = [ FDirName $(OUTDIR) $(d:B)$(_stamp)$(SUFPDB) ] ;
     DEPENDS $(srcPDB) : $(d) ;
-    Touch $(d) ; # We need the libs to look like they have been built
-    Touch $(srcPDB) ;     # after the DLL so that the dependency check doesnt always
-                             # think that they are older (and so needs to be rebuilt)
-    File $(dstPDB) : $(srcPDB) ;
-#     Touch $(dstPDB) ;
+    FilePreserve $(dstPDB) : $(srcPDB) ;
     f += $(dstPDB) ;
   }
 
@@ -772,10 +759,7 @@ rule tkBuildPackage
     LINKFLAGS on $(PKGTARGET) += -IMPLIB:$(srcLib) ;
     LINKFLAGS on $(PKGTARGET) += -DEF:$(defFile) ;
     DEPENDS $(srcLib) : $(PKGTARGET) ;
-    File $(dstLib) : $(srcLib) ;
-    Touch $(dstLib) ; # We need the libs to look like they have been built
-    Touch $(srcLib) ; # after the DLL so that the dependency check doesnt always
-                      # think that they are older (and so needs to be rebuilt)
+    FilePreserve $(dstLib) : $(srcLib) ;
     f += $(dstLib) ;
   }
 
