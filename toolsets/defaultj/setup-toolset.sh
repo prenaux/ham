@@ -3,7 +3,7 @@
 # path setup
 case $HAM_OS in
     NT*)
-        . ham-toolset-import.sh java_jdk16
+        . ham-toolset-import.sh build_jni
         . ham-toolset-import.sh default
         ;;
     *)

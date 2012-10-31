@@ -28,6 +28,10 @@ Import $(TK_ENV_FILE) : "E/Can't find toolkit's configuration for toolset:" $(TK
 AssertVarDefined LOA_LINKER ;
 AssertVarDefined LOA_OS ;
 AssertVarDefined LOA_ARCH ;
+if $(BUILD_JNI) = 1 {
+  LOA_ARCH = $(LOA_ARCH)j ;
+  DEFINES += _BUILD_JNI ;
+}
 
 LIBS_LOA = $(LOA_LINKER)-$(LOA_OS)-$(LOA_ARCH) ;
 BIN_LOA = $(LOA_OS)-$(LOA_ARCH) ;
@@ -43,11 +47,11 @@ else {
 }
 logVar BUILD ;
 
-BUILDEXT = $(LOA_ARCH)_$(BUILD) ;
+BUILDEXT = $(BUILD) ;
 logVar BUILDEXT ;
 
-BUILDEXT_RA = $(LOA_ARCH)_ra ;
-BUILDEXT_DA = $(LOA_ARCH)_da ;
+BUILDEXT_RA = ra ;
+BUILDEXT_DA = da ;
 switch $(BUILD) {
   case ra :
   case da : DEBUG = 1 ;
@@ -546,8 +550,12 @@ rule tkIncludeDep {
 # tkDepends target : depend_on : dira dirb
 rule tkDepends {
   if $(NO_DEPS) = 1 { return ; }
-  if [ IncludeOnce $(3) ] = 0 {
-    SubInclude $(3) ;
+  local depDir = $(3) ;
+  if ! $(depDir) {
+    depDir = TOP $(2) src ;
+  }
+  if [ IncludeOnce $(depDir) ] = 0 {
+    SubInclude $(depDir) ;
   }
   DEPENDS $(<) : $(>) ;
 }
@@ -737,29 +745,30 @@ rule tkBuildPackage
     local srcPDB = [ FDirName $(LOCATE_TARGET) $(d:S=$(SUFPDB)) ] ;
     local dstPDB = [ FDirName $(OUTDIR) $(d:B)$(_stamp)$(SUFPDB) ] ;
     DEPENDS $(srcPDB) : $(d) ;
+    Touch $(srcPDB) ; # Make sure that the PDB's date is more recent than the output
     FilePreserve $(dstPDB) : $(srcPDB) ;
     f += $(dstPDB) ;
   }
 
   ### Package deps ###
   if $(_implib) = 1 && $(NT) && ! $(ANDROID) && ! $(IOS) {
-
-    local defFile ;
-    if $(BUILD_JNI) = 1 {
-      defFile = [ FDirName $(SUBDIR) _$(PACKAGE)_$(OSPLAT:L)_$(BUILD)_jni.def ] ;
-    }
-    else {
-      defFile = [ FDirName $(SUBDIR) _$(PACKAGE)_$(OSPLAT:L)_$(BUILD).def ] ;
-    }
-    DEPENDS $(PKGTARGETF) : $(defFile) ;
-    local impLib = $(PKGTARGETF:S=$(SUFLIB)) ;
+    local defFile = [ FDirName $(SUBDIR) _$(PACKAGE)-$(LIBS_LOA)-$(BUILDEXT).def ] ;
+    local impLib = $(PKGTARGETF:B:S=$(SUFLIB)) ;
     local srcLib = [ FDirName $(OBJDIR) $(impLib) ] ;
-    local dstLib = [ FDirName $(TK_DIR_LIBS) $(impLib) ] ;
+
+    DEPENDS $(srcLib) : $(defFile) ;
+    DEPENDS $(srcLib) : $(PKGTARGETF) ;
+    DEPENDS $(PKGTARGETF) ;
+
     LINKFLAGS on $(PKGTARGET) ?= $(LINKFLAGS) ;
     LINKFLAGS on $(PKGTARGET) += -IMPLIB:$(srcLib) ;
     LINKFLAGS on $(PKGTARGET) += -DEF:$(defFile) ;
-    DEPENDS $(srcLib) : $(PKGTARGET) ;
+
+    local dstLib = [ FDirName $(TK_DIR_LIBS) $(impLib) ] ;
+    Touch $(srcLib) ; # Make sure that the lib's date is more recent than the output
     FilePreserve $(dstLib) : $(srcLib) ;
+    Clean clean : $(dstLib) ;
+
     f += $(dstLib) ;
   }
 

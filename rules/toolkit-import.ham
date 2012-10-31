@@ -118,12 +118,14 @@ rule tkImportLib {
 # tkImportJar SrcToolkit : JarName : BUILDEXT ;
 # imports a jar from another toolkit
 rule tkImportJar {
-  local srcPath = [ tkImportGetJarPath $(<) : $(>) : $(3) ] ;
-  local r = [ tkImportDoCopy tkimport_jar
-  : $(srcPath)
-  : $(TK_DIR_JARS) ] ;
-  DEPENDS $(>) : $(r) ;
-  redistAddFile $(r) : jar ;
+  if $(BUILD_JNI) = 1 {
+    local srcPath = [ tkImportGetJarPath $(<) : $(>) : $(3) ] ;
+    local r = [ tkImportDoCopy tkimport_jar
+    : $(srcPath)
+    : $(TK_DIR_JARS) ] ;
+    DEPENDS $(>) : $(r) ;
+    redistAddFile $(r) : jar ;
+  }
 }
 
 # tkImportJar SrcToolkit : BaseName ;

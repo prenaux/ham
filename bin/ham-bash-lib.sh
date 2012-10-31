@@ -80,8 +80,12 @@ thisscriptdir() {
 }
 
 update_prompt() {
+    TOOLSET_EXTRA=
+    if [ "$BUILD_JNI" == "1" ]; then
+        TOOLSET_EXTRA=" (jni)"
+    fi
     export PS1='
-\[\033[35m$HAM_TOOLSET_NAME\033[0m\] \w (\[\033[32m$USERNAME\033[0m\])
+\[\033[35m$HAM_TOOLSET_NAME$TOOLSET_EXTRA\033[0m\] \w (\[\033[32m$USERNAME\033[0m\])
 $ '
 	# echo -e "\033]0;`pwd`\007"
     # export PS1="${AGL_TOOLSET_NAME}\$ "
