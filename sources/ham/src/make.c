@@ -445,9 +445,9 @@ make0(
 	    }
 	    else
 	    {
-		printf( "don't know how to make %s\n", t->name );
-
-		fate = T_FATE_CANTFIND;
+		printf( "E/Don't know how to make %s\n", t->name );
+        exit( EXITBAD );
+		/* fate = T_FATE_CANTFIND; */
 	    }
 	}
 
