@@ -1,0 +1,13 @@
+AR          ?= lib ;
+CC          ?= icl -nologo ;
+CCFLAGS     ?= "" ;
+C++         ?= $(CC) ;
+C++FLAGS    ?= $(CCFLAGS) ;
+LINK        ?= xilink -nologo ;
+LINKFLAGS   ?= "" ;
+LINKLIBS    ?= advapi32.lib oldnames.lib kernel32.lib ;
+OPTIM       ?= "" ;
+STDHDRS     ?= $(INTELC)/include $(VISUALC)/include ;
+UNDEFFLAG   ?= "-u _" ;
+
+Import base-VISUALC.ham ;

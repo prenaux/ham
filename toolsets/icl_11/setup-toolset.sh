@@ -5,7 +5,7 @@
 
 # toolset
 export HAM_TOOLSET_IS_SETUP_ICL_11=1
-export HAM_TOOLSET=ICL
+export HAM_TOOLSET=INTELC
 export HAM_TOOLSET_VER=11
 export HAM_TOOLSET_NAME=icl_11
 export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/icl_11

@@ -1,0 +1,2 @@
+Import toolkit-msvc.ham ;
+DEFINES += _COMPILER_ICL_11 ;
