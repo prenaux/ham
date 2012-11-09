@@ -72,14 +72,17 @@ do
             # echo "_ARG_TOOLSET:" $_ARG_TOOLSET
             ;;
         D)
-            _ARG_DIRECTORY="$WORK/$OPTARG/sources"
+            _ARG_DIRECTORY="`unxpath $WORK/$OPTARG/sources`"
             if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                _ARG_DIRECTORY="${OPTARG}sources"
+                _ARG_DIRECTORY="`unxpath ${OPTARG}sources`"
                 if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                    _ARG_DIRECTORY="$OPTARG/sources"
+                    _ARG_DIRECTORY="`unxpath $OPTARG/sources`"
                     if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                        echo "E/Can't find directory '$OPTARG'"
-                        usage
+                        _ARG_DIRECTORY="`unxpath $OPTARG`"
+                        if [[ ! -e "$_ARG_DIRECTORY" ]]; then
+                            echo "E/Can't find directory '$OPTARG'"
+                            usage
+                        fi
                     fi
                 fi
             fi
