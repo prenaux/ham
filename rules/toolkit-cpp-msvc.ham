@@ -1,4 +1,6 @@
-LINKLIBS += winmm.lib gdi32.lib user32.lib shell32.lib ;
+if $(WINDOWS) = 1 {
+  LINKLIBS += winmm.lib gdi32.lib user32.lib shell32.lib ;
+}
 SUFPCH = .pch ;
 
 CC_ADD_FLAGS = -Zc:forScope -W4 ;
@@ -140,6 +142,8 @@ rule tkCC++Build
     ObjectOptimFlags $(<) : -GR- ;
   }
 
+  LINKFLAGS on $(PKGTARGETF) ?= $(LINKFLAGS) ;
+
   # Set the debug infos generation
   if ! ( $(REDIST) ) && ! ( $(FLYMAKE) = 1 ) {
     SUFPDB = .pdb ;
@@ -169,7 +173,6 @@ rule tkCC++Build
         # ObjectOptimFlags $(<) : -GL ;
       # }
       strOpt += "(OptMaxSpeed) " ;
-      LINKFLAGS on $(PKGTARGETF) ?= $(LINKFLAGS) ;
       # if $(EMBEDDED) != 1 {
         # LINKFLAGS on $(PKGTARGETF) += -LTCG ;
       # }
@@ -198,7 +201,7 @@ rule tkCC++Build
     ObjectOptimFlags $(<) : -Zl ;
     strOpt += "(NOCRT) " ;
   }
-  else if $(OPT_CRTDLL) = 1 {
+  else if $(WINRT) = 1 || $(OPT_CRTDLL) = 1 {
     if $(DEBUG) {
       ObjectOptimFlags $(<) : -MDd ;
       strOpt += "(CRT-DLL-MT-DBG) " ;
@@ -222,19 +225,22 @@ rule tkCC++Build
   logVerbose "- CC++Build: " $(strOpt) ;
 }
 
-rule tkC++Exceptions
-{
-  if $(EMBEDDED) != 1 {
-    ObjectOptimFlags $(<) : -EHa ;
-    logVerbose "- C++ Exceptions" ;
+# Exceptions can be changed only for Windows Desktop apps
+if $(WINDOWS) = 1 {
+  rule tkC++Exceptions
+  {
+    if $(EMBEDDED) != 1 {
+      ObjectOptimFlags $(<) : -EHa ;
+      logVerbose "- C++ Exceptions" ;
+    }
+    else {
+      logVerbose "- No Exceptions in Embedded mode" ;
+    }
   }
-  else {
-    logVerbose "- No Exceptions in Embedded mode" ;
-  }
-}
 
-rule tkNoC++Exceptions {
-  ObjectDefines $(<) : _HAS_EXCEPTIONS=0 ;
+  rule tkNoC++Exceptions {
+    ObjectDefines $(<) : _HAS_EXCEPTIONS=0 ;
+  }
 }
 
 rule tkCC++Lint

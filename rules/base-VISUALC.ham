@@ -1,10 +1,32 @@
 NT = 1 ;
-WINDOWS = 1 ;
-if $(HAM_TOOLSET_NAME) = VC9_X86 || $(HAM_TOOLSET_NAME) = VC10_X86 {
+
+if $(HAM_TOOLSET_NAME) = winrt_x86 ||
+   $(HAM_TOOLSET_NAME) = winrt_x64 ||
+   $(HAM_TOOLSET_NAME) = winrt_arm
+{
+  WINRT = 1 ;
+}
+else {
+  WINDOWS = 1 ;
+}
+
+if $(HAM_TOOLSET_NAME) = msvc_10_x86 ||
+   $(HAM_TOOLSET_NAME) = msvc_11_x86 ||
+   $(HAM_TOOLSET_NAME) = winrt_x86
+{
   OSPLAT = X86 ;
 }
-else if $(HAM_TOOLSET_NAME) = VC9_X64 || $(HAM_TOOLSET_NAME) = VC10_X64 {
+else if $(HAM_TOOLSET_NAME) = msvc_10_x64 ||
+        $(HAM_TOOLSET_NAME) = msvc_11_x64
+{
   OSPLAT = X64 ;
+}
+else if $(HAM_TOOLSET_NAME) = winrt_arm
+{
+  OSPLAT = ARM ;
+}
+else {
+  EXIT "Unknown toolset name:" $(HAM_TOOLSET_NAME) ;
 }
 
 SLASH   ?= / ;
@@ -14,32 +36,37 @@ SUFEXE  ?= .exe ;
 SUFDLL  ?= .dll ;
 CHMOD   ?= chmod ;
 
-if $(OSPLAT) = X64 {
-  YASM = "yasm_x64" ;
-  YASMFLAGS   = "-m amd64 -f coff" ;
-}
-else {
-  YASM = "yasm_x86" ;
-  YASMFLAGS   = "-m x86 -f coff" ;
-}
-
 if ! $(HAM_CL) {
   EXIT "F/HAM_CL not defined !" ;
 }
+
 if ! ( $(FLYMAKE) = 1 ) {
   # Errors with absolute file path
   HAM_CL = $(HAM_CL) -FC ;
 }
 
+if $(WINRT) = 1 {
+  HAM_CL = $(HAM_CL)  ;
+  HAM_LINK = $(HAM_LINK) -WINMD:NO ;
+
+  # -sdl: Adds additional Security Development Lifecycle (SDL) recommended
+  #       checks. These include enabling additional secure code generation
+  #       features and enables extra security-relevant warnings as errors.
+  CCFLAGS     ?= -sdl -fp:precise -EHsc -D "UNICODE" -D "_UNICODE" -D "WINAPI_FAMILY=WINAPI_FAMILY_APP" ;
+  C++FLAGS    ?= -ZW -Zl $(CCFLAGS) ;
+}
+else {
+  C++FLAGS    ?= ;
+  CCFLAGS     ?= ;
+}
+
 AR ?= lib ;
 
 CC          ?= $(HAM_CL) -nologo ;
-CCFLAGS     ?= ;
-C++FLAGS    ?= ;
 C++         ?= $(HAM_CL) -nologo ;
 LINK        ?= $(HAM_LINK) -nologo -INCREMENTAL:NO ;
 LINKFLAGS   ?= "" ;
-LINKLIBS    ?= oldnames.lib kernel32.lib ;
+LINKLIBS    ?= kernel32.lib ;
 OPTIM       ?= "" ;
 STDHDRS     ?= $(VISUALC)/include ;
 UNDEFFLAG   ?= "-u _" ;

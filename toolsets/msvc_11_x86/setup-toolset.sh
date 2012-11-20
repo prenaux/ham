@@ -1,4 +1,4 @@
-TAG=VC10-x86
+TAG=msvc_11_x86
 echo I/Setting up $TAG
 
 case $HAM_OS in
