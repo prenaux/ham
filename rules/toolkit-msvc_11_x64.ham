@@ -1,0 +1,4 @@
+Import toolkit-msvc.ham ;
+LOA_ARCH = x64 ;
+
+DEFINES += _COMPILER_MSVC_11_X64 ;

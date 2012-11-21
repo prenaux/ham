@@ -1,2 +1,4 @@
 Import toolkit-msvc.ham ;
-DEFINES += _COMPILER_MSVC_10 ;
+LOA_ARCH = x86 ;
+
+DEFINES += _COMPILER_MSVC_10_X86 ;

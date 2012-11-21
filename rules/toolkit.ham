@@ -340,6 +340,25 @@ rule tkPkgHdrs {
   return [ GlobSrc $(d) : h ] ;
 }
 
+# tkLinkLibsRaw TARGET : LIB : DIR : EXT ;
+# LIB is a library contained in the SDK's library folder.
+rule tkLinkLibsRaw {
+  if $(PKGTYPE) != library {
+    local dir = $(3) ;
+    dir ?= $(TK_DIR_LIBS) ;
+    local ext = $(4) ;
+    ext ?= "" ;
+    local l = [ FDirName $(dir) $(>)$(ext) ] ;
+    if ! ( $(NO_DEPS) = 1 ) {
+      DEPENDS $(<) : $(l) ;
+    }
+    VarOnAddToFront LINKLIBS : $(<) : $(l) ;
+    # [ VarAddToFront LINKLIBS $(<) $(l) ] ;
+    # LINKLIBS on $(<) += $(l) ;
+    # ECHO "LINKLIBS: " [ VarOnGet LINKLIBS : $(<) ] ;
+  }
+}
+
 # tkLinkLibs TARGET : LIB : DIR ;
 # LIB is a library contained in the SDK's library folder.
 rule tkLinkLibs {
@@ -357,20 +376,27 @@ rule tkLinkLibs {
   }
 }
 
-# tkPkgLinkLibs LIB ;
+# tkPkgLinkLibs LIB : DIR ;
 rule tkPkgLinkLibs {
-  tkLinkLibs $(PKGTARGET) : $(<) ;
+  tkLinkLibs $(PKGTARGET) : $(<) : $(>) ;
 }
 
-rule tkLinkDll {
-  tkLinkLibs $(<) : $(>) ;
-
+rule tkDepDll {
   local dir = $(3) ;
   dir ?= $(TK_DIR_BIN) ;
   local l = [ FDirName $(dir) $(>)_$(BUILDEXT)$(SUFDLL) ] ;
   if ! ( $(NO_DEPS) = 1 ) {
     DEPENDS $(<) : $(l) ;
   }
+}
+
+rule tkLinkDll {
+  tkLinkLibs $(<) : $(>) ;
+  tkDepDll $(<) : $(>) : $(3) ;
+}
+
+rule tkPkgDepDll {
+  tkDepDll $(PKGTARGET) : $(<) ;
 }
 
 rule tkPkgLinkDll {

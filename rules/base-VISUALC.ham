@@ -8,10 +8,12 @@ if $(HAM_TOOLSET_NAME) = winrt_x86 ||
 }
 else {
   WINDOWS = 1 ;
+  WINDESKTOP = 1 ;
 }
 
 if $(HAM_TOOLSET_NAME) = msvc_10_x86 ||
    $(HAM_TOOLSET_NAME) = msvc_11_x86 ||
+   $(HAM_TOOLSET_NAME) = icl_11 ||
    $(HAM_TOOLSET_NAME) = winrt_x86
 {
   OSPLAT = X86 ;
