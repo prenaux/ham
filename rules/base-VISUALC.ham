@@ -19,7 +19,8 @@ if $(HAM_TOOLSET_NAME) = msvc_10_x86 ||
   OSPLAT = X86 ;
 }
 else if $(HAM_TOOLSET_NAME) = msvc_10_x64 ||
-        $(HAM_TOOLSET_NAME) = msvc_11_x64
+        $(HAM_TOOLSET_NAME) = msvc_11_x64 ||
+        $(HAM_TOOLSET_NAME) = winrt_x64
 {
   OSPLAT = X64 ;
 }

@@ -3,7 +3,7 @@ if $(WINDOWS) = 1 {
 }
 SUFPCH = .pch ;
 
-CC_ADD_FLAGS = -Zc:forScope -W4 ;
+CC_ADD_FLAGS = -Zm200 -Zc:forScope -W4 ;
 if $(FLYMAKE) = 1 {
   CC_ADD_FLAGS += -WL ;
 }
