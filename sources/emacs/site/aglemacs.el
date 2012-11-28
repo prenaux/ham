@@ -958,10 +958,14 @@ LIST defaults to all existing live buffers."
 (defconst flymake-allowed-aq-file-name-masks '(
       ("\\.aq$" flymake-aq-init)
       ("\\.aqw$" flymake-aq-init)
-      ("\\.aqp$" flymake-aq-init))
+      ("\\.aqp$" flymake-aq-init)
+      ("\\.ni$" flymake-aq-init)
+      ("\\.niw$" flymake-aq-init)
+      ("\\.nip$" flymake-aq-init)
+      )
       "Filename extensions that switch on flymake-aq mode syntax checks")
 (defconst flymake-aq-err-line-pattern-re
-      '("^\\(.*\\)(\\([0-9]+\\)) : (col \\([0-9]+\\)) \\(.*\\)$" 1 2 3 4)
+      '("^E/[[:space:]]*\\(.*\\)(\\([0-9]+\\)) : (col \\([0-9]+\\)) \\(.*\\)$" 1 2 3 4)
       "Regexp matching aglScript error messages")
 
 (defun flymake-aq-init ()
@@ -970,7 +974,7 @@ LIST defaults to all existing live buffers."
          (local-file  (file-relative-name
                        temp-file
                        (file-name-directory buffer-file-name))))
-    (list (concat (getenv "NI_HOME") "/redist/bin/ni") (list "-b" "-e" local-file))))
+    (list (concat (getenv "WORK") "/niLang/bin/ni-flymake") (list "-e" local-file))))
 
 (defun flymake-aq-load ()
   (interactive)
