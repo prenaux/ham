@@ -78,10 +78,24 @@
       ;; Remove all non-existing files from the list
       (defun file-cache-clean ()
         (interactive)
-        (setq file-cache-alist
-              (remove-if (lambda (U)
-                           (not (file-exists-p (concat (car (cdr U)) (car U)))))
-                         file-cache-alist)))
+        (setq file-cache-alist (-file-cache-build-clean-list file-cache-alist)))
+
+      (defun -file-cache-build-clean-list (aItems)
+        (remove-if
+         (lambda (U) (eq U nil))
+         (loop for ITEM in aItems
+               collect (let ((file (car ITEM))
+                             (dirs (cdr ITEM)))
+                         (let ((existingDirs
+                                (agl-list-flatten (loop for d in dirs
+                                                        collect
+                                                        (let ((fileName (concat d file)))
+                                                          (cond
+                                                           ((file-exists-p fileName) d)
+                                                           (t nil)))))))
+                           (cond
+                            (existingDirs (agl-list-flatten (list file existingDirs)))
+                            (t nil)))))))
 
       (defun file-cache-save-cache-to-file (file)
         "Save contents of `file-cache-alist' to FILE.

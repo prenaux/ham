@@ -44,6 +44,18 @@
   (member switch command-line-args))
 
 ;;;======================================================================
+;;; Utils
+;;;======================================================================
+
+;; Flatten a list and remove all the nil elements
+(defun agl-list-flatten (mylist)
+  (cond
+   ((null mylist) nil)
+   ((atom mylist) (list mylist))
+   (t
+    (append (agl-list-flatten (car mylist)) (agl-list-flatten (cdr mylist))))))
+
+;;;======================================================================
 ;;; Versions
 ;;;======================================================================
 (agl-begin-time-block "Versions")
