@@ -12,7 +12,9 @@
             (setq truncate-lines nil))
           t)
 
-;; Change back the paragraph definition to be empty lines after a block of text
+;;--------------------------------------------------------------------------
+;; Change back the paragraph definition to be empty lines after a block of
+;; text
 (defmacro with-default-paragraph-definition (&rest body)
   "Evaluate body forms using the default definition of a paragraph."
   `(let ((paragraph-start (default-value 'paragraph-start))
@@ -43,8 +45,43 @@
 
 (add-hook 'org-mode-hook 'my-org-paragraph-overrides)
 
-(defun flatten(x)
-  (cond ((null x) nil)
-        ((listp x) (append (flatten (car x)) (flatten (cdr x))))
-        (t (list x))))
-
+;;--------------------------------------------------------------------------
+;; Easier nav
+(setq org-use-speed-commands t)
+(defun my-org-forward-and-preview ()
+    "Go to same level next heading and show preview in dedicated buffer"
+    (hide-subtree)
+    (org-speed-move-safe (quote outline-next-visible-heading))
+    (show-children)
+    (org-tree-to-indirect-buffer)
+    )
+(defun my-org-back-and-preview ()
+    "Go to same level previous heading and show preview in dedicated buffer"
+    (hide-subtree)
+    (org-speed-move-safe (quote outline-previous-visible-heading))
+    (show-children)
+    (org-tree-to-indirect-buffer)
+    )
+(defun my-org-up-back-and-preview ()
+    "Go to previous level heading and show preview in dedicated buffer"
+    (org-speed-move-safe (quote outline-up-heading))
+    (org-tree-to-indirect-buffer)
+    (hide-subtree)
+    )
+(defun my-org-up-forward-and-preview ()
+    "Go to previous level next heading and show preview in dedicated buffer"
+    (org-speed-move-safe (quote outline-up-heading))
+    (hide-subtree)
+    (org-speed-move-safe (quote outline-next-visible-heading))
+    (org-tree-to-indirect-buffer)
+    )
+(defun my-org-inside-and-preview ()
+    "Go to next level heading and show preview in dedicated buffer"
+    (org-speed-move-safe (quote outline-next-visible-heading))
+    (show-children)
+    (org-tree-to-indirect-buffer)
+    )
+(add-to-list 'org-speed-commands-user '("l" my-org-inside-and-preview))
+(add-to-list 'org-speed-commands-user '("j" my-org-forward-and-preview))
+(add-to-list 'org-speed-commands-user '("k" my-org-back-and-preview))
+(add-to-list 'org-speed-commands-user '("J" my-org-up-forward-and-preview))
