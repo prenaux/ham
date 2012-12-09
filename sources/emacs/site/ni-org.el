@@ -36,18 +36,8 @@
   (around my-org-backward-paragraph-advice activate)
   (with-default-paragraph-definition ad-do-it))
 
-(defun my-org-paragraph-overrides ()
-  "Use the default paragraph definitions in org-mode
-        when marking or moving by paragraph."
-  (local-set-key [remap mark-paragraph] 'my-org-mark-paragraph)
-  (local-set-key [remap forward-paragraph] 'my-org-forward-paragraph)
-  (local-set-key [remap backward-paragraph] 'my-org-backward-paragraph))
-
-(add-hook 'org-mode-hook 'my-org-paragraph-overrides)
-
 ;;--------------------------------------------------------------------------
 ;; Easier nav
-(setq org-use-speed-commands t)
 (defun my-org-forward-and-preview ()
     "Go to same level next heading and show preview in dedicated buffer"
     (hide-subtree)
@@ -81,7 +71,19 @@
     (show-children)
     (org-tree-to-indirect-buffer)
     )
-(add-to-list 'org-speed-commands-user '("l" my-org-inside-and-preview))
-(add-to-list 'org-speed-commands-user '("j" my-org-forward-and-preview))
-(add-to-list 'org-speed-commands-user '("k" my-org-back-and-preview))
-(add-to-list 'org-speed-commands-user '("J" my-org-up-forward-and-preview))
+
+;;--------------------------------------------------------------------------
+;; Org mode hook
+(defun my-org-mode-overrides ()
+  "Use the default paragraph definitions in org-mode
+        when marking or moving by paragraph."
+  (setq org-use-speed-commands t)
+  (add-to-list 'org-speed-commands-user '("l" my-org-inside-and-preview))
+  (add-to-list 'org-speed-commands-user '("j" my-org-forward-and-preview))
+  (add-to-list 'org-speed-commands-user '("k" my-org-back-and-preview))
+  (add-to-list 'org-speed-commands-user '("J" my-org-up-forward-and-preview))
+  (local-set-key [remap mark-paragraph] 'my-org-mark-paragraph)
+  (local-set-key [remap forward-paragraph] 'my-org-forward-paragraph)
+  (local-set-key [remap backward-paragraph] 'my-org-backward-paragraph))
+
+(add-hook 'org-mode-hook 'my-org-mode-overrides)
