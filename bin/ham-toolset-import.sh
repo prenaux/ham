@@ -14,7 +14,7 @@ toolset_dl() {
     export CWD=`pwd`
     export DIR=${HAM_HOME}/toolsets/$1
     export ARCH_URL1="http://localhost:8123/data/toolsets/$2.7z"
-    export ARCH_URL2="https://github.com/downloads/prenaux/ham/$2.7z"
+    export ARCH_URL2="https://bitbucket.org/prenaux/ham/downloads/$2.7z"
     export DLFILENAME="_$2.7z"
     cd ${DIR}
     if [ ! -e "$DLFILENAME" ]; then
