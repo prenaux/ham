@@ -7,6 +7,7 @@ CC_ADD_FLAGS = -Zm200 -Zc:forScope -W4 ;
 if $(FLYMAKE) = 1 {
   CC_ADD_FLAGS += -WL ;
 }
+
 CC_ADD_FLAGS +=
 # ERROR: warning C4172: returning address of local variable or temporary.
 -we4172

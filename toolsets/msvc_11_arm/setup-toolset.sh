@@ -59,11 +59,15 @@ export HAM_CL="\"$MSVCDIR/bin/x86_arm/cl.exe\""
 export HAM_LINK="\"$MSVCDIR/bin/x86_arm/link.exe\""
 export HAM_CROSS=
 
-VER="--- Microsoft Visual C++ ------------------------
+VER="--- Microsoft Visual C++ 11 arm -----------------"
+if [ "$FLYMAKE" != "1" ]; then
+    VER="$VER
 `cl 2>&1 >/dev/null`"
-if [ $? != 0 ]; then
-    echo "E/Can't get version."
-    return 1
+    if [ $? != 0 ]; then
+        echo "E/Can't get version."
+        return 1
+    fi
 fi
+
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

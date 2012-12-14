@@ -26,14 +26,18 @@ case $HAM_OS in
         ;;
 esac
 
-VER="--- java_jdk16 ------------------------
+VER="--- java_jdk16 ------------------------"
+if [ "$FLYMAKE" != "1" ]; then
+    VER="$VER
 --- java ---
 `java -version 2>&1`
 --- javac ---
 `javac -version 2>&1`"
-if [ $? != 0 ]; then
-    echo "E/Can't get version."
-    return 1
+    if [ $? != 0 ]; then
+        echo "E/Can't get version."
+        return 1
+    fi
 fi
+
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
