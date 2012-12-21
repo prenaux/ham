@@ -4,14 +4,15 @@
 case $HAM_OS in
     NT*)
         . ham-toolset-import.sh xslt_tools
-        MSVCDIR="`unxpath "$PROGRAMFILES\\Microsoft Visual Studio 11.0\\VC"`"
-        if [ -e "$MSVCDIR/bin/cl.exe" ]; then
-            echo "I/Default Toolset: Detected VS2012"
-            . ham-toolset-import.sh msvc_11_x86
-        else
+        ### We're using VS 2012 because VS 2012 **CANNOT** target WinXP ###
+        # MSVCDIR="`unxpath "$PROGRAMFILES\\Microsoft Visual Studio 11.0\\VC"`"
+        # if [ -e "$MSVCDIR/bin/cl.exe" ]; then
+            # echo "I/Default Toolset: Detected VS2012"
+            # . ham-toolset-import.sh msvc_11_x86
+        # else
             echo "I/Default Toolset: Using VC10 legacy package"
             . ham-toolset-import.sh msvc_10_x86
-        fi
+        # fi
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

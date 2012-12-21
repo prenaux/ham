@@ -1,1 +1,6 @@
 Import toolkit-cpp-msvc.ham ;
+
+# Disable "k:\work\nilang\sources\nilang\src\memoryallocator.cpp(286) :
+# warning C4481: nonstandard extension used: override specifier 'override'"
+CCFLAGS += -wd4481 ;
+C++FLAGS += -wd4481 ;
