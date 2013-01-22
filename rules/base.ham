@@ -1284,8 +1284,28 @@ rule Object
     case .s :
       As $(<) : $(>) ;
     case .rc :  ResourceCompiler $(<) : $(>) ;
+    case .ncc : Ncc $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
     case * :    UserObject $(<) : $(>) ;
   }
+}
+
+# nicc compiler
+rule Ncc
+{
+  local _h ;
+  _h = [ FDirName $(SUBDIR) $(>:BS=.ncc.hpp) ] ;
+  local _cpp ;
+  _cpp = [ FDirName $(SUBDIR) $(>:BS=.ncc.cxx) ] ;
+
+  Depends $(_cpp) $(_h) : $(>) ;
+  Includes $(_cpp) : $(_h) ;
+  C++ $(<) : $(_cpp) ;
+
+  RmTemps $(<) : $(_h) $(_cpp) ;
+}
+actions Ncc
+{
+  $(NICC_EXE) $(>)
 }
 
 # /ObjectOptimFlags  sources : flags ;
@@ -1384,7 +1404,7 @@ rule FTargetSuffix
     case .f : return $(SUFOBJ) ;
     case .s : return $(SUFOBJ) ;
     case .rc : return $(SUFOBJ) ;
-    case .acc : return $(SUFOBJ) ;
+    case .ncc : return $(SUFOBJ) ;
   }
   return $(<:S) ;
 }

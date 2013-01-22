@@ -225,6 +225,7 @@ the text to another HTML buffer."
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.acc\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.ncc\\'" . c++-mode))
 ;; (add-to-list 'auto-mode-alist '("\\.m\\'" . c-mode))
 
 (setq auto-mode-alist
@@ -997,6 +998,7 @@ LIST defaults to all existing live buffers."
  (push '(".+\\.cpp$" agl-flymake-cpp-make-init) flymake-allowed-file-name-masks)
  (push '(".+\\.cxx$" agl-flymake-cpp-make-init) flymake-allowed-file-name-masks)
  (push '(".+\\.acc$" agl-flymake-cpp-make-init) flymake-allowed-file-name-masks)
+ (push '(".+\\.ncc$" agl-flymake-cpp-make-init) flymake-allowed-file-name-masks)
  (push '(".+\\.hpp$" agl-flymake-cpp-make-init-tocpp) flymake-allowed-file-name-masks)
  (push '(".+\\.inl$" agl-flymake-cpp-make-init-tocpp) flymake-allowed-file-name-masks)
  (push '(".+\\.m$" agl-flymake-cpp-make-init) flymake-allowed-file-name-masks)
