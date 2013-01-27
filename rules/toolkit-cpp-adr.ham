@@ -1,0 +1,228 @@
+PICFLAGS = -fpic ;
+
+ANDROID_CC_ARGS =
+-g
+-fpic
+-fno-strict-aliasing
+-mthumb-interwork
+-ffunction-sections
+-funwind-tables
+-fstack-protector
+-fno-short-enums
+-fvisibility=hidden
+-D__ARM_ARCH_5__
+-D__ARM_ARCH_5T__
+-D__ARM_ARCH_5E__
+-D__ARM_ARCH_5TE
+-DANDROID
+-D__LITTLE_ENDIAN__
+-I$(ADR_DIR_NDK_USR)/include
+-finput-charset=UTF-8
+-Werror -Wall
+-Wno-psabi -Wno-trigraphs -Wno-sign-compare
+-Wno-unknown-pragmas -Wno-switch -Wno-comment
+-Wno-unused -Wno-uninitialized
+;
+
+ANDROID_CPP_ARGS +=
+-fno-rtti -fno-exceptions
+-Wno-reorder # Warnings valid for C++ only
+;
+
+ANDROID_LINK_BASE_ARGS +=
+-L$(ADR_DIR_NDK_USR)/lib
+-nostdlib
+;
+
+ANDROID_LINK_EXE_ARGS = $(ANDROID_LINK_BASE_ARGS)
+-ffunction-sections
+-fdata-sections
+-Bdynamic
+-Wl,-dynamic-linker,//system/bin/linker
+-Wl,--gc-sections
+-Wl,-z,nocopyreloc
+-Wl,--no-undefined
+-Wl,-rpath-link=$(ADR_DIR_NDK_USR)/lib
+$(ADR_DIR_NDK_USR)/lib/crtend_android.o
+$(ADR_DIR_NDK_USR)/lib/crtbegin_dynamic.o
+;
+
+ANDROID_LINK_DLL_ARGS = $(ANDROID_LINK_BASE_ARGS)
+-ffunction-sections
+-fdata-sections
+-Wl,--gc-sections
+-Wl,-z,nocopyreloc
+-Wl,--no-undefined
+-Wl,-shared,-Bsymbolic
+-Wl,--no-whole-archive
+-Wl,-rpath-link=$(ADR_DIR_NDK_USR)/lib
+;
+
+
+switch $(ADR_CPU_PROFILE)
+{
+    ## ARMv5TE no FPU
+  case ARMv5 :
+    ANDROID_CC_ARGS +=
+    -D__CPU_ARMv5__
+    -march=armv5te
+    -mtune=xscale
+    -msoft-float
+    -DaglAtomicC
+    -mthumb
+    ;
+    ## ARM6+ VFP (TC8900, Qualcomm 7227, ...)
+  case ARMv6 :
+    ANDROID_CC_ARGS +=
+    -D__CPU_ARMv6__
+    -march=armv6
+    -mfpu=vfp
+    -mfloat-abi=softfp
+    ;
+    ## ARM7A VFPv3 (Cortex A8, NVidia Tegra 2, HTC Desire, ...)
+  case ARMv7A :
+    ANDROID_CC_ARGS +=
+    -D__CPU_ARMv7A__
+    -march=armv7-a
+    -mfpu=vfpv3
+    -mfloat-abi=softfp
+    ;
+    ANDROID_LINK_BASE_ARGS = -Wl,--fix-cortex-a8 ;
+    ## ARM7N ARMV7A + NEON
+  case ARMv7N :
+    ANDROID_CC_ARGS +=
+    -D__CPU_ARMv7N__
+    -D__CPU_ARM_NEON__
+    -march=armv7-a
+    -mfpu=neon
+    -mfloat-abi=softfp
+    ;
+    ANDROID_LINK_BASE_ARGS = -Wl,--fix-cortex-a8 ;
+  case * :
+    Exit "Invalid Android CPU profile '"$(ADR_CPU_PROFILE)"' !" ;
+}
+
+SYSTEM_LINKLIBS = $(GCC_DIR)/lib/gcc/$(GCC_BASE)/$(GCC_VER)/libgcc.a -llog -lc -lstdc++ -lm -ldl ;
+
+CCFLAGS   ?= $(ANDROID_CC_ARGS) ;
+C++FLAGS  ?= $(CCFLAGS) $(ANDROID_CPP_ARGS) ;
+
+ANDROID_WARN_ARGS = -Wall ;
+SUFPCH = .h.gch ;
+
+### "Debug" (da) build flags ###
+ANDROID_DBG_ARGS = -g -O0 ;
+
+### Optimized (ra) build flags ###
+# Remark: fast-math is not compatible with SQLite, so can't be used ATM...
+# Remark2: -O2 doesn't produce a measurable gain in perf atm, but it does produce a larger library...
+if $(FLYMAKE) = 1 {
+  ANDROID_OPT_ARGS = -O0 ;
+}
+else {
+  ANDROID_OPT_ARGS = -Os -fomit-frame-pointer -finline-limit=120 ;
+}
+
+rule tkCC++Build
+{
+  LINKFLAGS on $(PKGTARGETF) += $(LINKFLAGS) ;
+  local t = $(<) ;
+  local strOpt = "" ;
+  # Set the optimization flags
+  if ! $(DEBUG) {
+    if $(NO_STRIP) != 1 {
+      LINKFLAGS on $(PKGTARGETF) += -Wl,-s ;
+    }
+    PKGOPTIM += $(ANDROID_OPT_ARGS) ;
+    strOpt += "(Optimized) " ;
+  }
+  # Set debug-only flags
+  else {
+    PKGOPTIM += $(ANDROID_DBG_ARGS) ;
+    strOpt += "(DebugOnly) " ;
+  }
+  logVerbose "- CC++Build: " $(strOpt) ;
+}
+
+rule tkC++Exceptions
+{
+  if $(ADREXCEPTIONS) != 1 {
+    # ECHO "Exceptions are not supported on Android." ;
+  }
+  else {
+    PKGOPTIM += -fexceptions ;
+  }
+  logVerbose "- C++ Exceptions" ;
+}
+
+rule tkCC++Warnings
+{
+  # 	  PKGOPTIM += -Wall ;
+  logVerbose "- C++ Warnings" ;
+}
+
+actions AGCC_C++PCH
+{
+  $(C++) -x c++-header -o $(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) $(>)
+}
+
+rule AGCC_C++PCH
+{
+  DEPENDS $(<) : $(>) ;
+  C++FLAGS on $(<) += $(C++FLAGS) $(SUBDIRC++FLAGS) ;
+  if $(PKGTYPE) = dll {
+    C++FLAGS on $(<) += $(PICFLAGS) ;
+  }
+  CCHDRS on $(<) = [ on $(<) FIncludes $(HDRS) ] ;
+  CCDEFS on $(<) = [ on $(<) FDefines $(DEFINES) ] ;
+}
+
+rule AGCC_BuildPCH
+{
+  Clean clean : $(<) ;
+
+  MakeLocate $(<) : $(LOCATE_TARGET) ;
+  SEARCH on $(>) = $(SEARCH_SOURCE) ;
+
+  HDRS on $(<) = $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) ;
+
+  HDRRULE on $(>) = HdrRule ;
+  HDRSCAN on $(>) = $(HDRPATTERN) ;
+  HDRSEARCH on $(>) = $(SEARCH_SOURCE:E) $(SUBDIRHDRS) $(HDRS) $(STDHDRS) ;
+
+  HDRGRIST on $(>) = $(HDRGRIST) ;
+
+  DEFINES on $(<) += $(DEFINES) ;
+
+  AGCC_C++PCH $(<) : $(>) ;
+}
+
+rule tkC++Pch
+{
+  local _src = [ FGristFiles $(3) ] ;
+  local _extrasrc = [ FGristFiles $(4) ] ;
+
+  local _pch = [ FGristFiles $(>:S=$(SUFPCH)) ] ;
+  local _pchTarget = [ FDirName $(LOCATE_TARGET) $(>:S=$(SUFPCH)) ] ;
+  local _cpp = [ FGristFiles $(>) ] ;
+  local _hdr = [ FGristFiles $(>:S=.h) ] ;
+  local _obj = $(_cpp:S=$(SUFOBJ)) ;
+  local _dir = $(_pchTarget:D) ;
+
+  MakeLocate $(_pch) : $(_dir) ;
+  AGCC_BuildPCH $(_pch) : $(_hdr) ;
+
+  DEPENDS $(<) : $(_pch) ;
+  NotFile $(<) ;
+  NoUpdate $(<) ;
+
+  Clean clean : $(_pch) ;
+  DEPENDS pch : $(<) ;
+
+  ObjectC++Flags $(_src) : -include $(_pchTarget:S=) ;
+  DEPENDS $(_src:S=$(SUFOBJ)) : $(<) $(_pch) $(_hdr) ;
+  DEPENDS $(_extrasrc:S=$(SUFOBJ)) : $(<) $(_pch) $(_hdr) ;
+
+  logVerbose "- PCH:" $(_pchTarget) ;
+  return $(_hdr:S=$(SUFPCH)) ;
+}

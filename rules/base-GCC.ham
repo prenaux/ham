@@ -1,0 +1,35 @@
+NT = 1 ;
+
+if ! $(GCC_EXE_BASE) {
+  EXIT "E/{GCC_EXE_BASE} not defined !" ;
+}
+if ! $(OSPLAT) {
+  EXIT "E/{OSPLAT} not defined !" ;
+}
+
+SLASH   ?= / ;
+SUFEXE  ?= .$(OSPLAT:L) ;
+SUFOBJ  ?= .o ;
+SUFLIB  ?= .a ;
+SUFDLL  ?= .so ;
+PREFIXDLL ?= lib ;
+CHMOD   ?= chmod ;
+
+C++FLAGS    ?= ;
+CCFLAGS     ?= ;
+
+if $(SYSROOT) {
+  CC ?= $(GCC_EXE_BASE)gcc --sysroot=$(SYSROOT) ;
+}
+else {
+  CC ?= $(GCC_EXE_BASE)gcc ;
+}
+C++  ?= $(CC) ;
+LINK ?= $(CC) ;
+AR   ?= $(GCC_EXE_BASE)ar -ru ;
+
+LINKFLAGS   ?= "" ;
+LINKLIBS    ?=  ;
+OPTIM       ?= "" ;
+STDHDRS     ?= ;
+UNDEFFLAG   ?= "-u _" ;

@@ -36,6 +36,7 @@ if $(BUILD_JNI) = 1 {
 LIBS_LOA = $(LOA_LINKER)-$(LOA_OS)-$(LOA_ARCH) ;
 BIN_LOA = $(LOA_OS)-$(LOA_ARCH) ;
 BUILD_BIN_LOA ?= $(BIN_LOA) ;
+BUILD_SUFEXE ?= $(SUFEXE) ;
 
 #----------------------------------------------------------------------
 #     DEFINES

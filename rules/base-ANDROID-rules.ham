@@ -1,0 +1,26 @@
+Import base-GCC-rules.ham ;
+
+actions together piecemeal Archive
+{
+  $(AR) $(<) $(>:T)
+}
+
+actions Cc
+{
+  $(CC) -c -o $(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) $(>)
+}
+
+actions C++
+{
+  $(C++) -c -o $(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) $(>)
+}
+
+actions Link bind NEEDLIBS
+{
+  $(LINK) $(LINKFLAGS) $(ANDROID_LINK_EXE_ARGS) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
+}
+
+actions DllLink bind IMPLIBNAME
+{
+  $(LINK) $(LINKFLAGS) $(ANDROID_LINK_DLL_ARGS) $(>) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
+}

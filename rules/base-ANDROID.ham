@@ -1,0 +1,8 @@
+if $(HAM_TOOLSET_NAME) = adr_22_arm {
+  OSPLAT = ARM ;
+}
+else {
+  EXIT "base-ANDROID: Unknown toolset name:" $(HAM_TOOLSET_NAME) ;
+}
+
+Import base-GCC.ham ;
