@@ -1,6 +1,7 @@
 #!/bin/bash
 . ham-bash-setenv.sh
 export BUILD_JNI=
+export HAM_C99=
 export HAM_TOOLSET_VERSIONS=""
 toolset_info() {
     echo "======================================================="

@@ -17,8 +17,17 @@ actions Archive {
   $(AR) -NOLOGO -WX:NO -out:$(<) $(>)
 }
 
-actions Cc {
-  $(CC) -c -Fo$(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) -Tc$(>)
+if $(HAM_C99) = gcc {
+  ECHO "I/MSVC: Using GCC for C99 code." ;
+  actions Cc
+  {
+    $(HAM_C99) -mno-stack-arg-probe -O2 -D_CRTIMP= -D__MINGW32__ -I${GCCDIR}/include -c -o $(<) $(C99_FLAGS) $(C99_OPTIM) $(CCDEFS) $(CCHDRS) $(>)
+  }
+}
+else {
+  actions Cc {
+    $(CC) -c -Fo$(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) -Tc$(>)
+  }
 }
 
 actions C++ {

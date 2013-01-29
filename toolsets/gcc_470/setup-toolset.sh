@@ -11,8 +11,6 @@ export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/gcc_470
 case $HAM_OS in
     NT*)
         export GCCDIR=${HAM_TOOLSET_DIR}/nt-x86
-        export INCLUDE=${GCCDIR}/include
-        export LIB=${GCCDIR}/lib
         export PATH=${GCCDIR}/bin:${PATH}
         if [ ! -e $GCCDIR ] || [ -z `type -P gcc` ]; then
             toolset_dl gcc_470 gcc_470_nt-x86
@@ -36,3 +34,5 @@ if [ $? != 0 ]; then
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
+
+export HAM_C99=gcc

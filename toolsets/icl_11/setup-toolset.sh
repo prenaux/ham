@@ -37,3 +37,5 @@ if [ $? != 0 ]; then
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
+
+HAM_C99=icl
