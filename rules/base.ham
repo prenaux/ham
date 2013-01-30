@@ -458,6 +458,7 @@ Import base-$(HAM_TOOLSET).ham ;
 #     General defaults; a lot like UNIX
 #----------------------------------------------------------------------
 PREFIXDLL ?= "" ;
+DLLIMPLIB ?= ;
 SUFDLLOBJ ?= $(SUFOBJ) ;
 SUFDLL    ?= $(SUFLIB) ;
 

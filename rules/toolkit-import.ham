@@ -35,7 +35,7 @@ rule tkImportGetDllPath {
     buildExt = $(BUILDEXT) ;
   }
   local srcTkDirBin = [ FDirName $(TK_SRC_WORK_DIR) $(<) bin $(BIN_LOA) ] ;
-  local srcPath = [ FDirName $(srcTkDirBin) $(>)_$(buildExt)$(SUFDLL) ] ;
+  local srcPath = [ FDirName $(srcTkDirBin) $(PREFIXDLL)$(>)_$(buildExt)$(SUFDLL) ] ;
   return $(srcPath) ;
 }
 

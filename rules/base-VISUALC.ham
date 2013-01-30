@@ -37,6 +37,7 @@ SUFLIB  ?= .lib ;
 SUFOBJ  ?= .obj ;
 SUFEXE  ?= .exe ;
 SUFDLL  ?= .dll ;
+DLLIMPLIB ?= 1 ;
 CHMOD   ?= chmod ;
 
 if ! $(HAM_CL) {

@@ -385,14 +385,22 @@ rule tkPkgLinkLibs {
 rule tkDepDll {
   local dir = $(3) ;
   dir ?= $(TK_DIR_BIN) ;
-  local l = [ FDirName $(dir) $(>)_$(BUILDEXT)$(SUFDLL) ] ;
+  local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFDLL) ] ;
   if ! ( $(NO_DEPS) = 1 ) {
     DEPENDS $(<) : $(l) ;
   }
 }
 
 rule tkLinkDll {
-  tkLinkLibs $(<) : $(>) ;
+  if $(DLLIMPLIB) = 1 {
+    tkLinkLibs $(<) : $(>) ;
+  }
+  else {
+    local dir = $(3) ;
+    dir ?= $(TK_DIR_BIN) ;
+    local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFDLL) ] ;
+    VarOnAddToFront LINKLIBS : $(<) : $(l) ;
+  }
   tkDepDll $(<) : $(>) : $(3) ;
 }
 
