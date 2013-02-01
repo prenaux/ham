@@ -32,6 +32,9 @@ if $(BUILD_JNI) = 1 {
   LOA_ARCH = $(LOA_ARCH)j ;
   DEFINES += _BUILD_JNI ;
 }
+if $(RTCPP) = 1 {
+  DEFINES += _RTCPP ;
+}
 
 LIBS_LOA = $(LOA_LINKER)-$(LOA_OS)-$(LOA_ARCH) ;
 BIN_LOA = $(LOA_OS)-$(LOA_ARCH) ;

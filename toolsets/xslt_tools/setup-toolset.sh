@@ -41,7 +41,7 @@ export PATH=${HAM_TOOLSET_DIR}:${PATH}
 
 # version
 VER="--- xslt_tools_1 ----------------------"
-if [ "$FLYMAKE" != "1" ]; then
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
     VER="$VER
 --- xsltproc ---
 `xsltproc --version | grep xsltproc`

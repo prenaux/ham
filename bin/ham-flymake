@@ -1,4 +1,5 @@
 #!/bin/bash
 export FLYMAKE=1
+export HAM_NO_VER_CHECK=1
 time ham -Tdefault $*
 true

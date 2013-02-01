@@ -72,19 +72,24 @@ do
             # echo "_ARG_TOOLSET:" $_ARG_TOOLSET
             ;;
         D)
-            _ARG_DIRECTORY="`unxpath $WORK/$OPTARG/sources`"
-            if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                _ARG_DIRECTORY="`unxpath ${OPTARG}sources`"
+            if  [[ "$OPTARG" == ?:/* ]] || [[ "$OPTARG" == /* ]] || [[ "$OPTARG" == .* ]] ;
+            then
+                # Explicit path
+                _ARG_DIRECTORY="$OPTARG/sources/"
                 if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                    _ARG_DIRECTORY="`unxpath $OPTARG/sources`"
+                    _ARG_DIRECTORY="$OPTARG"
                     if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                        _ARG_DIRECTORY="`unxpath $OPTARG`"
-                        if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                            echo "E/Can't find directory '$OPTARG'"
-                            usage
-                        fi
+                        echo "E/Can't find directory '$_ARG_DIRECTORY'"
+                        usage
                     fi
                 fi
+            else
+                # Work App path
+                _ARG_DIRECTORY="$WORK/$OPTARG/sources/"
+            fi
+            if [[ ! -e "$_ARG_DIRECTORY" ]]; then
+                echo "E/Can't find directory '$_ARG_DIRECTORY'"
+                usage
             fi
             _ARG_DIRECTORIES+=($_ARG_DIRECTORY)
             ;;

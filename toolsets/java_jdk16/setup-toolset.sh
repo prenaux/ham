@@ -27,7 +27,7 @@ case $HAM_OS in
 esac
 
 VER="--- java_jdk16 ------------------------"
-if [ "$FLYMAKE" != "1" ]; then
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
     VER="$VER
 --- java ---
 `java -version 2>&1`

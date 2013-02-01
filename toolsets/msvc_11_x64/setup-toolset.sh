@@ -60,7 +60,7 @@ export HAM_LINK="\"$MSVCDIR/bin/x86_amd64/link.exe\""
 export HAM_CROSS=
 
 VER="--- Microsoft Visual C++ 11 x64 -----------------"
-if [ "$FLYMAKE" != "1" ]; then
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
     VER="$VER
 `cl 2>&1 >/dev/null`"
     if [ $? != 0 ]; then
