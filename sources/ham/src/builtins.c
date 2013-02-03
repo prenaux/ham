@@ -73,6 +73,8 @@ LIST *builtin_subst_literalize( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_math( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_split( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_absolutepath( PARSE *parse, LOL *args, int *jmp );
+LIST *builtin_strafter( PARSE *parse, LOL *args, int *jmp );
+LIST *builtin_strafteri( PARSE *parse, LOL *args, int *jmp );
 
 int glob( const char *s, const char *c );
 
@@ -171,6 +173,11 @@ load_builtins()
 	bindrule( "GetAbsolutePath" )->procedure =
         bindrule( "GETABSOLUTEPATH" )->procedure =
 		parse_make( builtin_absolutepath, P0, P0, P0, C0, C0, 0 );
+
+	bindrule( "StrAfter" )->procedure =
+		parse_make( builtin_strafter, P0, P0, P0, C0, C0, 0 );
+	bindrule( "StrAfterI" )->procedure =
+		parse_make( builtin_strafteri, P0, P0, P0, C0, C0, 0 );
 }
 
 /*
@@ -800,4 +807,84 @@ builtin_absolutepath(
 
 	buffer_free( &buff );
     return  result;
+}
+
+/*
+ * builtin_strafter()
+ */
+
+LIST *
+builtin_strafter(
+	PARSE	*parse,
+	LOL	*args,
+	int	*jmp )
+{
+	LIST *liststring;
+	LIST *result = 0;
+	LIST *pattern = lol_get( args, 1 );
+    int patternLen = strlen(pattern->string), stringLen;
+
+	/* For each string */
+
+	for( liststring = lol_get( args, 0 ); liststring; liststring = liststring->next )
+	{
+		BUFFER buff;
+		buffer_init( &buff );
+
+        stringLen = strlen(liststring->string);
+        if (stringLen >= patternLen &&
+            strncmp(liststring->string,pattern->string,patternLen) == 0)
+        {
+            buffer_addstring(&buff,liststring->string+patternLen,stringLen-patternLen);
+        }
+        else {
+            buffer_addstring(&buff,liststring->string,stringLen);
+        }
+        buffer_addchar( &buff, 0 );
+
+		result = list_new( result, buffer_ptr( &buff ), 0 );
+		buffer_free( &buff );
+	}
+
+	return result;
+}
+
+/*
+ * builtin_strafteri()
+ */
+
+LIST *
+builtin_strafteri(
+	PARSE	*parse,
+	LOL	*args,
+	int	*jmp )
+{
+	LIST *liststring;
+	LIST *result = 0;
+	LIST *pattern = lol_get( args, 1 );
+    int patternLen = strlen(pattern->string), stringLen;
+
+	/* For each string */
+
+	for( liststring = lol_get( args, 0 ); liststring; liststring = liststring->next )
+	{
+		BUFFER buff;
+		buffer_init( &buff );
+
+        stringLen = strlen(liststring->string);
+        if (stringLen >= patternLen &&
+            strnicmp(liststring->string,pattern->string,patternLen) == 0)
+        {
+            buffer_addstring(&buff,liststring->string+patternLen,stringLen-patternLen);
+        }
+        else {
+            buffer_addstring(&buff,liststring->string,stringLen);
+        }
+        buffer_addchar( &buff, 0 );
+
+		result = list_new( result, buffer_ptr( &buff ), 0 );
+		buffer_free( &buff );
+	}
+
+	return result;
 }
