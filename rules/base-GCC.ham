@@ -1,5 +1,3 @@
-NT = 1 ;
-
 if ! $(GCC_EXE_BASE) {
   EXIT "E/{GCC_EXE_BASE} not defined !" ;
 }

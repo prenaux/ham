@@ -9,6 +9,8 @@ toolset_import java_jdk16
 if [ $? != 0 ]; then return 1; fi
 toolset_import python_26
 if [ $? != 0 ]; then return 1; fi
+toolset_import xslt_tools
+if [ $? != 0 ]; then return 1; fi
 
 # toolset
 export HAM_TOOLSET_IS_SETUP_EMSCRIPTEN=1

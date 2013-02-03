@@ -1,0 +1,21 @@
+OSPLAT = JS ;
+
+SLASH   ?= / ;
+SUFEXE  ?= .html ;
+SUFOBJ  ?= .o ;
+SUFLIB  ?= .a ;
+SUFDLL  ?= .so ;
+
+CCFLAGS  = -DJSCC -D__JSCC__ -D__JSCC_WEB__ -fvisibility=hidden ;
+C++FLAGS = $(CCFLAGS) -fno-rtti -fno-exceptions ;
+
+CC   ?= emcc ;
+C++  ?= em++ ;
+LINK ?= em++ ;
+AR   ?= emar ru ;
+
+LINKFLAGS   ?= "" ;
+LINKLIBS    ?=  ;
+OPTIM       ?= "" ;
+STDHDRS     ?= ;
+UNDEFFLAG   ?= "-u _" ;

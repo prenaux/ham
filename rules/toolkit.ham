@@ -19,7 +19,7 @@ Import redist.ham ;
 AssertVarDefined HAM_TOOLSET_NAME ;
 AssertVarDefined HAM_TOOLSET_VER ;
 
-TK_ENV_FILE = toolkit-$(HAM_TOOLSET_NAME).ham ;
+TK_ENV_FILE = toolkit-base-$(HAM_TOOLSET_NAME).ham ;
 Import $(TK_ENV_FILE) : "E/Can't find toolkit's configuration for toolset:" $(TK_ENV_FILE:B:S) ;
 
 #----------------------------------------------------------------------
@@ -68,6 +68,7 @@ if $(FEATURES) = "" {
   FEATURES = ;
 }
 if $(EMBEDDED) = 1 {
+  DEFINES += niEmbedded ;
   FEATURES ?= 20 ;
 }
 else {
@@ -683,7 +684,9 @@ rule tkBuildPackage
       OPT_NOOPT = 1 ;
     # Copy the implib of DLLs to the library output folder (NT only)
     case implib :
-      _implib = 1 ;
+      if ! $(NO_DLL) = 1 {
+        _implib = 1 ;
+      }
     # Dont copy the output in the redist directory
     case noredist :
       _cpredist = 0 ;
