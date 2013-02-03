@@ -124,6 +124,8 @@ TK_DIR_LIBS ?= [ FDirName $(TK_DIR) libs $(LIBS_LOA) ] ;
 logVar TK_DIR_LIBS ;
 MakeLocate tkdir : $(TK_DIR_LIBS) ;
 
+TK_DIR_JARS ?= [ FDirName $(TK_DIR_LIBS) jars ] ;
+
 NOTFILE tkdir ;
 NOUPDATE tkdir ;
 NOTFILE tkimport ;
@@ -576,6 +578,14 @@ rule tkDefTool
     for _l in $(3) {
       tkLinkLibs $(PKGTARGET) : $(_l) ;
     }
+  }
+}
+
+# tkDefJar lib_name : version ;
+rule tkDefJar
+{
+  if $(BUILD_JNI) = 1 {
+    tkDefPackage $(1) : $(2) : jar : $(TK_DIR_JARS) ;
   }
 }
 

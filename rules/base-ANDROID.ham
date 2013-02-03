@@ -6,3 +6,19 @@ else {
 }
 
 Import base-GCC.ham ;
+
+if $(ADR_LLVM_VERSION) {
+  ECHO "# Using LLVM for Android build." ;
+
+  LLVM_TRIPLE = armv7-none-linux-androideabi ;
+  CC = clang ;
+  C++ = clang++ ;
+  LINK = clang ;
+
+  CCFLAGS = -gcc-toolchain $(GCC_DIR) -target $(LLVM_TRIPLE) ;
+  C++FLAGS = -gcc-toolchain $(GCC_DIR) -target $(LLVM_TRIPLE) ;
+  LINKFLAGS = -gcc-toolchain $(GCC_DIR) -no-canonical-prefixes -target $(LLVM_TRIPLE) ;
+}
+else {
+  ECHO "# Using GCC for Android build." ;
+}

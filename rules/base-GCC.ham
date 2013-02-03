@@ -16,12 +16,7 @@ CHMOD   ?= chmod ;
 C++FLAGS    ?= ;
 CCFLAGS     ?= ;
 
-if $(SYSROOT) {
-  CC ?= $(GCC_EXE_BASE)gcc --sysroot=$(SYSROOT) ;
-}
-else {
-  CC ?= $(GCC_EXE_BASE)gcc ;
-}
+CC ?= $(GCC_EXE_BASE)gcc ;
 C++  ?= $(CC) ;
 LINK ?= $(CC) ;
 AR   ?= $(GCC_EXE_BASE)ar -ru ;

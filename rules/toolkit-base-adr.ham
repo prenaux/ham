@@ -17,3 +17,5 @@ DEFINES += niPosix ANDROID ;
 POSIX = 1 ;
 ANDROID = 1 ;
 EMBEDDED = 1 ;
+NO_PCH = 1 ;
+NO_EXCEPTION = 1 ;

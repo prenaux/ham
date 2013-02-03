@@ -2,9 +2,8 @@ PICFLAGS = -fpic ;
 
 ANDROID_CC_ARGS =
 -g
--fpic
+$(PICFLAGS)
 -fno-strict-aliasing
--mthumb-interwork
 -ffunction-sections
 -funwind-tables
 -fstack-protector
@@ -17,14 +16,31 @@ ANDROID_CC_ARGS =
 -DANDROID
 -D__LITTLE_ENDIAN__
 -I$(ADR_DIR_NDK_USR)/include
--finput-charset=UTF-8
 -Werror -Wall
 -Wno-psabi -Wno-trigraphs -Wno-sign-compare
 -Wno-unknown-pragmas -Wno-switch -Wno-comment
 -Wno-unused -Wno-uninitialized
+-Wno-narrowing
 ;
 
+if $(ADR_LLVM_VERSION) {
+  ANDROID_CC_ARGS +=
+    -D__CLANG__
+    -mthumb
+    -Wno-return-type-c-linkage
+    -Wno-tautological-compare
+  ;
+}
+else {
+  ANDROID_CC_ARGS +=
+    -mthumb-interwork
+    -finput-charset=UTF-8
+  ;
+}
+
 ANDROID_CPP_ARGS +=
+-Wno-conversion-null
+-std=c++11
 -fno-rtti -fno-exceptions
 -Wno-reorder # Warnings valid for C++ only
 ;
@@ -102,10 +118,10 @@ switch $(ADR_CPU_PROFILE)
     Exit "Invalid Android CPU profile '"$(ADR_CPU_PROFILE)"' !" ;
 }
 
-SYSTEM_LINKLIBS = $(GCC_DIR)/lib/gcc/$(GCC_BASE)/$(GCC_VER)/libgcc.a -llog -lc -lstdc++ -lm -ldl ;
+SYSTEM_LINKLIBS = $(ADR_LIBGCC_PATH) -llog -lc -lstdc++ -lm -ldl ;
 
-CCFLAGS   ?= $(ANDROID_CC_ARGS) ;
-C++FLAGS  ?= $(CCFLAGS) $(ANDROID_CPP_ARGS) ;
+CCFLAGS   += $(ANDROID_CC_ARGS) ;
+C++FLAGS  += $(ANDROID_CC_ARGS) $(ANDROID_CPP_ARGS) ;
 
 ANDROID_WARN_ARGS = -Wall ;
 SUFPCH = .h.gch ;
@@ -120,7 +136,12 @@ if $(FLYMAKE) = 1 {
   ANDROID_OPT_ARGS = -O0 ;
 }
 else {
-  ANDROID_OPT_ARGS = -Os -fomit-frame-pointer -finline-limit=120 ;
+  if $(ADR_LLVM_VERSION) {
+    ANDROID_OPT_ARGS += -Os -fomit-frame-pointer ;
+  }
+  else {
+    ANDROID_OPT_ARGS = -Os -fomit-frame-pointer -finline-limit=120 ;
+  }
 }
 
 rule tkCC++Build
@@ -225,4 +246,10 @@ rule tkC++Pch
 
   logVerbose "- PCH:" $(_pchTarget) ;
   return $(_hdr:S=$(SUFPCH)) ;
+}
+
+rule tkNoC++Exceptions {
+}
+
+rule tkCC++Lint {
 }
