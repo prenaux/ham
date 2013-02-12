@@ -180,6 +180,7 @@
                     "[.]DDS$"
                     "[.]scene$"
                     "[.]ach$"
+                    "[.]swf$"
                     ))
         (add-to-list 'file-cache-filter-regexps pat))
 
