@@ -2268,6 +2268,20 @@ rule GlobSrc
   return $(r) ;
 }
 
+# DataGlob BASEDIR : SUBDIR : EXTENSIONS
+rule DataGlob {
+  return [ GlobSrcWithDir [ FDirName $(1) $(2) ] : $(3) ] ;
+}
+
+# DataList BASEDIR : SUBDIR : FILES
+rule DataList {
+  local r = ;
+  for _s in $(3) {
+    r += [ FDirName $(1) $(2) $(_s) ] ;
+  }
+  return $(r) ;
+}
+
 # TargetLinkLibs TARGET : LIBS ;
 rule TargetLinkLibs
 {
