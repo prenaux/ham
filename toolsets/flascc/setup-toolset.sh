@@ -10,7 +10,7 @@ export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=flascc
 export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/flascc
 
-export JAVA_HOME=${HAM_TOOLSET_DIR}/nt-x86/jre
+export JAVA_HOME=${HAM_TOOLSET_DIR}/nt-x86/jre64
 export PATH=${JAVA_HOME}/bin:${PATH}
 
 export FLEX=${HAM_TOOLSET_DIR}/flex_sdk
@@ -21,7 +21,7 @@ export GCCDIR=${HAM_TOOLSET_DIR}/nt-x86/sdk/usr
 # path setup
 case $HAM_OS in
     NT*)
-        export PATH=${GCCDIR}/bin:${PATH}:${FLASCC_ROOT}/bin:${FLASCC_ROOT}/cygwin/bin
+        export PATH=${GCCDIR}/bin:${PATH}:${FLASCC_ROOT}/bin:${FLASCC_ROOT}/cygwin/bin:${FLEX}/bin:${FLASCC_ROOT}/mtasc:${FLASCC_ROOT}/libming/bin
         if [ ! -e $GCCDIR ] || [ -z `type -P gcc` ]; then
             toolset_dl flascc flascc_nt-x86
             if [ ! -e $GCCDIR ] || [ -z `type -P gcc` ]; then
