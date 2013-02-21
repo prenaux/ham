@@ -187,6 +187,7 @@ class ASConsole
 		string targetDirectory;             // path to the directory being processed
 		string targetFilename;              // file name being processed
 
+		string excludeWildcard;				// exclude wildcard from wildcard hits
 		vector<string> excludeVector;       // exclude from wildcard hits
 		vector<bool>   excludeHitsVector;   // exclude flags for eror reporting
 		vector<string> fileNameVector;      // file paths and names from the command line
@@ -230,6 +231,7 @@ class ASConsole
 		bool fileNameVectorIsEmpty();
 		int  getFilesFormatted();
 		int  getFilesUnchanged();
+		const string& getExcludeWildcard();
 		bool getIgnoreExcludeErrors();
 		bool getIgnoreExcludeErrorsDisplay();
 		bool getIsFormattedOnly();
@@ -247,6 +249,7 @@ class ASConsole
 		bool getPreserveDate();
 		void processFiles();
 		void processOptions(vector<string>& argvOptions);
+		void setExcludeWildcard(const string& aExcludeWildcard);
 		void setIgnoreExcludeErrors(bool state);
 		void setIgnoreExcludeErrorsAndDisplay(bool state);
 		void setIsFormattedOnly(bool state);

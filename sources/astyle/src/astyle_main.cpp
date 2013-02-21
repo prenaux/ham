@@ -604,6 +604,9 @@ int ASConsole::getFilesUnchanged()
 int ASConsole::getFilesFormatted()
 { return filesFormatted; }
 
+const string& ASConsole::getExcludeWildcard()
+{ return excludeWildcard; }
+
 bool ASConsole::getIgnoreExcludeErrors()
 { return ignoreExcludeErrors; }
 
@@ -713,6 +716,9 @@ FileEncoding ASConsole::readFile(const string& fileName_, stringstream& in) cons
 	fin.close();
 	return encoding;
 }
+
+void ASConsole::setExcludeWildcard(const string& aExcludeWildcard)
+{ excludeWildcard = aExcludeWildcard; }
 
 void ASConsole::setIgnoreExcludeErrors(bool state)
 { ignoreExcludeErrors = state; }
@@ -1258,6 +1264,28 @@ bool ASConsole::isPathExclued(const string& subPath)
 {
 	bool retVal = false;
 
+    if (!excludeWildcard.empty()) {
+		string test;
+
+		size_t findSep = subPath.rfind('/');
+		if (findSep != string::npos) {
+			test = subPath.substr(findSep+1);
+		}
+		else {
+			findSep = subPath.rfind('\\');
+			if (findSep != string::npos) {
+				test = subPath.substr(findSep+1);
+			}
+			else {
+				test = subPath;
+			}
+		}
+
+		int res = wildcmp(excludeWildcard.c_str(),test.c_str());
+        if (res)
+            return true;
+    }
+
 	// read the exclude vector checking for a match
 	for (size_t i = 0; i < excludeVector.size(); i++)
 	{
@@ -1594,6 +1622,9 @@ void ASConsole::printHelp() const
 	(*_err) << endl;
 	(*_err) << "    --exclude=####\n";
 	(*_err) << "    Specify a file or directory #### to be excluded from processing.\n";
+	(*_err) << endl;
+	(*_err) << "    --wexclude=####\n";
+	(*_err) << "    Specify a wildcard pattern to be excluded from processing.\n";
 	(*_err) << endl;
 	(*_err) << "    ignore-exclude-errors  OR  -i\n";
 	(*_err) << "    Allow processing to continue if there are errors in the exclude=###\n";
@@ -2846,6 +2877,11 @@ void ASOptions::parseOption(const string& arg, const string& errorInfo)
 		string suffixParam = getParam(arg, "exclude=");
 		if (suffixParam.length() > 0)
 			g_console->updateExcludeVector(suffixParam);
+	}
+	else if ( isParamOption(arg, "wexclude=") )
+	{
+		string suffixParam = getParam(arg, "wexclude=");
+        g_console->setExcludeWildcard(suffixParam);
 	}
 	else if ( isOption(arg, "r", "R") || isOption(arg, "recursive") )
 	{
