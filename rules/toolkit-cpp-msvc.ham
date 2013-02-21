@@ -40,6 +40,8 @@ CC_ADD_FLAGS +=
 # DISABLE: warning C4244: 'initializing' : conversion from '' to 'xxx', possible loss of data.
 # Enum to int generates the warning.
 -wd4244
+# warning C4819: The file contains a character that cannot be represented in the current code page (936).
+-wd4819
 # DISABLE: warning C6384: Dividing sizeof a pointer by another value.
 # COUNT_OF() generates the warning.
 -wd6384
