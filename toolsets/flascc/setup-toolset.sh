@@ -21,7 +21,7 @@ export GCCDIR=${HAM_TOOLSET_DIR}/nt-x86/sdk/usr
 # path setup
 case $HAM_OS in
     NT*)
-        export PATH=${GCCDIR}/bin:${PATH}:${FLASCC_ROOT}/bin:${FLASCC_ROOT}/cygwin/bin:${FLEX}/bin:${FLASCC_ROOT}/mtasc:${FLASCC_ROOT}/libming/bin
+        export PATH=${GCCDIR}/bin:${PATH}:${FLASCC_ROOT}/bin:${FLASCC_ROOT}/cygwin/bin:${FLEX}/bin:${FLASCC_ROOT}/mtasc:${FLASCC_ROOT}/libming/bin:${FLEX}/runtimes/player/11.1/win
         if [ ! -e $GCCDIR ] || [ -z `type -P gcc` ]; then
             toolset_dl flascc flascc_nt-x86
             if [ ! -e $GCCDIR ] || [ -z `type -P gcc` ]; then
