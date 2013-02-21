@@ -1,0 +1,2 @@
+#!bash
+astyle -R --options=none --mode=c --style=java --break-closing-brackets --align-pointer=type --align-reference=type --lineend=linux --indent=tab=4 --wexclude="_*.*" --pad-header "*.c" "*.cpp"  "*.cc" "*.cxx" "*.ncc" "*.h" "*.hh" "*.hpp" "*.hxx"
