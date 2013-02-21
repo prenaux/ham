@@ -1218,7 +1218,7 @@ void ASConsole::getFilePaths(string& filePath)
 		fprintf(stderr, _("No file to process %s\n"), filePath.c_str());
 		if (hasWildcard && !isRecursive)
 			fprintf(stderr, "%s\n", _("Did you intend to use --recursive"));
-		error();
+		//error();
 	}
 
 	if (hasWildcard)
