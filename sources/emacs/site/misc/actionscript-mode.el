@@ -1,7 +1,7 @@
 ;;; as3-mode.el --- A simple mode for editing Actionscript 3 files
- 
+
 ;; Copyright (C) 2008 Austin Haas
- 
+
 ;; Author: Austin Haas
 ;; Keywords: language modes
 
@@ -12,17 +12,17 @@
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 2, or (at your option)
 ;; any later version.
- 
+
 ;; This file is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 ;; GNU General Public License for more details.
- 
+
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs; see the file COPYING. If not, write to
 ;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
- 
+
 ;;; Commentary:
 ;;
 ;;------------------
@@ -92,14 +92,14 @@
 	'("#include" "#define" "#else" "#endif" "#ifdef" "#ifndef"))
 
 ;; Constants
-(defconst actionscript-constant-kwds 
+(defconst actionscript-constant-kwds
 	'("true" "false" "null" "undefined" "NaN" "Infinity" "-Infinity"))
 
 ;; Global funcs
 (defconst actionscript-global-funcs
-  '("Array" "Boolean" "decodeURI" "decodeURIComponent" "encodeURI" 
+  '("Array" "Boolean" "decodeURI" "decodeURIComponent" "encodeURI"
 		"encodeURIComponent" "escape" "int" "isFinite" "isNaN" "isXMLName"
-		"Number" "Object"	"parseFloat" "parseInt"	"String" "trace" "uint" 
+		"Number" "Object"	"parseFloat" "parseInt"	"String" "trace" "uint"
 		"unescape" "XML" "XMLList"))
 
 ;; Top Level Classes
@@ -116,12 +116,12 @@
 
 ;; Operators
 (defconst actionscript-symbol-operators
-	'("+" "+=" "[]" "=" "&" "&=" "<<" "<<=" 
-		"~" "|" "|=" ">>" ">>=" ">>>" ">>>=" 
-		"^" "^=" "/*" "*/" "," "?:" "--" "/" 
-		"/=" "." "==" ">" ">=" "++" "!=" "<>" 
-		"<" "<=" "//" "&&" "!" "||" "%" "%=" 
-		"*" "*=" "{}" "()" "===" "!==" "\"" 
+	'("+" "+=" "[]" "=" "&" "&=" "<<" "<<="
+		"~" "|" "|=" ">>" ">>=" ">>>" ">>>="
+		"^" "^=" "/*" "*/" "," "?:" "--" "/"
+		"/=" "." "==" ">" ">=" "++" "!=" "<>"
+		"<" "<=" "//" "&&" "!" "||" "%" "%="
+		"*" "*=" "{}" "()" "===" "!==" "\""
 		"-" "-=" ":"))
 
 (defconst actionscript-word-operators
@@ -132,7 +132,7 @@
   '("override" "instrinsic" "private" "protected" "public" "static" "dynamic"))
 
 ;; Class/struct declaration keywords.
-(defconst actionscript-class-kwds 
+(defconst actionscript-class-kwds
 	'("class" "interface"))
 
 (defconst actionscript-package-kwds
@@ -147,7 +147,7 @@
 	'("var" "function" "const"))
 
 ;; Keywords that occur in declaration-level constructs.
-(defconst actionscript-decl-level-kwds 
+(defconst actionscript-decl-level-kwds
 	'("extends" "implements"))
 
 ;; Conditionals
@@ -165,11 +165,11 @@
   '("break" "continue" "return" "throw"))
 
 ;; Keywords introducing labels in blocks.
-(defconst actionscript-label-kwds 
+(defconst actionscript-label-kwds
 	'("case" "default"))
 
 ;; Keywords that can occur anywhere in expressions.
-(defconst actionscript-expr-kwds 
+(defconst actionscript-expr-kwds
 	'("super"))
 
 ;; Other keywords that we haven't grouped properly.
@@ -231,25 +231,25 @@
 (defvar actionscript-font-lock-default-face 'actionscript-font-lock-default-face)
 
 (let ((red "#a35757")
-			(green "#7ac470")
-			(yellow "#dfe14e")
-			(orange "#ef6d22")
-			(blue "#5083b2")
-			(magenta "#b781ac")
-			(cyan "#b0b5d2")
-			(white "#f0f0f0"))
+      (green "#7ac470")
+      (yellow "#afb11e")
+      (orange "#ef6d22")
+      (blue "#5083b2")
+      (magenta "#b781ac")
+      (cyan "#b0b5d2")
+      (white "#f0f0f0"))
 
-	(defface actionscript-preprocessor-kwds-face 
+	(defface actionscript-preprocessor-kwds-face
 			`((t (:foreground ,yellow)))
 		"*Face for preprocesor directives."
 		:group 'actionscript-faces :group 'faces)
 
-	(defface actionscript-constant-kwds-face 
+	(defface actionscript-constant-kwds-face
 			`((t (:foreground ,cyan)))
 		"*"
 		:group 'actionscript-faces :group 'faces)
 
-	(defface actionscript-global-funcs-face 
+	(defface actionscript-global-funcs-face
 			`((t (:foreground ,red)))
 		"*"
 		:group 'actionscript-faces :group 'faces)
@@ -259,42 +259,42 @@
 		"*"
 		:group 'actionscript-faces :group 'faces)
 
-	(defface actionscript-global-props-face 
+	(defface actionscript-global-props-face
 			`((t (:foreground ,blue)))
 		"*"
 		:group 'actionscript-faces :group 'faces)
 
-	(defface actionscript-operators-face 
+	(defface actionscript-operators-face
 			`((t (:foreground ,yellow)))
 		"*"
 		:group 'actionscript-faces :group 'faces)
 
-	(defface actionscript-specifier-kwds-face 
+	(defface actionscript-specifier-kwds-face
 			`((t (:foreground ,magenta)))
 		"*"
 		:group 'actionscript-faces :group 'faces)
 
-	(defface actionscript-package-kwds-face 
+	(defface actionscript-package-kwds-face
 			`((t (:foreground ,yellow)))
 		"*"
 		:group 'actionscript-faces :group 'faces)
 
-	(defface actionscript-class-kwds-face 
+	(defface actionscript-class-kwds-face
 			`((t (:foreground ,yellow)))
 		"*"
 		:group 'actionscript-faces :group 'faces)
 
-	(defface actionscript-other-decl-kwds-face 
+	(defface actionscript-other-decl-kwds-face
 			`((t (:foreground ,yellow)))
 		"*"
 		:group 'actionscript-faces :group 'faces)
 
-	(defface actionscript-other-decl-2-kwds-face 
+	(defface actionscript-other-decl-2-kwds-face
 			`((t (:foreground ,blue)))
 		"* function, var"
 		:group 'actionscript-faces :group 'faces)
 
-	(defface actionscript-decl-level-kwds-face 
+	(defface actionscript-decl-level-kwds-face
 			`((t (:foreground ,yellow)))
 		"*"
 		:group 'actionscript-faces :group 'faces)
@@ -377,7 +377,7 @@
   (append
    actionscript-font-lock-keywords-1
 	 ;;;; The rules in this section highlight words in the buffer by determining their context.
-	 (list 
+	 (list
 		;; Fontify package names in import directives.
 		;; TODO: support '*' as the last symbol in the package name.
 		(list (concat (regexp-opt actionscript-other-decl-kwds 'words) "[ \t]*\\(?:" actionscript-identifier-re "\\.\\)*\\(" actionscript-identifier-re "\\)?")
@@ -570,7 +570,7 @@ is omitted, the regexp will match any class attribute."
 ;; --------------------------------------------------------------------------------
 
 ;; Indentation (by Aemon Cannon: http://github.com/aemoncannon/as3-mode/tree/master/as3-mode.el)
- 
+
 (defun actionscript-indent-line ()
   "Indent current line of As3 code."
   (interactive)
@@ -587,18 +587,18 @@ is omitted, the regexp will match any class attribute."
   (progn
    (as3-maybe-skip-leading-close-delim)
    (+ (current-indentation) (* standard-indent (as3-count-scope-depth (point) pos))))))))
- 
+
 (defun as3-maybe-skip-leading-close-delim ()
   (beginning-of-line)
   (forward-to-indentation 0)
   (if (looking-at "\\s)")
       (forward-char)
     (beginning-of-line)))
- 
+
 (defun as3-face-at-point (pos)
   "Return face descriptor for char at point."
   (plist-get (text-properties-at pos) 'face))
- 
+
 (defun as3-count-scope-depth (rstart rend)
   "Return difference between open and close scope delimeters."
   ;;Attempting Steve Yegge's solution..
@@ -626,7 +626,7 @@ is omitted, the regexp will match any class attribute."
             (incf open-count))
            )))
       (- open-count close-count))))
- 
+
 ;; --------------------------------------------------------------------------------
 
 ;;;###autoload
@@ -650,7 +650,7 @@ is omitted, the regexp will match any class attribute."
   (setq comment-start-skip "\\(//+\\|/\\*+\\)\\s *")
   (make-local-variable 'font-lock-defaults)
   (setq font-lock-defaults
-        `((,(cond 
+        `((,(cond
 						 ((= actionscript-font-lock-level 1) 'actionscript-font-lock-keywords-1)
 						 ((= actionscript-font-lock-level 2) 'actionscript-font-lock-keywords-2)
 						 ((= actionscript-font-lock-level 3) 'actionscript-font-lock-keywords-3)))
