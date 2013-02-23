@@ -1315,21 +1315,6 @@ LIST defaults to all existing live buffers."
 )
 
 ;;;======================================================================
-;;; Alignment
-;;;======================================================================
-(defun agl-align-repeat (begin end regexp)
-  ""
-  (interactive "r\nsAlign regexp:")
-  (align-regexp begin end (concat "\\(\\s-*\\)" regexp) 1 1 t))
-(defun agl-align-indent (begin end regexp)
-  ""
-  (interactive "r\nsAlign regexp:")
-  (agl-align-repeat begin end regexp)
-  (indent-region begin end)
-  (delete-trailing-whitespace)
-  (nuke-trailing-whitespace))
-
-;;;======================================================================
 ;;; CMake
 ;;;======================================================================
 (NotBatchMode
@@ -1495,10 +1480,6 @@ LIST defaults to all existing live buffers."
  (global-set-key (kbd "C-M-S-g") 'agl-uuid1-to-buffer)
  (global-set-key (kbd "C-M-g") 'agl-uuid2-to-buffer)
  (global-set-key (kbd "M-G") 'agl-uuid3-to-buffer)
-
- ;; Align indent
- (define-key global-map (kbd "C-M-[") 'agl-align-repeat)
- (define-key global-map (kbd "C-M-]") 'agl-align-indent)
 
  ;; Begin/end of buffer
  (define-key global-map (kbd "C-S-a") 'beginning-of-buffer)
