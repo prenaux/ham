@@ -2359,6 +2359,7 @@ rule ListDirs {
   }
   return $(r) ;
 }
+
 # ListDirsR BASEDIR : PATTERN : EXCLUDE PATTERN
 # Recursively list directories
 rule ListDirsR {
@@ -2370,7 +2371,7 @@ rule ListDirsR {
 }
 
 # ListFiles DIRS : PATTERN : EXCLUDE PATTERN
-# Recursively list directories
+# Example: [ ListFiles [ ListDirsR $(SUBDIR) ] : *.c ] ] ;
 rule ListFiles {
   local r ;
   local p ;
@@ -2447,6 +2448,16 @@ rule ListFilter LIST : INCLUDE : EXCLUDE {
   else {
     return $(t) ;
   }
+}
+
+# ListStrAfterI LIST : AFTERTOKEN
+rule ListStrAfterI {
+  local r = ;
+  for _s in $(<) {
+    local s = [ StrAfterI $(_s) : "$(>)/" ] ;
+    r += $(s) ;
+  }
+  return $(r) ;
 }
 
 #----------------------------------------------------------------------

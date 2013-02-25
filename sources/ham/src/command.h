@@ -16,8 +16,8 @@
  *	ACTIONS must be split if 'actions piecemeal' is given.
  *	ACTIONS must have current sources omitted for 'actions updated'.
  *
- * The CMD datatype holds a single command that is to be executed 
- * against a target, and they can chain together to represent the 
+ * The CMD datatype holds a single command that is to be executed
+ * against a target, and they can chain together to represent the
  * full collection of commands used to update a target.
  *
  * Structures:
@@ -42,7 +42,6 @@ struct _cmd
 	CMD	*next;
 	CMD	*tail;		/* valid on in head */
 	RULE	*rule;		/* rule->actions contains shell script */
-	LIST	*shell;		/* $(SHELL) value */
 	LOL	args;		/* LISTs for $(<), $(>) */
 	char	buf[ MAXLINE ];	/* actual commands */
 } ;
@@ -51,7 +50,6 @@ CMD *cmd_new(
 	RULE	*rule,		/* rule (referenced) */
 	LIST	*targets,	/* $(<) (freed) */
 	LIST	*sources,	/* $(>) (freed) */
-	LIST	*shell,		/* $(SHELL) (freed) */
 	int	maxline );	/* max line length */
 
 void cmd_free( CMD *cmd );

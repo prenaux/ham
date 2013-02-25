@@ -15,7 +15,7 @@
  *
  * Each word must be an individual element in a jam variable value.
  *
- * In $(JAMSHELL), % expands to the command string and ! expands to 
+ * In $(JAMSHELL), % expands to the command string and ! expands to
  * the slot number (starting at 1) for multiprocess (-j) invocations.
  * If $(JAMSHELL) doesn't include a %, it is tacked on as the last
  * argument.
@@ -52,13 +52,13 @@
 # include <process.h>
 # endif
 
-# ifdef OS_NT 
+# ifdef OS_NT
 # define USE_EXECNT
 # include <process.h>
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>		/* do the ugly deed */
 # define USE_MYWAIT
-# if !defined( __BORLANDC__ ) 
+# if !defined( __BORLANDC__ )
 # define wait my_wait
 static int my_wait( int *status );
 # endif
@@ -160,16 +160,111 @@ static char* get_fullpathname(char* prog) {
  */
 static int _firstExec = 0;
 
+#define _MAX_CMD_LINE_ARGS  128
+
+//! Converts a command line to argc/argv
+//! \param aszCmdLine is the command line to convert
+//! \param apArgvBuffer is the buffer where the command line will be copied, apArgv will point to location
+//!        in that buffer. It should be at least the same length as aaszCmdLine.
+//! \param apArgv will contain the arguments.
+int StrCommandLineToArgcArgv(const char* aszCmdLine, char* apArgvBuffer, char** apArgv, int anArgv0)
+{
+    int argc = 0;
+
+    // Set to no argv elements, in case we have to bail out
+    apArgv[anArgv0 + 0] = 0;
+
+    // Copy the system version of the command line into our copy
+    strcpy( apArgvBuffer, aszCmdLine );
+
+    if ( '"' == *apArgvBuffer )   // If command line starts with a quote ("),
+    {                           // it's a quoted filename.  Skip to next quote.
+        apArgvBuffer++;
+
+        apArgv[anArgv0 + 0] = apArgvBuffer;  // argv[0] == executable name
+
+        while ( *apArgvBuffer && (*apArgvBuffer != '"') )
+            apArgvBuffer++;
+
+        if ( *apArgvBuffer )      // Did we see a non-NULL ending?
+            *apArgvBuffer++ = 0;  // Null terminate and advance to next char
+        else
+            return 0;           // Oops!  We didn't see the end quote
+    }
+    else    // A regular (non-quoted) filename
+    {
+        apArgv[anArgv0 + 0] = apArgvBuffer;  // argv[0] == executable name
+
+        while ( *apArgvBuffer && (' ' != *apArgvBuffer) && ('\t' != *apArgvBuffer) )
+            apArgvBuffer++;
+
+        if ( *apArgvBuffer )
+            *apArgvBuffer++ = 0;  // Null terminate and advance to next char
+    }
+
+    // Done processing argv[0] (i.e., the executable name).  Now do th
+    // actual arguments
+
+    argc = 1;
+
+    while ( 1 )
+    {
+        // Skip over any whitespace
+        while ( *apArgvBuffer && (' ' == *apArgvBuffer) || ('\t' == *apArgvBuffer) )
+            apArgvBuffer++;
+
+        if ( 0 == *apArgvBuffer ) // End of command line???
+            return argc;
+
+        if ( '"' == *apArgvBuffer )   // Argument starting with a quote???
+        {
+            apArgvBuffer++;   // Advance past quote character
+
+            apArgv[ anArgv0 + (argc++) ] = apArgvBuffer;
+            apArgv[ anArgv0 + argc ] = 0;
+
+            // Scan to end quote, or NULL terminator
+            while ( *apArgvBuffer && (*apArgvBuffer != '"') )
+                apArgvBuffer++;
+
+            if ( 0 == *apArgvBuffer )
+                return argc;
+
+            if ( *apArgvBuffer )
+                *apArgvBuffer++ = 0;  // Null terminate and advance to next char
+        }
+        else                        // Non-quoted argument
+        {
+            apArgv[ anArgv0 + (argc++) ] = apArgvBuffer;
+            apArgv[ anArgv0 + argc ] = 0;
+
+            // Skip till whitespace or NULL terminator
+            while ( *apArgvBuffer && (' '!=*apArgvBuffer) && ('\t'!=*apArgvBuffer) )
+                apArgvBuffer++;
+
+            if ( 0 == *apArgvBuffer )
+                return argc;
+
+            if ( *apArgvBuffer )
+                *apArgvBuffer++ = 0;  // Null terminate and advance to next char
+        }
+
+        if ( argc >= (_MAX_CMD_LINE_ARGS) )
+            return argc;
+    }
+}
+
 void
-execcmd( 
-	char *string,
+execcmd(
+	const char *string,
 	void (*func)( void *closure, int status, const char* output ),
 	void *closure,
-	LIST* _shell,
+	const char* aShellPath,
     int serialOutput)
 {
 	int pid;
 	int slot;
+    char* buffer = NULL;
 	const char *argv[ MAXARGC + 1 ];	/* +1 for NULL */
 	int stringLen = 0;
 /* # ifdef USE_EXECNT */
@@ -211,14 +306,23 @@ execcmd(
 	}
 
 	/* Forumulate argv */
-	{
+    if (aShellPath) {
+        int i = 0;
+        if (*aShellPath) {
+            argv[i++] = aShellPath;
+        }
+        buffer = malloc(stringLen+1);
+        StrCommandLineToArgcArgv(string,buffer,argv,i);
+    }
+    else {
+        // Use Bash, the default shell
 		int i = 0;
 #ifdef USE_EXECNT
         extern char g_bash_path[_MAX_PATH];
         if (strstr(g_bash_path,"cygwin") == NULL && strstr(g_bash_path,"CYGWIN") == NULL)
         {
             /* write to a temporary bash script */
-            {                
+            {
                 int maxTry = 10;
                 while (maxTry--) {
                     FILE *f;
@@ -336,7 +440,7 @@ execcmd(
 /****** POSIX *********/
 
 # ifdef NO_VFORK
-	if ((pid = fork()) == 0) 
+	if ((pid = fork()) == 0)
 	{
 /* 		printf("EXEC-FORK\n"); */
 		int fd;
@@ -353,7 +457,7 @@ execcmd(
 	    _exit(127);
 	}
 # else
-	if ((pid = vfork()) == 0) 
+	if ((pid = vfork()) == 0)
    	{
 /* 		printf("EXEC-VFORK\n"); */
 		if ( serialOutput )
@@ -392,6 +496,9 @@ execcmd(
 	while( cmdsrunning >= MAXJOBS || cmdsrunning >= globs.jobs )
 	    if( !execwait() )
             break;
+
+    if (buffer)
+        free(buffer);
 }
 
 /*
@@ -411,7 +518,7 @@ execwait()
 	    return 0;
 
 	/* Pick up process pid and status */
-    
+
 	while( ( w = wait( &status ) ) == -1 && errno == EINTR )
 		;
 
@@ -466,7 +573,7 @@ my_wait( int *status )
 
 	if (!active_handles)
 	    active_handles = (HANDLE *)malloc(globs.jobs * sizeof(HANDLE) );
-        
+
 	/* first see if any non-waited-for processes are dead,
 	 * and return if so.
 	 */
@@ -511,7 +618,7 @@ my_wait( int *status )
 FAILED:
 	errno = GetLastError();
 	return -1;
-    
+
 }
 
 # endif /* USE_MYWAIT */

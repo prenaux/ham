@@ -11,10 +11,10 @@
  */
 
 void execcmd(
-	char *string,
+	const char* string,
 	void (*func)( void *closure, int status, const char* outputname ),
 	void *closure,
-	LIST *shell,
+	const char* shellPath,
     int serialOutput );
 
 int execwait();

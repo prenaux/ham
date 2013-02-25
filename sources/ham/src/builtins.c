@@ -49,6 +49,8 @@
 #include <sys/stat.h>
 #endif
 
+#include <time.h>
+
 /*
  * compile_builtin() - define builtin rules
  */
@@ -67,6 +69,7 @@ LIST *builtin_glob( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_globstring( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_hdrmacro( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_bash( PARSE *parse, LOL *args, int *jmp );
+LIST *builtin_execcmd( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_match( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_subst( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_subst_literalize( PARSE *parse, LOL *args, int *jmp );
@@ -152,8 +155,12 @@ load_builtins()
 	parse_make( builtin_hdrmacro, P0, P0, P0, C0, C0, 0 );
 
     bindrule( "Bash" )->procedure =
-    bindrule( "Bash" )->procedure =
+    bindrule( "BASH" )->procedure =
     parse_make( builtin_bash, P0, P0, P0, C0, C0, 0 );
+
+    bindrule( "ExecCmd" )->procedure =
+        bindrule( "EXECCMD" )->procedure =
+        parse_make( builtin_execcmd, P0, P0, P0, C0, C0, 0 );
 
 	bindrule( "Subst" )->procedure =
 		parse_make( builtin_subst, P0, P0, P0, C0, C0, 0 );
@@ -533,6 +540,23 @@ static void bash_done( void *closure, int status, const char* outputname )
 
 LIST *
 builtin_bash(
+	PARSE	*parse,
+	LOL	*args,
+	int	*jmp )
+{
+    LIST *l = lol_get( args, 0 );
+    LIST *output = L0;
+    exec_init();
+    for( ; l; l = list_next( l ) ) {
+        execcmd( l->string, bash_done, &output, NULL, 1 );
+        execwait();
+    }
+    exec_done();
+    return output;
+}
+
+LIST *
+builtin_execcmd(
 	PARSE	*parse,
 	LOL	*args,
 	int	*jmp )
