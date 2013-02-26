@@ -1,0 +1,9 @@
+# base.ham is setup for GCC by default
+
+actions SharedLink {
+}
+
+actions DllLink bind NEEDLIBS
+{
+  $(LINK) $(LINKFLAGS) -fvisibility=hidden -shared -o $(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+}

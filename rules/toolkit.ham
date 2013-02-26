@@ -126,6 +126,14 @@ MakeLocate tkdir : $(TK_DIR_LIBS) ;
 
 TK_DIR_JARS ?= [ FDirName $(TK_DIR_LIBS) jars ] ;
 
+if $(NO_DLL) = 1 {
+  SUFDLL = $(SUFLIB) ;
+  TK_DIR_DLL = $(TK_DIR_LIBS) ;
+}
+else {
+  TK_DIR_DLL = $(TK_DIR_BIN) ;
+}
+
 NOTFILE tkdir ;
 NOUPDATE tkdir ;
 NOTFILE tkimport ;
@@ -390,7 +398,7 @@ rule tkPkgLinkLibs {
 
 rule tkDepDll {
   local dir = $(3) ;
-  dir ?= $(TK_DIR_BIN) ;
+  dir ?= $(TK_DIR_DLL) ;
   local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFDLL) ] ;
   if ! ( $(NO_DEPS) = 1 ) {
     DEPENDS $(<) : $(l) ;
@@ -403,7 +411,7 @@ rule tkLinkDll {
   }
   else {
     local dir = $(3) ;
-    dir ?= $(TK_DIR_BIN) ;
+    dir ?= $(TK_DIR_DLL) ;
     local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFDLL) ] ;
     VarOnAddToFront LINKLIBS : $(<) : $(l) ;
   }

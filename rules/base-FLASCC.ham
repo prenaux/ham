@@ -1,0 +1,30 @@
+OSPLAT = SWF ;
+
+SLASH   ?= / ;
+SUFOBJ  ?= .o ;
+SUFLIB  ?= .a ;
+SUFDLL  ?= .so ;
+
+CCFLAGS  = -swf-version=17 -D__FLASCC__ -D__FLASCC_SWF__ -fvisibility=hidden ;
+C++FLAGS = $(CCFLAGS) -fno-rtti -fno-exceptions ;
+
+# ... yes 8GB this is necessary to build Test_niLang without running out of memory ...
+JVMOPTIONS = -jvmopt=-Xmx8G ;
+
+CC   ?= gcc $(JVMOPTIONS) ;
+C++  ?= g++ $(JVMOPTIONS) ;
+LINK ?= g++ $(JVMOPTIONS) ;
+AR   ?= ar ru ;
+
+LINKLIBS    ?= ;
+OPTIM       ?= "" ;
+STDHDRS     ?= ;
+UNDEFFLAG   ?= "-u _" ;
+
+if $(FLASH_PROJECTOR) = 1 {
+  SUFEXE    ?= .exe ;
+}
+else {
+  SUFEXE    ?= .swf ;
+  LINKFLAGS ?= -emit-swf -swf-size=400x400 ;
+}

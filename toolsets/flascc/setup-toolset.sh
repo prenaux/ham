@@ -1,5 +1,7 @@
 #!/bin/bash
 
+toolset_import xslt_tools
+if [ $? != 0 ]; then return 1; fi
 toolset_import python_26
 if [ $? != 0 ]; then return 1; fi
 
@@ -29,6 +31,7 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        export FLASCC_GDB_RUNTIME="${FLEX}/runtimes/player/11.1/win/FlashPlayerDebugger.exe"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

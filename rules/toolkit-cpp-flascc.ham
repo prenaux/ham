@@ -1,0 +1,59 @@
+STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
+
+FLASCC_WARN_ARGS =
+-D_HAS_EXCEPTIONS=0
+-Wall
+-Wno-switch
+-Wno-trigraphs
+-Wno-sign-compare
+-Wno-unused
+;
+if $(FLYMAKE) = 1 {
+  FLASCC_WARN_ARGS += -Wno-\#pragma-messages ;
+}
+else {
+  # FLASCC_WARN_ARGS += -Wfatal-errors ;
+}
+SUFPCH = .h.gch ;
+
+CCFLAGS += $(FLASCC_WARN_ARGS) ;
+C++FLAGS += $(FLASCC_WARN_ARGS) -Wno-reorder ;
+
+### "Debug" (da) build flags ###
+FLASCC_DBG_ARGS = $(STRICT_ALIASING_FLAGS) ;
+FLASCC_DBG_ARGS += -g -O0 ;
+
+### Optimized (ra) build flags ###
+FLASCC_OPT_ARGS = -Os $(STRICT_ALIASING_FLAGS) ;
+
+### Link flags ###
+LINKLIBS += -lAS3++ -lFlash++ ;
+
+rule tkCC++Build
+{
+  local t = $(<) ;
+  local strOpt = "" ;
+  # Set the debug infos generation
+  # Set the optimization flags
+  if $(DEBUG) = 1 {
+    PKGOPTIM += $(FLASCC_DBG_ARGS) ;
+    strOpt += "(DebugOnly) " ;
+  }
+  # Set debug-only flags
+  else {
+    PKGOPTIM += $(FLASCC_OPT_ARGS) ;
+    strOpt += "(Optimized) " ;
+  }
+  logVerbose "- CC++Build: " $(strOpt) ;
+}
+
+rule tkC++Exceptions
+{
+  ECHO "E/Exceptions not supported with FLASCC." ;
+}
+
+rule tkNoC++Exceptions {
+}
+
+rule tkCC++Lint {
+}
