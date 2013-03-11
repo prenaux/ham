@@ -13,7 +13,7 @@ export HAM_TOOLSET_NAME=flascc
 export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/flascc
 
 export JAVA_HOME=${HAM_TOOLSET_DIR}/nt-x86/jre64
-export PATH=${JAVA_HOME}/bin:${PATH}
+export PATH=${JAVA_HOME}/bin:${PATH}:${HAM_TOOLSET_DIR}
 
 export FLEX=${HAM_TOOLSET_DIR}/flex_sdk
 export FLASCC_ROOT=${HAM_TOOLSET_DIR}/nt-x86/
