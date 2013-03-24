@@ -29,14 +29,22 @@
   '(escape-glyph ((((class color)) (:foreground "#ddaa6f" :weight bold))))
 
   ;; Font lock faces
-  '(font-lock-builtin-face ((((class color)) (:foreground "#e5786d"))))
   '(font-lock-comment-face ((((class color)) (:foreground "#99968b"))))
-  '(font-lock-constant-face ((((class color)) (:foreground "#e5786d"))))
   '(font-lock-function-name-face ((((class color)) (:foreground "#cae682"))))
-  '(font-lock-keyword-face ((((class color)) (:foreground "#8ac6f2" :weight bold))))
   '(font-lock-string-face ((((class color)) (:foreground "#95e454"))))
-  '(font-lock-type-face ((((class color)) (:foreground "#92a65e" :weight bold))))
   '(font-lock-variable-name-face ((((class color)) (:foreground "#cae682"))))
+
+  ;; used for prepend and D/
+  '(font-lock-preprocessor-face ((((class color)) (:foreground "#b9b6ab"))))
+  ;; used for types and V/
+  '(font-lock-type-face ((((class color)) (:foreground "#92a65e" :weight bold))))
+  ;; used for builtins and W/
+  '(font-lock-builtin-face ((((class color)) (:foreground "#e5a86d"))))
+  ;; used for constants and E/
+  '(font-lock-constant-face ((((class color)) (:foreground "#f5686d"))))
+  ;; used for keyword and I/
+  '(font-lock-keyword-face ((((class color)) (:foreground "#8ac6f2" :weight bold))))
+  ;; used for warnings and F/
   '(font-lock-warning-face ((((class color)) (:foreground "#ccaa8f"))))
 
   ;; Button and link faces
