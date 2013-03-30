@@ -7,7 +7,7 @@ LOA_LINKER = msvc ;
 #----------------------------------------------------------------------
 #     DEFINES
 #----------------------------------------------------------------------
-DEFINES += WIN32 _WINDOWS __WIN32__ ;
+DEFINES += NOMINMAX WIN32 _WINDOWS __WIN32__ ;
 # The secure CRT (_s methods) are MSVC specific so we can't use them
 # since they are not portable.
 DEFINES += _CRT_SECURE_NO_WARNINGS ;

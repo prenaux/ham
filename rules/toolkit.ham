@@ -816,9 +816,8 @@ rule tkBuildPackage
     local impLib = $(PKGTARGETF:B:S=$(SUFLIB)) ;
     local srcLib = [ FDirName $(OBJDIR) $(impLib) ] ;
 
-    DEPENDS $(srcLib) : $(defFile) ;
+    DEPENDS $(PKGTARGETF) : $(defFile) ;
     DEPENDS $(srcLib) : $(PKGTARGETF) ;
-    DEPENDS $(PKGTARGETF) ;
 
     LINKFLAGS on $(PKGTARGET) ?= $(LINKFLAGS) ;
     LINKFLAGS on $(PKGTARGET) += -IMPLIB:$(srcLib) ;
