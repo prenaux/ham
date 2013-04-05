@@ -52,6 +52,8 @@ CC_ADD_FLAGS +=
 # DISABLE: warning C6316: Incorrect operator: tested expression is constant and non-zero. Use bitwise-and to determine whether bits are set.
 # Generate by FLAG_TEST(x,XYZ|ABC)
 -wd6316
+# DISABLE: warning C4345: behavior change: an object of POD type constructed with an initializer of the form () will be default-initialized
+-wd4345
 ;
 CCFLAGS += $(CC_ADD_FLAGS) ;
 C++FLAGS += $(CC_ADD_FLAGS) ;
