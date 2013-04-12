@@ -124,7 +124,7 @@ TK_DIR_LIBS ?= [ FDirName $(TK_DIR) libs $(LIBS_LOA) ] ;
 logVar TK_DIR_LIBS ;
 MakeLocate tkdir : $(TK_DIR_LIBS) ;
 
-TK_DIR_JARS ?= [ FDirName $(TK_DIR_LIBS) jars ] ;
+TK_DIR_JARS ?= [ FDirName $(TK_DIR) libs jars ] ;
 
 if $(NO_DLL) = 1 {
   SUFDLL = $(SUFLIB) ;
