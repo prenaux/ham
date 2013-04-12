@@ -10,6 +10,8 @@ BUILD_SUFEXE = .exe ;
 #     DEFINES
 #----------------------------------------------------------------------
 DEFINES += niPosix ANDROID ;
+# Android NDK C++ support is more than spotty... so no BOOST...
+DEFINES += _NO_BOOST ;
 
 #----------------------------------------------------------------------
 #     OS Variables
