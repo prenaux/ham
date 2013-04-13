@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # dependencies
-. ham-toolset-import.sh msvc_10_x86
+if [[ "${HAM_TOOLSET_IS_SETUP_MSVC_10_X86}" != "1" ]]; then
+    . ham-toolset-import.sh msvc_10_x86
+fi
 
 # toolset
 export HAM_TOOLSET_IS_SETUP_ICL_11=1
