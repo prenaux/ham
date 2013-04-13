@@ -514,7 +514,7 @@ rule tkDefModuleEx
 
   tkDefPackage $(1) : $(2) : $(5) : $(3) ;
   if $(4) {
-    DEPHDRS += [ FDirName $(TK_DIR_INCLUDE) agl $(4) ] ;
+    DEPHDRS += [ FDirName $(TK_DIR_INCLUDE) $(4) ] ;
   }
   MODXML = [ FSubDirAbsName "_"$(PACKAGE)"_Desc.xml" ] ;
   Clean clean : $(MODXML) ;

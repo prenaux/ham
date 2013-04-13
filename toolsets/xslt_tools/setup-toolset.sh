@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "${HAM_TOOLSET_IS_SETUP_XSLT_TOOLS}" == "1" ]]; then
+if [[ "${HAM_TOOLSET_IS_SETUP_XSLT_TOOLS}" == "1" ]] && [ ! -z `type -P xslt_tools-xslt1` ]; then
     echo "I/xslt_tools already imported."
 else
 

@@ -1,3 +1,2 @@
 Import toolkit-base-adr.ham ;
-LOA_ARCH = arm ;
 DEFINES += _COMPILER_ADR_22_ARM ;

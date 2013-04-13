@@ -19,9 +19,14 @@ $(PICFLAGS)
 -D__LITTLE_ENDIAN__
 -I$(ADR_DIR_NDK_USR)/include
 -Werror -Wall
--Wno-psabi -Wno-trigraphs -Wno-sign-compare
--Wno-unknown-pragmas -Wno-switch -Wno-comment
--Wno-unused -Wno-uninitialized
+# -Wno-psabi
+-Wno-trigraphs
+-Wno-sign-compare
+-Wno-unknown-pragmas
+-Wno-switch
+-Wno-comment
+-Wno-unused
+-Wno-uninitialized
 -Wno-narrowing
 ;
 
@@ -44,6 +49,8 @@ ANDROID_CPP_ARGS +=
 -Wno-conversion-null
 -std=c++11
 -Wno-reorder # Warnings valid for C++ only
+-I$(ADR_LIBCPP_DIR_INCLUDE)
+-I$(ADR_LIBCPP_DIR_LIBS)/include
 ;
 
 ANDROID_LINK_BASE_ARGS +=
@@ -85,7 +92,6 @@ switch $(ADR_CPU_PROFILE)
     -march=armv5te
     -mtune=xscale
     -msoft-float
-    -DaglAtomicC
     -mthumb
     ;
     ## ARM6+ VFP (TC8900, Qualcomm 7227, ...)
@@ -116,7 +122,7 @@ switch $(ADR_CPU_PROFILE)
     ;
     ANDROID_LINK_BASE_ARGS = -Wl,--fix-cortex-a8 ;
   case * :
-    Exit "Invalid Android CPU profile '"$(ADR_CPU_PROFILE)"' !" ;
+    EXIT "Unknown Android CPU profile '"$(ADR_CPU_PROFILE)"' !" ;
 }
 
 SYSTEM_LINKLIBS = $(ADR_LIBGCC_PATH) -llog -lc -lstdc++ -lm -ldl ;

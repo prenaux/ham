@@ -3,6 +3,7 @@
 #----------------------------------------------------------------------
 LOA_OS = adr ;
 LOA_LINKER = gcc ;
+LOA_ARCH = $(ADR_CPU_PROFILE:L) ;
 BUILD_BIN_LOA = nt-x86 ;
 BUILD_SUFEXE = .exe ;
 
@@ -10,8 +11,6 @@ BUILD_SUFEXE = .exe ;
 #     DEFINES
 #----------------------------------------------------------------------
 DEFINES += niPosix ANDROID ;
-# Android NDK C++ support is more than spotty... so no BOOST...
-DEFINES += _NO_BOOST ;
 
 #----------------------------------------------------------------------
 #     OS Variables
