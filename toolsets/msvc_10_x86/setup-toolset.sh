@@ -1,19 +1,9 @@
 TAG=msvc_10_x86
 echo I/Setting up $TAG
 
-########################################################################
-##  Find a C99 compiler
-########################################################################
-ICLDIR=${HAM_HOME}/toolsets/icl_11/nt-x86
-if [ ! -e $ICLDIR ] || [ -z `type -P ${ICLDIR}/bin/ia32/icl.exe` ]; then
-    # gcc 4.7 is our C99 compiler
-    echo "I/MSVC using GCC as C99 compiler"
-    . ham-toolset-import.sh gcc_470
-else
-    echo "I/MSVC using ICL as C99 compiler"
-    export HAM_TOOLSET_IS_SETUP_MSVC_10_X86=1
-    . ham-toolset-import.sh icl_11
-fi
+# gcc 4.7 is our C99 compiler
+echo "I/MSVC using GCC as C99 compiler"
+. ham-toolset-import.sh gcc_470
 
 ########################################################################
 ##  Toolset
