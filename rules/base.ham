@@ -613,6 +613,28 @@ rule Cc
   CCDEFS on $(<) = [ on $(<) FDefines $(DEFINES) ] ;
 }
 
+# /C99 object : source ;
+#
+# Compile the C99 source file _source_. Similar to @CC, called by @Object
+#
+# Do not call this rule directly, since _object_ and _source_ may have
+# have platform-specific file extensions
+#
+rule C99
+{
+  Depends $(<) : $(>) ;
+
+  if $(RELOCATE) {
+	CcMv $(<) : $(>) ;
+  }
+
+  CCFLAGS on $(<) += $(CCFLAGS) $(SUBDIRCCFLAGS) ;
+  C99FLAGS on $(<) += $(C99FLAGS) $(SUBDIRC99FLAGS) ;
+
+  CCHDRS on $(<) = [ on $(<) FIncludes $(HDRS) ] ;
+  CCDEFS on $(<) = [ on $(<) FDefines $(DEFINES) ] ;
+}
+
 # /C++ object : source ;
 #
 # Compile the C++ source file _source_. Similar to @CC, called by @Object
@@ -1266,27 +1288,34 @@ rule Object
 
   DEFINES on $(<) += $(DEFINES) ;
 
-  # if source is not .c, generate .c with specific rule
-  switch $(>:S)
-  {
-    case .h   : if $(CAN_LINT) { LintH lint_h : $(>) ; }
-    case .hpp : if $(CAN_LINT) { LintH lint_h : $(>) ; }
-    case .asm : Yasm $(<) : $(>) ;
-    case .masm : Masm $(<) : $(>) ;
-    case .c :   Cc $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
-    case .m :   Cc $(<) : $(>) ;
-    case .C :   C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
-    case .cc :  C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
-    case .cpp : C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
-    case .cxx : C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
-    case .c++ : C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
-    case .C++ : C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
-    case .mm  : C++ $(<) : $(>) ;
-    case .s :
-      As $(<) : $(>) ;
-    case .rc :  ResourceCompiler $(<) : $(>) ;
-    case .ncc : Ncc $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
-    case * :    UserObject $(<) : $(>) ;
+  local COMPILER = [ VarOnGet COMPILER : $(<) ] ;
+  if $(COMPILER) {
+    # ECHO "I/CUSTOM COMPILER FOR:" $(<) ":" $(COMPILER) ;
+    $(COMPILER) $(<) : $(>) ;
+  }
+  else {
+    # if source is not .c, generate .c with specific rule
+    switch $(>:S)
+    {
+      case .h   : if $(CAN_LINT) { LintH lint_h : $(>) ; }
+      case .hpp : if $(CAN_LINT) { LintH lint_h : $(>) ; }
+      case .asm : Yasm $(<) : $(>) ;
+      case .masm : Masm $(<) : $(>) ;
+      case .c :   Cc $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
+      case .m :   Cc $(<) : $(>) ;
+      case .C :   C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
+      case .cc :  C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
+      case .cpp : C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
+      case .cxx : C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
+      case .c++ : C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
+      case .C++ : C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
+      case .mm  : C++ $(<) : $(>) ;
+      case .s :
+        As $(<) : $(>) ;
+      case .rc :  ResourceCompiler $(<) : $(>) ;
+      case .ncc : Ncc $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
+      case * :    UserObject $(<) : $(>) ;
+    }
   }
 }
 
@@ -1345,6 +1374,13 @@ rule ObjectCC++Flags
 {
   ObjectCcFlags $(<) : $(>) ;
   ObjectC++Flags $(<) : $(>) ;
+}
+
+# /ObjectCompiler objects : compiler ;
+rule ObjectCompiler
+{
+  local s = [ FGristFiles $(<:S=$(SUFOBJ)) ] ;
+  COMPILER on $(s) = $(>) ;
 }
 
 # /ObjectDefines  objects : macros ;
@@ -2060,6 +2096,11 @@ actions C++
 }
 
 actions Cc
+{
+  $(CC) -c -o $(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) $(>)
+}
+
+actions C99
 {
   $(CC) -c -o $(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) $(>)
 }

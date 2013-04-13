@@ -17,17 +17,8 @@ actions Archive {
   $(AR) -NOLOGO -WX:NO -out:$(<) $(>)
 }
 
-if $(HAM_C99) = gcc {
-  ECHO "I/MSVC: Using GCC for C99 code." ;
-  actions Cc
-  {
-    $(HAM_C99) -mno-stack-arg-probe -O2 -D_CRTIMP= -D__MINGW32__ -I${GCCDIR}/include -c -o $(<) $(C99_FLAGS) $(C99_OPTIM) $(CCDEFS) $(CCHDRS) $(>)
-  }
-}
-else {
-  actions Cc {
-    $(CC) -c -Fo$(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) -Tc$(>)
-  }
+actions Cc {
+  $(CC) -c -Fo$(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) -Tc$(>)
 }
 
 actions C++ {
@@ -40,4 +31,34 @@ actions Link bind NEEDLIBS {
 
 actions DllLink bind NEEDLIBS {
   $(LINK) $(LINKFLAGS) -DLL -DEBUG -out:$(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+}
+
+# No C99 support
+if ! $(HAM_C99) {
+  actions C99 {
+    echo "E/MSVC: No C99 compiler, can't compile $(>) !"
+    exit -1
+  }
+}
+# C99 using the Intel C/C++ compiler
+else if $(HAM_C99) = icl {
+  ECHO "I/MSVC: Using ICL for C99 code." ;
+
+  LINKFLAGS += -LIBPATH:$(ICLDIR)/lib/$(ICL_ARCH)/ ;
+
+  actions C99 {
+    icl -nologo -Qstd=c99 -Qdiag-disable:82,120,133,144,167,177,186,188,344,424,869,981,1011,1419,1572,1786,2259 -Qdiag-error:266 -I$(ICLDIR)/include/$(ICL_ARCH) -I$(ICLDIR)/include -c -Fo$(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) -Tc$(>)
+  }
+}
+# C99 using GCC
+else if $(HAM_C99) = gcc {
+  ECHO "I/MSVC: Using GCC for C99 code." ;
+
+  actions C99 {
+    $(HAM_C99) -mno-stack-arg-probe -O2 -D_CRTIMP= -D__MINGW32__ -I${GCCDIR}/include -c -o $(<) $(C99_FLAGS) $(C99_OPTIM) $(CCDEFS) $(CCHDRS) $(>)
+  }
+}
+# Unknown C99
+else {
+  EXIT "E/MSVC: Unknown HAM_C99 compiler:" $(HAM_C99) ;
 }

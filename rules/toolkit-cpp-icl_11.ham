@@ -62,7 +62,7 @@ rule tkCC++Build
   local ILK = [ FDirName $(LOCATE_TARGET) $(PKGBUILD:S=.ilk) ] ;
   Clean clean : $(ILK) ;
   # Enable string pooling
-  ObjectOptimFlags $(<) : -GF -GR- -Qstd=c99 -Qdiag-disable:120,133,144,167,177,186,188,1011,1786 -Qdiag-error:266 ;
+  ObjectOptimFlags $(<) : -GF -GR- -Qstd=c99 -Qdiag-disable:82,120,133,144,167,177,186,188,344,424,869,981,1011,1419,1572,1786,2259 -Qdiag-error:266 ;
   # Set the debug infos generation
   if ! $(REDIST) {
     SUFPDB = .pdb ;
