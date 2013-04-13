@@ -1,29 +1,35 @@
 # Enable lint/analyze on the C/C++ source code
-rule tkCC++Lint
-{
-  Echo "WARN: tkCC++Lint not defined for this toolset ($(HAM_TOOLSET))" ;
+rule tkCC++Lint {
+  Echo "W/tkCC++Lint not defined for this toolset ($(HAM_TOOLSET))" ;
 }
+
 # Used on C++ sources that require exceptions handling
 # REM: The precompiled header file should be included to have the same flags
-rule tkC++Exceptions
-{
-  Echo "WARN: tkC++Exceptions not defined for this toolset ($(HAM_TOOLSET))" ;
+rule tkC++Exceptions {
+  Echo "W/tkC++Exceptions not defined for this toolset ($(HAM_TOOLSET))" ;
 }
-rule tkNoC++Exceptions
-{
-  Echo "WARN: tkNoC++Exceptions not defined for this toolset ($(HAM_TOOLSET))" ;
+rule tkNoC++Exceptions {
+  Echo "W/tkNoC++Exceptions not defined for this toolset ($(HAM_TOOLSET))" ;
+}
+
+# Used on C++ sources that require rtti handling
+# REM: The precompiled header file should be included to have the same flags
+rule tkC++RTTI {
+  Echo "W/tkC++RTTI not defined for this toolset ($(HAM_TOOLSET))" ;
+}
+rule tkNoC++RTTI {
+  Echo "W/tkNoC++RTTI not defined for this toolset ($(HAM_TOOLSET))" ;
 }
 
 # Used on C++ sources to enable the use of a precompilhed header.
 # Precompiled header for C sources is not supported.
-rule tkC++Pch
-{
-  Echo "WARN: tkC++Pch not defined for this toolset ($(HAM_TOOLSET))" ;
+rule tkC++Pch {
+  Echo "W/tkC++Pch not defined for this toolset ($(HAM_TOOLSET))" ;
 }
+
 # Set the Build flags for C and C++ files.
-rule tkCC++Build
-{
-  Echo "WARN: tkCC++Build not defined for this toolset ($(HAM_TOOLSET))" ;
+rule tkCC++Build {
+  Echo "W/tkCC++Build not defined for this toolset ($(HAM_TOOLSET))" ;
 }
 
 Import toolkit-cpp-$(HAM_TOOLSET_NAME).ham ;

@@ -1,0 +1,16 @@
+rule tkC++Exceptions {
+  ObjectC++Flags $(<) : -fexceptions ;
+}
+rule tkNoC++Exceptions {
+  ObjectC++Flags $(<) : -fno-exceptions ;
+}
+
+rule tkC++RTTI {
+  ObjectC++Flags $(<) : -frtti ;
+}
+rule tkNoC++RTTI {
+  ObjectC++Flags $(<) : -fno-rtti ;
+}
+
+rule tkCC++Lint {
+}

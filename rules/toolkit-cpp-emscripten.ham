@@ -1,7 +1,6 @@
 STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
 
 JSCC_WARN_ARGS =
--D_HAS_EXCEPTIONS=0
 -Wall
 -Wno-switch
 -Wno-unknown-pragmas
@@ -61,14 +60,6 @@ rule tkCC++Build
     strOpt += "(Optimized) " ;
   }
   logVerbose "- CC++Build: " $(strOpt) ;
-}
-
-rule tkC++Exceptions
-{
-  ECHO "Exceptions are not supported with JSCC" ;
-}
-
-rule tkNoC++Exceptions {
 }
 
 rule tkCC++Lint {

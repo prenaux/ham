@@ -138,15 +138,6 @@ rule tkCC++Build
     ObjectOptimFlags $(<) : -bigobj ;
   }
 
-  # RTTI
-  if $(OPT_RTTI) = 1 || $(DEBUG) = 1 {
-    ObjectOptimFlags $(<) : -GR ;
-    strOpt += "(RTTI) " ;
-  }
-  else {
-    ObjectOptimFlags $(<) : -GR- ;
-  }
-
   LINKFLAGS on $(PKGTARGETF) ?= $(LINKFLAGS) ;
 
   # Set the debug infos generation
@@ -182,11 +173,7 @@ rule tkCC++Build
         # LINKFLAGS on $(PKGTARGETF) += -LTCG ;
       # }
     }
-    #         if $(OSPLAT:L) = x86 {
-      #           ObjectOptimFlags $(<) : -arch:SSE2 ;
-      #           strOpt += "(OptSSE2) " ;
-    #         }
-    if $(AGL_TOOLSET_VER) >= 9 {
+    if $(HAM_TOOLSET_VER) >= 9 {
       ObjectOptimFlags $(<) : -GS- ;  # Disable buffer security check
       strOpt += "(NoBufferSecurity) " ;
     }
@@ -236,16 +223,23 @@ if $(WINDOWS) = 1 {
   {
     if $(EMBEDDED) != 1 {
       ObjectOptimFlags $(<) : -EHa ;
+      ObjectDefines $(<) : _HAS_EXCEPTIONS=1 ;
       logVerbose "- C++ Exceptions" ;
     }
     else {
       logVerbose "- No Exceptions in Embedded mode" ;
     }
   }
-
   rule tkNoC++Exceptions {
-    ObjectDefines $(<) : _HAS_EXCEPTIONS=0 ;
   }
+}
+
+rule tkC++RTTI {
+  ObjectOptimFlags $(<) : -GR ;
+}
+
+rule tkNoC++RTTI {
+  ObjectOptimFlags $(<) : -GR- ;
 }
 
 rule tkCC++Lint

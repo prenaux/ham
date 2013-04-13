@@ -121,17 +121,21 @@ rule tkCC++Build
   logVerbose "- CC++Build: " $(strOpt) ;
 }
 
-rule tkC++Exceptions
-{
-  ObjectOptimFlags $(<) : -EHa ;
-  logVerbose "- C++ Exceptions" ;
-}
-rule tkNoC++Exceptions {
-  ObjectDefines $(<) : _HAS_EXCEPTIONS=0 ;
-}
-
 rule tkCC++Warnings
 {
   ObjectOptimFlags $(<) : -W3 ;
   logVerbose "- C++ Warnings" ;
+}
+
+rule tkC++Exceptions {
+  ObjectOptimFlags $(<) : -EHa ;
+}
+rule tkNoC++Exceptions {
+}
+
+rule tkC++RTTI {
+  ObjectOptimFlags $(<) : -GR ;
+}
+rule tkNoC++RTTI {
+  ObjectOptimFlags $(<) : -GR- ;
 }

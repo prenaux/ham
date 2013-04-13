@@ -6,7 +6,7 @@ SUFLIB  ?= .a ;
 SUFDLL  ?= .so ;
 
 CCFLAGS  = -swf-version=17 -D__FLASCC__ -D__FLASCC_SWF__ -fvisibility=hidden ;
-C++FLAGS = $(CCFLAGS) -fno-rtti -fno-exceptions ;
+C++FLAGS = $(CCFLAGS) ;
 
 # ... yes 8GB this is necessary to build Test_niLang without running out of memory ...
 JVMOPTIONS = -jvmopt=-Xmx8G ;

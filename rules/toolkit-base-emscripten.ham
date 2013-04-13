@@ -21,5 +21,4 @@ HTML5 = 1 ;
 EMBEDDED = 1 ;
 NO_DLL = 1 ;
 NO_PCH = 1 ;
-NO_EXCEPTION = 1 ;
 BUILD_JNI = 0 ;

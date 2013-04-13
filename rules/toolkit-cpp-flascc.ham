@@ -1,7 +1,8 @@
+Import toolkit-cpp-gcc.ham ;
+
 STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
 
 FLASCC_WARN_ARGS =
--D_HAS_EXCEPTIONS=0
 -Wall
 -Wno-switch
 -Wno-trigraphs
@@ -45,14 +46,6 @@ rule tkCC++Build
     strOpt += "(Optimized) " ;
   }
   logVerbose "- CC++Build: " $(strOpt) ;
-}
-
-rule tkC++Exceptions
-{
-  ECHO "E/Exceptions not supported with FLASCC." ;
-}
-
-rule tkNoC++Exceptions {
 }
 
 rule tkCC++Lint {

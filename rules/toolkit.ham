@@ -642,6 +642,7 @@ rule tkBuildPackage
   local _console = 0 ;
   local _jni = 0 ;
   local _exc = 0 ;
+  local _rtti = 0 ;
   local _unicode = 0 ;
   local _stamp = "" ;
 
@@ -658,7 +659,6 @@ rule tkBuildPackage
   OPT_CRTDLL = 0 ;
   OPT_MINSIZE = 0 ;
   OPT_NOOPT = 0 ;
-  OPT_RTTI = 0 ;
   ### Parse options ###
   for _i in $(>) {
 	switch $(_i) {
@@ -676,10 +676,8 @@ rule tkBuildPackage
       _jni = 0 ;
 	# Require exceptions
 	case exc :
-        if ( ! ( $(NO_EXCEPTION) = 1 ) ) {
-          _exc = 1 ;
-          tkC++Exceptions $(_exsrc) $(_src) $(_nopchsrc) ;
-        }
+      _exc = 1 ;
+      tkC++Exceptions $(_exsrc) $(_src) $(_nopchsrc) ;
     # Can lint
     case lint :
       if $(LINT) = 1 {
@@ -713,7 +711,8 @@ rule tkBuildPackage
       _pdb = 0 ;
     # Enable RTTI
     case rtti :
-      OPT_RTTI = 1 ;
+      _rtti = 1 ;
+      tkC++RTTI $(_exsrc) $(_src) $(_nopchsrc) ;
     # Console application
     case console :
       _console = 1 ;
@@ -740,6 +739,10 @@ rule tkBuildPackage
   if $(_exc) = 0 {
     tkNoC++Exceptions $(_allsrc) ;
   }
+  if $(_rtti) = 0 {
+    tkNoC++RTTI $(_allsrc) ;
+  }
+
   logVerbose "- Build options of '$(PKGTARGET)' : " $(>) ;
 
   if $(NOAUTOBUILD) = 0 {

@@ -1,3 +1,5 @@
+Import toolkit-cpp-gcc.ham ;
+
 PICFLAGS = -fpic ;
 
 ANDROID_CC_ARGS =
@@ -41,7 +43,6 @@ else {
 ANDROID_CPP_ARGS +=
 -Wno-conversion-null
 -std=c++11
--fno-rtti -fno-exceptions
 -Wno-reorder # Warnings valid for C++ only
 ;
 
@@ -165,17 +166,6 @@ rule tkCC++Build
   logVerbose "- CC++Build: " $(strOpt) ;
 }
 
-rule tkC++Exceptions
-{
-  if $(ADREXCEPTIONS) != 1 {
-    # ECHO "Exceptions are not supported on Android." ;
-  }
-  else {
-    PKGOPTIM += -fexceptions ;
-  }
-  logVerbose "- C++ Exceptions" ;
-}
-
 rule tkCC++Warnings
 {
   # 	  PKGOPTIM += -Wall ;
@@ -246,9 +236,6 @@ rule tkC++Pch
 
   logVerbose "- PCH:" $(_pchTarget) ;
   return $(_hdr:S=$(SUFPCH)) ;
-}
-
-rule tkNoC++Exceptions {
 }
 
 rule tkCC++Lint {
