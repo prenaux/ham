@@ -3,6 +3,7 @@ rule tkC++Exceptions {
 }
 rule tkNoC++Exceptions {
   ObjectC++Flags $(<) : -fno-exceptions ;
+  ObjectDefines $(<) : _HAS_EXCEPTIONS=0 ; # Needed to disable exception usage in the standard C++ library
 }
 
 rule tkC++RTTI {

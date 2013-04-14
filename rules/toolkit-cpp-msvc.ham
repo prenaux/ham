@@ -231,6 +231,7 @@ if $(WINDOWS) = 1 {
     }
   }
   rule tkNoC++Exceptions {
+    ObjectDefines $(<) : _HAS_EXCEPTIONS=0 ; # Needed to disable exception usage in the standard C++ library
   }
 }
 
