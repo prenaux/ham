@@ -28,6 +28,12 @@ $(PICFLAGS)
 -Wno-unused
 -Wno-uninitialized
 -Wno-narrowing
+-Wno-address
+;
+
+# For boost...
+ANDROID_CC_ARGS +=
+-pthread -Wno-deprecated-declarations
 ;
 
 if $(ADR_LLVM_VERSION) {
@@ -125,7 +131,8 @@ switch $(ADR_CPU_PROFILE)
     EXIT "Unknown Android CPU profile '"$(ADR_CPU_PROFILE)"' !" ;
 }
 
-SYSTEM_LINKLIBS = $(ADR_LIBGCC_PATH) -llog -lc -lstdc++ -lm -ldl ;
+# SYSTEM_LINKLIBS = $(ADR_LIBGCC_PATH) -llog -lc -lstdc++ -lm -ldl ;
+SYSTEM_LINKLIBS = -L$(ADR_LIBCPP_DIR_LIBS) -llog -lc -lgnustl_static -lsupc++ -ldl -lm -lgcc ;
 
 CCFLAGS   += $(ANDROID_CC_ARGS) ;
 C++FLAGS  += $(ANDROID_CC_ARGS) $(ANDROID_CPP_ARGS) ;

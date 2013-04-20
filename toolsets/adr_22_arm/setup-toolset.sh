@@ -69,20 +69,21 @@ fi
 export ADR_LIBCPP_DIR_INCLUDE=$ADR_DIR_NDK/sources/cxx-stl/gnu-libstdc++/$GCC_VER/include
 export ADR_LIBCPP_DIR_LIBS=$ADR_DIR_NDK/sources/cxx-stl/gnu-libstdc++/$GCC_VER/libs/$ADR_CPU_ABI
 
-# export ADR_LLVM_VERSION=
-export ADR_LLVM_VERSION=3.2
-export ADR_LLVM_NAME=llvm-${ADR_LLVM_VERSION}
-export ADR_LLVM_TOOLCHAIN_ROOT=${ADR_DIR_NDK}/toolchains/${ADR_LLVM_NAME}
-export ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT=${ADR_LLVM_TOOLCHAIN_ROOT}/prebuilt/$ADR_NDK_PREBUILT
-export ADR_LLVM_TOOLCHAIN_PREFIX=${ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT}/bin/
-export PATH=${ADR_LLVM_TOOLCHAIN_PREFIX}:${PATH}
-VER="$VER
---- adr_22_arm-clang ------------------
-`clang --version`"
-if [ $? != 0 ]; then
-    echo "E/Can't get clang version."
-    return 1
-fi
+# Clang can't build some atomic ops used by boost...
+export ADR_LLVM_VERSION=
+# export ADR_LLVM_VERSION=3.2
+# export ADR_LLVM_NAME=llvm-${ADR_LLVM_VERSION}
+# export ADR_LLVM_TOOLCHAIN_ROOT=${ADR_DIR_NDK}/toolchains/${ADR_LLVM_NAME}
+# export ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT=${ADR_LLVM_TOOLCHAIN_ROOT}/prebuilt/$ADR_NDK_PREBUILT
+# export ADR_LLVM_TOOLCHAIN_PREFIX=${ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT}/bin/
+# export PATH=${ADR_LLVM_TOOLCHAIN_PREFIX}:${PATH}
+# VER="$VER
+# --- adr_22_arm-clang ------------------
+# `clang --version`"
+# if [ $? != 0 ]; then
+    # echo "E/Can't get clang version."
+    # return 1
+# fi
 
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

@@ -20,7 +20,7 @@ actions Link bind NEEDLIBS
   $(LINK) $(LINKFLAGS) $(ANDROID_LINK_EXE_ARGS) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
 }
 
-actions DllLink bind IMPLIBNAME
+actions DllLink
 {
   $(LINK) $(LINKFLAGS) $(ANDROID_LINK_DLL_ARGS) $(>) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
 }

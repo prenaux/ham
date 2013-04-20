@@ -815,16 +815,12 @@ rule tkBuildPackage
 
   ### Package deps ###
   if $(_implib) = 1 && $(NT) && ! $(ANDROID) && ! $(IOS) {
-    local defFile = [ FDirName $(SUBDIR) _$(PACKAGE)-$(LIBS_LOA)-$(BUILDEXT).def ] ;
     local impLib = $(PKGTARGETF:B:S=$(SUFLIB)) ;
     local srcLib = [ FDirName $(OBJDIR) $(impLib) ] ;
-
-    DEPENDS $(PKGTARGETF) : $(defFile) ;
     DEPENDS $(srcLib) : $(PKGTARGETF) ;
 
     LINKFLAGS on $(PKGTARGET) ?= $(LINKFLAGS) ;
     LINKFLAGS on $(PKGTARGET) += -IMPLIB:$(srcLib) ;
-    LINKFLAGS on $(PKGTARGET) += -DEF:$(defFile) ;
 
     local dstLib = [ FDirName $(TK_DIR_LIBS) $(impLib) ] ;
     Touch $(srcLib) ; # Make sure that the lib's date is more recent than the output
