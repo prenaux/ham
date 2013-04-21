@@ -3,6 +3,8 @@
 # import dependencies
 toolset_import build_jni
 if [ $? != 0 ]; then return 1; fi
+toolset_import ant
+if [ $? != 0 ]; then return 1; fi
 
 # toolset
 export HAM_TOOLSET=ANDROID
