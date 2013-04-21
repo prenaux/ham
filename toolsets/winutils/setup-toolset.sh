@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # toolset
-export HAM_TOOLSET_IS_SETUP_WINUTILS=1
 export HAM_TOOLSET=WINUTILS
 export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=winutils

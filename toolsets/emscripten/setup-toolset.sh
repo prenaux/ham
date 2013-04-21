@@ -13,7 +13,6 @@ toolset_import xslt_tools
 if [ $? != 0 ]; then return 1; fi
 
 # toolset
-export HAM_TOOLSET_IS_SETUP_EMSCRIPTEN=1
 export HAM_TOOLSET=EMSCRIPTEN
 export HAM_TOOLSET_VER=2
 export HAM_TOOLSET_NAME=emscripten

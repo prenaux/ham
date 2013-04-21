@@ -5,7 +5,6 @@ toolset_import build_jni
 if [ $? != 0 ]; then return 1; fi
 
 # toolset
-export HAM_TOOLSET_IS_SETUP_ADR_22_ARM=1
 export HAM_TOOLSET=ANDROID
 export HAM_TOOLSET_VER=2
 export HAM_TOOLSET_NAME=adr_22_arm

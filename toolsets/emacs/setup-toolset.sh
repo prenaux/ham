@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # toolset
-export HAM_TOOLSET_IS_SETUP_EMACS=1
 export HAM_TOOLSET=EMACS
 export HAM_TOOLSET_VER=23
 export HAM_TOOLSET_NAME=emacs

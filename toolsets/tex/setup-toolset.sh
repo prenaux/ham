@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # toolset
-export HAM_TOOLSET_IS_SETUP_TEX=1
 export HAM_TOOLSET=TEX
 export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=tex

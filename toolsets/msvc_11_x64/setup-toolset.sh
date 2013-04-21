@@ -45,7 +45,6 @@ echo "I/Found WindowsSDK in '$WINSDKDIR'"
 ########################################################################
 ##  Setup the C++ environment
 ########################################################################
-export HAM_TOOLSET_IS_SETUP_MSVC_11_X64=1
 export HAM_TOOLSET=VISUALC
 export HAM_TOOLSET_VER=11
 export HAM_TOOLSET_NAME=msvc_11_x64

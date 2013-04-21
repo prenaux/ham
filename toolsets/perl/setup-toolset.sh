@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # toolset
-export HAM_TOOLSET_IS_SETUP_PERL=1
 export HAM_TOOLSET=PERL
 export HAM_TOOLSET_VER=516
 export HAM_TOOLSET_NAME=perl

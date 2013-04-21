@@ -6,7 +6,6 @@ toolset_import python_26
 if [ $? != 0 ]; then return 1; fi
 
 # toolset
-export HAM_TOOLSET_IS_SETUP_FLASCC=1
 export HAM_TOOLSET=FLASCC
 export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=flascc

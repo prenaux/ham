@@ -1,11 +1,6 @@
 #!/bin/bash
 
-if [[ "${HAM_TOOLSET_IS_SETUP_XSLT_TOOLS}" == "1" ]] && [ ! -z `type -P xslt_tools-xslt1` ]; then
-    echo "I/xslt_tools already imported."
-else
-
 # toolset
-export HAM_TOOLSET_IS_SETUP_XSLT_TOOLS=1
 export HAM_TOOLSET=XSLT_TOOLS
 export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=xslt_tools
@@ -58,5 +53,3 @@ if [ "$HAM_NO_VER_CHECK" != "1" ]; then
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
-
-fi
