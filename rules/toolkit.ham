@@ -218,6 +218,26 @@ actions tkFileAppend {
   rm _temp_
 }
 
+# tkCopyDataToObjDir BASEDIR : FILES : ADDDIR ;
+rule tkCopyDataToObjDir {
+  local objDir = $(OBJDIR) ;
+  if $(3) {
+    objDir = [ FDirName $(OBJDIR) $(3) ] ;
+  }
+  local r = ;
+  for _s in $(>) {
+    local s = [ StrAfterI $(_s) : "$(<)/" ] ;
+    # ECHO "--[$(<)/] $(_s) -> $(s)" ;
+    local dest = [ FDirName $(objDir) $(s) ] ;
+    MkDir $(dest:D) ;
+    DEPENDS $(dest) : $(dest:D) ;
+    # ECHO "$(_s) -> $(dest)" ;
+    File $(dest) : $(_s) ;
+    r += $(dest) ;
+  }
+  return $(r) ;
+}
+
 #----------------------------------------------------------------------
 #     API Copy
 #----------------------------------------------------------------------
