@@ -2323,6 +2323,23 @@ rule DataList {
   return $(r) ;
 }
 
+# CopyDataToDir BASEDIR : FILES : DESTDIR ;
+rule CopyDataToDir {
+  local destDir = $(3) ;
+  local r = ;
+  for _s in $(>) {
+    local s = [ StrAfterI $(_s) : "$(<)/" ] ;
+    # ECHO "--[$(<)/] $(_s) -> $(s)" ;
+    local dest = [ FDirName $(destDir) $(s) ] ;
+    MkDir $(dest:D) ;
+    DEPENDS $(dest) : $(dest:D) ;
+    # ECHO "$(_s) -> $(dest)" ;
+    File $(dest) : $(_s) ;
+    r += $(dest) ;
+  }
+  return $(r) ;
+}
+
 # TargetLinkLibs TARGET : LIBS ;
 rule TargetLinkLibs
 {
