@@ -1,3 +1,5 @@
+ANDROID = 1 ;
+
 if $(HAM_TOOLSET_NAME) = adr_22_arm {
   OSPLAT = ARM ;
 }
