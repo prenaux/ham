@@ -4,7 +4,8 @@ if [[ -z $HAM_HOME ]]; then
     exit 1
 fi
 . $HAM_HOME/bin/ham-bash-lib.sh
-export HAM_CMD="$HAM_HOME/bin/$HAM_BIN_LOA/ham"
+
+HAM_CMD="$HAM_HOME/bin/$HAM_BIN_LOA/ham"
 
 # the help
 usage() {
@@ -121,7 +122,7 @@ hamIn() {
     if [[ "$_ARG_BUILD_BEFORE" != "" ]]; then
         "$HAM_CMD" $_ARG_BUILD_BEFORE
     fi
-    echo "$HAM_CMD" $*
+    echo "I/Ham Command: $HAM_CMD" $*
     "$HAM_CMD" $*
     errcheck $? ham "Build in $DIR failed."
     if [[ "$CWD" != "$DIR" ]]; then
