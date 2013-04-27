@@ -7,4 +7,3 @@ fi
 export HAM_CMD="$HAM_HOME/bin/$HAM_BIN_LOA/ham"
 export HAM_NO_VER_CHECK=1
 time $HAM_HOME/bin/ham -Tdefault $*
-true
