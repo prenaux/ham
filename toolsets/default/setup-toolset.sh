@@ -4,7 +4,7 @@
 case $HAM_OS in
     NT*)
         . ham-toolset-import.sh xslt_tools
-        ### We're using VS 2012 because VS 2012 **CANNOT** target WinXP ###
+        ### We're using VS 2010 because VS 2012 **CANNOT** target WinXP ###
         # MSVCDIR="`unxpath "$PROGRAMFILES\\Microsoft Visual Studio 11.0\\VC"`"
         # if [ -e "$MSVCDIR/bin/cl.exe" ]; then
             # echo "I/Default Toolset: Detected VS2012"
