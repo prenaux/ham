@@ -59,10 +59,8 @@
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>		/* do the ugly deed */
 # define USE_MYWAIT
-# if !defined( __BORLANDC__ )
 # define wait my_wait
 static int my_wait( int *status );
-# endif
 
 intptr_t __cdecl _my_spawnvp (
     int modeflag,
@@ -832,9 +830,9 @@ intptr_t __cdecl my_dospawn (
     if ( background ) {
         fdwCreate |= DETACHED_PROCESS;
     }
-    else {
-        fdwCreate |= CREATE_NO_WINDOW;
-    }
+    /* else { */
+        /* fdwCreate |= CREATE_NO_WINDOW; */
+    /* } */
 
     /*
      * errno is set to something non-zero if there are some
@@ -860,8 +858,6 @@ intptr_t __cdecl my_dospawn (
         );
 
     dosretval = GetLastError();
-    free( StartupInfo.lpReserved2 );
-
     if (!CreateProcessStatus) {
         _dosmaperr(dosretval);
         return -1;
