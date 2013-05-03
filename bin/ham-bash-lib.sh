@@ -161,6 +161,15 @@ toolset_import() {
     fi
 }
 
+toolset_import_once() {
+    ALREADY_IMPORTED=`ni-hget HAM_IMPORTS $1`
+    if [[ $ALREADY_IMPORTED = "1" ]]; then
+        echo "I/Already imported '$1'."
+    else
+        . hat $1
+    fi
+}
+
 toolset_dl() {
     export CWD=`pwd`
     export DIR=${HAM_HOME}/toolsets/$1
