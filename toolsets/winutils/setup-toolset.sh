@@ -10,7 +10,7 @@ export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/winutils
 case $HAM_OS in
     NT*)
         export WINUTILS_DIR=${HAM_TOOLSET_DIR}/nt-x86/
-        export PATH=${HAM_TOOLSET_DIR}/:${PATH}:${WINUTILS_DIR}/git/bin/:${WINUTILS_DIR}/svn/bin/
+        export PATH=${HAM_TOOLSET_DIR}/:${PATH}
         if [ ! -e "$WINUTILS_DIR" ]; then
             toolset_dl winutils winutils_nt-x86
             if [ ! -e "$WINUTILS_DIR" ]; then
