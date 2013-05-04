@@ -3,6 +3,10 @@ if [[ -z $HAM_HOME ]]; then
     exit 1
 fi
 
+if [[ `pwd` == "/usr" ]]; then
+    cd $HAM_HOME/..
+fi
+
 export BASH_START_PATH=$PATH
 . $HAM_HOME/bin/ham-bash-lib.sh
 . $HAM_HOME/bin/ham-bash-setenv.sh
