@@ -114,6 +114,14 @@
   "Faces in shell buffers."
   :group 'shell)
 
+;; Just in case the faces are not supported
+;; by current theme since the defvar itself
+;; will not override previous values if any.
+(defvar font-ut-green 'font-lock-type-face "Green font for success!")
+(defvar font-ut-red 'font-lock-constant-face "Red font for failure!")
+(defvar font-ut-light 'font-lock-string-face "Light font for highlight!")
+(defvar font-ut-dark 'font-lock-preprocessor-face "dark font for highlight!")
+
 ;;;###autoload
 (defcustom ham-shell-dumb-ham-shell-regexp (purecopy "cmd\\(proxy\\)?\\.exe")
   "Regexp to match shells that don't save their command history, and
@@ -361,15 +369,15 @@ Thus, this does not include the shell's current directory.")
 
 (defvar ham-shell-font-lock-keywords
   '(
-    ("^.*\\[Begin\\].*\\[Begin\\]" . font-unittest-light)
-    ("^.*\\[End\\].*\\[End\\]" . font-unittest-dark)
-    ("^\\[S\\].*" . font-unittest-green)
-    ("^\\[F\\].*(Line.\ [0-9]\\{1,4\\})" . font-unittest-red)
-    ("^\\[F\\].*" . font-unittest-red)
-    ("^.* failed$" . font-unittest-red)
-    ("^.* succeeded$" . font-unittest-green)
-    ("(.*succeeded.*)" . font-unittest-green)
-    ("(.*failed.*)" . font-unittest-red)
+    ("^.*\\[Begin\\].*\\[Begin\\]" . font-ut-light)
+    ("^.*\\[End\\].*\\[End\\]" . font-ut-dark)
+    ("^\\[S\\].*$" . font-ut-green)
+    ("^\\[F\\].*(Line.\ [0-9]\\{1,4\\})" . font-ut-red)
+    ("^\\[F\\].*$" . font-ut-red)
+    ("^.* failed$" . font-ut-red)
+    ("^.* succeeded$" . font-ut-green)
+    ("(.*succeeded.*)" . font-ut-green)
+    ("(.*failed.*)" . font-ut-red)
     ("^.* error: Failure.*$" . font-lock-warning-face)
     ("^.* warning: Failure.*$" . font-lock-warning-face)
     ("^################################$" . font-lock-warning-face)

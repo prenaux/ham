@@ -1,17 +1,10 @@
 (provide 'ni-theme-wombat)
 (require 'ni-base)
 
-(defvar font-unittest-green 'font-unittest-green "Green font for success!")
-(defface font-unittest-green nil "" :group 'font-lock-faces)
-
-(defvar font-unittest-red 'font-unittest-red "Red font for failure!")
-(defface font-unittest-red nil "" :group 'font-lock-faces)
-
-(defvar font-unittest-light 'font-unittest-light "Light font for highlight!")
-(defface font-unittest-light nil "" :group 'font-lock-faces)
-
-(defvar font-unittest-dark 'font-unittest-dark "dark font for highlight!")
-(defface font-unittest-dark nil "" :group 'font-lock-faces)
+(defface font-ut-green-face nil "" :group 'unit-test)
+(defface font-ut-red-face nil "" :group 'unit-test)
+(defface font-ut-light-face nil "" :group 'unit-test)
+(defface font-ut-dark-face nil "" :group 'unit-test)
 
 ;;;======================================================================
 ;;; Color theme - Based on Wombat from Emacs 24
@@ -60,10 +53,10 @@
   '(font-lock-warning-face ((((class color)) (:foreground "#ccaa8f"))))
 
   ;; Unit testing related colors;
-  '(font-unittest-green ((((class color)) (:foreground "#68f56d"))))
-  '(font-unittest-red ((((class color)) (:foreground "#f5686d"))))
-  '(font-unittest-light ((((class color)) (:background "#666666" :foreground "#dddddd"))))
-  '(font-unittest-dark ((((class color)) (:background "#333333" :foreground "#aaaaaa"))))
+  '(font-ut-green-face ((((class color)) (:foreground "#68f56d"))))
+  '(font-ut-red-face ((((class color)) (:foreground "#f5686d"))))
+  '(font-ut-light-face ((((class color)) (:background "#666666" :foreground "#dddddd"))))
+  '(font-ut-dark-face ((((class color)) (:background "#333333" :foreground "#aaaaaa"))))
 
   ;; Button and link faces
   '(link ((((class color)) (:foreground "#8ac6f2" :underline t))))
@@ -139,3 +132,15 @@
   )
  )
 )
+
+;; defvar first (Does not override)...
+(defvar font-ut-green nil "Green font for success!")
+(defvar font-ut-red nil "Red font for failure!")
+(defvar font-ut-light nil "Light font for highlight!")
+(defvar font-ut-dark nil "dark font for highlight!")
+
+;; ... then setq (Overrides previous values).
+(setq font-ut-green 'font-ut-green-face)
+(setq font-ut-red 'font-ut-red-face)
+(setq font-ut-light 'font-ut-light-face)
+(setq font-ut-dark 'font-ut-dark-face)
