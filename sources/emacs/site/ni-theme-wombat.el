@@ -1,6 +1,18 @@
 (provide 'ni-theme-wombat)
 (require 'ni-base)
 
+(defvar font-unittest-green 'font-unittest-green "Green font for success!")
+(defface font-unittest-green nil "" :group 'font-lock-faces)
+
+(defvar font-unittest-red 'font-unittest-red "Red font for failure!")
+(defface font-unittest-red nil "" :group 'font-lock-faces)
+
+(defvar font-unittest-light 'font-unittest-light "Light font for highlight!")
+(defface font-unittest-light nil "" :group 'font-lock-faces)
+
+(defvar font-unittest-dark 'font-unittest-dark "dark font for highlight!")
+(defface font-unittest-dark nil "" :group 'font-lock-faces)
+
 ;;;======================================================================
 ;;; Color theme - Based on Wombat from Emacs 24
 ;;;======================================================================
@@ -46,6 +58,12 @@
   '(font-lock-keyword-face ((((class color)) (:foreground "#8ac6f2" :weight bold))))
   ;; used for warnings and F/
   '(font-lock-warning-face ((((class color)) (:foreground "#ccaa8f"))))
+
+  ;; Unit testing related colors;
+  '(font-unittest-green ((((class color)) (:foreground "#68f56d"))))
+  '(font-unittest-red ((((class color)) (:foreground "#f5686d"))))
+  '(font-unittest-light ((((class color)) (:background "#666666" :foreground "#dddddd"))))
+  '(font-unittest-dark ((((class color)) (:background "#333333" :foreground "#aaaaaa"))))
 
   ;; Button and link faces
   '(link ((((class color)) (:foreground "#8ac6f2" :underline t))))

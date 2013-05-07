@@ -361,6 +361,15 @@ Thus, this does not include the shell's current directory.")
 
 (defvar ham-shell-font-lock-keywords
   '(
+    ("^.*\\[Begin\\].*\\[Begin\\]" . font-unittest-light)
+    ("^.*\\[End\\].*\\[End\\]" . font-unittest-dark)
+    ("^\\[S\\].*" . font-unittest-green)
+    ("^\\[F\\].*(Line.\ [0-9]\\{1,4\\})" . font-unittest-red)
+    ("^\\[F\\].*" . font-unittest-red)
+    ("^.* failed$" . font-unittest-red)
+    ("^.* succeeded$" . font-unittest-green)
+    ("(.*succeeded.*)" . font-unittest-green)
+    ("(.*failed.*)" . font-unittest-red)
     ("^.* error: Failure.*$" . font-lock-warning-face)
     ("^.* warning: Failure.*$" . font-lock-warning-face)
     ("^################################$" . font-lock-warning-face)
@@ -372,14 +381,6 @@ Thus, this does not include the shell's current directory.")
     ("^:::.*$" . font-lock-type-face)
     ("^==.*$" . font-lock-builtin-face)
     ("^= TODO.*$" . font-lock-builtin-face)
-    ;; ("^.*\\[Debug .*\\]:.*" . font-lock-preprocessor-face)
-    ;; ("^.*\\[Error .*\\]:.*" . font-lock-constant-face)
-    ;; ("^.*\\[Warning .*\\]:.*" . font-lock-builtin-face)
-    ;; ("^.*\\[Info .*\\]:.*" . font-lock-keyword-face)
-    ;; ("^\\[ERROR\\].*$" . font-lock-constant-face)
-    ;; ("^\\[WARNING\\].*$" . font-lock-builtin-face)
-    ;; ("^\\[INFO\\].*$" . font-lock-keyword-face)
-    ;; ("^\\[DEBUG\\].*$" . font-lock-preprocessor-face)
     ("^D/.*$" . font-lock-preprocessor-face)
     ("^V/.*$" . font-lock-type-face)
     ("^E/.*$" . font-lock-constant-face)
@@ -398,19 +399,6 @@ Thus, this does not include the shell's current directory.")
     ("^warning:.*$" . font-lock-builtin-face)
     ("^info:.*$" . font-lock-keyword-face)
     ("^debug:.*$" . font-lock-preprocessor-face)
-    ;; ("[ \t]\\([+-][^ \t\n]+\\)" 1 font-lock-comment-face)
-    ;; ("[ \t]\\([+-][^ \t\n]+\\)" 1 font-lock-comment-face)
-    ;; ("^[^ \t\n]+:.*" . font-lock-string-face)
-    ;; ("^\\[[1-9][0-9]*\\]" . font-lock-string-face)
-    ;; ("^=.*" . font-lock-string-face) ;; brighter yellow
-    ;; ("^=.*" . font-lock-preprocessor-face) ;; darker yellow
-    ;; ("^=.*" . font-lock-constant-face) ;; red
-    ;; ("^=.*" . font-lock-comment-face)  ;; purple
-    ;; ("^=.*" . font-lock-warning-face)  ;; white on red
-    ;; ("^=.*" . font-lock-error-face)    ;; nothing...
-    ;; ("^=.*" . font-lock-type-face) ;; green
-    ;; ("^=.*" . font-lock-builtin-face) ;; orange
-    ;; ("^=.*" . font-lock-keyword-face) ;; blue
     )
   "Additional expressions to highlight in Shell mode.")
 
