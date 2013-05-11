@@ -114,6 +114,14 @@
   "Faces in shell buffers."
   :group 'shell)
 
+;; Just in case the faces are not supported
+;; by current theme since the defvar itself
+;; will not override previous values if any.
+(defvar font-ut-green 'font-lock-type-face "Green font for success!")
+(defvar font-ut-red 'font-lock-constant-face "Red font for failure!")
+(defvar font-ut-light 'font-lock-string-face "Light font for highlight!")
+(defvar font-ut-dark 'font-lock-preprocessor-face "dark font for highlight!")
+
 ;;;###autoload
 (defcustom ham-shell-dumb-ham-shell-regexp (purecopy "cmd\\(proxy\\)?\\.exe")
   "Regexp to match shells that don't save their command history, and
@@ -361,6 +369,15 @@ Thus, this does not include the shell's current directory.")
 
 (defvar ham-shell-font-lock-keywords
   '(
+    ("^.*\\[Begin\\].*\\[Begin\\]" . font-ut-light)
+    ("^.*\\[End\\].*\\[End\\]" . font-ut-dark)
+    ("^\\[S\\].*$" . font-ut-green)
+    ("^\\[F\\].*(Line.\ [0-9]\\{1,4\\})" . font-ut-red)
+    ("^\\[F\\].*$" . font-ut-red)
+    ("^.* failed$" . font-ut-red)
+    ("^.* succeeded$" . font-ut-green)
+    ("(.*succeeded.*)" . font-ut-green)
+    ("(.*failed.*)" . font-ut-red)
     ("^.* error: Failure.*$" . font-lock-warning-face)
     ("^.* warning: Failure.*$" . font-lock-warning-face)
     ("^################################$" . font-lock-warning-face)
@@ -372,14 +389,6 @@ Thus, this does not include the shell's current directory.")
     ("^:::.*$" . font-lock-type-face)
     ("^==.*$" . font-lock-builtin-face)
     ("^= TODO.*$" . font-lock-builtin-face)
-    ;; ("^.*\\[Debug .*\\]:.*" . font-lock-preprocessor-face)
-    ;; ("^.*\\[Error .*\\]:.*" . font-lock-constant-face)
-    ;; ("^.*\\[Warning .*\\]:.*" . font-lock-builtin-face)
-    ;; ("^.*\\[Info .*\\]:.*" . font-lock-keyword-face)
-    ;; ("^\\[ERROR\\].*$" . font-lock-constant-face)
-    ;; ("^\\[WARNING\\].*$" . font-lock-builtin-face)
-    ;; ("^\\[INFO\\].*$" . font-lock-keyword-face)
-    ;; ("^\\[DEBUG\\].*$" . font-lock-preprocessor-face)
     ("^D/.*$" . font-lock-preprocessor-face)
     ("^V/.*$" . font-lock-type-face)
     ("^E/.*$" . font-lock-constant-face)
@@ -398,19 +407,6 @@ Thus, this does not include the shell's current directory.")
     ("^warning:.*$" . font-lock-builtin-face)
     ("^info:.*$" . font-lock-keyword-face)
     ("^debug:.*$" . font-lock-preprocessor-face)
-    ;; ("[ \t]\\([+-][^ \t\n]+\\)" 1 font-lock-comment-face)
-    ;; ("[ \t]\\([+-][^ \t\n]+\\)" 1 font-lock-comment-face)
-    ;; ("^[^ \t\n]+:.*" . font-lock-string-face)
-    ;; ("^\\[[1-9][0-9]*\\]" . font-lock-string-face)
-    ;; ("^=.*" . font-lock-string-face) ;; brighter yellow
-    ;; ("^=.*" . font-lock-preprocessor-face) ;; darker yellow
-    ;; ("^=.*" . font-lock-constant-face) ;; red
-    ;; ("^=.*" . font-lock-comment-face)  ;; purple
-    ;; ("^=.*" . font-lock-warning-face)  ;; white on red
-    ;; ("^=.*" . font-lock-error-face)    ;; nothing...
-    ;; ("^=.*" . font-lock-type-face) ;; green
-    ;; ("^=.*" . font-lock-builtin-face) ;; orange
-    ;; ("^=.*" . font-lock-keyword-face) ;; blue
     )
   "Additional expressions to highlight in Shell mode.")
 
