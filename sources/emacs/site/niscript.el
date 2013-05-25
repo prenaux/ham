@@ -178,13 +178,12 @@ comments have been removed."
 (defun nip-continued-var-decl-list-p ()
   "Return non-nil if point is inside a continued variable declaration list."
   (interactive)
-  (let ((start (save-excursion (nip-re-search-backward "\\<local\\>" nil t))))
+  (let ((start (save-excursion nil)))
     (and start
 	 (save-excursion (re-search-backward "\n" start t))
 	 (not (save-excursion
 		(nip-re-search-backward
 		 ";\\|[^, \t][ \t]*\\(/[/*]\\|$\\)" start t))))))
-
 
 ;; --- Font Lock ---
 
@@ -212,7 +211,7 @@ comments have been removed."
   "Regular expression matching any niScript keyword.")
 
 (defconst nip-basic-type-re
-  (regexp-opt '("local" "var"
+  (regexp-opt '("local"
                 "void" "bool" "int" "float" "string" "stringarray" "array" "map") 'words)
   "Regular expression matching any predefined type in niScript.")
 
@@ -360,17 +359,6 @@ comments have been removed."
 	   nil
 	   nil
 	   '(1 font-lock-variable-name-face)))
-;;
-    ;; continued variable declaration list
-	;; --- Disabled, makes emacs freeze when inputing a mix of "' in some cases... (also doesnt have any notable visible impact...)
-;;    (list
-;;     (concat "^[ \t]*\\w+[ \t]*\\([,;=]\\|/[/*]\\|$\\)")
-;;     (list "\\(\\w+\\)[ \t]*\\([=;].*\\|,\\|/[/*]\\|$\\)"
-;;	   '(if (save-excursion (backward-char) (nip-continued-var-decl-list-p))
-;;		(backward-word 1)
-;;	      (end-of-line))
-;;	   '(end-of-line)
-;;	   '(1 font-lock-variable-name-face)))
 
     ;; formal parameters
     (list
@@ -408,11 +396,10 @@ comments have been removed."
   followed by an opening brace.")
 
 (defconst nip-indent-operator-re
-  (concat "[-+*/%<>=&^|?:]\\([^-+*/]\\|$\\)\\|"
-          (regexp-opt '("in" "instanceof") 'words))
+  (concat "[-+*/%<>=&^|?:]\\([^-+*/:]\\|$\\)\\|"
+          (regexp-opt '("in") 'words))
   "Regular expression matching operators that affect indentation
   of continued expressions.")
-
 
 (defun nip-looking-at-operator-p ()
   "Return non-nil if text after point is an operator (that is not
@@ -496,7 +483,7 @@ returns nil."
           (continued-expr-p (nip-continued-expression-p)))
       (cond (ctrl-stmt-indent)
 	    ((nip-continued-var-decl-list-p)
-	     (nip-re-search-backward "\\<var\\>" nil t)
+	     (nip-re-search-backward "\\<local\\>" nil t)
 	     (+ (current-indentation) niscript-indent-level))
             ((nth 1 parse-status)
              (goto-char (nth 1 parse-status))
