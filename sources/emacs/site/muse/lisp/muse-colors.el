@@ -56,7 +56,7 @@
 See `muse-colors-buffer' for more information."
   :group 'muse-mode)
 
-(defcustom muse-colors-autogen-headings t
+(defcustom muse-colors-autogen-headings nil
   "Specify whether the heading faces should be auto-generated.
 The default is to scale them.
 
@@ -70,7 +70,7 @@ this to nil."
                  (const :tag "Don't touch the headings" nil))
   :group 'muse-colors)
 
-(defcustom muse-colors-evaluate-lisp-tags t
+(defcustom muse-colors-evaluate-lisp-tags nil
   "Specify whether to evaluate the contents of <lisp> tags at
 display time.  If nil, don't evaluate them.  If non-nil, evaluate
 them.
@@ -80,7 +80,7 @@ displayed text."
   :type 'boolean
   :group 'muse-colors)
 
-(defcustom muse-colors-inline-images t
+(defcustom muse-colors-inline-images nil
   "Specify whether to inline images inside the Emacs buffer.  If
 nil, don't inline them.  If non-nil, an image link will be
 replaced by the image.
@@ -293,7 +293,7 @@ This is usually called with `muse-colors-markup' as both arguments."
          (e1 (match-end 0))
          (leader (- e1 beg))
          b2 e2 multiline)
-    (unless (or (eq (get-text-property beg 'invisible) 'muse)
+    (unless (or (eq (get-text-property beg 'visible) 'muse)
                 (get-text-property beg 'muse-comment)
                 (get-text-property beg 'muse-directive))
       ;; check if it's a header
@@ -327,12 +327,12 @@ This is usually called with `muse-colors-markup' as both arguments."
                         (not (eq (char-after b2) ?*))
                         (and (not (eobp))
                              (eq (char-syntax (char-after (1+ b2))) ?w)))
-              (add-text-properties beg e1 '(invisible muse))
+              (add-text-properties beg e1 '(visible muse))
               (add-text-properties
                e1 b2 (list 'face (cond ((= leader 1) 'muse-emphasis-1)
                                        ((= leader 2) 'muse-emphasis-2)
                                        ((= leader 3) 'muse-emphasis-3))))
-              (add-text-properties b2 e2 '(invisible muse))
+              (add-text-properties b2 e2 '(visible muse))
               (when multiline
                 (add-text-properties
                  beg e2 '(font-lock-multiline t))))))))))
@@ -341,7 +341,7 @@ This is usually called with `muse-colors-markup' as both arguments."
   "Color underlined text."
   (let ((start (match-beginning 0))
         multiline)
-    (unless (or (eq (get-text-property start 'invisible) 'muse)
+    (unless (or (eq (get-text-property start 'visible) 'muse)
                 (get-text-property start 'muse-comment)
                 (get-text-property start 'muse-directive))
       ;; beginning of line or space or symbol
@@ -361,11 +361,11 @@ This is usually called with `muse-colors-markup' as both arguments."
                       (not (eq (char-after (point)) ?_))
                       (and (not (eobp))
                            (eq (char-syntax (char-after (1+ (point)))) ?w)))
-            (add-text-properties start (1+ start) '(invisible muse))
+            (add-text-properties start (1+ start) '(visible muse))
             (add-text-properties (1+ start) (point) '(face underline))
             (add-text-properties (point)
                                  (min (1+ (point)) (point-max))
-                                 '(invisible muse))
+                                 '(visible muse))
             (when multiline
               (add-text-properties
                start (min (1+ (point)) (point-max))
@@ -375,7 +375,7 @@ This is usually called with `muse-colors-markup' as both arguments."
   "Render in teletype and suppress further parsing."
   (let ((start (match-beginning 0))
         multiline)
-    (unless (or (eq (get-text-property start 'invisible) 'muse)
+    (unless (or (eq (get-text-property start 'visible) 'muse)
                 (get-text-property start 'muse-comment)
                 (get-text-property start 'muse-directive))
       ;; beginning of line or space or symbol
@@ -396,11 +396,11 @@ This is usually called with `muse-colors-markup' as both arguments."
                       (and (not (eobp))
                            (eq (char-syntax (char-after (1+ (point)))) ?w)))
             (setq pos (min (1+ (point)) (point-max)))
-            (add-text-properties start (1+ start) '(invisible muse))
+            (add-text-properties start (1+ start) '(visible muse))
             (add-text-properties (1+ start) (point) '(face muse-verbatim))
             (add-text-properties (point)
                                  (min (1+ (point)) (point-max))
-                                 '(invisible muse))
+                                 '(visible muse))
             (when multiline
               (add-text-properties
                start (min (1+ (point)) (point-max))
@@ -456,7 +456,7 @@ properties to change the appearance of the buffer.
 
 This markup is used to modify the appearance of the original text to
 make it look more like the published HTML would look (like making some
-markup text invisible, inlining images, etc).
+markup text visible, inlining images, etc).
 
 font-lock is used to apply the markup rules, so that they can happen
 on a deferred basis.  They are not always accurate, but you can use
@@ -656,7 +656,7 @@ This is used to delay highlighting of <lisp> tags in #title until later.")
     (unwind-protect
         (remove-text-properties
          begin end '(face nil font-lock-multiline nil end-glyph nil
-                          invisible nil intangible nil display nil
+                          visible nil intangible nil display nil
                           mouse-face nil keymap nil help-echo nil
                           muse-link nil muse-directive nil muse-comment nil
                           muse-no-implicit-link nil))
@@ -735,7 +735,7 @@ This is used to delay highlighting of <lisp> tags in #title until later.")
   "Determine text properties to use for a link."
   (append (if face
               (list 'face face 'mouse-face 'highlight 'muse-link t)
-            (list 'invisible 'muse 'intangible t))
+            (list 'visible 'muse 'intangible t))
           (list 'help-echo help-str 'rear-nonsticky t
                 muse-keymap-property muse-mode-local-map)))
 
@@ -823,7 +823,7 @@ in place of an image link defined by BEG and END."
                                  (error nil))))
             (when display-stuff
               (add-text-properties beg end (list 'display display-stuff))))
-        ;; use make-glyph and invisible property
+        ;; use make-glyph and visible property
         (and (setq glyph (muse-make-file-glyph image-file))
              (progn
                (add-text-properties beg end invis-props)
@@ -863,7 +863,7 @@ in place of an image link defined by BEG and END."
            (match-beginning 0) (match-end 0) invis-props)
         (if desc
             (progn
-              ;; we put the normal face properties on the invisible
+              ;; we put the normal face properties on the visible
               ;; portion too, since emacs sometimes will position
               ;; the cursor on an intangible character
               (add-text-properties (match-beginning 0)
@@ -890,7 +890,7 @@ in place of an image link defined by BEG and END."
 
 (defun muse-colors-implicit-link ()
   "Color implicit links."
-  (unless (or (eq (get-text-property (match-beginning 0) 'invisible) 'muse)
+  (unless (or (eq (get-text-property (match-beginning 0) 'visible) 'muse)
               (get-text-property (match-beginning 0) 'muse-comment)
               (get-text-property (match-beginning 0) 'muse-directive)
               (get-text-property (match-beginning 0) 'muse-no-implicit-link)
