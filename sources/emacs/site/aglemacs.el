@@ -201,62 +201,51 @@ the text to another HTML buffer."
 ;;;======================================================================
 (agl-begin-time-block "Modes")
 
+(defun ni-make-newline-indent ()
+  "Sets up preferred newline behavior. Not set by default. Meant
+  to be added to `c-mode-common-hook'."
+  (interactive)
+  (define-key c-mode-base-map "\C-m" 'newline-and-indent)
+  (define-key c-mode-base-map [ret] 'newline-and-indent))
+
 ;;*** DOS BATCH FILES ***************************************************
 (require 'batch-mode)
+
 ;;*** Bash Script *******************************************************
 (add-to-list 'auto-mode-alist '("\\.sed\\'" . sh-mode))
 
-;;*** C/C++/Acc *********************************************************
+;;*** C/C++ Style *******************************************************
+(require 'google-c-style)
 
-;; Use C-c C-s to see the type of the current token in a cc-mode
-;; source file.
-(c-add-style "agl"
-			 '("awk"
-			   (c-comment-only-line-offset . (0 . 0))
-			   (c-offsets-alist
-				(innamespace . -)
-				(inline-open . 0)
-				(statement-case-open . 0)
-				(statement-cont . +)
-				(case-label . 0)
-				)))
-(setq c-default-style "agl")
+(add-hook 'c-mode-common-hook 'google-set-c-style)
+(add-hook 'c-mode-common-hook 'ni-make-newline-indent)
 
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.acc\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.ncc\\'" . c++-mode))
-;; (add-to-list 'auto-mode-alist '("\\.m\\'" . c-mode))
 
 (setq auto-mode-alist
       (cons '("\\.m$" . objc-mode) auto-mode-alist))
 
-(defun c-reformat-buffer()
-  (interactive)
-  (save-buffer)
-  (setq sh-indent-command (concat
-						   "indent -st -bad --blank-lines-after-procedures "
-						   "-bli0 -i4 -l79 -ncs -npcs -nut -npsl -fca "
-						   "-lc79 -fc1 -cli4 -bap -sob -ci4 -nlp "
-						   buffer-file-name))
-  (mark-whole-buffer)
-  (universal-argument)
-  (shell-command-on-region
-   (point-min)
-   (point-max)
-   sh-indent-command
-   (buffer-name))
-  (save-buffer))
+;;*** Java **************************************************************
+(require 'eclipse-java-style)
+
+(add-hook 'java-mode-hook (lambda ()
+                            (eclipse-set-java-style)
+                            (ni-make-newline-indent)))
 
 ;;*** LUA ***************************************************************
 (setq auto-mode-alist (cons '("\\.lua$" . lua-mode) auto-mode-alist))
 (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
 
 ;;*** JavaScript ********************************************************
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
-(add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
-(add-to-list 'auto-mode-alist '("\\.jsw\\'" . js-mode))
-(add-to-list 'auto-mode-alist '("\\.jsr\\'" . js-mode))
+;; Use niscript-mode because the JS modes I tested are quite broken, and also
+;; they are really slow
+(add-to-list 'auto-mode-alist '("\\.js\\'" . niscript-mode))
+(add-to-list 'auto-mode-alist '("\\.json\\'" . niscript-mode))
+(add-to-list 'auto-mode-alist '("\\.jsw\\'" . niscript-mode))
+(add-to-list 'auto-mode-alist '("\\.jsr\\'" . niscript-mode))
 
 ;;*** CoffeeScript ******************************************************
 (require 'coffee-mode)
@@ -274,17 +263,13 @@ the text to another HTML buffer."
 (add-to-list 'auto-mode-alist '("\\.php4\\'" . php-mode))
 (add-to-list 'auto-mode-alist '("\\.php5\\'" . php-mode))
 
-;;*** aglScript *********************************************************
-(autoload 'aglscript-mode "aglscript" nil t)
-(NotBatchMode
- (add-hook 'aglscript-mode-hook 'flymake-aq-load))
-(add-to-list 'auto-mode-alist '("\\.aq\\'" . aglscript-mode))
-(add-to-list 'auto-mode-alist '("\\.aqw\\'" . aglscript-mode))
-(add-to-list 'auto-mode-alist '("\\.aqp\\'" . aglscript-mode))
-(add-to-list 'auto-mode-alist '("\\.nil\\'" . aglscript-mode))
-(add-to-list 'auto-mode-alist '("\\.ni\\'" . aglscript-mode))
-(add-to-list 'auto-mode-alist '("\\.niw\\'" . aglscript-mode))
-(add-to-list 'auto-mode-alist '("\\.nip\\'" . aglscript-mode))
+;;*** niScript **********************************************************
+(autoload 'niscript-mode "niscript" nil t)
+(add-to-list 'auto-mode-alist '("\\.nil\\'" . niscript-mode))
+(add-to-list 'auto-mode-alist '("\\.nit\\'" . niscript-mode))
+(add-to-list 'auto-mode-alist '("\\.ni\\'" . niscript-mode))
+(add-to-list 'auto-mode-alist '("\\.niw\\'" . niscript-mode))
+(add-to-list 'auto-mode-alist '("\\.nip\\'" . niscript-mode))
 
 ;;*** TScript ***********************************************************
 (add-to-list 'auto-mode-alist '("\\.at\\'" . c-mode))
@@ -845,193 +830,6 @@ LIST defaults to all existing live buffers."
     ;(message "%s" date)))
 
 ;;;======================================================================
-;;; Flymake
-;;;======================================================================
-(NotBatchMode
- (agl-begin-time-block "Flymake")
-
-(require 'flymake)
-
-; Set flymake to start only when saving the buffer
-(setq flymake-no-changes-timeout 999999
-      flymake-start-syntax-check-on-newline nil)
-
-; Error pattern matching :
-;   regexp file-idx line-idx col-idx (optional) text-idx(optional), match-end to end of string is error text
-
-(defun agl-flymake-goto-prev-error-disp ()
- "Flymake, goto the previous error and display it in the minibuffer."
-  (interactive)
-  (flymake-goto-prev-error)
-  (agl-flymake-display-err-minibuf)
-)
-
-(defun agl-flymake-goto-next-error-disp ()
- "Flymake, goto the next error and display it in the minibuffer."
-  (interactive)
-  (flymake-goto-next-error)
-  (agl-flymake-display-err-minibuf)
-)
-
-(defun agl-flymake-display-err-minibuf ()
-  "Displays the error/warning for the current line in the minibuffer"
-  (interactive)
-  (let* ((line-no             (flymake-current-line-no))
-         (line-err-info-list  (nth 0 (flymake-find-err-info flymake-err-info line-no)))
-         (count               (length line-err-info-list))
-         )
-    (while (> count 0)
-      (when line-err-info-list
-        (let* ((file       (flymake-ler-file (nth (1- count) line-err-info-list)))
-               (full-file  (flymake-ler-full-file (nth (1- count) line-err-info-list)))
-               (text (flymake-ler-text (nth (1- count) line-err-info-list)))
-               (line       (flymake-ler-line (nth (1- count) line-err-info-list))))
-          (message "%s:%s: %s" full-file line text)
-          )
-        )
-      (setq count (1- count)))))
-
-(defun agl-flymake-follow-err ()
-  "Open the file/line in which the error is described."
-  (interactive)
-  (let* ((line-no             (flymake-current-line-no))
-         (line-err-info-list  (nth 0 (flymake-find-err-info flymake-err-info line-no)))
-         (count               (length line-err-info-list))
-         )
-    (while (> count 0)
-      (when line-err-info-list
-        (let* ((file       (flymake-ler-file (nth (1- count) line-err-info-list)))
-               (full-file  (flymake-ler-full-file (nth (1- count) line-err-info-list)))
-               (text (flymake-ler-text (nth (1- count) line-err-info-list)))
-               (line       (flymake-ler-line (nth (1- count) line-err-info-list))))
-           ;;(message "%s:%s: %s" full-file line text)
-		   (find-file full-file)
-		   (goto-line line)
-          )
-        )
-      (setq count (1- count)))))
-
-(defun agl-flymake-goto-prev-error-disp ()
- "Flymake, goto the previous error and display it in the minibuffer."
-  (interactive)
-  (flymake-goto-prev-error)
-  (agl-flymake-display-err-minibuf)
-)
-
-(defun agl-flymake-goto-next-error-disp ()
- "Flymake, goto the next error and display it in the minibuffer."
-  (interactive)
-  (flymake-goto-next-error)
-  (agl-flymake-display-err-minibuf)
-)
-
-
-;; Return the filename directly, ignore the prefixe
-;; Ex: (agl-flymake-create-passthrough "c:/machin/roger.java" "xxx") -> "c:/machin/roger.java"
-(defun agl-flymake-create-temp-passthrough (file-name prefix)
-  file-name)
-
-;; Generates a tempfile in the temp folder
-;; Ex: (agl-flymake-create-temp-intmp "c:/machin/roger.java" "xxx") -> "c:/.tmp/78979879/roger.java"
-(defun agl-flymake-create-temp-intmp (file-name prefix)
-  (file-truename (expand-file-name (file-name-nondirectory file-name)
-                                   (expand-file-name (int-to-string (abs (random))) (flymake-get-temp-dir)))))
-
-;; Generates a _FILENAME_.EXT tempfile (adds a _ in front so that the Glob of Ham skips it always)
-;; Ex: (agl-flymake-create-temp-inplace "c:/machin/roger.java" "xxx") -> "c:/machin/_roger_xxx.java"
-(defun agl-flymake-create-temp-inplace (file-name prefix)
-  (unless (stringp file-name)
-    (error "Invalid file-name"))
-  (or prefix
-      (setq prefix "flymake"))
-  (let* ((temp-name (concat (file-name-directory file-name)
-                            "_"
-                            (file-name-sans-extension (file-name-nondirectory  file-name))
-                            "_" prefix
-                            (and (file-name-extension file-name)
-                                 (concat "." (file-name-extension file-name))))))
-    (flymake-log 3 "create-temp-inplace: file=%s temp=%s" file-name temp-name)
-    temp-name))
-
-;;**********************************************************************
-;; Flymake - aglScript
-;;**********************************************************************
-(defconst flymake-allowed-aq-file-name-masks '(
-      ("\\.aq$" flymake-aq-init)
-      ("\\.aqw$" flymake-aq-init)
-      ("\\.aqp$" flymake-aq-init)
-      ("\\.ni$" flymake-aq-init)
-      ("\\.niw$" flymake-aq-init)
-      ("\\.nip$" flymake-aq-init)
-      )
-      "Filename extensions that switch on flymake-aq mode syntax checks")
-(defconst flymake-aq-err-line-pattern-re
-      '("^E/[[:space:]]*\\(.*\\)(\\([0-9]+\\)) : (col \\([0-9]+\\)) \\(.*\\)$" 1 2 3 4)
-      "Regexp matching aglScript error messages")
-
-(defun flymake-aq-init ()
-  (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                     'flymake-create-temp-inplace))
-         (local-file  (file-relative-name
-                       temp-file
-                       (file-name-directory buffer-file-name))))
-    (list (concat (getenv "WORK") "/niLang/bin/ni-flymake") (list "-e" local-file))))
-
-(defun flymake-aq-load ()
-  (interactive)
-  (if (buffer-file-name)
-      (progn
-        (setq flymake-allowed-file-name-masks (append flymake-allowed-file-name-masks flymake-allowed-aq-file-name-masks))
-        (setq flymake-err-line-patterns (cons flymake-aq-err-line-pattern-re flymake-err-line-patterns))
-        (flymake-mode t)))
-)
-
-;;**********************************************************************
-;; Flymake - C++
-;;**********************************************************************
-
- (defun agl-flymake-cpp-make-init ()
-   (flymake-simple-make-init-impl 'agl-flymake-create-temp-inplace t t "Makefile" 'flymake-get-make-cmdline))
-
- (push '(".+\\.c$" agl-flymake-cpp-make-init) flymake-allowed-file-name-masks)
- (push '(".+\\.cc$" agl-flymake-cpp-make-init) flymake-allowed-file-name-masks)
- (push '(".+\\.cpp$" agl-flymake-cpp-make-init) flymake-allowed-file-name-masks)
- (push '(".+\\.cxx$" agl-flymake-cpp-make-init) flymake-allowed-file-name-masks)
- (push '(".+\\.acc$" agl-flymake-cpp-make-init) flymake-allowed-file-name-masks)
- (push '(".+\\.ncc$" agl-flymake-cpp-make-init) flymake-allowed-file-name-masks)
- (push '(".+\\.hpp$" agl-flymake-cpp-make-init-tocpp) flymake-allowed-file-name-masks)
- (push '(".+\\.inl$" agl-flymake-cpp-make-init-tocpp) flymake-allowed-file-name-masks)
- (push '(".+\\.m$" agl-flymake-cpp-make-init) flymake-allowed-file-name-masks)
- (push '(".+\\.mm$" agl-flymake-cpp-make-init) flymake-allowed-file-name-masks)
-
-;;**********************************************************************
-;; Flymake - Java & Scala
-;;**********************************************************************
-
-(defun agl-flymake-make-inplace-init (use-relative-base-dir use-relative-source build-file-name get-cmdline-f)
-  "Create syntax check command line for a directly checked source file."
-  (let* ((args nil)
-         (buildfile-dir      (flymake-init-find-buildfile-dir buffer-file-name build-file-name)))
-    (if buildfile-dir
-          (setq args (flymake-get-syntax-check-program-args buffer-file-name buildfile-dir
-                                                            use-relative-base-dir use-relative-source
-                                                            get-cmdline-f)))
-    args))
-
-(defun agl-flymake-java-init ()
-  (agl-flymake-make-inplace-init t t "Makefile" 'flymake-get-make-cmdline))
-
-;; do nothing because we compile inplace
-(defun agl-flymake-java-cleanup () t)
-
-(push '("\\(.*?\\):\\([0-9]+\\): error: \\(.*?\\)\n" 1 2 nil 2 3 (6 compilation-error-face)) flymake-err-line-patterns)
-(push '("\\(.*?\\):\\([0-9]+\\): warning: \\(.*?\\)\n" 1 2 nil 2 3 (6 compilation-warning-face)) flymake-err-line-patterns)
-(push '(".+\\.java$" agl-flymake-java-init agl-flymake-java-cleanup) flymake-allowed-file-name-masks)
-(push '(".+\\.scala$" agl-flymake-java-init agl-flymake-java-cleanup) flymake-allowed-file-name-masks)
-
-) ;; End of NotBatchMode
-
-;;;======================================================================
 ;;; Overlays
 ;;;======================================================================
 (NotBatchMode
@@ -1209,9 +1007,9 @@ LIST defaults to all existing live buffers."
 )
 
 ;; tab size
-(setq default-tab-width 4)
+(setq default-tab-width 2)
 ;; use this to change the indentation offset
-(setq c-basic-offset 4)
+(setq c-basic-offset 2)
 ;; use tabs for indentation (t)
 (setq-default indent-tabs-mode nil)
 
@@ -1272,7 +1070,7 @@ LIST defaults to all existing live buffers."
  (agl-begin-time-block "Autoindent yank")
 
 ;; automatically indenting yanked text if in programming-modes
-(defvar yank-indent-modes '(emacs-lisp-mode erlang-mode aglscript-mode
+(defvar yank-indent-modes '(emacs-lisp-mode erlang-mode niscript-mode
                             c-mode c++-mode
                             tcl-mode sql-mode
                             perl-mode cperl-mode
@@ -1390,15 +1188,6 @@ LIST defaults to all existing live buffers."
    (save-buffer)
    (kill-buffer (current-buffer)))
  (global-set-key [(meta delete)] 'kill-current-buffer)
-
- ;; Flymake, show current error
- ;(global-set-key XXX 'flymake-display-err-menu-for-current-line) ; show in a menu
- ;(global-set-key XXX 'flymake-display-err-minibuf) ; show in the minibuffer
- (global-set-key [f3] 'agl-flymake-goto-prev-error-disp)
- (global-set-key [(control f3)] 'flymake-start-syntax-check)
- (global-set-key [f4] 'agl-flymake-goto-next-error-disp)
- (global-set-key [(control f4)] 'flymake-mode)
- (global-set-key [(meta f3)] 'agl-flymake-follow-err)
 
  ;; Compile command
  (global-set-key [f5] 'recompile)

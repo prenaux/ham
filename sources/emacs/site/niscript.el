@@ -1,8 +1,8 @@
-;;; aglscript.el --- Major mode for editing aglScript source text
+;;; niscript.el --- Major mode for editing niScript source text
 
 ;;; Commentary:
 ;;
-;; The main features of this aglScript mode are syntactic
+;; The main features of this niScript mode are syntactic
 ;; highlighting (enabled with `font-lock-mode' or
 ;; `global-font-lock-mode'), automatic indentation and filling of
 ;; comments.
@@ -13,18 +13,20 @@
 ;; load-path' for more info). Then add the following lines to your
 ;; Emacs initialization file:
 ;;
-;;    (add-to-list 'auto-mode-alist '("\\.aq\\'" . aglscript-mode))
-;;    (add-to-list 'auto-mode-alist '("\\.aqw\\'" . aglscript-mode))
-;;    (add-to-list 'auto-mode-alist '("\\.aqp\\'" . aglscript-mode))
-;;    (autoload 'aglscript-mode "aglScript" nil t)
+;;    (add-to-list 'auto-mode-alist '("\\.ni\\'" . niscript-mode))
+;;    (add-to-list 'auto-mode-alist '("\\.nip\\'" . niscript-mode))
+;;    (add-to-list 'auto-mode-alist '("\\.niw\\'" . niscript-mode))
+;;    (add-to-list 'auto-mode-alist '("\\.nil\\'" . niscript-mode))
+;;    (add-to-list 'auto-mode-alist '("\\.nit\\'" . niscript-mode))
+;;    (autoload 'niscript-mode "niScript" nil t)
 ;;
 ;; General Remarks:
 ;;
 ;; This mode assumes that block comments are not nested inside block
 ;; comments and that strings do not contain line breaks.
 ;;
-;; Exported names start with "aglscript-" whereas private names start
-;; with "aq-".
+;; Exported names start with "niscript-" whereas private names start
+;; with "nip-".
 ;;
 
 ;;; Code:
@@ -33,37 +35,37 @@
 (require 'font-lock)
 (require 'newcomment)
 
-(defgroup aglscript nil
-  "Customization variables for `aglscript-mode'."
-  :tag "aglScript"
+(defgroup niscript nil
+  "Customization variables for `niscript-mode'."
+  :tag "niScript"
   :group 'languages)
 
-(defcustom aglscript-indent-level 4
+(defcustom niscript-indent-level 2
   "Number of spaces for each indentation step."
   :type 'integer
-  :group 'aglscript)
+  :group 'niscript)
 
-(defcustom aglscript-auto-indent-flag t
+(defcustom niscript-auto-indent-flag t
   "Automatic indentation with punctuation characters. If non-nil, the
-current line is indented when certain punctuations are inserted."
+   current line is indented when certain punctuations are inserted."
   :type 'boolean
-  :group 'aglscript)
+  :group 'niscript)
 
 
 ;; --- Keymap ---
 
-(defvar aglscript-mode-map nil
-  "Keymap used in aglScript mode.")
+(defvar niscript-mode-map nil
+  "Keymap used in niScript mode.")
 
-(unless aglscript-mode-map
-  (setq aglscript-mode-map (make-sparse-keymap)))
+(unless niscript-mode-map
+  (setq niscript-mode-map (make-sparse-keymap)))
 
-(when aglscript-auto-indent-flag
+(when niscript-auto-indent-flag
   (mapc (lambda (key)
-	  (define-key aglscript-mode-map key 'aglscript-insert-and-indent))
+	  (define-key niscript-mode-map key 'niscript-insert-and-indent))
 	'(";")))
 
-(defun aglscript-insert-and-indent (key)
+(defun niscript-insert-and-indent (key)
   "Run command bound to key and indent current line. Runs the command
 bound to KEY in the global keymap and indents the current line."
   (interactive (list (this-command-keys)))
@@ -73,7 +75,7 @@ bound to KEY in the global keymap and indents the current line."
 
 ;; --- Syntax Table And Parsing ---
 
-(defvar aglscript-mode-syntax-table
+(defvar niscript-mode-syntax-table
   (let ((table (make-syntax-table)))
     (c-populate-syntax-table table)
 
@@ -84,11 +86,11 @@ bound to KEY in the global keymap and indents the current line."
     (modify-syntax-entry ?_ "w" table)
 
     table)
-  "Syntax table used in aglScript mode.")
+  "Syntax table used in niScript mode.")
 
 
-(defun aq-re-search-forward-inner (regexp &optional bound count)
-  "Auxiliary function for `aq-re-search-forward'."
+(defun nip-re-search-forward-inner (regexp &optional bound count)
+  "Auxiliary function for `nip-re-search-forward'."
   (let ((parse)
         (saved-point (point-min)))
     (while (> count 0)
@@ -109,18 +111,18 @@ bound to KEY in the global keymap and indents the current line."
   (point))
 
 
-(defun aq-re-search-forward (regexp &optional bound noerror count)
+(defun nip-re-search-forward (regexp &optional bound noerror count)
   "Search forward but ignore strings and comments. Invokes
 `re-search-forward' but treats the buffer as if strings and
 comments have been removed."
   (let ((saved-point (point))
         (search-expr
          (cond ((null count)
-                '(aq-re-search-forward-inner regexp bound 1))
+                '(nip-re-search-forward-inner regexp bound 1))
                ((< count 0)
-                '(aq-re-search-backward-inner regexp bound (- count)))
+                '(nip-re-search-backward-inner regexp bound (- count)))
                ((> count 0)
-                '(aq-re-search-forward-inner regexp bound count)))))
+                '(nip-re-search-forward-inner regexp bound count)))))
     (condition-case err
         (eval search-expr)
       (search-failed
@@ -129,8 +131,8 @@ comments have been removed."
          (error (error-message-string err)))))))
 
 
-(defun aq-re-search-backward-inner (regexp &optional bound count)
-  "Auxiliary function for `aq-re-search-backward'."
+(defun nip-re-search-backward-inner (regexp &optional bound count)
+  "Auxiliary function for `nip-re-search-backward'."
   (let ((parse)
         (saved-point (point-min)))
     (while (> count 0)
@@ -153,18 +155,18 @@ comments have been removed."
   (point))
 
 
-(defun aq-re-search-backward (regexp &optional bound noerror count)
+(defun nip-re-search-backward (regexp &optional bound noerror count)
   "Search backward but ignore strings and comments. Invokes
 `re-search-backward' but treats the buffer as if strings and
 comments have been removed."
   (let ((saved-point (point))
         (search-expr
          (cond ((null count)
-                '(aq-re-search-backward-inner regexp bound 1))
+                '(nip-re-search-backward-inner regexp bound 1))
                ((< count 0)
-                '(aq-re-search-forward-inner regexp bound (- count)))
+                '(nip-re-search-forward-inner regexp bound (- count)))
                ((> count 0)
-                '(aq-re-search-backward-inner regexp bound count)))))
+                '(nip-re-search-backward-inner regexp bound count)))))
     (condition-case err
         (eval search-expr)
       (search-failed
@@ -173,20 +175,20 @@ comments have been removed."
          (error (error-message-string err)))))))
 
 
-(defun aq-continued-var-decl-list-p ()
+(defun nip-continued-var-decl-list-p ()
   "Return non-nil if point is inside a continued variable declaration list."
   (interactive)
-  (let ((start (save-excursion (aq-re-search-backward "\\<local\\>" nil t))))
+  (let ((start (save-excursion (nip-re-search-backward "\\<local\\>" nil t))))
     (and start
 	 (save-excursion (re-search-backward "\n" start t))
 	 (not (save-excursion
-		(aq-re-search-backward
+		(nip-re-search-backward
 		 ";\\|[^, \t][ \t]*\\(/[/*]\\|$\\)" start t))))))
 
 
 ;; --- Font Lock ---
 
-(defun aq-inside-param-list-p ()
+(defun nip-inside-param-list-p ()
   "Return non-nil if point is inside a function parameter list."
   (condition-case err
       (save-excursion
@@ -197,30 +199,29 @@ comments have been removed."
 			(progn (backward-word 1) (looking-at "function"))))))
     (error nil)))
 
-
-(defconst aq-function-heading-1-re
+(defconst nip-function-heading-1-re
   "[ \t]*function[ \t]+\\(\\w+\\)"
   "Regular expression matching the start of a function header.")
 
-(defconst aq-keyword-re
+(defconst nip-keyword-re
   (regexp-opt '(
       "break" "case" "catch" "continue" "default"
       "delete" "do" "else" "for" "foreach" "function" "if" "in"
       "return" "switch" "this" "throw" "try" "typeof" "while" "_args_"
   ) 'words)
-  "Regular expression matching any aglScript keyword.")
+  "Regular expression matching any niScript keyword.")
 
-(defconst aq-basic-type-re
+(defconst nip-basic-type-re
   (regexp-opt '("local" "var"
                 "void" "bool" "int" "float" "string" "stringarray" "array" "map") 'words)
-  "Regular expression matching any predefined type in aglScript.")
+  "Regular expression matching any predefined type in niScript.")
 
-(defconst aq-constant-re
+(defconst nip-constant-re
   (regexp-opt '("false" "invalid" "null" "true") 'words)
-  "Regular expression matching any future reserved words in aglScript.")
+  "Regular expression matching any future reserved words in niScript.")
 
 ;; Lispy stuff @()
-(defconst aq-lisp-re
+(defconst nip-lisp-re
   (regexp-opt '("defun"
                 "defvar"
                 "defstruct"
@@ -251,16 +252,16 @@ comments have been removed."
                 "get-member"
                 "match-type"
                 "any-type") 'words)
-  "Regular expression matching any future lisp reserved words in aglScript.")
+  "Regular expression matching any future lisp reserved words in niScript.")
 
-(defconst aq-pp-re
+(defconst nip-pp-re
   (regexp-opt '("CreateInstance" "CreateGlobalInstance" "QueryInterface" "Import" "NewImport" "import"
                 "Array" "Table" "List" "Map" "Set"  "Vector"
                 "Vec2" "Vec3" "Vec4" "RGB" "RGBA" "Quat" "Plane" "Rect" "Matrix" "UUID"
                 ) 'words)
-  "Regular expression matching any future reserved words in aglScript.")
+  "Regular expression matching any future reserved words in niScript.")
 
-(defconst aq-builtin-re
+(defconst nip-builtin-re
   (regexp-opt '(
       ;; Regular stuff
       "namespace"
@@ -319,22 +320,22 @@ comments have been removed."
       "isidentifier"
       "isvalididentifier"
       ) 'words)
-  "Regular expression matching any future reserved words in aglScript.")
+  "Regular expression matching any future reserved words in niScript.")
 
-(defconst aq-font-lock-keywords-1
+(defconst nip-font-lock-keywords-1
   (list
-   (list aq-function-heading-1-re 1 font-lock-function-name-face)
+   (list nip-function-heading-1-re 1 font-lock-function-name-face)
    (list "[=(][ \t]*\\(/.*?[^\\]/\\w*\\)" 1 font-lock-string-face))
   "Level one font lock.")
 
-(defconst aq-font-lock-keywords-2
-  (append aq-font-lock-keywords-1
-          (list (list aq-keyword-re 1 font-lock-keyword-face)
-                (cons aq-lisp-re font-lock-keyword-face)
-                (cons aq-builtin-re font-lock-builtin-face)
-                (cons aq-pp-re font-lock-preprocessor-face)
-                (cons aq-basic-type-re font-lock-type-face)
-                (cons aq-constant-re font-lock-constant-face)))
+(defconst nip-font-lock-keywords-2
+  (append nip-font-lock-keywords-1
+          (list (list nip-keyword-re 1 font-lock-keyword-face)
+                (cons nip-lisp-re font-lock-keyword-face)
+                (cons nip-builtin-re font-lock-builtin-face)
+                (cons nip-pp-re font-lock-preprocessor-face)
+                (cons nip-basic-type-re font-lock-type-face)
+                (cons nip-constant-re font-lock-constant-face)))
   "Level two font lock.")
 
 
@@ -346,15 +347,15 @@ comments have been removed."
 ;;
 ;; z will not be highlighted.
 
-(defconst aq-font-lock-keywords-3
+(defconst nip-font-lock-keywords-3
   (append
-   aq-font-lock-keywords-2
+   nip-font-lock-keywords-2
    (list
     "printdebugln"
 
     ;; variable declarations
     (list
-     (concat "\\<\\(const\\|local\\)\\>\\|" aq-basic-type-re)
+     (concat "\\<\\(const\\|local\\)\\>\\|" nip-basic-type-re)
      (list "\\(\\w+\\)[ \t]*\\([=;].*\\|,\\|/[/*]\\|$\\)"
 	   nil
 	   nil
@@ -365,7 +366,7 @@ comments have been removed."
 ;;    (list
 ;;     (concat "^[ \t]*\\w+[ \t]*\\([,;=]\\|/[/*]\\|$\\)")
 ;;     (list "\\(\\w+\\)[ \t]*\\([=;].*\\|,\\|/[/*]\\|$\\)"
-;;	   '(if (save-excursion (backward-char) (aq-continued-var-decl-list-p))
+;;	   '(if (save-excursion (backward-char) (nip-continued-var-decl-list-p))
 ;;		(backward-word 1)
 ;;	      (end-of-line))
 ;;	   '(end-of-line)
@@ -383,7 +384,7 @@ comments have been removed."
     (list
      (concat "^[ \t]*\\w+[ \t]*[,)]")
      (list "\\w+"
-	   '(if (save-excursion (backward-char) (aq-inside-param-list-p))
+	   '(if (save-excursion (backward-char) (nip-inside-param-list-p))
 		(backward-word 1)
 	      (end-of-line))
 	   '(end-of-line)
@@ -392,55 +393,55 @@ comments have been removed."
 	   ))
   "Level three font lock.")
 
-(defconst aq-font-lock-keywords
-  '(aq-font-lock-keywords-3)
+(defconst nip-font-lock-keywords
+  '(nip-font-lock-keywords-3)
   "See `font-lock-keywords'.")
 
 
 ;; --- Indentation ---
 
-(defconst aq-possibly-braceless-keyword-re
+(defconst nip-possibly-braceless-keyword-re
   (regexp-opt
-   '("active_table" "catch" "do" "else" "finally" "for" "foreach" "function" "if" "try" "while" "with")
+   '("catch" "do" "else" "function" "if" "try")
    'words)
   "Regular expression matching keywords that are optionally
   followed by an opening brace.")
 
-(defconst aq-indent-operator-re
+(defconst nip-indent-operator-re
   (concat "[-+*/%<>=&^|?:]\\([^-+*/]\\|$\\)\\|"
           (regexp-opt '("in" "instanceof") 'words))
   "Regular expression matching operators that affect indentation
   of continued expressions.")
 
 
-(defun aq-looking-at-operator-p ()
+(defun nip-looking-at-operator-p ()
   "Return non-nil if text after point is an operator (that is not
 a comma)."
   (save-match-data
-    (and (looking-at aq-indent-operator-re)
+    (and (looking-at nip-indent-operator-re)
          (or (not (looking-at ":"))
              (save-excursion
-               (and (aq-re-search-backward "[?:{]\\|\\<case\\>" nil t)
+               (and (nip-re-search-backward "[?:{]" nil t)
                     (looking-at "?")))))))
 
 
-(defun aq-continued-expression-p ()
+(defun nip-continued-expression-p ()
   "Returns non-nil if the current line continues an expression."
   (save-excursion
     (back-to-indentation)
-    (or (aq-looking-at-operator-p)
-        (and (aq-re-search-backward "\n" nil t)
+    (or (nip-looking-at-operator-p)
+        (and (nip-re-search-backward "\n" nil t)
 	     (progn
 	       (skip-chars-backward " \t")
 	       (backward-char)
 	       (and (> (point) (point-min))
                     (save-excursion (backward-char) (not (looking-at "[/*]/")))
-                    (aq-looking-at-operator-p)
+                    (nip-looking-at-operator-p)
 		    (and (progn (backward-char)
 				(not (looking-at "++\\|--\\|/[/*]"))))))))))
 
 
-(defun aq-end-of-do-while-loop-p ()
+(defun nip-end-of-do-while-loop-p ()
   "Returns non-nil if word after point is `while' of a do-while
 statement, else returns nil. A braceless do-while statement
 spanning several lines requires that the start of the loop is
@@ -454,18 +455,18 @@ indented to the same column as the current line."
 	      (looking-at "[ \t\n]*}"))
 	    (save-excursion
 	      (backward-list) (backward-word 1) (looking-at "\\<do\\>"))
-	  (aq-re-search-backward "\\<do\\>" (point-at-bol) t)
+	  (nip-re-search-backward "\\<do\\>" (point-at-bol) t)
 	  (or (looking-at "\\<do\\>")
 	      (let ((saved-indent (current-indentation)))
-		(while (and (aq-re-search-backward "^[ \t]*\\<" nil t)
+		(while (and (nip-re-search-backward "^[ \t]*\\<" nil t)
 			    (/= (current-indentation) saved-indent)))
 		(and (looking-at "[ \t]*\\<do\\>")
-		     (not (aq-re-search-forward
+		     (not (nip-re-search-forward
 			   "\\<while\\>" (point-at-eol) t))
 		     (= (current-indentation) saved-indent)))))))))
 
 
-(defun aq-ctrl-statement-indentation ()
+(defun nip-ctrl-statement-indentation ()
   "Returns the proper indentation of the current line if it
 starts the body of a control statement without braces, else
 returns nil."
@@ -474,29 +475,29 @@ returns nil."
     (when (save-excursion
             (and (not (looking-at "[{]"))
                  (progn
-                   (aq-re-search-backward "[[:graph:]]" nil t)
+                   (nip-re-search-backward "[[:graph:]]" nil t)
                    (forward-char)
                    (when (= (char-before) ?\)) (backward-list))
                    (skip-syntax-backward " ")
                    (skip-syntax-backward "w")
-                   (looking-at aq-possibly-braceless-keyword-re))
-                 (not (aq-end-of-do-while-loop-p))))
+                   (looking-at nip-possibly-braceless-keyword-re))
+                 (not (nip-end-of-do-while-loop-p))))
       (save-excursion
         (goto-char (match-beginning 0))
-        (+ (current-indentation) aglscript-indent-level)))))
+        (+ (current-indentation) niscript-indent-level)))))
 
 
-(defun aq-proper-indentation (parse-status)
+(defun nip-proper-indentation (parse-status)
   "Return the proper indentation for the current line."
   (save-excursion
     (back-to-indentation)
-    (let ((ctrl-stmt-indent (aq-ctrl-statement-indentation))
-          (same-indent-p (looking-at "[]})]\\|\\<case\\>\\|\\<default\\>"))
-          (continued-expr-p (aq-continued-expression-p)))
+    (let ((ctrl-stmt-indent (nip-ctrl-statement-indentation))
+          (same-indent-p (looking-at "[]})]"))
+          (continued-expr-p (nip-continued-expression-p)))
       (cond (ctrl-stmt-indent)
-	    ((aq-continued-var-decl-list-p)
-	     (aq-re-search-backward "\\<var\\>" nil t)
-	     (+ (current-indentation) aglscript-indent-level))
+	    ((nip-continued-var-decl-list-p)
+	     (nip-re-search-backward "\\<var\\>" nil t)
+	     (+ (current-indentation) niscript-indent-level))
             ((nth 1 parse-status)
              (goto-char (nth 1 parse-status))
              (if (looking-at "[({[][ \t]*\\(/[/*]\\|$\\)")
@@ -507,25 +508,25 @@ returns nil."
                    (cond (same-indent-p
                           (current-column))
                          (continued-expr-p
-                          (+ (current-column) (* 2 aglscript-indent-level)))
+                          (+ (current-column) (* 2 niscript-indent-level)))
                          (t
-                          (+ (current-column) aglscript-indent-level))))
+                          (+ (current-column) niscript-indent-level))))
                (unless same-indent-p
                  (forward-char)
                  (skip-chars-forward " \t"))
                (current-column)))
-	    (continued-expr-p aglscript-indent-level)
+	    (continued-expr-p niscript-indent-level)
             (t 0)))))
 
 
-(defun aglscript-indent-line ()
-  "Indent the current line as aglScript source text."
+(defun niscript-indent-line ()
+  "Indent the current line as niScript source text."
   (interactive)
   (let ((parse-status
          (save-excursion (parse-partial-sexp (point-min) (point-at-bol))))
         (offset (- (current-column) (current-indentation))))
     (when (not (nth 8 parse-status))
-      (indent-line-to (aq-proper-indentation parse-status))
+      (indent-line-to (nip-proper-indentation parse-status))
       (when (> offset 0) (forward-char offset)))))
 
 
@@ -537,7 +538,7 @@ returns nil."
 ;; inside `c-fill-paragraph', `fill-paragraph-function' evaluates to
 ;; nil!?
 
-(defun aq-backward-paragraph ()
+(defun nip-backward-paragraph ()
   "Move backward to start of paragraph. Postcondition: Point is at
 beginning of buffer or the previous line contains only whitespace."
   (forward-line -1)
@@ -546,7 +547,7 @@ beginning of buffer or the previous line contains only whitespace."
   (when (not (bobp)) (forward-line 1)))
 
 
-(defun aq-forward-paragraph ()
+(defun nip-forward-paragraph ()
   "Move forward to end of paragraph. Postcondition: Point is at
 end of buffer or the next line contains only whitespace."
   (forward-line 1)
@@ -555,7 +556,7 @@ end of buffer or the next line contains only whitespace."
   (when (not (eobp)) (backward-char 1)))
 
 
-(defun aq-fill-block-comment-paragraph (parse-status justify)
+(defun nip-fill-block-comment-paragraph (parse-status justify)
   "Fill current paragraph as a block comment. PARSE-STATUS is the
 result of `parse-partial-regexp' from beginning of buffer to
 point. JUSTIFY has the same meaning as in `fill-paragraph'."
@@ -569,11 +570,11 @@ point. JUSTIFY has the same meaning as in `fill-paragraph'."
 			    (goto-char (nth 8 parse-status))
 			    (re-search-forward "*/")))
         (narrow-to-region (save-excursion
-                            (aq-backward-paragraph)
+                            (nip-backward-paragraph)
                             (when (looking-at "^[ \t]*$") (forward-line 1))
                             (point))
                           (save-excursion
-                            (aq-forward-paragraph)
+                            (nip-forward-paragraph)
                             (when (looking-at "^[ \t]*$") (backward-char))
                             (point)))
         (goto-char (point-min))
@@ -596,7 +597,7 @@ point. JUSTIFY has the same meaning as in `fill-paragraph'."
           (forward-line 1))))))
 
 
-(defun aq-sline-comment-par-start ()
+(defun nip-sline-comment-par-start ()
   "Return point at the beginning of the line where the current
 single-line comment paragraph starts."
   (save-excursion
@@ -608,7 +609,7 @@ single-line comment paragraph starts."
     (point)))
 
 
-(defun aq-sline-comment-par-end ()
+(defun nip-sline-comment-par-end ()
   "Return point at end of current single-line comment paragraph."
   (save-excursion
     (beginning-of-line)
@@ -619,7 +620,7 @@ single-line comment paragraph starts."
     (point)))
 
 
-(defun aq-sline-comment-offset (line)
+(defun nip-sline-comment-offset (line)
   "Return the column at the start of the current single-line
 comment paragraph."
   (save-excursion
@@ -629,7 +630,7 @@ comment paragraph."
     (current-column)))
 
 
-(defun aq-sline-comment-text-offset (line)
+(defun nip-sline-comment-text-offset (line)
   "Return the column at the start of the text of the current
 single-line comment paragraph."
   (save-excursion
@@ -638,7 +639,7 @@ single-line comment paragraph."
     (current-column)))
 
 
-(defun aq-at-empty-sline-comment-p ()
+(defun nip-at-empty-sline-comment-p ()
   "Return non-nil if inside an empty single-line comment."
   (and (save-excursion
          (beginning-of-line)
@@ -647,17 +648,17 @@ single-line comment paragraph."
          (re-search-backward "//" (point-at-bol) t))))
 
 
-(defun aq-fill-sline-comments (parse-status justify)
+(defun nip-fill-sline-comments (parse-status justify)
   "Fill current paragraph as a sequence of single-line comments.
 PARSE-STATUS is the result of `parse-partial-regexp' from
 beginning of buffer to point. JUSTIFY has the same meaning as in
 `fill-paragraph'."
-  (when (not (aq-at-empty-sline-comment-p))
-    (let* ((start (aq-sline-comment-par-start))
+  (when (not (nip-at-empty-sline-comment-p))
+    (let* ((start (nip-sline-comment-par-start))
            (start-line (1+ (count-lines (point-min) start)))
-           (end (aq-sline-comment-par-end))
-           (offset (aq-sline-comment-offset start-line))
-           (text-offset (aq-sline-comment-text-offset start-line)))
+           (end (nip-sline-comment-par-end))
+           (offset (nip-sline-comment-offset start-line))
+           (text-offset (nip-sline-comment-text-offset start-line)))
       (save-excursion
         (save-restriction
           (narrow-to-region start end)
@@ -683,7 +684,7 @@ beginning of buffer to point. JUSTIFY has the same meaning as in
             (forward-line 1)))))))
 
 
-(defun aq-trailing-comment-p (parse-status)
+(defun nip-trailing-comment-p (parse-status)
   "Return non-nil if inside a trailing comment. PARSE-STATUS is
 the result of `parse-partial-regexp' from beginning of buffer to
 point."
@@ -694,7 +695,7 @@ point."
       (not (bolp)))))
 
 
-(defun aq-block-comment-p (parse-status)
+(defun nip-block-comment-p (parse-status)
   "Return non-nil if inside a block comment. PARSE-STATUS is the
 result of `parse-partial-regexp' from beginning of buffer to
 point."
@@ -705,22 +706,22 @@ point."
         (looking-at "/\\*")))))
 
 
-(defun aglscript-fill-paragraph (&optional justify)
+(defun niscript-fill-paragraph (&optional justify)
   "If inside a comment, fill the current comment paragraph.
 Trailing comments are ignored."
   (interactive)
   (let ((parse-status (parse-partial-sexp (point-min) (point))))
     (when (and (nth 4 parse-status)
-               (not (aq-trailing-comment-p parse-status)))
-      (if (aq-block-comment-p parse-status)
-          (aq-fill-block-comment-paragraph parse-status justify)
-        (aq-fill-sline-comments parse-status justify))))
+               (not (nip-trailing-comment-p parse-status)))
+      (if (nip-block-comment-p parse-status)
+          (nip-fill-block-comment-paragraph parse-status justify)
+        (nip-fill-sline-comments parse-status justify))))
   t)
 
 
 ;; --- Imenu ---
 
-(defconst aq-imenu-generic-expression
+(defconst nip-imenu-generic-expression
   (list
    (list
     nil
@@ -732,20 +733,20 @@ Trailing comments are ignored."
 ;; --- Main Function ---
 
 ;;;###autoload
-(defun aglscript-mode ()
-  "Major mode for editing aglScript source text.
+(defun niscript-mode ()
+  "Major mode for editing niScript source text.
 
 Key bindings:
 
-\\{aglscript-mode-map}"
+\\{niscript-mode-map}"
   (interactive)
   (kill-all-local-variables)
 
-  (use-local-map aglscript-mode-map)
-  (set-syntax-table aglscript-mode-syntax-table)
+  (use-local-map niscript-mode-map)
+  (set-syntax-table niscript-mode-syntax-table)
 
-  (set (make-local-variable 'indent-line-function) 'aglscript-indent-line)
-  (set (make-local-variable 'font-lock-defaults) (list aq-font-lock-keywords))
+  (set (make-local-variable 'indent-line-function) 'niscript-indent-line)
+  (set (make-local-variable 'font-lock-defaults) (list nip-font-lock-keywords))
 
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
 
@@ -753,17 +754,17 @@ Key bindings:
   (setq comment-start "// ")
   (setq comment-end "")
   (set (make-local-variable 'fill-paragraph-function)
-       'aglscript-fill-paragraph)
+       'niscript-fill-paragraph)
 
   ;; Imenu
   (setq imenu-case-fold-search nil)
   (set (make-local-variable 'imenu-generic-expression)
-      aq-imenu-generic-expression)
+      nip-imenu-generic-expression)
 
-  (setq major-mode 'aglscript-mode)
-  (setq mode-name "aglScript")
-  (run-hooks 'aglscript-mode-hook))
+  (setq major-mode 'niscript-mode)
+  (setq mode-name "niScript")
+  (run-hooks 'niscript-mode-hook))
 
 
-(provide 'aglscript-mode)
-;;; aglscript.el ends here
+(provide 'niscript-mode)
+;;; niscript.el ends here
