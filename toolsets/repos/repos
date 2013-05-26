@@ -43,18 +43,26 @@ do
         # echo "ARR: " ${arr[0]} " -> " ${arr[1]}
         REPO=${arr[0]}
         REMOTE=${arr[1]}
+        REMOTE2=${arr[2]}
         if [ -z $REMOTE ]; then
             REMOTE=$REPO
+            REMOTE2=$REPO
             echo "::: $REPO :::"
         else
-            echo "::: $REPO ($REMOTE) :::"
+            if [ -z $REMOTE2 ]; then
+                REMOTE2=$REMOTE
+                echo "::: $REPO ($REMOTE) :::"
+            else
+                echo "::: $REPO ($REMOTE) ($REMOTE2) :::"
+            fi
         fi
 
         mkdir -p $REPO
         pushd ${REPO} > /dev/null
         errcheck $? git_repos "can't move to repo's folder !"
         ARGS0=${*/__REPO__/$REPO}
-        ARGS=${ARGS0/__REMOTE__/$REMOTE}
+        ARGS1=${ARGS0/__REMOTE2__/$REMOTE2}
+        ARGS=${ARGS1/__REMOTE__/$REMOTE}
         # echo "Runing: $CMD $ARGS"
         $CMD $ARGS
         RET=$?
