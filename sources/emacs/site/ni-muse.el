@@ -261,24 +261,6 @@ and escapes any remaining non-alphanumeric characters."
   ;; indicate that we are to continue the :before-end processing
   nil)
 
-(defun muse-agl-html-insert-anchor (anchor)
-  "Insert an anchor, either around the word at point, or within a tag."
-  (skip-chars-forward (concat muse-regexp-blank "\n"))
-  (if (looking-at (concat "<\\([^" muse-regexp-blank "/>\n]+\\)>"))
-      (let ((tag (match-string 1)))
-        (goto-char (match-end 0))
-        (muse-insert-markup (muse-markup-text 'anchor anchor))
-        (when muse-html-anchor-on-word
-          (or (and (search-forward (format "</%s>" tag)
-                                   (muse-line-end-position) t)
-                   (goto-char (match-beginning 0)))
-              (forward-word 1)))
-        (muse-insert-markup "</a>"))
-    (muse-insert-markup (muse-markup-text 'anchor anchor))
-    (when muse-html-anchor-on-word
-      (forward-word 1))
-    (muse-insert-markup "</a>\n")))
-
 (defun muse-agl-html-insert-contents (depth)
   "Scan the current document and generate a table of contents at point.
 DEPTH indicates how many levels of headings to include.  The default is 2."
@@ -304,8 +286,8 @@ DEPTH indicates how many levels of headings to include.  The default is 2."
               ;; escape specials now before copying the text, so that we
               ;; can deal sanely with both emphasis in titles and
               ;; special characters
-              (goto-char (match-end 2))
-              (muse-insert-markup "<a href='#top' class='to_top'>^</a>")
+              ;; (goto-char (match-end 2))
+              ;; (muse-insert-markup "<a href='#top' class='to_top'>^</a>")
               (goto-char (match-end 2))
               (setq end (point-marker))
               (muse-publish-escape-specials (match-beginning 2) end
@@ -316,7 +298,11 @@ DEPTH indicates how many levels of headings to include.  The default is 2."
                                    contents))
               (set-marker end nil)
               (goto-char (match-end 2))
-              (muse-agl-html-insert-anchor (concat "sec" (int-to-string index)))
+
+              (muse-insert-markup (format "<a class='muse-anchor' name=\"%s\" id=\"%s\"><a href='#top' class='to_top'>^</a></a>"
+                                          (concat "sec" (int-to-string index))
+                                          (concat "sec" (int-to-string index))))
+
               (setq index (1+ index))))
 ;;           )
         ))
