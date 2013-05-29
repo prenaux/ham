@@ -240,12 +240,11 @@ the text to another HTML buffer."
 (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
 
 ;;*** JavaScript ********************************************************
-;; Use niscript-mode because the JS modes I tested are quite broken, and also
-;; they are really slow
-(add-to-list 'auto-mode-alist '("\\.js\\'" . niscript-mode))
-(add-to-list 'auto-mode-alist '("\\.json\\'" . niscript-mode))
-(add-to-list 'auto-mode-alist '("\\.jsw\\'" . niscript-mode))
-(add-to-list 'auto-mode-alist '("\\.jsr\\'" . niscript-mode))
+(setq js-indent-level 2)
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
+(add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
+(add-to-list 'auto-mode-alist '("\\.jsw\\'" . js-mode))
+(add-to-list 'auto-mode-alist '("\\.jsr\\'" . js-mode))
 
 ;;*** CoffeeScript ******************************************************
 (require 'coffee-mode)
@@ -294,9 +293,15 @@ the text to another HTML buffer."
 
 ;;*** XML ***************************************************************
 (require 'xml-lite)
+(add-hook 'xml-lite-mode-hook
+          '(lambda ()
+             (setq sgml-basic-offset 2)
+             ))
+
 (add-hook 'sgml-mode-hook
           '(lambda ()
-             (xml-lite-mode)))
+             (xml-lite-mode)
+             ))
 
 (add-to-list 'auto-mode-alist '("\\.gml\\'" . xml-lite-mode))
 
@@ -304,6 +309,7 @@ the text to another HTML buffer."
 (add-to-list 'auto-mode-alist '("\\.yaws\\'" . html-mode))
 
 ;;*** CSS ***************************************************************
+(setq css-indent-offset 2)
 (add-to-list 'auto-mode-alist '("\\.css\\'" . css-mode))
 (add-to-list 'auto-mode-alist '("\\.rcss\\'" . css-mode))
 (autoload 'css-mode "css-mode" nil t)

@@ -2,7 +2,7 @@
 
 (require 'aglemacs)
 (require 'ni-org)
-(require 'ni-js2)
+;; (require 'ni-js2)
 (require 'ni-muse)
 (require 'ni-templates)
 (require 'ni-file-cache)
