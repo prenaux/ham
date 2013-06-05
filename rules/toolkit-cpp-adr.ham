@@ -1,5 +1,7 @@
 Import toolkit-cpp-gcc.ham ;
 
+NO_STRIP = 1 ;
+
 PICFLAGS = -fpic ;
 
 ANDROID_CC_ARGS =
@@ -27,7 +29,6 @@ $(PICFLAGS)
 -Wno-comment
 -Wno-unused
 -Wno-uninitialized
--Wno-narrowing
 -Wno-address
 ;
 
@@ -53,11 +54,22 @@ else {
 
 ANDROID_CPP_ARGS +=
 -Wno-conversion-null
--std=c++11
 -Wno-reorder # Warnings valid for C++ only
 -I$(ADR_LIBCPP_DIR_INCLUDE)
 -I$(ADR_LIBCPP_DIR_LIBS)/include
 ;
+
+# GCC 4.4.3
+ANDROID_CPP_ARGS +=
+ # Fix compilation error with BOOST_STATIC_CONSTANT
+ -Wno-invalid-offsetof
+;
+
+# GCC 4.6+
+# ANDROID_CPP_ARGS +=
+# -std=c++11
+# -Wno-narrowing
+# ;
 
 ANDROID_LINK_BASE_ARGS +=
 -L$(ADR_DIR_NDK_USR)/lib
@@ -151,7 +163,7 @@ if $(FLYMAKE) = 1 {
 }
 else {
   if $(ADR_LLVM_VERSION) {
-    ANDROID_OPT_ARGS += -Os -fomit-frame-pointer ;
+    ANDROID_OPT_ARGS = -Os -fomit-frame-pointer ;
   }
   else {
     ANDROID_OPT_ARGS = -Os -fomit-frame-pointer -finline-limit=120 ;

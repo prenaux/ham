@@ -35,7 +35,7 @@ export ADR_NDK_PREBUILT=windows
 export ADR_DIR_BASE=${ADR_22_ARM_ROOT}
 
 export ADR_DIR_NDK=${ADR_22_ARM_ROOT}/ndk_${ADR_NDK_VERSION}
-export GCC_VER=4.7
+export GCC_VER=4.4.3
 export ADR_DIR_NDK_USR=${ADR_DIR_NDK}/platforms/$ADR_NDK_PLATFORM/arch-arm/usr
 
 export CYGWIN=nodosfilewarning # disable awesome cygwin warning...
