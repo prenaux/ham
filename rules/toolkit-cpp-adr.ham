@@ -1,7 +1,5 @@
 Import toolkit-cpp-gcc.ham ;
 
-NO_STRIP = 1 ;
-
 PICFLAGS = -fpic ;
 
 ANDROID_CC_ARGS =
