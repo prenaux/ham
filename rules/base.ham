@@ -2326,13 +2326,14 @@ rule DataList {
 # CopyDataToDir BASEDIR : FILES : DESTDIR ;
 rule CopyDataToDir {
   local destDir = $(3) ;
+  MkDir $(destDir) ;
+
   local r = ;
   for _s in $(>) {
     local s = [ StrAfterI $(_s) : "$(<)/" ] ;
     # ECHO "--[$(<)/] $(_s) -> $(s)" ;
     local dest = [ FDirName $(destDir) $(s) ] ;
-    MkDir $(dest:D) ;
-    DEPENDS $(dest) : $(dest:D) ;
+    DEPENDS $(dest) : $(destDir) ;
     # ECHO "$(_s) -> $(dest)" ;
     File $(dest) : $(_s) ;
     r += $(dest) ;
