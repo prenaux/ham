@@ -160,11 +160,13 @@ if $(FLYMAKE) = 1 {
   ANDROID_OPT_ARGS = -O0 ;
 }
 else {
+  ADR_GCC_OPT ?= -Os ;
+  ECHO "I/Building with GCC Optimization flag:" $(ADR_GCC_OPT) ;
   if $(ADR_LLVM_VERSION) {
-    ANDROID_OPT_ARGS = -Os -fomit-frame-pointer ;
+    ANDROID_OPT_ARGS = $(ADR_GCC_OPT) -fomit-frame-pointer ;
   }
   else {
-    ANDROID_OPT_ARGS = -Os -fomit-frame-pointer -finline-limit=120 ;
+    ANDROID_OPT_ARGS = $(ADR_GCC_OPT) -fomit-frame-pointer -finline-limit=120 ;
   }
 }
 

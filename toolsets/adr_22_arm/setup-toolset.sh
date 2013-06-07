@@ -24,11 +24,21 @@ if [ ! -e $ADR_22_ARM_ROOT  ]; then
     fi
 fi
 
+
+# Performance gain of 7A build with -O3 is almost nil (<2-3%)
+# export ADR_GCC_OPT=-O3
+# export ADR_CPU_PROFILE=ARMv7A
+# export ADR_CPU_ABI=armeabi
+# export ADR_NDK_VERSION=r8e
+# export ADR_NDK_PLATFORM=android-5
+# export ADR_SDK_PLATFORM=android-7
+
 export ADR_CPU_PROFILE=ARMv6
 export ADR_CPU_ABI=armeabi
 export ADR_NDK_VERSION=r8e
 export ADR_NDK_PLATFORM=android-5
 export ADR_SDK_PLATFORM=android-7
+
 export ADR_NDK_PREBUILT=windows
 # export ADR_NDK_PREBUILT=windows-x86_64
 
