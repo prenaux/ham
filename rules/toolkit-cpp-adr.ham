@@ -29,6 +29,9 @@ $(PICFLAGS)
 -Wno-uninitialized
 -Wno-address
 ;
+ANDROID_CC_ARGS +=
+  $(ADR_CC_ARGS)
+;
 
 # For boost...
 ANDROID_CC_ARGS +=
@@ -36,17 +39,30 @@ ANDROID_CC_ARGS +=
 ;
 
 if $(ADR_LLVM_VERSION) {
+  # Clang 3.2
   ANDROID_CC_ARGS +=
     -D__CLANG__
-    -mthumb
     -Wno-return-type-c-linkage
     -Wno-tautological-compare
+    # -flto
+  ;
+  ANDROID_CPP_ARGS +=
+    -std=c++11
+    -Wno-narrowing
+  ;
+  ANDROID_LINK_BASE_ARGS +=
+    # -flto
   ;
 }
 else {
+  # GCC 4.4.3
   ANDROID_CC_ARGS +=
     -mthumb-interwork
     -finput-charset=UTF-8
+  ;
+  ANDROID_CPP_ARGS +=
+    # Fix compilation error with BOOST_STATIC_CONSTANT
+    -Wno-invalid-offsetof
   ;
 }
 
@@ -56,18 +72,6 @@ ANDROID_CPP_ARGS +=
 -I$(ADR_LIBCPP_DIR_INCLUDE)
 -I$(ADR_LIBCPP_DIR_LIBS)/include
 ;
-
-# GCC 4.4.3
-ANDROID_CPP_ARGS +=
- # Fix compilation error with BOOST_STATIC_CONSTANT
- -Wno-invalid-offsetof
-;
-
-# GCC 4.6+
-# ANDROID_CPP_ARGS +=
-# -std=c++11
-# -Wno-narrowing
-# ;
 
 ANDROID_LINK_BASE_ARGS +=
 -L$(ADR_DIR_NDK_USR)/lib
@@ -98,11 +102,11 @@ ANDROID_LINK_DLL_ARGS = $(ANDROID_LINK_BASE_ARGS)
 -Wl,-rpath-link=$(ADR_DIR_NDK_USR)/lib
 ;
 
-
 switch $(ADR_CPU_PROFILE)
 {
     ## ARMv5TE no FPU
   case ARMv5 :
+    ANDROID_SO_DIR = armeabi ;
     ANDROID_CC_ARGS +=
     -D__CPU_ARMv5__
     -march=armv5te
@@ -110,16 +114,9 @@ switch $(ADR_CPU_PROFILE)
     -msoft-float
     -mthumb
     ;
-    ## ARM6+ VFP (TC8900, Qualcomm 7227, ...)
-  case ARMv6 :
-    ANDROID_CC_ARGS +=
-    -D__CPU_ARMv6__
-    -march=armv6
-    -mfpu=vfp
-    -mfloat-abi=softfp
-    ;
     ## ARM7A VFPv3 (Cortex A8, NVidia Tegra 2, HTC Desire, ...)
   case ARMv7A :
+    ANDROID_SO_DIR = armeabi-v7a ;
     ANDROID_CC_ARGS +=
     -D__CPU_ARMv7A__
     -march=armv7-a
@@ -127,22 +124,12 @@ switch $(ADR_CPU_PROFILE)
     -mfloat-abi=softfp
     ;
     ANDROID_LINK_BASE_ARGS = -Wl,--fix-cortex-a8 ;
-    ## ARM7N ARMV7A + NEON
-  case ARMv7N :
-    ANDROID_CC_ARGS +=
-    -D__CPU_ARMv7N__
-    -D__CPU_ARM_NEON__
-    -march=armv7-a
-    -mfpu=neon
-    -mfloat-abi=softfp
-    ;
-    ANDROID_LINK_BASE_ARGS = -Wl,--fix-cortex-a8 ;
   case * :
     EXIT "Unknown Android CPU profile '"$(ADR_CPU_PROFILE)"' !" ;
 }
 
-# SYSTEM_LINKLIBS = $(ADR_LIBGCC_PATH) -llog -lc -lstdc++ -lm -ldl ;
 SYSTEM_LINKLIBS = -L$(ADR_LIBCPP_DIR_LIBS) -llog -lc -lgnustl_static -lsupc++ -ldl -lm -lgcc ;
+SYSTEM_LINKLIBS += $(ADR_SYSTEM_LINKLIBS) ;
 
 CCFLAGS   += $(ANDROID_CC_ARGS) ;
 C++FLAGS  += $(ANDROID_CC_ARGS) $(ANDROID_CPP_ARGS) ;
