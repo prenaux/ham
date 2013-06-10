@@ -1226,7 +1226,7 @@ BEGIN {
         cc          => [qw( c h xs )],
         cfmx        => [qw( cfc cfm cfml )],
         clojure     => [qw( clj )],
-        cpp         => [qw( acc cpp cc cxx m mm hpp hh h hxx )],
+        cpp         => [qw( acc ncc cpp cc cxx m mm hpp hh h hxx )],
         csharp      => [qw( cs )],
         css         => [qw( css )],
         delphi      => [qw( pas int dfm nfm dof dpk dproj groupproj bdsgroup bdsproj )],
