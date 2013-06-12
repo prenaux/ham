@@ -201,6 +201,8 @@ the text to another HTML buffer."
 ;;;======================================================================
 (agl-begin-time-block "Modes")
 
+(setq standard-indent 2)
+
 (defun ni-make-newline-indent ()
   "Sets up preferred newline behavior. Not set by default. Meant
   to be added to `c-mode-common-hook'."
@@ -218,7 +220,7 @@ the text to another HTML buffer."
 (require 'google-c-style)
 
 (add-hook 'c-mode-common-hook 'google-set-c-style)
-(add-hook 'c-mode-common-hook 'ni-make-newline-indent)
+;; (add-hook 'c-mode-common-hook 'ni-make-newline-indent)
 
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
