@@ -426,16 +426,20 @@ rule tkDepDll {
 }
 
 rule tkLinkDll {
-  if $(DLLIMPLIB) = 1 {
-    tkLinkLibs $(<) : $(>) ;
+  if $(NO_DLL) = 1 {
   }
   else {
-    local dir = $(3) ;
-    dir ?= $(TK_DIR_DLL) ;
-    local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFDLL) ] ;
-    VarOnAddToFront LINKLIBS : $(<) : $(l) ;
+    if $(DLLIMPLIB) = 1 {
+      tkLinkLibs $(<) : $(>) ;
+    }
+    else {
+      local dir = $(3) ;
+      dir ?= $(TK_DIR_DLL) ;
+      local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFDLL) ] ;
+      VarOnAddToFront LINKLIBS : $(<) : $(l) ;
+    }
+    tkDepDll $(<) : $(>) : $(3) ;
   }
-  tkDepDll $(<) : $(>) : $(3) ;
 }
 
 rule tkPkgDepDll {

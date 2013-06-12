@@ -80,19 +80,21 @@ rule tkImportExe {
 # tkImportDll SrcToolkit : DllName : BUILDEXT ;
 # imports a dll from another toolkit
 rule tkImportDll {
-  local srcPath = [ tkImportGetDllPath $(<) : $(>) : $(3) ] ;
-  local r = [ tkImportDoCopy tkimport_dll
-  : $(srcPath)
-  : $(TK_DIR_BIN) ] ;
-  DEPENDS $(>) : $(r) ;
-  redistAddFile $(r) : modules ;
-
-  # Has a .pdb attached to it ?
-  if [ FExists $(srcPath:S=.pdb) ] {
-    local r [ tkImportDoCopy tkimport_dll
-    : $(srcPath:S=.pdb)
+  if ! $(NO_DLL) = 1 {
+    local srcPath = [ tkImportGetDllPath $(<) : $(>) : $(3) ] ;
+    local r = [ tkImportDoCopy tkimport_dll
+    : $(srcPath)
     : $(TK_DIR_BIN) ] ;
     DEPENDS $(>) : $(r) ;
+    redistAddFile $(r) : modules ;
+
+    # Has a .pdb attached to it ?
+    if [ FExists $(srcPath:S=.pdb) ] {
+      local r [ tkImportDoCopy tkimport_dll
+      : $(srcPath:S=.pdb)
+      : $(TK_DIR_BIN) ] ;
+      DEPENDS $(>) : $(r) ;
+    }
   }
 
   # Has an implib ?
