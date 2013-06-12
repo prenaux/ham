@@ -663,12 +663,12 @@ is omitted, the regexp will match any class attribute."
 (provide 'actionscript-mode)
 
 ;; For testing
-(defun reload-actionscript-mode ()
-	(interactive)
-	(with-current-buffer (get-buffer "actionscript-mode.el")
-		(eval-buffer))
-	(with-current-buffer (get-buffer "test.as")
-		(actionscript-mode)
-		(message "actionscript-mode reloaded.")))
+;; (defun reload-actionscript-mode ()
+	;; (interactive)
+	;; (with-current-buffer (get-buffer "actionscript-mode.el")
+		;; (eval-buffer))
+	;; (with-current-buffer (get-buffer "test.as")
+		;; (actionscript-mode)
+		;; (message "actionscript-mode reloaded.")))
 
-(define-key global-map [f5] 'reload-actionscript-mode)
+;; (define-key global-map [f5] 'reload-actionscript-mode)
