@@ -2,6 +2,8 @@ Import toolkit-cpp-gcc.ham ;
 
 STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
 
+FLASCC_LTO ?= 0 ;
+
 FLASCC_WARN_ARGS =
 -Wall
 -Wno-switch
@@ -25,10 +27,47 @@ FLASCC_DBG_ARGS = $(STRICT_ALIASING_FLAGS) ;
 FLASCC_DBG_ARGS += -g -O0 ;
 
 ### Optimized (ra) build flags ###
-FLASCC_OPT_ARGS = -Os $(STRICT_ALIASING_FLAGS) ;
+if $(FLASCC_LTO) = 1 {
+  FLASCC_OPT_ARGS = -O4 $(STRICT_ALIASING_FLAGS) ;
+}
+else {
+  FLASCC_OPT_ARGS = -Os $(STRICT_ALIASING_FLAGS) ;
+}
 
 ### Link flags ###
-LINKLIBS += -lAS3++ -lFlash++ ;
+LINKLIBS += ;
+
+### Free GLUT & GLS3D linking ###
+GLS3D_DIR = h:/_Reps/flascc/GLS3D ;
+FREEGLUT_DIR = h:/_Reps/flascc/alcfreeglut ;
+
+ESGLUT_CCFLAGS +=
+  -I$(GLS3D_DIR)/install/usr/include
+  -I$(FREEGLUT_DIR)/install/usr/include
+;
+ESGLUT_C++FLAGS += $(ESGLUT_CCFLAGS)
+;
+if $(FLASCC_LTO) = 1 {
+  ESGLUT_LINKFLAGS +=
+    -flto-api=$(FREEGLUT_DIR)/exports.txt
+  ;
+}
+ESGLUT_LINKFLAGS +=
+  -L$(GLS3D_DIR)/install/usr/lib
+  -L$(FREEGLUT_DIR)/install/usr/lib
+;
+
+CCFLAGS += $(ESGLUT_CCFLAGS) ;
+C++FLAGS += $(ESGLUT_C++FLAGS) ;
+LINKFLAGS += $(ESGLUT_LINKFLAGS) ;
+
+SYSTEM_LINKLIBS +=
+  $(FLASCC)/usr/lib/AlcVFSZip.abc
+  $(GLS3D_DIR)/install/usr/lib/libGL.abc
+  -symbol-abc=$(FREEGLUT_DIR)/demos/Console.abc
+  -lglut -lGL
+  -swf-preloader=$(FREEGLUT_DIR)/demos/VFSPreLoader.swf
+;
 
 rule tkCC++Build
 {

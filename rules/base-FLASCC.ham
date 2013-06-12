@@ -23,8 +23,10 @@ UNDEFFLAG   ?= "-u _" ;
 
 if $(FLASH_PROJECTOR) = 1 {
   SUFEXE    ?= .exe ;
+  TEST_RUNNER = ;
 }
 else {
   SUFEXE    ?= .swf ;
-  LINKFLAGS ?= -emit-swf -swf-size=400x400 ;
+  LINKFLAGS ?= -emit-swf -swf-size=800x450 ;
+  TEST_RUNNER = $(FLASH_PLAYER_SA) ;
 }

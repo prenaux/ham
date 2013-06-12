@@ -31,6 +31,7 @@ case $HAM_OS in
             fi
         fi
         export FLASCC_GDB_RUNTIME="${FLEX}/runtimes/player/11.1/win/FlashPlayerDebugger.exe"
+        export FLASH_PLAYER_SA="${FLASCC_ROOT}/sa/flashplayer_11_sa.exe"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
