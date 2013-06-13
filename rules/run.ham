@@ -43,4 +43,9 @@ rule runInDir {
   runInDebugger $(<) : $(2) : $(3) ;
 }
 
-Import run-$(OS)-$(TARGET_OS).ham ;
+if $(RUN_IMPORT) {
+  Import run-$(RUN_IMPORT).ham ;
+}
+else {
+  Import run-$(OS)-$(TARGET_OS).ham ;
+}

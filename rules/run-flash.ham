@@ -2,7 +2,12 @@ actions runInDir_ {
   echo "=== Running:" $(RUN_EXE)
   cd $(WORK_DIR)
   pwd
-  "$(RUN_EXE)" $(A0) $(A1) $(A2) $(A3) $(A4) $(A5) $(A6) $(A7) $(A8) $(A9) $(A10) $(A11) $(A12) $(A13) $(A14) $(A15) $(A16) $(FIXTURE)
+  FIXTURE="$(FIXTURE)"
+  if [ "$FIXTURE" = "" ]; then
+    FIXTURE="foo=bar"
+  fi
+  echo "FIXTURE:" ${FIXTURE}
+  "$(FLASH_PLAYER_SA)" "$(RUN_EXE)?${FIXTURE}" $(A4) $(A5) $(A6) $(A7) $(A8) $(A9) $(A10) $(A11) $(A12) $(A13) $(A14) $(A15) $(A16)
 }
 
 actions runInDebugger_
