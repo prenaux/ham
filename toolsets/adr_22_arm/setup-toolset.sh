@@ -29,7 +29,7 @@ export ADR_NDK_PREBUILT=windows
 
 export ADR_GCC_OPT=-O2
 export ADR_CPU_PROFILE=ARMv7A
-export ADR_CPU_ABI=armeabi
+export ADR_CPU_ABI=armeabi-v7a
 export ADR_NDK_PLATFORM=android-8
 export ADR_SDK_PLATFORM=android-7
 export ADR_NDK_VERSION=r8cx
