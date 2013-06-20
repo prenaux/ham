@@ -10,13 +10,9 @@ FLASCC_WARN_ARGS =
 -Wno-trigraphs
 -Wno-sign-compare
 -Wno-unused
+-Wno-pragmas
+-Wno-unknown-pragmas
 ;
-if $(FLYMAKE) = 1 {
-  FLASCC_WARN_ARGS += -Wno-\#pragma-messages ;
-}
-else {
-  # FLASCC_WARN_ARGS += -Wfatal-errors ;
-}
 SUFPCH = .h.gch ;
 
 CCFLAGS += $(FLASCC_WARN_ARGS) ;

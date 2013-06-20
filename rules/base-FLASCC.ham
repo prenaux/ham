@@ -5,7 +5,20 @@ SUFOBJ  ?= .o ;
 SUFLIB  ?= .a ;
 SUFDLL  ?= .so ;
 
-CCFLAGS  = -swf-version=17 -D__FLASCC__ -D__FLASCC_SWF__ -fvisibility=hidden ;
+# -swf-version=9 9.0.115.0 N/A
+# -swf-version=10 10.0, 10.1 1.5, 2.0
+# -swf-version=11 10.2 2.6
+# -swf-version=12 10.3 2.7
+# -swf-version=13 11.0 3
+# -swf-version=14 11.1 3.1
+# -swf-version=15 11.2 3.2
+# -swf-version=16 11.3 3.3 # This is the standard version bundled with Win8 & IE10
+# -swf-version=17 11.4 3.4
+# -swf-version=18 11.5 3.5
+# -swf-version=19 11.6 3.6
+# -swf-version=20 11.7 3.7
+# -swf-version=21 11.8 3.8
+CCFLAGS  = -swf-version=16 -D__FLASCC__ -D__FLASCC_SWF__ -fvisibility=hidden ;
 C++FLAGS = $(CCFLAGS) ;
 
 # ... yes 8GB this is necessary to build Test_niLang without running out of memory ...
