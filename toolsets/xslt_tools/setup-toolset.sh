@@ -1,5 +1,8 @@
 #!/bin/bash
 
+toolset_import java_jdk16
+if [ $? != 0 ]; then return 1; fi
+
 # toolset
 export HAM_TOOLSET=XSLT_TOOLS
 export HAM_TOOLSET_VER=1
