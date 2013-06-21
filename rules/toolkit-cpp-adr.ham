@@ -44,7 +44,8 @@ if $(ADR_LLVM_VERSION) {
     -D__CLANG__
     -Wno-return-type-c-linkage
     -Wno-tautological-compare
-    # -flto
+    -Wno-implicit-exception-spec-mismatch
+  # -flto
   ;
   ANDROID_CPP_ARGS +=
     -std=c++11
@@ -128,7 +129,7 @@ switch $(ADR_CPU_PROFILE)
     EXIT "Unknown Android CPU profile '"$(ADR_CPU_PROFILE)"' !" ;
 }
 
-SYSTEM_LINKLIBS = -L$(ADR_LIBCPP_DIR_LIBS) -llog -lc -lgnustl_static -lsupc++ -ldl -lm -lgcc ;
+SYSTEM_LINKLIBS = -L$(ADR_LIBCPP_DIR_LIBS) -llog -lc $(ADR_LIBCPP_LINKER_LIB) -ldl -lm -lgcc ;
 SYSTEM_LINKLIBS += $(ADR_SYSTEM_LINKLIBS) ;
 
 CCFLAGS   += $(ANDROID_CC_ARGS) ;
