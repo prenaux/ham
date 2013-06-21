@@ -4,6 +4,10 @@ if $(WINDOWS) = 1 {
 SUFPCH = .pch ;
 
 CC_ADD_FLAGS = -Zm200 -Zc:forScope -W4 ;
+
+# sometimes usefull
+# CC_ADD_FLAGS += -showIncludes ;
+
 if $(FLYMAKE) = 1 {
   CC_ADD_FLAGS += -WL ;
 }
