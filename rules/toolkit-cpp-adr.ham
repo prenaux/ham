@@ -70,6 +70,7 @@ else {
 ANDROID_CPP_ARGS +=
 -Wno-conversion-null
 -Wno-reorder # Warnings valid for C++ only
+$(ADR_LIBCPP_DEFINES)
 -I$(ADR_LIBCPP_DIR_INCLUDE)
 -I$(ADR_LIBCPP_DIR_LIBS)/include
 ;

@@ -69,13 +69,15 @@ if [ $? != 0 ]; then
     return 1
 fi
 
-# export ADR_LIBCPP_DIR_INCLUDE=$ADR_DIR_NDK/sources/cxx-stl/stlport/stlport
-# export ADR_LIBCPP_DIR_LIBS=$ADR_DIR_NDK/sources/cxx-stl/stlport/libs/$ADR_CPU_ABI
-# export ADR_LIBCPP_LINKER_LIB=-lstlport_static
+export ADR_LIBCPP_DIR_INCLUDE=$ADR_DIR_NDK/sources/cxx-stl/stlport/stlport
+export ADR_LIBCPP_DIR_LIBS=$ADR_DIR_NDK/sources/cxx-stl/stlport/libs/$ADR_CPU_ABI
+export ADR_LIBCPP_DEFINES="-DANDROID_STLPORT"
+export ADR_LIBCPP_LINKER_LIB="-DANDROID_STLPORT -lstlport_static"
 
-export ADR_LIBCPP_DIR_INCLUDE=$ADR_DIR_NDK/sources/cxx-stl/gnu-libstdc++/$GCC_VER/include
-export ADR_LIBCPP_DIR_LIBS=$ADR_DIR_NDK/sources/cxx-stl/gnu-libstdc++/$GCC_VER/libs/$ADR_CPU_ABI
-export ADR_LIBCPP_LINKER_LIB="-lgnustl_static -lsupc++"
+# export ADR_LIBCPP_DIR_INCLUDE=$ADR_DIR_NDK/sources/cxx-stl/gnu-libstdc++/$GCC_VER/include
+# export ADR_LIBCPP_DIR_LIBS=$ADR_DIR_NDK/sources/cxx-stl/gnu-libstdc++/$GCC_VER/libs/$ADR_CPU_ABI
+# export ADR_LIBCPP_DEFINES="-DANDROID_GNUSTL"
+# export ADR_LIBCPP_LINKER_LIB="-lgnustl_static -lsupc++"
 
 # export ADR_LLVM_VERSION=
 
