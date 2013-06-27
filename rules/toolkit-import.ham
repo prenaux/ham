@@ -49,6 +49,16 @@ rule tkImportGetJarPath {
   return $(srcPath) ;
 }
 
+rule tkImportGetImpLibPath {
+  local buildExt = $(3) ;
+  if ! $(buildExt) {
+    buildExt = $(BUILDEXT) ;
+  }
+  local srcTkDirLib = [ FDirName $(TK_SRC_WORK_DIR) $(<) libs $(LIBS_LOA) ] ;
+  local srcPath = [ FDirName $(srcTkDirLib) $(>)_$(buildExt)$(SUFDLL)$(SUFLIB) ] ;
+  return $(srcPath) ;
+}
+
 rule tkImportGetLibPath {
   local buildExt = $(3) ;
   if ! $(buildExt) {
@@ -86,7 +96,6 @@ rule tkImportDll {
     : $(srcPath)
     : $(TK_DIR_BIN) ] ;
     DEPENDS $(>) : $(r) ;
-    redistAddFile $(r) : modules ;
 
     # Has a .pdb attached to it ?
     if [ FExists $(srcPath:S=.pdb) ] {
@@ -97,8 +106,17 @@ rule tkImportDll {
     }
   }
 
-  # Has an implib ?
+  # Has a lib version ?
   local libPath = [ tkImportGetLibPath $(<) : $(>) : $(3) ] ;
+  if [ FExists $(libPath) ] {
+    local r = [ tkImportDoCopy tkimport_dll
+    : $(libPath)
+    : $(TK_DIR_LIBS) ] ;
+    DEPENDS $(>) : $(r) ;
+  }
+
+  # Has an lib version ?
+  local libPath = [ tkImportGetImpLibPath $(<) : $(>) : $(3) ] ;
   if [ FExists $(libPath) ] {
     local r = [ tkImportDoCopy tkimport_dll
     : $(libPath)
@@ -126,7 +144,6 @@ rule tkImportJar {
     : $(srcPath)
     : $(TK_DIR_JARS) ] ;
     DEPENDS $(>) : $(r) ;
-    redistAddFile $(r) : jar ;
   }
 }
 

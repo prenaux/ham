@@ -12,10 +12,6 @@ Import log.ham ;
 Import assert.ham ;
 Import run.ham ;
 
-REDIST_TOP_DIR = $(TK_DIR) ;
-REDIST_NAME = $(TK_NAME) ;
-Import redist.ham ;
-
 AssertVarDefined HAM_TOOLSET_NAME ;
 AssertVarDefined HAM_TOOLSET_VER ;
 
@@ -268,7 +264,6 @@ rule tkAPICopy {
       }
       reld = [ FDirName $(idir) $(d:B)$(d:S) ] ;
       reld = "<"$(SUBDIR)">"$(reld) ; # Our own grist...
-      redistAddFile $(d) : header ;
       s = [ FGristFiles $(s) ] ;
       d = [ FGristFiles $(d) ] ;
       DEPENDS $(d) : $(TARGET)_dir ;
@@ -299,8 +294,6 @@ rule tkIncludeCopy {
   for _i in $(>) {
     local DEST = [ FDirName $(DEST_DIR) $(_i) ] ;
     local SRC = [ FDirName $(SUBDIR) $(_i) ] ;
-
-    redistAddFile $(DEST) : header ;
 
     SRC = [ FGristFiles $(SRC) ] ;
     DEST = [ FGristFiles $(DEST) ] ;
@@ -430,7 +423,7 @@ rule tkLinkDll {
   }
   else {
     if $(DLLIMPLIB) = 1 {
-      tkLinkLibs $(<) : $(>) ;
+      tkLinkLibsRaw $(<) : $(>)_$(BUILDEXT) : : .dll.lib ;
     }
     else {
       local dir = $(3) ;
@@ -469,6 +462,8 @@ rule tkDefPackage
   OUTDIR  = [ FDirName $(4) ] ;
   PKGOPTIM = ;
   PKGGROUP = $(3) ;
+  PKGTARGET_LIB = ;
+  PKGTARGETF2 = ;
   if $(PKGGROUP) = jar {
     OBJDIR = [ FDirName $(BASEOBJDIR) $(TK_NAME:L)-jvm $(PACKAGE) ] ;
     PKGBUILD = $(PACKAGE) ;
@@ -479,11 +474,13 @@ rule tkDefPackage
   else {
     OBJDIR = [ FDirName $(BASEOBJDIR) $(TK_NAME:L)-$(LIBS_LOA)-$(BUILD) $(PACKAGE) ] ;
     PKGBUILD = $(PACKAGE)_$(BUILDEXT) ;
-    if $(PKGGROUP) = $(PKGGROUP) = modules || $(PKGGROUP) = dll || $(PKGGROUP) = dylib {
+    if $(PKGGROUP) = modules || $(PKGGROUP) = dll || $(PKGGROUP) = dylib {
       PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
       PKGTARGET = $(PKGBUILD:S=$(SUFDLL)) ;
       PKGTYPE = dll ;
       DEPENDS modplugs : $(PKGGROUP) ;
+
+      PKGTARGET_LIB = $(PKGBUILD:S=$(SUFLIB)) ;
     }
     else if $(PKGGROUP) = libs || $(PKGGROUP) = modulelibs {
       PKGTARGET = $(PKGBUILD:S=$(SUFLIB)) ;
@@ -503,6 +500,10 @@ rule tkDefPackage
     }
     LINKFLAGS on $(PKGTARGET) ?= $(LINKFLAGS) ;
     LINKLIBS on $(PKGTARGET) ?= $(LINKLIBS) ;
+    if $(PKGTARGET_LIB) {
+      LINKFLAGS on $(PKGTARGET_LIB) ?= $(LINKFLAGS) ;
+      LINKLIBS on $(PKGTARGET_LIB) ?= $(LINKLIBS) ;
+    }
   }
 
   if $(5) {
@@ -512,6 +513,9 @@ rule tkDefPackage
   else {
     PKGTARGETF = $(PKGTARGET) ;
   }
+  if $(PKGTARGET_LIB) {
+    PKGTARGETF2 = $(PKGTARGET_LIB) ;
+  }
 
   # Target directory
   LOCATE_TARGET = $(OBJDIR) ;
@@ -519,6 +523,12 @@ rule tkDefPackage
   MakeLocate $(PKGTARGET) : $(OBJDIR) ;
   DEPENDS $(PKGTARGET) : tkdir ;
   DEPENDS $(PKGTARGET) : tkimport ;
+  if $(PKGTARGET_LIB) {
+    MakeLocate $(PKGTARGET_LIB) : $(TK_DIR_LIBS) ;
+    MakeLocate $(PKGTARGET_LIB) : $(OBJDIR) ;
+    DEPENDS $(PKGTARGET_LIB) : tkdir ;
+    DEPENDS $(PKGTARGET_LIB) : tkimport ;
+  }
 
   logVerbose "[ $(PKGBUILD) - $(VERSION) : $(PKGGROUP) [$(PKGTYPE)] ]" ;
   logVerbose "- Platform    : $(OS) ($(OSPLAT))" ;
@@ -527,6 +537,7 @@ rule tkDefPackage
   logVerbose "- OutDir      : $(OUTDIR)" ;
   logVerbose "- Target      : $(PKGTARGET)" ;
   logVerbose "- Target File : $(PKGTARGETF)" ;
+  logVerbose "- Target2     :" $(PKGTARGET_LIB) ;
 }
 
 # tkDefModuleEx module_name : version : outdir : depdir : group ;
@@ -660,7 +671,6 @@ rule tkBuildPackage
   local _extra_objs = $(5) ;
   local _ei = 0 ;
   local _pch = ;
-  local _implib = 0 ;
   local _cpredist = 1 ;
   local _pdb = 1 ;
   local _console = 0 ;
@@ -685,72 +695,67 @@ rule tkBuildPackage
   OPT_NOOPT = 0 ;
   ### Parse options ###
   for _i in $(>) {
-	switch $(_i) {
-	# Use precompiled header, should be the first option if specified
-	case pch :
-	  if $(SUFPCH) && ( ! ( $(NO_PCH) = 1 ) )  && ( ( ! $(FLYMAKE) ) || ( $(FLYMAKE_PCH) = 1 ) ) {
-		# Use _exsrc
-        _pch = [ tkC++Pch PCH_$(PACKAGE) : stdafx.cpp : $(_src) $(_exsrc) : $(_nopchsrc) : $(>) ] ;
-		# _exsrc += stdafx.cpp ;
-	  }
-    # Compile JNI
-    case jni :
-      _jni = 1 ;
-    case nojni :
-      _jni = 0 ;
-	# Require exceptions
-	case exc :
-      _exc = 1 ;
-      tkC++Exceptions $(_exsrc) $(_src) $(_nopchsrc) ;
-    # Can lint
-    case lint :
-      if $(LINT) = 1 {
-        tkCC++Lint $(_exsrc) $(_src) $(_nopchsrc) ;
-      }
-	# Dont call CC++Build automatically
-    case noautobuild :
-	  NOAUTOBUILD = 1 ;
-    # No CRT DLL
-    case nocrt :
-      OPT_CRTDLL = 2 ;
-	# Use the CRT DLL
-	case crtdll :
-	  OPT_CRTDLL = 1 ;
-	# Min size optimization
-	case minsz :
-	  OPT_MINSIZE = 1 ;
-    # No optimization
-    case noopt :
-      OPT_NOOPT = 1 ;
-    # Copy the implib of DLLs to the library output folder (NT only)
-    case implib :
-      if ! $(NO_DLL) = 1 {
-        _implib = 1 ;
-      }
-    # Dont copy the output in the redist directory
-    case noredist :
-      _cpredist = 0 ;
-    # Dont copy the pdb in the redist directory
-    case nopdb :
-      _pdb = 0 ;
-    # Enable RTTI
-    case rtti :
-      _rtti = 1 ;
-      tkC++RTTI $(_exsrc) $(_src) $(_nopchsrc) ;
-    # Console application
-    case console :
-      _console = 1 ;
-    # Unicode (UTF16) application
-    case unicode :
-      _unicode = 1 ;
-    # Output to a stamped target if STAMP is not empty
-    case stamp :
-      if $(STAMP) {
-        _stamp = -$(STAMP) ;
-      }
-    case * :
-      ECHO "Unknown Build Option : " $(_i) ;
-	}
+    switch $(_i) {
+        # Use precompiled header, should be the first option if specified
+      case pch :
+        if $(SUFPCH) && ( ! ( $(NO_PCH) = 1 ) )  && ( ( ! $(FLYMAKE) ) || ( $(FLYMAKE_PCH) = 1 ) ) {
+          # Use _exsrc
+          _pch = [ tkC++Pch PCH_$(PACKAGE) : stdafx.cpp : $(_src) $(_exsrc) : $(_nopchsrc) : $(>) ] ;
+          # _exsrc += stdafx.cpp ;
+        }
+        # Compile JNI
+      case jni :
+        _jni = 1 ;
+      case nojni :
+        _jni = 0 ;
+        # Require exceptions
+      case exc :
+        _exc = 1 ;
+        tkC++Exceptions $(_exsrc) $(_src) $(_nopchsrc) ;
+        # Can lint
+      case lint :
+        if $(LINT) = 1 {
+          tkCC++Lint $(_exsrc) $(_src) $(_nopchsrc) ;
+        }
+        # Dont call CC++Build automatically
+      case noautobuild :
+        NOAUTOBUILD = 1 ;
+        # No CRT DLL
+      case nocrt :
+        OPT_CRTDLL = 2 ;
+        # Use the CRT DLL
+      case crtdll :
+        OPT_CRTDLL = 1 ;
+        # Min size optimization
+      case minsz :
+        OPT_MINSIZE = 1 ;
+        # No optimization
+      case noopt :
+        OPT_NOOPT = 1 ;
+        # Dont copy the output in the redist directory
+      case noredist :
+        _cpredist = 0 ;
+        # Dont copy the pdb in the redist directory
+      case nopdb :
+        _pdb = 0 ;
+        # Enable RTTI
+      case rtti :
+        _rtti = 1 ;
+        tkC++RTTI $(_exsrc) $(_src) $(_nopchsrc) ;
+        # Console application
+      case console :
+        _console = 1 ;
+        # Unicode (UTF16) application
+      case unicode :
+        _unicode = 1 ;
+        # Output to a stamped target if STAMP is not empty
+      case stamp :
+        if $(STAMP) {
+          _stamp = -$(STAMP) ;
+        }
+      case * :
+        ECHO "Unknown Build Option :" $(_i) ;
+    }
   }
 
   local _allsrc = $(_exsrc) $(_src) $(_nopchsrc) ;
@@ -767,10 +772,10 @@ rule tkBuildPackage
     tkNoC++RTTI $(_allsrc) ;
   }
 
-  logVerbose "- Build options of '$(PKGTARGET)' : " $(>) ;
+  logVerbose "- Build options of '$(PKGTARGET)' :" $(>) ;
 
   if $(NOAUTOBUILD) = 0 {
-	tkCC++Build $(_exsrc) $(_src) $(_nopchsrc) ;
+    tkCC++Build $(_exsrc) $(_src) $(_nopchsrc) ;
   }
   ObjectOptimFlags $(_exsrc) $(_src) $(_nopchsrc) : $(PKGOPTIM) ;
   OPTIM on $(_pch) = $(PKGOPTIM) ;
@@ -780,27 +785,33 @@ rule tkBuildPackage
 
   local is_exe = 0 ;
   local t = $(PKGBUILD) ;
+  logVar PKGBUILD ;
   if $(PKGTYPE) = dll || $(PKGTYPE) = jni || $(PKGTYPE) = dylib {
     ObjectDefines $(_allsrc) : _TARGET_DLL ;
-	SharedLibrary $(t) : $(_src) : : : $(_extra_objs) ;
+    if $(PKGTARGET_LIB) {
+      SharedAndStaticLibrary $(t) : $(_src) : : : $(_extra_objs) ;
+    }
+    else {
+      SharedLibrary $(t) : $(_src) : : : $(_extra_objs) ;
+    }
   }
   else if $(PKGTYPE) = library {
     ObjectDefines $(_allsrc) : _TARGET_LIB ;
-	Library $(t) : $(_src) : $(_extra_objs) ;
+    Library $(t) : $(_src) : $(_extra_objs) ;
   }
   else {
-	is_exe = 1 ;
+    is_exe = 1 ;
     ObjectDefines $(_allsrc) : _TARGET_EXE ;
-	Main $(t) : $(_src) : $(_extra_objs) ;
+    Main $(t) : $(_src) : $(_extra_objs) ;
     if $(OSX) {
-	  LINKFLAGS on $(PKGTARGETF) += -fvisibility=hidden ;
+      LINKFLAGS on $(PKGTARGETF) += -fvisibility=hidden ;
     }
-	else if $(EMB_DEVICE) {
-	  LINKFLAGS on $(PKGTARGETF) += -fvisibility=hidden ;
+    else if $(EMB_DEVICE) {
+      LINKFLAGS on $(PKGTARGETF) += -fvisibility=hidden ;
     }
-	else if $(UNIX) {
-	  LINKFLAGS on $(PKGTARGETF) += -Wl,-export-dynamic -fvisibility=hidden ;
-	}
+    else if $(UNIX) {
+      LINKFLAGS on $(PKGTARGETF) += -Wl,-export-dynamic -fvisibility=hidden ;
+    }
   }
 
   if $(OSX) {
@@ -821,11 +832,20 @@ rule tkBuildPackage
       Chmod $(p) ;
     }
     f += $(p) ;
-    redistAddFile $(p) : $(PKGGROUP) ;
+
+    if $(PKGTARGET_LIB) {
+      local p = [ tkFile $(PKGTARGET_LIB:B)$(_stamp)$(PKGTARGET_LIB:S) : $(PKGTARGET_LIB) : $(TK_DIR_LIBS) ] ;
+      DEPENDS $(PACKAGE)_lib : $(p) ;
+      f += $(p) ;
+    }
   }
   else {
     f += $(d) ;
-    redistAddFile $(d) : $(PKGGROUP) ;
+
+    if $(PKGTARGET_LIB) {
+      f += $(PKGTARGET_LIB) ;
+      DEPENDS $(PACKAGE)_lib : $(PKGTARGET_LIB) ;
+    }
   }
 
   if $(SUFPDB) && $(_pdb) = 1 {
@@ -837,9 +857,9 @@ rule tkBuildPackage
     f += $(dstPDB) ;
   }
 
-  ### Package deps ###
-  if $(_implib) = 1 && $(NT) && ! $(ANDROID) && ! $(IOS) {
-    local impLib = $(PKGTARGETF:B:S=$(SUFLIB)) ;
+  # Import library, for MSVC
+  if $(MSVC) = 1 && $(PKGTYPE) = dll {
+    local impLib = $(PKGTARGETF:B:S)$(SUFLIB) ;
     local srcLib = [ FDirName $(OBJDIR) $(impLib) ] ;
     DEPENDS $(srcLib) : $(PKGTARGETF) ;
 
@@ -847,7 +867,7 @@ rule tkBuildPackage
     LINKFLAGS on $(PKGTARGET) += -IMPLIB:$(srcLib) ;
 
     local dstLib = [ FDirName $(TK_DIR_LIBS) $(impLib) ] ;
-    Touch $(srcLib) ; # Make sure that the lib's date is more recent than the output
+    Touch $(srcLib) ;
     FilePreserve $(dstLib) : $(srcLib) ;
     Clean clean : $(dstLib) ;
 
@@ -868,8 +888,3 @@ rule tkBuildPackage
 
   return $(_all) ;
 }
-
-#----------------------------------------------------------------------
-#     Redist
-#----------------------------------------------------------------------
-redistBuild redist-dll : modules : $(LOA_OS)-$(LOA_ARCH)_$(BUILD) ;

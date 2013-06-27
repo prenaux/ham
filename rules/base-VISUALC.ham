@@ -1,4 +1,5 @@
 NT = 1 ;
+MSVC = 1 ;
 
 if $(HAM_TOOLSET_NAME) = winrt_x86 ||
    $(HAM_TOOLSET_NAME) = winrt_x64 ||

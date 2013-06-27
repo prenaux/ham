@@ -578,7 +578,7 @@ rule Bulk
 
   for i in $(>)
   {
-	File $(i:D=$(<)) : $(i) ;
+    File $(i:D=$(<)) : $(i) ;
   }
 }
 
@@ -599,7 +599,7 @@ rule Cc
 
   if $(RELOCATE)
   {
-	CcMv $(<) : $(>) ;
+    CcMv $(<) : $(>) ;
   }
 
   # Just to clarify here: this sets the per-target CCFLAGS to
@@ -625,7 +625,7 @@ rule C99
   Depends $(<) : $(>) ;
 
   if $(RELOCATE) {
-	CcMv $(<) : $(>) ;
+    CcMv $(<) : $(>) ;
   }
 
   CCFLAGS on $(<) += $(CCFLAGS) $(SUBDIRCCFLAGS) ;
@@ -648,7 +648,7 @@ rule C++
 
   if $(RELOCATE)
   {
-	CcMv $(<) : $(>) ;
+    CcMv $(<) : $(>) ;
   }
 
   C++FLAGS on $(<) += $(C++FLAGS) $(SUBDIRC++FLAGS) ;
@@ -786,7 +786,7 @@ rule HdrRule
   local t = $(HDRSEARCH) ;
   t += $(DEPHDRS) ;
 
-#  Echo "MYHDR: " $(t) ;
+  #  Echo "MYHDR: " $(t) ;
 
   Includes $(<) : $(s) ;
   SEARCH on $(s) = $(HDRSEARCH) ;
@@ -794,14 +794,14 @@ rule HdrRule
 
   # Propagate on $(<) to $(>)
 
-#   local t = $(HDRSEARCH) ;
-#   Echo "MYHDR([$(<:D)]-[$(>:D)]): " $(HDRSEARCH) ;
-#   for _i in $(HDRSEARCH) {
-# 	t += [ FDirName $(_i) $(<:D) ] ;
-# 	t += [ FDirName $(_i) $(>:D) ] ;
-#   }
-   t += $(HDROPENED:DC) ;
-#  Echo "HDROPEN: " $(HDROPENED:D) ;
+  #   local t = $(HDRSEARCH) ;
+  #   Echo "MYHDR([$(<:D)]-[$(>:D)]): " $(HDRSEARCH) ;
+  #   for _i in $(HDRSEARCH) {
+    # 	t += [ FDirName $(_i) $(<:D) ] ;
+    # 	t += [ FDirName $(_i) $(>:D) ] ;
+  #   }
+  t += $(HDROPENED:DC) ;
+  #  Echo "HDROPEN: " $(HDROPENED:D) ;
 
   HDRSEARCH on $(s) = $(t) ;
   HDRSCAN on $(s) = $(HDRSCAN) ;
@@ -843,6 +843,14 @@ rule SharedLibrary
 {
   SharedLibraryFromObjects $(<) : $(>:S=$(SUFDLLOBJ)) $(5) : $(3) : $(4) ;
   SharedObjects            $(>) ;
+}
+
+# Same as SharedLibrary, but also output a static library along side the dll
+rule SharedAndStaticLibrary
+{
+  SharedLibraryFromObjects $(<) : $(>:S=$(SUFDLLOBJ)) $(5) : $(3) : $(4) ;
+  LibraryFromObjects $(<) : $(>:S=$(SUFOBJ)) $(5) ;
+  SharedObjects $(>) ;
 }
 
 if $(UNIX)
@@ -888,11 +896,11 @@ rule LibraryFromObjects
 
   if $(DELOBJS)
   {
-	Depends lib : $(_l) ;
+    Depends lib : $(_l) ;
   }
   else
   {
-	Depends obj : $(_s) ;
+    Depends obj : $(_s) ;
   }
 
   # Set LOCATE for the library and its contents.  The bound
@@ -902,29 +910,29 @@ rule LibraryFromObjects
 
   if ! $(_l:D)
   {
-	MakeLocate $(_l) $(_l)($(_s:BS)) : $(LOCATE_TARGET) ;
+    MakeLocate $(_l) $(_l)($(_s:BS)) : $(LOCATE_TARGET) ;
   }
 
   if ( ! $(DELOBJS) ) ||  $(NOARSCAN)
   {
-	# If we can't scan the library to timestamp its contents,
-	# we have to just make the library depend directly on the
-	# on-disk object files.
+    # If we can't scan the library to timestamp its contents,
+    # we have to just make the library depend directly on the
+    # on-disk object files.
 
-	Depends $(_l) : $(_s) ;
+    Depends $(_l) : $(_s) ;
   }
   else
   {
-	# If we can scan the library, we make the library depend
-	# on its members and each member depend on the on-disk
-	# object file.
+    # If we can scan the library, we make the library depend
+    # on its members and each member depend on the on-disk
+    # object file.
 
-	Depends $(_l) : $(_l)($(_s:BS)) ;
+    Depends $(_l) : $(_l)($(_s:BS)) ;
 
-	for _i in $(_s)
-	{
-	  Depends $(_l)($(_i:BS)) : $(_i) ;
-	}
+    for _i in $(_s)
+    {
+      Depends $(_l)($(_i:BS)) : $(_i) ;
+    }
   }
 
   Clean clean : $(_l) ;
@@ -962,11 +970,11 @@ rule SharedLibraryFromObjects
 
   if $(DELOBJS)
   {
-	Depends lib : $(_l) ;
+    Depends lib : $(_l) ;
   }
   else
   {
-	Depends obj : $(_s) ;
+    Depends obj : $(_s) ;
   }
 
   # Set LOCATE for the library and its contents.  The bound
@@ -976,7 +984,7 @@ rule SharedLibraryFromObjects
 
   if ! $(_l:D)
   {
-	MakeLocate $(_l) : $(LOCATE_TARGET) ;
+    MakeLocate $(_l) : $(LOCATE_TARGET) ;
   }
 
   # we never scan shared libraries for member objects
@@ -991,33 +999,33 @@ rule SharedLibraryFromObjects
 
   if $(OS) = LINUX || $(OS) = MACOSX
   {
-	DllLink $(_l) : $(_s) ;
+    DllLink $(_l) : $(_s) ;
   }
   else if $(NT)
   {
-	local  _implib = $(4) ;
+    local  _implib = $(4) ;
 
-	_implib ?= $(_l:S=$(SUFLIB)) ;
+    _implib ?= $(_l:S=$(SUFLIB)) ;
 
-	Clean    clean : $(_implib) ;
-	Depends  lib   : $(_implib) ;
+    Clean    clean : $(_implib) ;
+    Depends  lib   : $(_implib) ;
 
-	Depends $(_implib) : $(_l) ;
-	Depends $(_l)      ;
+    Depends $(_implib) : $(_l) ;
+    Depends $(_l)      ;
 
-	IMPLIBNAME  on $(_l) = $(_implib) ;
+    IMPLIBNAME  on $(_l) = $(_implib) ;
 
-	MakeLocate $(_implib)        : $(LOCATE_TARGET) ;
-	MakeLocate $(_implib:S=.exp) : $(LOCATE_TARGET) ;
+    MakeLocate $(_implib)        : $(LOCATE_TARGET) ;
+    MakeLocate $(_implib:S=.exp) : $(LOCATE_TARGET) ;
 
     SharedLink $(_l) : $(_s) : $(_implib) ;
 
-	DllLink $(_l) : $(_s) ;
+    DllLink $(_l) : $(_s) ;
   }
   else
   {
-	Echo "Sorry, I don't know how to make a shared library on your system" ;
-	Exit "Please contact the Ham maintainer for help" ;
+    Echo "Sorry, I don't know how to make a shared library on your system" ;
+    Exit "Please contact the Ham maintainer for help" ;
   }
 }
 
@@ -1071,10 +1079,10 @@ rule LinkSharedLibraries
 
   if $(NT) || $(OS2)
   {
-	# on NT or OS/2, we need to link agains the import library,
-	# not the DLL itself !!
-	#
-	_ext = $(SUFDLL)$(SUFLIB) ;
+    # on NT or OS/2, we need to link agains the import library,
+    # not the DLL itself !!
+    #
+    _ext = $(SUFDLL)$(SUFLIB) ;
   }
   Depends $(_t) : $(>:S=$(_ext))  ;
   NEEDLIBS on $(_t) += $(>:S=$(_ext)) ;
@@ -1112,8 +1120,8 @@ rule MainFromObjects
 
   if $(_t) != $(<)
   {
-	Depends $(<) : $(_t) ;
-	NotFile $(<) ;
+    Depends $(<) : $(_t) ;
+    NotFile $(<) ;
   }
 
   # make compiled sources a dependency of target
@@ -1128,8 +1136,8 @@ rule MainFromObjects
   # .tds file for executables, even when no debug information is needed
   #
   if $(HAM_TOOLSET) = BORLANDC {
-	MakeLocate $(_t:S=.tds) : $(LOCATE_TARGET) ;
-	Clean  clean : $(_t:S=.tds) ;
+    MakeLocate $(_t:S=.tds) : $(LOCATE_TARGET) ;
+    Clean  clean : $(_t:S=.tds) ;
   }
 
   Link $(_t) : $(_s) ;
@@ -1151,9 +1159,9 @@ rule MakeLocate
 
   if $(>)
   {
-	LOCATE on $(<) = $(>) ;
-	Depends $(<) : $(>[1]:G=dir) ;
-	MkDir $(>[1]:G=dir) ;
+    LOCATE on $(<) = $(>) ;
+    Depends $(<) : $(>[1]:G=dir) ;
+    MkDir $(>[1]:G=dir) ;
   }
 }
 rule MakeDir
@@ -1164,8 +1172,8 @@ rule MakeDir
 
   if $(>)
   {
-	Depends $(<) : $(>[1]:G=dir) ;
-	MkDir $(>[1]:G=dir) ;
+    Depends $(<) : $(>[1]:G=dir) ;
+    MkDir $(>[1]:G=dir) ;
   }
 }
 
@@ -1184,57 +1192,57 @@ rule MkDir
 
   if $(<:G=) != $(DOT) && ! $($(<)-mkdir)
   {
-	# Cheesy gate to prevent multiple invocations on same dir
-	# Arrange for jam dirs
-	# MkDir1 has the actions
+    # Cheesy gate to prevent multiple invocations on same dir
+    # Arrange for jam dirs
+    # MkDir1 has the actions
 
-	$(<)-mkdir = true ;
-	Depends dirs : $(<) ;
-	MkDir1 $(<) ;
+    $(<)-mkdir = true ;
+    Depends dirs : $(<) ;
+    MkDir1 $(<) ;
 
-	# Recursively make parent directories.
-	# $(<:P) = $(<)'s parent, & we recurse until root
+    # Recursively make parent directories.
+    # $(<:P) = $(<)'s parent, & we recurse until root
 
-	local s = $(<:P) ;
+    local s = $(<:P) ;
 
-	# Don't try to create A: or A:\ on windows
+    # Don't try to create A: or A:\ on windows
 
-	if $(NT)
-	{
-	  switch $(s)
-	  {
-		case *:   : s = ;
-		case *:\\ : s = ;
-	  }
-	}
+    if $(NT)
+    {
+      switch $(s)
+      {
+        case *:   : s = ;
+        case *:\\ : s = ;
+      }
+    }
 
-	# handle "C:", "C:/", "/cygdrive" and "/cygdrive/" in Cygwin
-	if $(UNIX) && $(OS) = CYGWIN
-	{
-	  switch $(s)
-	  {
-		case ?:   : s = ;
-		case ?:/  : s = ;
-		case <dir>/cygdrive   : s = ;
-		case <dir>/cygdrive/  : s = ;
-	  }
-	}
+    # handle "C:", "C:/", "/cygdrive" and "/cygdrive/" in Cygwin
+    if $(UNIX) && $(OS) = CYGWIN
+    {
+      switch $(s)
+      {
+        case ?:   : s = ;
+        case ?:/  : s = ;
+        case <dir>/cygdrive   : s = ;
+        case <dir>/cygdrive/  : s = ;
+      }
+    }
 
-	if $(s) = $(<)
-	{
-	  # The parent is the same as the dir.
-	  # We're at the root, which some OS's can't stat, so we mark
-	  # it as NotFile.
+    if $(s) = $(<)
+    {
+      # The parent is the same as the dir.
+      # We're at the root, which some OS's can't stat, so we mark
+      # it as NotFile.
 
-	  NotFile $(s) ;
-	}
-	else if $(s:G=)
-	{
-	  # There's a parent; recurse.
+      NotFile $(s) ;
+    }
+    else if $(s:G=)
+    {
+      # There's a parent; recurse.
 
-	  Depends $(<) : $(s) ;
-	  MkDir $(s) ;
-	}
+      Depends $(<) : $(s) ;
+      MkDir $(s) ;
+    }
   }
 }
 
@@ -1420,12 +1428,12 @@ rule ObjectHdrs
 rule FTargetSuffix
 {
   switch $(<:S) {
-	case .java : return $(SUFJAVAC) ;
-	case .scala : return $(SUFJAVAC) ;
-	case .erl :	return $(SUFBEAM) ;
-	case .aq : return $(SUFAQO) ;
-	case .aqw :	return $(SUFAQO) ;
-	case .aqp :	return $(SUFAQO) ;
+    case .java : return $(SUFJAVAC) ;
+    case .scala : return $(SUFJAVAC) ;
+    case .erl :	return $(SUFBEAM) ;
+    case .aq : return $(SUFAQO) ;
+    case .aqw :	return $(SUFAQO) ;
+    case .aqp :	return $(SUFAQO) ;
     case .asm : return $(SUFOBJ) ;
     case .masm : return $(SUFOBJ) ;
     case .c : return $(SUFOBJ) ;
@@ -1460,18 +1468,18 @@ rule ObjectSuf
   local suf = [ FTargetSuffix $(<) ] ;
   local d = $(<:S=$(suf)) ;
   switch $(suf) {
-	case .class :
-	  Object $(d) : $(_i) ;
-	  Depends class : $(d) ;
-	case .beam :
-	  Object $(d) : $(_i) ;
-	  Depends beam : $(d) ;
-	case $(SUFAQO) :
-	  Object $(d) : $(_i) ;
-	  Depends aqo : $(d) ;
-	case * :
-	  Object $(d) : $(_i) ;
-	  Depends obj : $(d) ;
+    case .class :
+      Object $(d) : $(_i) ;
+      Depends class : $(d) ;
+    case .beam :
+      Object $(d) : $(_i) ;
+      Depends beam : $(d) ;
+    case $(SUFAQO) :
+      Object $(d) : $(_i) ;
+      Depends aqo : $(d) ;
+    case * :
+      Object $(d) : $(_i) ;
+      Depends obj : $(d) ;
   }
   return $(d) ;
 }
@@ -1489,7 +1497,7 @@ rule Objects
 
   for _i in [ FGristFiles $(<) ]
   {
-	r += [ ObjectSuf $(_i) ] ;
+    r += [ ObjectSuf $(_i) ] ;
   }
 
   return $(r) ;
@@ -1518,10 +1526,10 @@ rule SharedObjects
   }
   else if $(UNIX)
   {
-	# change the compiler invokation for all these objects
-	# to use Libtool on Unix systems. We explicitely disable the
-	# generation of static objects here
-	#
+    # change the compiler invokation for all these objects
+    # to use Libtool on Unix systems. We explicitely disable the
+    # generation of static objects here
+    #
     libtool on $(<:S=$(SUFOBJ)) = [ LibToolFind ] ;
     CC on $(<:S=$(SUFOBJ))      = "$(libtool) --mode=compile $(CC) -dynamic" ;
   }
@@ -1603,113 +1611,113 @@ rule SubDir
 
   if ! $(_top)
   {
-	Exit SubDir syntax error ;
+    Exit SubDir syntax error ;
   }
 
   if ! $($(_top)-SET)
   {
-	$(_top)-SET = true ;
+    $(_top)-SET = true ;
 
-	# First time we've seen this TOP.
-	# We'll initialize a number of internal variables:
-	#
-	#   $(TOP-UP) = directories from ROOT to a common point
-	#   $(TOP-DOWN) = directories from common point to TOP
-	#   $(TOP-ROOT) = root directory for UP/DOWN -- normally CWD
-	#   $(SUBDIR_UP) = current value of $(TOP-UP)
-	#   $(SUBDIR_DOWN) = current value of $(TOP-DOWN)
-	#   $(SUBDIR_ROOT) = current value of $(TOP-ROOT)
-	#
+    # First time we've seen this TOP.
+    # We'll initialize a number of internal variables:
+    #
+    #   $(TOP-UP) = directories from ROOT to a common point
+    #   $(TOP-DOWN) = directories from common point to TOP
+    #   $(TOP-ROOT) = root directory for UP/DOWN -- normally CWD
+    #   $(SUBDIR_UP) = current value of $(TOP-UP)
+    #   $(SUBDIR_DOWN) = current value of $(TOP-DOWN)
+    #   $(SUBDIR_ROOT) = current value of $(TOP-ROOT)
+    #
 
-	if $($(_top))
-	{
-	  # TOP externally set.
-	  # We'll ignore the relative (UP/DOWN) path that
-	  # got us here, and instead remember the hard ROOT.
-
-	  $(_top)-UP = ;
-	  $(_top)-DOWN = ;
-	  $(_top)-ROOT = $($(_top)) ;
-	}
-	else
+    if $($(_top))
     {
-	  # TOP not preset.
+      # TOP externally set.
+      # We'll ignore the relative (UP/DOWN) path that
+      # got us here, and instead remember the hard ROOT.
 
-	  # Establishing a new TOP.  In the simplest case,
-	  # (SUBDIR_UP/SUBDIR_DOWN/SUBDIR_ROOT unset), it's
-	  # merely a certain number of directories down from
-	  # the current directory, and FSubDirPath will set
-	  # TOP to a path consisting of ../ for each of the
-	  # elements of _tokens, because that represents how
-	  # far below TOP the current directory sits.
-	  #
-	  # In the more complicated case, the starting directory
-	  # isn't the directory of jam's invocation but an
-	  # location established by previous SubDir call.  The
-	  # starting directory is SUBDIR_UP directories up from
-	  # SUBDIR_ROOT, and then SUBDIR_DOWN directories down
-	  # from that.   If SUBDIR_ROOT is not set, that means
-	  # SUBDIR_DOWN and SUBDIR_UP represent the path from
-	  # the directory of jam's invocation.
-	  #
-	  # In the most complicated case, the _tokens also
-	  # represents directories down, because TOP is being
-	  # estalished in a directory other than TOP's root.
-	  # Hopefully, _tokens and SUBDIR_DOWN represent the
-	  # same final directory, relative to the new TOP and
-	  # the previous SubDIr's TOP.  To find the new TOP,
-	  # we have to chop off any common directories from
-	  # then ends of _tokens and SUBDIR_DOWN.  To do so,
-	  # we reverse each of them, call FStripCommon to
-	  # remove the initial common elements, and then
-	  # reverse them again.  After this process, if
-	  # both _tokens and SUBDIR_DOWN have elements, it
-	  # means the directory names estalished by the two
-	  # SubDir calls don't match, and a warning is issued.
-	  # All hell will likely break loose at this point,
-	  # since the whole SubDir scheme relies on the SubDir
-	  # calls accurately naming the current directory.
+      $(_top)-UP = ;
+      $(_top)-DOWN = ;
+      $(_top)-ROOT = $($(_top)) ;
+    }
+    else
+    {
+      # TOP not preset.
 
-	  # Strip common trailing elements of _tokens and SUBDIR_DOWN.
+      # Establishing a new TOP.  In the simplest case,
+      # (SUBDIR_UP/SUBDIR_DOWN/SUBDIR_ROOT unset), it's
+      # merely a certain number of directories down from
+      # the current directory, and FSubDirPath will set
+      # TOP to a path consisting of ../ for each of the
+      # elements of _tokens, because that represents how
+      # far below TOP the current directory sits.
+      #
+      # In the more complicated case, the starting directory
+      # isn't the directory of jam's invocation but an
+      # location established by previous SubDir call.  The
+      # starting directory is SUBDIR_UP directories up from
+      # SUBDIR_ROOT, and then SUBDIR_DOWN directories down
+      # from that.   If SUBDIR_ROOT is not set, that means
+      # SUBDIR_DOWN and SUBDIR_UP represent the path from
+      # the directory of jam's invocation.
+      #
+      # In the most complicated case, the _tokens also
+      # represents directories down, because TOP is being
+      # estalished in a directory other than TOP's root.
+      # Hopefully, _tokens and SUBDIR_DOWN represent the
+      # same final directory, relative to the new TOP and
+      # the previous SubDIr's TOP.  To find the new TOP,
+      # we have to chop off any common directories from
+      # then ends of _tokens and SUBDIR_DOWN.  To do so,
+      # we reverse each of them, call FStripCommon to
+      # remove the initial common elements, and then
+      # reverse them again.  After this process, if
+      # both _tokens and SUBDIR_DOWN have elements, it
+      # means the directory names estalished by the two
+      # SubDir calls don't match, and a warning is issued.
+      # All hell will likely break loose at this point,
+      # since the whole SubDir scheme relies on the SubDir
+      # calls accurately naming the current directory.
 
-	  _tokens = [ FReverse $(_tokens) ] ;
-	  SUBDIR_DOWN = [ FReverse $(SUBDIR_DOWN) ] ;
-	  FStripCommon _tokens : SUBDIR_DOWN ;
-	  SUBDIR_DOWN = [ FReverse $(SUBDIR_DOWN) ] ;
-	  _tokens = [ FReverse $(_tokens) ] ;
+      # Strip common trailing elements of _tokens and SUBDIR_DOWN.
 
-	  if $(SUBDIR_DOWN) && $(_tokens)
-	  {
-		Echo Warning: SubDir $(<) misplaced! ;
-	  }
+      _tokens = [ FReverse $(_tokens) ] ;
+      SUBDIR_DOWN = [ FReverse $(SUBDIR_DOWN) ] ;
+      FStripCommon _tokens : SUBDIR_DOWN ;
+      SUBDIR_DOWN = [ FReverse $(SUBDIR_DOWN) ] ;
+      _tokens = [ FReverse $(_tokens) ] ;
 
-	  # We'll remember the relative (UP/DOWN) path that
-	  # got us here, plus any hard ROOT starting point
-	  # for the UP/DOWN.  If TOP is never set externally,
-	  # ROOT will always be "" (directory of jam's invocation).
+      if $(SUBDIR_DOWN) && $(_tokens)
+      {
+        Echo Warning: SubDir $(<) misplaced! ;
+      }
 
-	  $(_top)-UP = $(SUBDIR_UP) $(_tokens) ;
-	  $(_top)-DOWN = $(SUBDIR_DOWN) ;
-	  $(_top)-ROOT = $(SUBDIR_ROOT:E="") ;
-	  $(_top) = [ FSubDirPath $(_top) ] ;
-	}
+      # We'll remember the relative (UP/DOWN) path that
+      # got us here, plus any hard ROOT starting point
+      # for the UP/DOWN.  If TOP is never set externally,
+      # ROOT will always be "" (directory of jam's invocation).
 
-	# Set subdir vars for the inclusion of the Jamrules,
-	# just in case they have SubDir rules of their own.
-	# Note that SUBDIR_DOWN is empty: it's all the way
-	# up where the Jamrules live.  These gets overrided
-	# just after the inclusion.
+      $(_top)-UP = $(SUBDIR_UP) $(_tokens) ;
+      $(_top)-DOWN = $(SUBDIR_DOWN) ;
+      $(_top)-ROOT = $(SUBDIR_ROOT:E="") ;
+      $(_top) = [ FSubDirPath $(_top) ] ;
+    }
 
-	SUBDIR_UP = $($(_top)-UP) ;
-	SUBDIR_DOWN = ;
-	SUBDIR_ROOT = $($(_top)-ROOT) ;
+    # Set subdir vars for the inclusion of the Jamrules,
+    # just in case they have SubDir rules of their own.
+    # Note that SUBDIR_DOWN is empty: it's all the way
+    # up where the Jamrules live.  These gets overrided
+    # just after the inclusion.
 
-	# Include $(TOPRULES) or $(TOP)/Jamrules.
-	# Include $(TOPRULES) if set.
-	# Otherwise include $(TOP)/Jamrules if present.
+    SUBDIR_UP = $($(_top)-UP) ;
+    SUBDIR_DOWN = ;
+    SUBDIR_ROOT = $($(_top)-ROOT) ;
 
-	if $($(_top)RULES) {
-	  include $($(_top)RULES) ;
+    # Include $(TOPRULES) or $(TOP)/Jamrules.
+    # Include $(TOPRULES) if set.
+    # Otherwise include $(TOP)/Jamrules if present.
+
+    if $($(_top)RULES) {
+      include $($(_top)RULES) ;
     }
     else {
       NoCare $(JAMRULES:R=$($(_top)):G=$(_top)) ;
@@ -1806,7 +1814,7 @@ rule SubInclude
 
   if ! $($(<[1]))
   {
-	Exit SubInclude $(<[1]) without prior SubDir $(<[1]) ;
+    Exit SubInclude $(<[1]) without prior SubDir $(<[1]) ;
   }
 
   SubDir $(<) ;
@@ -1823,7 +1831,7 @@ rule SubRules
 
   if ! $($(<[1]))
   {
-	Exit SubRules $(<[1]) without prior SubDir $(<[1]) ;
+    Exit SubRules $(<[1]) without prior SubDir $(<[1]) ;
   }
 
   SubDir $(<) ;
@@ -1871,22 +1879,22 @@ rule FGristSourceFiles
 
   if ! $(SOURCE_GRIST)
   {
-	return $(<) ;
+    return $(<) ;
   }
   else
   {
-	local _i _o ;
+    local _i _o ;
 
-	for _i in $(<)
-	{
-	  switch $(_i)
-	  {
+    for _i in $(<)
+    {
+      switch $(_i)
+      {
         case *.h :  _o += $(_i) ;
         case * :    _o += $(_i:G=$(SOURCE_GRIST)) ;
-	  }
-	}
+      }
+    }
 
-	return $(_o) ;
+    return $(_o) ;
   }
 }
 
@@ -1904,20 +1912,20 @@ rule FSubDir
 
   if ! $(<[1])
   {
-	return $(DOT) ;
+    return $(DOT) ;
   }
   else
   {
-	local _i _d ;
+    local _i _d ;
 
-	_d = $(DOTDOT) ;
+    _d = $(DOTDOT) ;
 
-	for _i in $(<[2-])
-	{
-	  _d = $(_d:R=$(DOTDOT)) ;
-	}
+    for _i in $(<[2-])
+    {
+      _d = $(_d:R=$(DOTDOT)) ;
+    }
 
-	return $(_d) ;
+    return $(_d) ;
   }
 }
 
@@ -1931,9 +1939,9 @@ rule FStripCommon
 
   if $($(<)[1]) && $($(<)[1]) = $($(>)[1])
   {
-	$(<) = $($(<)[2-]) ;
-	$(>) = $($(>)[2-]) ;
-	FStripCommon $(<) : $(>) ;
+    $(<) = $($(<)[2-]) ;
+    $(>) = $($(>)[2-]) ;
+    FStripCommon $(<) : $(>) ;
   }
 }
 
@@ -1959,9 +1967,9 @@ rule FRelPath
   # XXX This should be better
 
   if $(_r) = $(DOT) {
-	return $(_l) ;
+    return $(_l) ;
     } else {
-	  return $(_r:R=$(_l)) ;
+      return $(_r:R=$(_l)) ;
     }
 }
 
@@ -1974,24 +1982,24 @@ rule FAppendSuffix
 
   if $(>)
   {
-	local _i _o ;
+    local _i _o ;
 
-	for _i in $(<)
-	{
-	  if $(_i:S)
-	  {
-		_o += $(_i) ;
-	  }
-	  else
-	  {
-		_o += $(_i:S=$(>)) ;
-	  }
-	}
-	return $(_o) ;
+    for _i in $(<)
+    {
+      if $(_i:S)
+      {
+        _o += $(_i) ;
+      }
+      else
+      {
+        _o += $(_i:S=$(>)) ;
+      }
+    }
+    return $(_o) ;
   }
   else
   {
-	return $(<) ;
+    return $(<) ;
   }
 }
 
@@ -2027,7 +2035,7 @@ rule FDirName
 
   for _i in $(<)
   {
-	_s = $(_i:R=$(_s)) ;
+    _s = $(_i:R=$(_s)) ;
   }
 
   return $(_s) ;
@@ -2245,7 +2253,7 @@ rule FGetAbsolutePath {
 rule FDirNameFiles {
   local t ;
   for _i in $(>) {
-	t += [ FDirName $(<) $(_i) ] ;
+    t += [ FDirName $(<) $(_i) ] ;
   }
   return $(t) ;
 }
@@ -2304,7 +2312,7 @@ rule GlobSrc
   local r ;
   local t = [ GlobSrcWithDir $(<) : $(>) ] ;
   for _i in $(t) {
-	r += $(_i:B)$(_i:S) ;
+    r += $(_i:B)$(_i:S) ;
   }
   return $(r) ;
 }
@@ -2361,13 +2369,13 @@ rule TestFileExists
 {
   local d = [ FDirName $(2) ] ;
   for _i in $(3) {
-	local t = $(_i:B)$(_i:S) ;
-	local f = [ GLOB $(d) : $(t) ] ;
-	f = $(f:B)$(f:S) ;
-	if ! ( $(f) = $(t) ) {
-# 	  Echo "FF: [$(f)] = [$(t)]" ;
-	  Exit "Test Failed : $(1) : Can't find '$(3)' in '$(d)' !" ;
-	}
+    local t = $(_i:B)$(_i:S) ;
+    local f = [ GLOB $(d) : $(t) ] ;
+    f = $(f:B)$(f:S) ;
+    if ! ( $(f) = $(t) ) {
+      # 	  Echo "FF: [$(f)] = [$(t)]" ;
+      Exit "Test Failed : $(1) : Can't find '$(3)' in '$(d)' !" ;
+    }
   }
 }
 
