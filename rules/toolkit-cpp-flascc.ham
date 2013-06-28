@@ -2,7 +2,7 @@ Import toolkit-cpp-gcc.ham ;
 
 STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
 
-FLASCC_LTO ?= 0 ;
+FLASCC_LTO ?= 1 ;
 
 FLASCC_WARN_ARGS =
 -Wall
@@ -19,12 +19,11 @@ CCFLAGS += $(FLASCC_WARN_ARGS) ;
 C++FLAGS += $(FLASCC_WARN_ARGS) -Wno-reorder ;
 
 ### "Debug" (da) build flags ###
-FLASCC_DBG_ARGS = $(STRICT_ALIASING_FLAGS) ;
-FLASCC_DBG_ARGS += -g -O0 ;
+FLASCC_DBG_ARGS = -Os $(STRICT_ALIASING_FLAGS) ;
 
 ### Optimized (ra) build flags ###
 if $(FLASCC_LTO) = 1 {
-  FLASCC_OPT_ARGS = -O4 $(STRICT_ALIASING_FLAGS) ;
+  FLASCC_OPT_ARGS = -flto -O4 $(STRICT_ALIASING_FLAGS) ;
 }
 else {
   FLASCC_OPT_ARGS = -Os $(STRICT_ALIASING_FLAGS) ;
