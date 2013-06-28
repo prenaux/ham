@@ -297,6 +297,7 @@ the text to another HTML buffer."
 (require 'xml-lite)
 (add-hook 'xml-lite-mode-hook
           '(lambda ()
+             (setq xml-lite-indent-offset 2)
              (setq sgml-basic-offset 2)
              ))
 
@@ -306,6 +307,8 @@ the text to another HTML buffer."
              ))
 
 (add-to-list 'auto-mode-alist '("\\.gml\\'" . xml-lite-mode))
+(add-to-list 'auto-mode-alist '("\\.xml\\'" . xml-lite-mode))
+(add-to-list 'auto-mode-alist '("\\.xslt\\'" . xml-lite-mode))
 
 ;;*** YAWS **************************************************************
 (add-to-list 'auto-mode-alist '("\\.yaws\\'" . html-mode))
