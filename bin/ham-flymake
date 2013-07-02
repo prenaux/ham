@@ -1,5 +1,10 @@
 #!/bin/bash
 export FLYMAKE=1
 export HAM_NO_VER_CHECK=1
-time ham -Tdefault $*
+export BUILD=da
+export TOOLSET=default
+if [[ -e ~/.ham-flymake ]]; then
+    . ~/.ham-flymake
+fi
+time ham -T${TOOLSET} $*
 true
