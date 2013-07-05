@@ -2305,7 +2305,7 @@ rule SrcSubDirGlobNoHdrs
 # EXAMPLE: GlobSrc DIR : cpp h asm : basepattern ;
 rule GlobSrcWithDir
 {
-  return [ GLOB [ FDirName $(<) ] : "[^_.]*."$(>) ] ;
+  return [ GLOB [ FDirName $(<) ] : "[^_.]*"$(>) ] ;
 }
 rule GlobSrc
 {

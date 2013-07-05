@@ -320,10 +320,10 @@ Import toolkit-cpp.ham ;
 #     Packages
 #----------------------------------------------------------------------
 if $(OSX) || $(IOS) {
-  DEFAULT_PKGSRC_EXT = cpp c cc ncc m mm ;
+  DEFAULT_PKGSRC_EXT = .cpp .c .cc .ncc .m .mm ;
 }
 else {
-  DEFAULT_PKGSRC_EXT = cpp c cc ncc ;
+  DEFAULT_PKGSRC_EXT = .cpp .c .cc .ncc ;
 }
 
 # tkPkgSrc Extensions ;
@@ -361,11 +361,40 @@ rule tkPkgSrcSubDirNoHdrs {
   return [ SrcSubDirGlobNoHdrs $(PACKAGE) : $(<) : $(OBJDIR) : $(ext) ] ;
 }
 
+
+# tkPkgSrcRecSubDir d1..dn : exts ;
+# Recursive version tkPkgSrcSubDir
+rule tkPkgSrcRecSubDir {
+  local BD = [ FDirName $(SUBDIR) $(1) ] ;
+  local FD = [ ListDirsR $(BD) ] ;
+  local SD =
+    [ ListStrAfterI $(BD) : $(SUBDIR) ]
+    [ ListStrAfterI $(FD) : $(SUBDIR) ]
+  ;
+  local ext = $(>) ;
+  if ! $(>) {
+    ext = $(DEFAULT_PKGSRC_EXT) ;
+  }
+
+  local F2 ;
+  {
+    local files = [ SrcSubDirGlob $(PACKAGE) : $(_sd) : $(OBJDIR) : $(ext) ] ;
+    F2 += $(files) ;
+  }
+  for _sd in $(SD) {
+    local files = [ SrcSubDirGlob $(PACKAGE) : $(_sd) : $(OBJDIR) : $(ext) ] ;
+    F2 += $(files) ;
+    # ECHO "F2 FOR $(_sd): " $(files) ;
+  }
+
+  return $(F2) ;
+}
+
 # tkPkgHdrs Dir ;
 # Dir is relative to TK_DIR/include
 rule tkPkgHdrs {
   local d = [ FDirName $(SUBDIR) API $(<) ] ;
-  return [ GlobSrc $(d) : h ] ;
+  return [ GlobSrc $(d) : .h ] ;
 }
 
 # tkLinkLibsRaw TARGET : LIB : DIR : EXT ;
