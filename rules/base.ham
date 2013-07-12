@@ -2349,11 +2349,20 @@ rule CopyDataToDir {
   return $(r) ;
 }
 
+# TargetLinkFlags TARGET : FLAGS ;
+rule TargetLinkFlags
+{
+  LINKFLAGS on $(<) ?= $(LINKFLAGS) ;
+  LINKFLAGS on $(<) += $(>) ;
+}
+
 # TargetLinkLibs TARGET : LIBS ;
 rule TargetLinkLibs
 {
   LINKLIBS on $(<) ?= $(LINKLIBS) ;
-  LINKLIBS on $(<) += $(>) ;
+  for _l in $(>) {
+    LINKLIBS on $(<) += $(_l) ;
+  }
 }
 
 # FileExists File
