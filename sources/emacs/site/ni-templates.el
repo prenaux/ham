@@ -13,9 +13,9 @@
                         (upcase (concat "__" (buffer-name) "_" (agl-uuid3) "__"))
                          )))
     (beginning-of-buffer)
+    (insert "#pragma once") (newline)
     (insert (concat "#ifndef " GUARD)) (newline)
     (insert (concat "#define " GUARD)) (newline)
     (end-of-buffer)
     (insert (concat "#endif // " GUARD)) (newline)
     ))
- 
