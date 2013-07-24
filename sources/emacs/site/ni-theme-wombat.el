@@ -14,7 +14,7 @@
 
  (custom-set-faces
   '(default ((((class color)) (:background "#242424" :foreground "#f6f3e8"))))
-  '(cursor ((((class color)) (:background "#656565"))))
+  '(cursor ((((class color)) (:background "#ff0000"))))
 
   ;; Highlighting faces
   '(fringe ((((class color)) (:background "#303030"))))
