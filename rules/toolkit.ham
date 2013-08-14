@@ -508,8 +508,9 @@ rule tkDefPackage
       PKGTARGET = $(PKGBUILD:S=$(SUFDLL)) ;
       PKGTYPE = dll ;
       DEPENDS modplugs : $(PKGGROUP) ;
-
-      PKGTARGET_LIB = $(PKGBUILD:S=$(SUFLIB)) ;
+      if ( $(PKGGROUP) = modules ) {
+        PKGTARGET_LIB = $(PKGBUILD:S=$(SUFLIB)) ;
+      }
     }
     else if $(PKGGROUP) = libs || $(PKGGROUP) = modulelibs {
       PKGTARGET = $(PKGBUILD:S=$(SUFLIB)) ;
@@ -884,10 +885,20 @@ rule tkBuildPackage
     Touch $(srcPDB) ; # Make sure that the PDB's date is more recent than the output
     FilePreserve $(dstPDB) : $(srcPDB) ;
     f += $(dstPDB) ;
+
+    if $(PKGTARGET_LIB) {
+      local p = $(PKGTARGET_LIB) ;
+      local srcPDB = [ FDirName $(LOCATE_TARGET) $(p:S=$(SUFPDB)) ] ;
+      local dstPDB = [ FDirName $(TK_DIR_LIBS) $(p:B)$(_stamp)$(SUFPDB) ] ;
+      DEPENDS $(srcPDB) : $(p) ;
+      Touch $(srcPDB) ; # Make sure that the PDB's date is more recent than the output
+      FilePreserve $(dstPDB) : $(srcPDB) ;
+      f += $(dstPDB) ;
+    }
   }
 
-  # Import library, for MSVC
-  if $(MSVC) = 1 && $(PKGTYPE) = dll {
+  # Import library, for MSVC, if its also potentially a static library
+  if $(MSVC) = 1 && $(PKGTARGET_LIB) {
     local impLib = $(PKGTARGETF:B:S)$(SUFLIB) ;
     local srcLib = [ FDirName $(OBJDIR) $(impLib) ] ;
     DEPENDS $(srcLib) : $(PKGTARGETF) ;
