@@ -26,8 +26,7 @@ case $HAM_OS in
 esac
 
 VER="--- doxygen -------------------------
-`doxygen_156 --version`
-`doxygen_163 --version`"
+`doxygen_184 --version`"
 if [ $? != 0 ]; then
     echo "E/Can't get version."
     return 1
