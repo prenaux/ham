@@ -1,0 +1,123 @@
+Import toolkit-cpp-gcc.ham ;
+
+PLATFORM_SUPPORTED = 1 ;
+DEFINES += TARGET_OS_IPHONE ;
+
+STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
+
+IOS_WARN_ARGS = -Wall ;
+SUFPCH = .h.gch ;
+
+### "Debug" (da) build flags ###
+IOS_DBG_ARGS = -g -O0 ;
+IOS_DBG_ARGS += $(STRICT_ALIASING_FLAGS) ;
+
+### Optimized (ra) build flags ###
+if $(FLYMAKE) {
+  IOS_OPT_ARGS = -O0 ;
+}
+else {
+  IOS_OPT_ARGS = -Os -fomit-frame-pointer ;
+}
+IOS_OPT_ARGS += $(STRICT_ALIASING_FLAGS) ;
+
+rule tkCC++Build
+{
+  LINKFLAGS on $(PKGTARGETF) += $(LINKFLAGS) ;
+  local t = $(<) ;
+  local strOpt = "" ;
+  # Set the debug infos generation
+  # Set the optimization flags
+  if $(DEBUG) = 1 {
+    PKGOPTIM += $(IOS_DBG_ARGS) ;
+    strOpt += "(DebugOnly) " ;
+  }
+  # Set debug-only flags
+  else {
+    PKGOPTIM += $(IOS_OPT_ARGS) ;
+    strOpt += "(Optimized) " ;
+  }
+  logVerbose "- CC++Build: " $(strOpt) ;
+}
+
+rule tkC++Exceptions
+{
+  if $(ADREXCEPTIONS) != 1 {
+    # ECHO "Exceptions are not supported on iOS." ;
+  }
+  else {
+    PKGOPTIM += -fexceptions ;
+  }
+  logVerbose "- C++ Exceptions" ;
+}
+rule tkCC++Warnings
+{
+  # 	  PKGOPTIM += -Wall ;
+  logVerbose "- C++ Warnings" ;
+}
+
+actions IOSCC_C++PCH
+{
+  $(C++) -x c++-header -o $(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) $(>)
+}
+rule IOSCC_C++PCH
+{
+  DEPENDS $(<) : $(>) ;
+  C++FLAGS on $(<) += $(C++FLAGS) $(SUBDIRC++FLAGS) ;
+  if $(PKGTYPE) = dll {
+    C++FLAGS on $(<) += $(PICFLAGS) ;
+  }
+  CCHDRS on $(<) = [ on $(<) FIncludes $(HDRS) ] ;
+  CCDEFS on $(<) = [ on $(<) FDefines $(DEFINES) ] ;
+}
+rule IOSCC_BuildPCH
+{
+  Clean clean : $(<) ;
+
+  MakeLocate $(<) : $(LOCATE_TARGET) ;
+  SEARCH on $(>) = $(SEARCH_SOURCE) ;
+
+  HDRS on $(<) = $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) ;
+
+  HDRRULE on $(>) = HdrRule ;
+  HDRSCAN on $(>) = $(HDRPATTERN) ;
+  HDRSEARCH on $(>) = $(SEARCH_SOURCE:E) $(SUBDIRHDRS) $(HDRS) $(STDHDRS) ;
+
+  HDRGRIST on $(>) = $(HDRGRIST) ;
+
+  DEFINES on $(<) += $(DEFINES) ;
+
+  IOSCC_C++PCH $(<) : $(>) ;
+}
+rule tkC++Pch
+{
+  local _src = [ FGristFiles $(3) ] ;
+  local _extrasrc = [ FGristFiles $(4) ] ;
+
+  local _pch = [ FGristFiles $(>:S=$(SUFPCH)) ] ;
+  local _pchTarget = [ FDirName $(LOCATE_TARGET) $(>:S=$(SUFPCH)) ] ;
+  local _cpp = [ FGristFiles $(>) ] ;
+  local _hdr = [ FGristFiles $(>:S=.h) ] ;
+  local _obj = $(_cpp:S=$(SUFOBJ)) ;
+  local _dir = $(_pchTarget:D) ;
+
+  MakeLocate $(_pch) : $(_dir) ;
+  IOSCC_BuildPCH $(_pch) : $(_hdr) ;
+
+  DEPENDS $(<) : $(_pch) ;
+  NotFile $(<) ;
+  NoUpdate $(<) ;
+
+  Clean clean : $(_pch) ;
+  DEPENDS pch : $(<) ;
+
+  ObjectC++Flags $(_src) : -include $(_pchTarget:S=) ;
+  DEPENDS $(_src:S=$(SUFOBJ)) : $(<) $(_pch) $(_hdr) ;
+  DEPENDS $(_extrasrc:S=$(SUFOBJ)) : $(<) $(_pch) $(_hdr) ;
+
+  logVerbose "- PCH:" $(_pchTarget) ;
+  return $(_hdr:S=$(SUFPCH)) ;
+}
+
+rule tkCC++Lint {
+}

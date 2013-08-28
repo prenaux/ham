@@ -1,0 +1,72 @@
+IOS = 1 ;
+OSPLAT = IOS ;
+
+Import base-GCC.ham ;
+
+CC = clang ;
+C++ = clang++ ;
+LINK = clang ;
+
+# Define here the CPU instruction set to use (armv6, armv7, armv7f or armv7s)
+# The armv6 instruction set is used in old devices, prior to the iPhone 3GS.
+# The armv7 set extends the armv6 and is used in all modern iOS devices.
+# The armv7f set adds dual-core instructions to armv7 for Apple A5 devices.
+# The armv7s set adds integer division optimizations for Apple A6 devices.
+IOS_CPUSET ?= ARMv6 ;
+
+# Define here the minimal iOS version's MAJOR number (iOS3, iOS4 or iOS5)
+IOS_MINVER ?= 3 ;
+
+switch $(IOS_MINVER) {
+  case 3 :
+    IOS_FRAMEWORKS = -framework AddressBook -framework AddressBookUI -framework AudioToolbox -framework AudioUnit -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreLocation -framework ExternalAccessory -framework Foundation -framework GameKit -framework IOKit -framework MapKit -framework MediaPlayer -framework MessageUI -framework MobileCoreServices -framework OpenAL -framework OpenGLES -framework QuartzCore -framework Security -framework StoreKit -framework SystemConfiguration -framework UIKit ;
+
+  case 4 :
+    IOS_FRAMEWORKS = -framework Accelerate -framework AddressBook -framework AddressBookUI -framework AssetsLibrary -framework AudioToolbox -framework AudioUnit -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreLocation -framework CoreMedia -framework CoreMIDI -framework CoreMotion -framework CoreTelephony -framework CoreText -framework CoreVideo -framework EventKit -framework EventKitUI -framework ExternalAccessory -framework Foundation -framework GameKit -framework iAd -framework ImageIO -framework IOKit -framework MapKit -framework MediaPlayer -framework MessageUI -framework MobileCoreServices -framework OpenAL -framework OpenGLES -framework QuartzCore -framework QuickLook -framework Security -framework StoreKit -framework SystemConfiguration -framework UIKit ;
+
+  case 5 :
+    IOS_FRAMEWORKS = -framework Accelerate -framework Accounts -framework AddressBook -framework AddressBookUI -framework AssetsLibrary -framework AudioToolbox -framework AudioUnit -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreBluetooth -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreImage -framework CoreLocation -framework CoreMedia -framework CoreMIDI -framework CoreMotion -framework CoreTelephony -framework CoreText -framework CoreVideo -framework EventKit -framework EventKitUI -framework ExternalAccessory -framework Foundation -framework GameKit -framework GLKit -framework GSS -framework iAd -framework ImageIO -framework IOKit -framework MapKit -framework MediaPlayer -framework MessageUI -framework MobileCoreServices -framework NewsstandKit -framework OpenAL -framework OpenGLES -framework QuartzCore -framework QuickLook -framework Security -framework StoreKit -framework SystemConfiguration -framework Twitter -framework UIKit ;
+
+  case 6 :
+    IOS_FRAMEWORKS = -framework Accelerate -framework Accounts -framework AddressBook -framework AddressBookUI -framework AdSupport -framework AssetsLibrary -framework AudioToolbox -framework AudioUnit -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreBluetooth -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreImage -framework CoreLocation -framework CoreMedia -framework CoreMIDI -framework CoreMotion -framework CoreTelephony -framework CoreText -framework CoreVideo -framework EventKit -framework EventKitUI -framework ExternalAccessory -framework Foundation -framework GameKit -framework GLKit -framework GSS -framework iAd -framework ImageIO -framework IOKit -framework MapKit -framework MediaPlayer -framework MediaToolbox -framework MessageUI -framework MobileCoreServices -framework NewsstandKit -framework OpenAL -framework OpenGLES -framework PassKit -framework QuartzCore -framework QuickLook -framework Security -framework Social -framework StoreKit -framework SystemConfiguration -framework Twitter -framework UIKit -framework VideoToolbox ;
+
+  case * :
+    EXIT "E/Unknown iOS version !" ;
+}
+
+CLANG_BASE_FLAGS =
+  # Define what are the necessary common compiler and linker options to build
+  # for the iOS platform. Here, tell the ARM cross-compiler to target the
+  # specified arm-apple-ios platform triplet, specify the location of the header
+  # files, use the compiler's integrated assembler, and set up the required
+  # preprocessor definitions. Tell the linker about the minimal supported iOS
+  # version, specify the location of the libraries and frameworks, and include
+  # explicitly libSystem.dylib, crt1.o, libgcc_s.1.dylib and the standard C++
+  # library in the linkage. Also include all available frameworks.
+  -ccc-host-triple $(IOS_CPUSET:L)-apple-ios$(IOS_MINVER).0.0
+  --sysroot "$(IOS_DIR)/SDK"
+  -integrated-as
+  -fdiagnostics-format=msvc
+  -fconstant-cfstrings
+  -miphoneos-version-min=$(IOS_MINVER).0.0
+  -DIPHONE
+  -D__CPU_$(IOS_CPUSET)__
+  -D__IPHONE_OS_VERSION_MIN_REQUIRED=$(IOS_MINVER)0000
+  # warning: enumerator value is not representable in the underlying type 'int'
+  -Wno-microsoft
+  # warning: 'XXX' has C-linkage specified, but returns user-defined type 'XXX &' which is incompatible with C
+  -Wno-return-type-c-linkage
+  # warning: N enumeration values not handled in switch ...
+  -Wno-switch
+;
+
+CCFLAGS = $(CLANG_BASE_FLAGS) ;
+C++FLAGS = $(CLANG_BASE_FLAGS) ;
+
+LINKFLAGS =
+  -ios_version_min $(IOS_MINVER).0
+  -syslibroot "$(IOS_DIR)/SDK"
+  -lSystem -lcrt1.o -lgcc_s.1 -lstdc++
+  -F"$(IOS_DIR)/SDK/System/Library/Frameworks"
+  $(IOS_FRAMEWORKS)
+;
