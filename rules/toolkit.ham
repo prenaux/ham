@@ -503,11 +503,16 @@ rule tkDefPackage
   else {
     OBJDIR = [ FDirName $(BASEOBJDIR) $(TK_NAME:L)-$(LIBS_LOA)-$(BUILD) $(PACKAGE) ] ;
     PKGBUILD = $(PACKAGE)_$(BUILDEXT) ;
-    if $(PKGGROUP) = modules || $(PKGGROUP) = dll || $(PKGGROUP) = dylib {
+    if $(PKGGROUP) = modules || $(PKGGROUP) = dll || $(PKGGROUP) = dylib || $(PKGGROUP) = tooldll {
       PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
       PKGTARGET = $(PKGBUILD:S=$(SUFDLL)) ;
       PKGTYPE = dll ;
-      DEPENDS modplugs : $(PKGGROUP) ;
+      if ( $(PKGGROUP) = tooldll ) {
+        DEPENDS tools : tooldll ;
+      }
+      else {
+        DEPENDS modplugs : $(PKGGROUP) ;
+      }
       if ( $(PKGGROUP) = modules ) {
         PKGTARGET_LIB = $(PKGBUILD:S=$(SUFLIB)) ;
       }
