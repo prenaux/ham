@@ -5,17 +5,17 @@ Import base-GCC.ham ;
 
 CC = clang ;
 C++ = clang++ ;
-LINK = clang ;
+LINK = ld ;
 
 # Define here the CPU instruction set to use (armv6, armv7, armv7f or armv7s)
 # The armv6 instruction set is used in old devices, prior to the iPhone 3GS.
 # The armv7 set extends the armv6 and is used in all modern iOS devices.
 # The armv7f set adds dual-core instructions to armv7 for Apple A5 devices.
 # The armv7s set adds integer division optimizations for Apple A6 devices.
-IOS_CPUSET ?= ARMv6 ;
+IOS_CPUSET ?= ARMv7 ;
 
 # Define here the minimal iOS version's MAJOR number (iOS3, iOS4 or iOS5)
-IOS_MINVER ?= 3 ;
+IOS_MINVER ?= 4 ;
 
 switch $(IOS_MINVER) {
   case 3 :
