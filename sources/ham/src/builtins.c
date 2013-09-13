@@ -806,6 +806,17 @@ static int _GetAbsolutePath(const char* input, BUFFER* buff) {
     }
     return 0;
 }
+#elif defined OS_MACOSX
+static int _GetAbsolutePath(const char* input, BUFFER* buff) {
+  char* resolvedPath = realpath(input,NULL);
+  if (resolvedPath) {
+    buffer_addstring(buff,resolvedPath,strlen(resolvedPath));
+    buffer_addchar(buff,0);
+    free(resolvedPath);
+    return 1;
+  }
+  return 0;
+}
 #else
 #error "_GetAbsolutePath not implemented on this platform !"
 #endif
@@ -886,7 +897,7 @@ builtin_strafteri(
 	LIST *liststring;
 	LIST *result = 0;
 	LIST *pattern = lol_get( args, 1 );
-    int patternLen = strlen(pattern->string), stringLen;
+  int patternLen = strlen(pattern->string), stringLen;
 
 	/* For each string */
 
@@ -897,7 +908,12 @@ builtin_strafteri(
 
         stringLen = strlen(liststring->string);
         if (stringLen >= patternLen &&
-            strnicmp(liststring->string,pattern->string,patternLen) == 0)
+#ifdef OS_NT
+            strnicmp(liststring->string,pattern->string,patternLen) == 0
+#else
+            strncasecmp(liststring->string,pattern->string,patternLen) == 0
+#endif
+            )
         {
             buffer_addstring(&buff,liststring->string+patternLen,stringLen-patternLen);
         }

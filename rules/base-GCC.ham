@@ -7,9 +7,15 @@ SLASH   ?= / ;
 SUFEXE  ?= .$(OSPLAT:L) ;
 SUFOBJ  ?= .o ;
 SUFLIB  ?= .a ;
-SUFDLL  ?= .so ;
 PREFIXDLL ?= lib ;
 CHMOD   ?= chmod ;
+
+if $(OS) = MACOSX {
+  SUFDLL  ?= .dylib ;
+}
+else {
+  SUFDLL  ?= .so ;
+}
 
 C++FLAGS    ?= ;
 CCFLAGS     ?= ;

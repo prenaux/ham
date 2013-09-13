@@ -1,4 +1,4 @@
-#!bash
+#!/bin/bash
 env | grep -E '^((ADR_|HAM_|GCC_|JAVA_|ANDROID_|NI_|XSLT_|BUILD_)\w+)=(.*)$' | sort
 echo WORK=${WORK}
 echo PATH=${PATH}

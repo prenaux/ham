@@ -20,6 +20,9 @@ case $HAM_OS in
         fi
         export PATH=$STRAW_PERL_HOME/perl/site/bin:$STRAW_PERL_HOME/perl/bin:$STRAW_PERL_HOME/c/bin:$PATH
         ;;
+    OSX*)
+        # OSX has Perl v5.12.4 pre-installed, which seems to do the job for our needs...
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1

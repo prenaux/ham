@@ -167,9 +167,6 @@ if $(HAM_TOOLSET) = MINGW
   Strip  ham$(SUFEXE) ;
 }
 
-
-if $(BINDIR) 	{ InstallBin $(BINDIR) : ham ; }
-
 #
 # Distribution making from here on out.
 #

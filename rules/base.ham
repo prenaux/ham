@@ -853,27 +853,6 @@ rule SharedAndStaticLibrary
   SharedObjects $(>) ;
 }
 
-if $(UNIX)
-{
-  # this rule is used to find the 'libtool' script in the current
-  # path, this is required when compiling shared objects on Unix
-  #
-  rule LibToolFind
-  {
-    if $(LIBTOOL) { return $(LIBTOOL) ; }
-
-    local  matches = [ Glob $(PATH) : libtool ] ;
-
-    if ! $(matches)
-    {
-      Exit "could not find 'libtool' program in current path. Aborting !" ;
-    }
-    LIBTOOL = $(matches[1]) ;
-
-    return $(LIBTOOL) ;
-  }
-}
-
 # /LibraryFromObjects library : objects ;
 #
 # Archives _objects_ into _library_. The _objects_ are then deleted
@@ -1520,19 +1499,6 @@ rule SharedObjects
   # call the normal Objects rule
   #
   Objects $(<) ;
-
-  if $(OS) = LINUX
-  {
-  }
-  else if $(UNIX)
-  {
-    # change the compiler invokation for all these objects
-    # to use Libtool on Unix systems. We explicitely disable the
-    # generation of static objects here
-    #
-    libtool on $(<:S=$(SUFOBJ)) = [ LibToolFind ] ;
-    CC on $(<:S=$(SUFOBJ))      = "$(libtool) --mode=compile $(CC) -dynamic" ;
-  }
 }
 
 rule RmTemps

@@ -1,0 +1,5 @@
+Import base-GCC.ham ;
+
+CC = clang ;
+C++ = clang++ ;
+LINK = clang++ ;

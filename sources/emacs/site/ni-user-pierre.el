@@ -1,3 +1,15 @@
+;;
+;; Example .emacs used in OSX:
+;;
+;; (setenv "WORK" "/Users/pierre/Documents/Work")
+;; (setenv "HAM_HOME" "/Users/pierre/Documents/Work/ham")
+;; (setenv "EMACS_DEVENV" (getenv "HAM_HOME"))
+;;
+;; (add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site"))
+;;
+;; (require 'ni-user-pierre)
+;;
+
 (provide 'ni-user-pierre)
 
 (require 'aglemacs)

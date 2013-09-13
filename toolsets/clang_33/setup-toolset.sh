@@ -23,6 +23,10 @@ case $HAM_OS in
             fi
         fi
         ;;
+    OSX)
+        export RUN_DEBUGGER=gdb
+        export RUN_DEBUGGER_PARAMS=--args
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1

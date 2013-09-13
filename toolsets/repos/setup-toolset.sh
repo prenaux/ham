@@ -19,6 +19,8 @@ case $HAM_OS in
             fi
         fi
         ;;
+    OSX*)
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
@@ -27,13 +29,27 @@ esac
 
 VER="--- repos ------------------------
 --- git ---
-`git --version`
---- mercurial ---
-`hg --version | grep 'Mercurial'`
---- svn ---
-`svn --version | grep 'Slik'`"
+`git --version`"
 if [ $? != 0 ]; then
-    echo "E/Can't get version."
+    echo "E/Can't get Git version."
+    return 1
+fi
+export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
+$VER"
+
+VER="--- mercurial ---
+`hg --version | grep 'Mercurial'`"
+if [ $? != 0 ]; then
+    echo "E/Can't get Mercurial version."
+    return 1
+fi
+export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
+$VER"
+
+VER="--- svn ---
+`svn --version | grep 'svn,'`"
+if [ $? != 0 ]; then
+    echo "E/Can't get SVN version."
     return 1
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS

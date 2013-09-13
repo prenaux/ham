@@ -422,7 +422,7 @@ rule tkLinkLibs {
   if $(PKGTYPE) != library {
     local dir = $(3) ;
     dir ?= $(TK_DIR_LIBS) ;
-    local l = [ FDirName $(dir) $(>)_$(BUILDEXT)$(SUFLIB) ] ;
+    local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFLIB) ] ;
     if ! ( $(NO_DEPS) = 1 ) {
       DEPENDS $(<) : $(l) ;
     }
@@ -518,6 +518,7 @@ rule tkDefPackage
       }
     }
     else if $(PKGGROUP) = libs || $(PKGGROUP) = modulelibs {
+      PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
       PKGTARGET = $(PKGBUILD:S=$(SUFLIB)) ;
       PKGTYPE = library ;
       DEPENDS modplugs : $(PKGGROUP) ;

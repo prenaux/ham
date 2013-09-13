@@ -19,6 +19,8 @@ case $HAM_OS in
             fi
         fi
         ;;
+    OSX)
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1

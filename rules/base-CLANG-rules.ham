@@ -1,5 +1,3 @@
-Import base-GCC-rules.ham ;
-
 actions together piecemeal Archive
 {
   $(AR) $(<) $(>:T)
@@ -20,7 +18,16 @@ actions Link bind NEEDLIBS
   $(LINK) $(LINKFLAGS) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
 }
 
-actions DllLink
+if $(OS) = MACOSX
 {
-  $(LINK) $(LINKFLAGS) $(>) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
+  actions DllLink
+  {
+    $(LINK) $(LINKFLAGS) -dynamiclib $(>) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
+  }
+}
+else {
+  actions DllLink
+  {
+    $(LINK) $(LINKFLAGS) $(>) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
+  }
 }

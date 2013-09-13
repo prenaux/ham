@@ -14,6 +14,10 @@ case $HAM_OS in
             . ham-toolset-import.sh msvc_10_x86
         # fi
         ;;
+    OSX*)
+        . ham-toolset-import.sh xslt_tools
+        . ham-toolset-import.sh clang_33
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1

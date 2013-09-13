@@ -2,6 +2,9 @@ if [[ -z $HAM_HOME ]]; then
     echo "E/HAM_HOME not set !"
     exit 1
 fi
+if [[ -z $USERNAME ]]; then
+    export USERNAME=$USER
+fi
 
 # Serious BS from Cygwin...
 export CYGWIN=nodosfilewarning
@@ -199,15 +202,20 @@ toolset_dl() {
 ##  Environments
 ########################################################################
 # Set HAM_OS first, its used by the script commands
-if [[ $OS == Windows* ]]; then
-    export HAM_OS=NT
-    export HAM_BIN_LOA=nt-x86
-    if [ -z $HOME ]; then
-        export HOME=`unxpath $USERPROFILE`
+if [[ -z $HAM_OS ]]; then
+    if [[ $OS == Windows* ]]; then
+        export HAM_OS=NT
+        export HAM_BIN_LOA=nt-x86
+        if [ -z $HOME ]; then
+            export HOME=`unxpath $USERPROFILE`
+        fi
+    elif [[ "`uname`" == "Darwin" ]]; then
+        export HAM_OS=OSX
+        export HAM_BIN_LOA=osx-x86
+    else
+        echo "W/Unknown OS"
+        # exit 1
     fi
-else
-    echo "W/Unknown OS"
-    # exit 1
 fi
 
 if [[ -z $WORK ]]; then

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 . ham-bash-lib.sh
 export SAXONPATH=${HAM_HOME}/toolsets/xslt_tools/jars/saxon9he.jar
 java -cp $SAXONPATH net.sf.saxon.Transform $*

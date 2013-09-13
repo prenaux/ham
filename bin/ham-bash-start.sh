@@ -8,7 +8,6 @@ if [[ `pwd` == "/usr" ]]; then
 fi
 
 export BASH_START_PATH=$PATH
-. $HAM_HOME/bin/ham-bash-lib.sh
 . $HAM_HOME/bin/ham-bash-setenv.sh
 
 echo "=== Ham bash shell ==="

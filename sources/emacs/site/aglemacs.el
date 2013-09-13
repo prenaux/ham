@@ -5,12 +5,29 @@
 ;;; Ack
 ;;;======================================================================
 (NotBatchMode
- ;; Use Ack to replace grep/rgrep which is badly broken/unreliable on Windows
- ;; You can get it this way if you dont have it already :
- ;; curl http://betterthangrep.com/ack-standalone > ./ack
- (require 'ack-emacs)
- ;; find in files
- (global-set-key "\C-h\C-j" 'ack)
+ (Windows
+  ;; Use Ack to replace grep/rgrep which is badly broken/unreliable on Windows
+  ;; You can get it this way if you dont have it already :
+  ;; curl http://betterthangrep.com/ack-standalone > ./ack
+  (require 'ack-emacs)
+  ;; find in files
+  (global-set-key "\C-h\C-j" 'ack))
+
+ ;; Mouarf... ack-emacs works properly on windows, so I use full-ack on
+ ;; Linux/OSX. Note that full-ack is actually much nicer than ack-emacs, we'll
+ ;; have to test whether it works on Windows...
+ (NotWindows
+  (require 'full-ack)
+  (setq ack-executable (concat (getenv "HAM_HOME") "/bin/ack"))
+  (setq ack-prompt-for-directory t)
+  (setq ack-context 2)
+  (setq ack-heading t)
+  (setq ack-project-root-file-patterns '("\\`_rules.ham\\'"))
+  (autoload 'ack-same "full-ack" nil t)
+  (autoload 'ack "full-ack" nil t)
+  (autoload 'ack-find-same-file "full-ack" nil t)
+  (autoload 'ack-find-file "full-ack" nil t)
+  (global-set-key "\C-h\C-j" 'ack))
 )
 
 ;;;======================================================================
@@ -1304,13 +1321,14 @@ LIST defaults to all existing live buffers."
  (define-key global-map (kbd "C-S-a") 'beginning-of-buffer)
  (define-key global-map (kbd "C-S-e") 'end-of-buffer)
 
- ;; Aquamacs, put back the keys to a sane (windows/linux-like) default
- (Aquamacs
+ ;; Emacs on OSX, put back the keys to a sane (windows/linux-like) default
+ (OSX
+  (global-set-key [ns-drag-file] 'ns-find-file)
+  (setq ns-pop-up-frames nil)
   (define-key osx-key-mode-map [home] 'beginning-of-line)
   (define-key osx-key-mode-map [end] 'end-of-line)
   (define-key osx-key-mode-map [(control left)] 'backward-word)
-  (define-key osx-key-mode-map [(control right)] 'forward-word)
- )
+  (define-key osx-key-mode-map [(control right)] 'forward-word))
 
 )
 
