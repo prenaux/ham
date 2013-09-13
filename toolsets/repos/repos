@@ -11,7 +11,10 @@ case "${REPOFILE}" in
         fi
         ;;
     *)
-        if [ -e ./_repos ]; then
+        if [ -e "$WORK/$USER/_repos" ]; then
+            REPOFILE="$WORK/$USER/_repos"
+            echo "== Work User Repo: $REPOFILE"
+        elif [ -e ./_repos ]; then
             REPOFILE=`pwd`/_repos
             echo "== Current Dir Repo: $REPOFILE"
         else

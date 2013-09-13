@@ -20,6 +20,8 @@ case $HAM_OS in
         fi
         ;;
     OSX*)
+        export PATH=${HAM_TOOLSET_DIR}:${PATH}
+        chmod +x "$HAM_TOOLSET_DIR/repos"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
