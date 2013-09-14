@@ -1325,11 +1325,8 @@ LIST defaults to all existing live buffers."
  (OSX
   (global-set-key [ns-drag-file] 'ns-find-file)
   (setq ns-pop-up-frames nil)
-  (define-key osx-key-mode-map [home] 'beginning-of-line)
-  (define-key osx-key-mode-map [end] 'end-of-line)
-  (define-key osx-key-mode-map [(control left)] 'backward-word)
-  (define-key osx-key-mode-map [(control right)] 'forward-word))
-
+  (global-set-key (kbd "<home>") 'move-beginning-of-line)
+  (global-set-key (kbd "<end>") 'move-end-of-line))
 )
 
 ;;;======================================================================
