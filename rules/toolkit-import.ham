@@ -65,7 +65,7 @@ rule tkImportGetLibPath {
     buildExt = $(BUILDEXT) ;
   }
   local srcTkDirLib = [ FDirName $(TK_SRC_WORK_DIR) $(<) libs $(LIBS_LOA) ] ;
-  local srcPath = [ FDirName $(srcTkDirLib) $(>)_$(buildExt)$(SUFLIB) ] ;
+  local srcPath = [ FDirName $(srcTkDirLib) $(PREFIXDLL)$(>)_$(buildExt)$(SUFLIB) ] ;
   return $(srcPath) ;
 }
 

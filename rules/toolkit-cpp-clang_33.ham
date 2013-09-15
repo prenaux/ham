@@ -4,6 +4,7 @@ CLANG_CC_ARGS +=
   -Wno-return-type-c-linkage
   -Wno-switch
   -Wno-#pragma-messages
+  -Wno-unused-value
 ;
 CLANG_CPP_ARGS +=
   -std=c++11
@@ -28,7 +29,8 @@ CCFLAGS   += $(CLANG_CC_ARGS) ;
 C++FLAGS  += $(CLANG_CC_ARGS) $(CLANG_CPP_ARGS) ;
 
 if $(FLYMAKE) = 1 {
-  CLANG_DBG_ARGS = -O0 -fsyntax-only ;
+  CLANG_DBG_ARGS = -O0 -fsyntax-check $(STRICT_ALIASING_FLAGS) ;
+  # CLANG_DBG_ARGS = -ggdb -O0 $(STRICT_ALIASING_FLAGS) ;
   CLANG_OPT_ARGS = $(CLANG_DBG_ARGS) ;
 }
 else {
