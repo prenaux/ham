@@ -1,6 +1,6 @@
 TK_SRC_WORK_DIR ?= $(WORK) ;
 
-# tkImportDoCopy TKIMPORT_TARGET : SRCPATH : DIR
+# tkImportDoCopy TKIMPORT_TARGET : SRCPATH : DIR : MODE
 rule tkImportDoCopy {
   if ! [ FExists $(2) ] {
     local destFile = [ FDirName $(3) $(2:BS) ] ;
@@ -12,7 +12,13 @@ rule tkImportDoCopy {
       EXIT "F/Cannot import $(2) to $(3) !" ;
     }
   }
-  local p = [ tkFile $(2:BS) : $(2) : $(3) ] ;
+  local p ;
+  if $(4) = EXE {
+    p = [ tkFileEXE $(2:BS) : $(2) : $(3) ] ;
+  }
+  else {
+    p = [ tkFile $(2:BS) : $(2) : $(3) ] ;
+  }
   DEPENDS $(1) : $(p) ;
   DEPENDS tkimport : $(p) ;
   DEPENDS pass1 : tkimport ;
@@ -75,7 +81,8 @@ rule tkImportExe {
   local srcPath = [ tkImportGetExePath $(<) : $(>) : $(3) ] ;
   local r = [ tkImportDoCopy tkimport_exe
   : $(srcPath)
-  : $(TK_DIR_BIN) ] ;
+  : $(TK_DIR_BIN)
+  : EXE ] ;
   DEPENDS $(>) : $(r) ;
 
   # Has a .pdb attached to it ?

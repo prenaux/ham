@@ -481,6 +481,7 @@ DOTDOT      ?= .. ;
 EXEMODE     ?= 711 ;
 FILEMODE    ?= 644 ;
 FILEMODERO  ?= -w ;
+FILEMODEEXE ?= +x ;
 HDRS        ?= ;
 INSTALLGRIST    ?= installed ;
 JAMFILE     ?= _build.ham ;
@@ -703,6 +704,18 @@ rule FilePreserveRO
   Chmod $(<) ;
 }
 actions FilePreserveRO
+{
+  $(CP_PRESERVE) $(>) $(<)
+}
+rule FilePreserveEXE
+{
+  Depends files : $(<) ;
+  Depends $(<) : $(>) ;
+  SEARCH on $(>) = $(SEARCH_SOURCE) ;
+  MODE on $(<) = $(FILEMODEEXE) ;
+  Chmod $(<) ;
+}
+actions FilePreserveEXE
 {
   $(CP_PRESERVE) $(>) $(<)
 }
