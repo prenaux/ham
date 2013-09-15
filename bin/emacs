@@ -1,3 +1,3 @@
 #!bash
-. ham-toolset emacs > NUL
+. ham-toolset emacs > /dev/null
 e $*

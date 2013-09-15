@@ -1,4 +1,4 @@
 #!/bin/bash
-. ham-toolset perl > NUL
+. ham-toolset perl > /dev/null
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 perl $HAM_HOME/bin/ack.pl $*
