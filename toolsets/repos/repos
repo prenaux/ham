@@ -60,16 +60,19 @@ do
             fi
         fi
 
-        mkdir -p $REPO
-        pushd ${REPO} > /dev/null
-        errcheck $? git_repos "can't move to repo's folder !"
-        ARGS0=${*/__REPO__/$REPO}
-        ARGS1=${ARGS0/__REMOTE2__/$REMOTE2}
-        ARGS=${ARGS1/__REMOTE__/$REMOTE}
-        # echo "Runing: $CMD $ARGS"
-        $CMD $ARGS
-        RET=$?
-        popd > /dev/null
+        if [ ! -e "${REPO}/.git" -a ! -e "${REPO}/.hg" -a ! -e "${REPO}/.svn" ]; then
+            echo "NO REPO: no .git, .hg or .svn folder found."
+        else
+            pushd ${REPO} > /dev/null
+            errcheck $? git_repos "can't move to repo's folder !"
+            ARGS0=${*/__REPO__/$REPO}
+            ARGS1=${ARGS0/__REMOTE2__/$REMOTE2}
+            ARGS=${ARGS1/__REMOTE__/$REMOTE}
+            # echo "Runing: $CMD $ARGS"
+            $CMD $ARGS
+            RET=$?
+            popd > /dev/null
+        fi
     fi
 done
 
