@@ -31,7 +31,7 @@ else {
   IOS_DBG_ARGS = -g -O0 $(STRICT_ALIASING_FLAGS) ;
 
   ### Optimized (ra) build flags ###
-  IOS_OPT_ARGS = -O2 -fomit-frame-pointer $(STRICT_ALIASING_FLAGS) ;
+  IOS_OPT_ARGS = -Os -fomit-frame-pointer $(STRICT_ALIASING_FLAGS) ;
 }
 
 rule tkCC++Build
