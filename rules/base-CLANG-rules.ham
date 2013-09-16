@@ -13,21 +13,26 @@ actions C++
   $(C++) -c -o $(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) $(>)
 }
 
-actions Link bind NEEDLIBS
-{
-  $(LINK) $(LINKFLAGS) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
-}
-
 if $(OS) = MACOSX
 {
+  OSX_DLL_RPATH = -rpath @loader_path/. ;
+  OSX_EXE_RPATH = -rpath @loader_path/. ;
   actions DllLink
   {
-    $(LINK) $(LINKFLAGS) -dynamiclib $(>) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
+    $(LINK) -install_name @rpath/$(<:B:S) $(LINKFLAGS) $(OSX_DLL_RPATH) -dynamiclib $(>) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
+  }
+  actions Link bind NEEDLIBS
+  {
+    $(LINK) $(LINKFLAGS) $(OSX_EXE_RPATH) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
   }
 }
 else {
   actions DllLink
   {
     $(LINK) $(LINKFLAGS) $(>) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
+  }
+  actions Link bind NEEDLIBS
+  {
+    $(LINK) $(LINKFLAGS) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
   }
 }
