@@ -4,8 +4,6 @@
 LOA_ARCH = avm2 ;
 LOA_OS = swf ;
 LOA_LINKER = gcc ;
-BUILD_BIN_LOA = nt-x86 ;
-BUILD_SUFEXE = .exe ;
 DEFINES += _COMPILER_FLASCC ;
 
 #----------------------------------------------------------------------

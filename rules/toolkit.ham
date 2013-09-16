@@ -15,6 +15,17 @@ Import run.ham ;
 AssertVarDefined HAM_TOOLSET_NAME ;
 AssertVarDefined HAM_TOOLSET_VER ;
 
+if $(OS) = MACOSX {
+  BUILD_BIN_LOA = osx-x86 ;
+  BUILD_SUFEXE = .x86 ;
+}
+else if $(WINDOWS) {
+  BUILD_BIN_LOA = nt-x86 ;
+  BUILD_SUFEXE = .exe ;
+}
+else {
+  EXIT "Toolkit: Unknown host platform to set BUILD_BIN_LOA & BUILD_BIN_SUFEXE !" ;
+}
 TK_ENV_FILE = toolkit-base-$(HAM_TOOLSET_NAME).ham ;
 Import $(TK_ENV_FILE) : "E/Can't find toolkit's configuration for toolset:" $(TK_ENV_FILE:B:S) ;
 
@@ -34,8 +45,6 @@ if $(RTCPP) = 1 {
 
 LIBS_LOA = $(LOA_LINKER)-$(LOA_OS)-$(LOA_ARCH) ;
 BIN_LOA = $(LOA_OS)-$(LOA_ARCH) ;
-BUILD_BIN_LOA ?= $(BIN_LOA) ;
-BUILD_SUFEXE ?= $(SUFEXE) ;
 
 #----------------------------------------------------------------------
 #     DEFINES
@@ -506,14 +515,14 @@ rule tkDefPackage
   PKGTARGET_LIB = ;
   PKGTARGETF2 = ;
   if $(PKGGROUP) = jar {
-    OBJDIR = [ FDirName $(BASEOBJDIR) $(TK_NAME:L)-jvm $(PACKAGE) ] ;
+    OBJDIR = [ FDirName $(BASEOBJDIR) jvm-$(TK_NAME:L) $(PACKAGE) ] ;
     PKGBUILD = $(PACKAGE) ;
     PKGTARGET = $(PKGBUILD:S=.jar) ;
     PKGTYPE = jar ;
     DEPENDS modplugs : $(PKGGROUP) ;
   }
   else {
-    OBJDIR = [ FDirName $(BASEOBJDIR) $(TK_NAME:L)-$(LIBS_LOA)-$(BUILD) $(PACKAGE) ] ;
+    OBJDIR = [ FDirName $(BASEOBJDIR) $(LIBS_LOA)-$(TK_NAME:L)-$(BUILD) $(PACKAGE) ] ;
     PKGBUILD = $(PACKAGE)_$(BUILDEXT) ;
     if $(PKGGROUP) = modules || $(PKGGROUP) = dll || $(PKGGROUP) = dylib || $(PKGGROUP) = tooldll {
       PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
@@ -851,22 +860,6 @@ rule tkBuildPackage
     is_exe = 1 ;
     ObjectDefines $(_allsrc) : _TARGET_EXE ;
     Main $(t) : $(_src) : $(_extra_objs) ;
-    if $(OSX) {
-      LINKFLAGS on $(PKGTARGETF) += -fvisibility=hidden ;
-    }
-    else if $(EMB_DEVICE) {
-      LINKFLAGS on $(PKGTARGETF) += -fvisibility=hidden ;
-    }
-    else if $(UNIX) {
-      LINKFLAGS on $(PKGTARGETF) += -Wl,-export-dynamic -fvisibility=hidden ;
-    }
-  }
-
-  if $(OSX) {
-  }
-  else if $(UNIX) && $(_console) != 1 && ! $(ANDROID) && ! $(EMB_DEVICE) {
-    LINKLIBS on $(PKGTARGETF) ?= $(LINKLIBS) ;
-    LINKLIBS on $(PKGTARGETF) += -lGL -lX11 ;
   }
 
   ### Copy into the redist/output directory ###

@@ -4,7 +4,6 @@
 LOA_OS = winrt ;
 LOA_ARCH = x86 ;
 LOA_LINKER = msvc ;
-BUILD_BIN_LOA = nt-x86 ;
 
 #----------------------------------------------------------------------
 #     DEFINES

@@ -5,21 +5,34 @@ DEFINES += TARGET_OS_IPHONE ;
 
 STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
 
-IOS_WARN_ARGS = -Wall ;
+CLANG_CC_ARGS +=
+  -Wno-return-type-c-linkage
+  -Wno-switch
+  -Wno-#pragma-messages
+  -Wno-unused-value
+;
+CLANG_CPP_ARGS +=
+  -std=c++11
+  -Wno-c++11-narrowing
+;
+
+CCFLAGS  += $(CLANG_CC_ARGS) ;
+C++FLAGS += $(CLANG_CC_ARGS) $(CLANG_CPP_ARGS) ;
+
 SUFPCH = .h.gch ;
 
-### "Debug" (da) build flags ###
-IOS_DBG_ARGS = -g -O0 ;
-IOS_DBG_ARGS += $(STRICT_ALIASING_FLAGS) ;
-
-### Optimized (ra) build flags ###
-if $(FLYMAKE) {
-  IOS_OPT_ARGS = -O0 ;
+if $(FLYMAKE) = 1 {
+  CLANG_DBG_ARGS = -O0 -fsyntax-check $(STRICT_ALIASING_FLAGS) ;
+  # CLANG_DBG_ARGS = -ggdb -O0 $(STRICT_ALIASING_FLAGS) ;
+  CLANG_OPT_ARGS = $(CLANG_DBG_ARGS) ;
 }
 else {
-  IOS_OPT_ARGS = -Os -fomit-frame-pointer ;
+  ### "Debug" (da) build flags ###
+  IOS_DBG_ARGS = -g -O0 $(STRICT_ALIASING_FLAGS) ;
+
+  ### Optimized (ra) build flags ###
+  IOS_OPT_ARGS = -O2 -fomit-frame-pointer $(STRICT_ALIASING_FLAGS) ;
 }
-IOS_OPT_ARGS += $(STRICT_ALIASING_FLAGS) ;
 
 rule tkCC++Build
 {
@@ -42,12 +55,7 @@ rule tkCC++Build
 
 rule tkC++Exceptions
 {
-  if $(ADREXCEPTIONS) != 1 {
-    # ECHO "Exceptions are not supported on iOS." ;
-  }
-  else {
-    PKGOPTIM += -fexceptions ;
-  }
+  PKGOPTIM += -fexceptions ;
   logVerbose "- C++ Exceptions" ;
 }
 rule tkCC++Warnings

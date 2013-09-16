@@ -4,8 +4,6 @@
 LOA_ARCH = js ;
 LOA_OS = web ;
 LOA_LINKER = em ;
-BUILD_BIN_LOA = nt-x86 ;
-BUILD_SUFEXE = .exe ;
 DEFINES += _COMPILER_EMSCRIPTEN ;
 
 #----------------------------------------------------------------------
