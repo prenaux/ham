@@ -1,6 +1,9 @@
 STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
 
 CLANG_CC_ARGS +=
+  -ffunction-sections
+  -fdata-sections
+  -fvisibility=hidden
   -Wno-return-type-c-linkage
   -Wno-switch
   -Wno-#pragma-messages
@@ -11,18 +14,49 @@ CLANG_CPP_ARGS +=
   -Wno-c++11-narrowing
 ;
 
+LINKFLAGS +=
+  -fvisibility=hidden
+  -ffunction-sections
+  -fdata-sections
+;
+
 ### OSX ###
 if $(OSX) {
-  CLANG_CC_ARGS += -fno-common ;
+  CLANG_CC_ARGS += -mmacosx-version-min=10.6 -fno-common ;
   if $(OSPLAT) = X64 {
-    CLANG_CC_ARGS += -m64 ;
-    LINKFLAGS += -m64 ;
+    CLANG_CC_ARGS += -arch x86_64 -m64 ;
+    LINKFLAGS += -arch x86_64 -m64 ;
   }
   else if $(OSPLAT) = X86 {
-    CLANG_CC_ARGS += -m32 ;
-    LINKFLAGS += -m32 ;
+    CLANG_CC_ARGS += -arch i386 -m32 ;
+    LINKFLAGS += -arch i386 -m32 ;
   }
-  LINKLIBS += -framework Foundation -framework CoreServices -framework Carbon -framework Cocoa -framework IOKit -framework OpenGL -framework AGL -lstdc++ -lpthread -ldl ;
+
+  # Strip all symbols in release build
+  #
+  # -dead_strip
+  # Remove functions and data that are unreachable by the entry point or
+  # exported symbols.
+  #
+  # -dead_strip_dylibs
+  #
+  # Remove dylibs that are unreachable by the entry point or exported
+  # symbols. That is, suppresses the generation of load command commands for
+  # dylibs which supplied no symbols during the link. This option should not be
+  # used when linking against a dylib which is required at runtime for some
+  # indirect reason such as the dylib has an important initializer.
+  #
+  # -why_live symbol_name
+  #
+  # Logs a chain of references to symbol_name. Only applicable with
+  # -dead_strip. It can help debug why something that you think should be dead
+  # strip removed is not removed.
+  #
+  if $(BUILD) = ra {
+    LINKFLAGS_EXE += -s -dead_strip ;
+    LINKFLAGS_DLL += -s -dead_strip ;
+  }
+  LINKLIBS += -framework Foundation -framework CoreServices -framework Cocoa -framework IOKit -framework OpenGL -framework AGL -lstdc++ -lpthread -ldl ;
 }
 
 CCFLAGS   += $(CLANG_CC_ARGS) ;
@@ -37,7 +71,7 @@ else {
   ### "Debug" (da) build flags ###
   CLANG_DBG_ARGS = -ggdb -O0 $(STRICT_ALIASING_FLAGS) ;
   ### Optimized (ra) build flags ###
-  CLANG_OPT_ARGS = -O2 $(STRICT_ALIASING_FLAGS) ;
+  CLANG_OPT_ARGS = -Os $(STRICT_ALIASING_FLAGS) ;
 }
 
 ### Link flags ###

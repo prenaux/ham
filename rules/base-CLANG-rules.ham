@@ -15,15 +15,15 @@ actions C++
 
 if $(OS) = MACOSX
 {
-  OSX_DLL_RPATH = -rpath @loader_path/. ;
-  OSX_EXE_RPATH = -rpath @loader_path/. ;
+  LINKFLAGS_DLL = -rpath @loader_path/. ;
+  LINKFLAGS_EXE = -rpath @loader_path/. ;
   actions DllLink
   {
-    $(LINK) -install_name @rpath/$(<:B:S) $(LINKFLAGS) $(OSX_DLL_RPATH) -dynamiclib $(>) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
+    $(LINK) -install_name @rpath/$(<:B:S) $(LINKFLAGS) $(LINKFLAGS_DLL) -dynamiclib $(>) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
   }
   actions Link bind NEEDLIBS
   {
-    $(LINK) $(LINKFLAGS) $(OSX_EXE_RPATH) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
+    $(LINK) $(LINKFLAGS) $(LINKFLAGS_EXE) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
   }
 }
 else {
