@@ -264,16 +264,29 @@ rule tkAPICopy {
   local TARGET = API_$(<) ;
   local r ;
   for _i in $(3) {
-    if $(_i) = . { _i = ; }
-    local base = [ FDirName $(SUBDIR) API $(2) ] ;
-    local dir = [ FDirName $(base) $(_i) ] ;
-    local idir = [ FDirName $(2) $(_i) ] ;
-    local ddir = [ FDirName $(TK_DIR_INCLUDE) $(idir) ] ;
+    local dir ;
+    local idir ;
+    local ddir ;
+    if $(_i) = .. {
+      dir = [ FDirName $(SUBDIR) API ] ;
+      idir = "" ;
+      ddir = [ FDirName $(TK_DIR_INCLUDE) $(idir) ] ;
+    }
+    else {
+      if $(_i) = . {
+        _i = ;
+      }
+      local base = [ FDirName $(SUBDIR) API $(2) ] ;
+      dir = [ FDirName $(base) $(_i) ] ;
+      idir = [ FDirName $(2) $(_i) ] ;
+      ddir = [ FDirName $(TK_DIR_INCLUDE) $(idir) ] ;
+    }
     local srcs = [ GlobAllSrc $(dir) : c cxx cpp h hxx hpp __h ] ;
-#     ECHO "Dir: " $(dir) ;
-#     ECHO "DDir: " $(ddir) ;
-#     ECHO "RDir: " $(rdir) ;
-#     ECHO "SUB: " $(SUBDIR) ;
+    # ECHO "Dir: " $(dir) ;
+    # ECHO "IDir: " $(idir) ;
+    # ECHO "DDir: " $(ddir) ;
+    # ECHO "RDir: " $(rdir) ;
+    # ECHO "SUB: " $(SUBDIR) ;
     MakeLocate $(TARGET)_dir : $(ddir) ;
     NotFile $(TARGET)_dir ;
     NoUpdate $(TARGET)_dir ;
@@ -292,8 +305,8 @@ rule tkAPICopy {
       INCLUDES $(d) : $(s) ;
       INCLUDES $(reld) : $(s) ;
       r += $(d) ;
-#       ECHO "$(d:S) $(s) -> $(d)" ;
-#       ECHO "REL: $(reld)" ;
+      # ECHO "$(d:S) $(s) -> $(d)" ;
+      # ECHO "REL: $(reld)" ;
       DEPENDS $(TARGET) : $(d) ;
     }
   }
