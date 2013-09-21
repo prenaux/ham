@@ -5,6 +5,9 @@ fi
 if [[ -z $USERNAME ]]; then
     export USERNAME=$USER
 fi
+if [[ -z $USER ]]; then
+    export USER=$USERNAME
+fi
 
 # Serious BS from Cygwin...
 export CYGWIN=nodosfilewarning
