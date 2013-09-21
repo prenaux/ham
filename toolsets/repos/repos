@@ -11,8 +11,8 @@ case "${REPOFILE}" in
         fi
         ;;
     *)
-        if [ -e "$WORK/$USER/_repos" ]; then
-            REPOFILE="$WORK/$USER/_repos"
+        if [ -e "$WORK/$USERNAME/_repos" ]; then
+            REPOFILE="$WORK/$USERNAME/_repos"
             echo "== Work User Repo: $REPOFILE"
         elif [ -e ./_repos ]; then
             REPOFILE=`pwd`/_repos
