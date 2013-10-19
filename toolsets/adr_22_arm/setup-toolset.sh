@@ -17,7 +17,7 @@ export ADR_22_ARM_ROOT=${HAM_TOOLSET_DIR}/nt-x86
 
 # dl if missing
 if [ ! -e $ADR_22_ARM_ROOT  ]; then
-    toolset_dl adr_22_arm adr_22_arm
+    toolset_dl adr_22_arm_nt-x86 adr_22_arm_nt-x86
     if [ ! -e $ADR_22_ARM_ROOT ]; then
         echo "adr_22_arm folder doesn't exist in the toolset"
         return 1
