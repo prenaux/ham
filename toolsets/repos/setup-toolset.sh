@@ -32,7 +32,7 @@ case $HAM_OS in
 esac
 
 if [ ! -e $GIT_EXTENSIONS ]; then
-    toolset_dl repos repos_GitExtensions
+    toolset_dl repos repos_GitExt
 fi
 
 VER="--- repos ------------------------
