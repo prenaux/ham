@@ -342,13 +342,13 @@ the text to another HTML buffer."
 (add-to-list 'auto-mode-alist '("\\.iss\\'" . iss-mode))
 
 ;;*** CG/HLSL/GLSL ******************************************************
-(add-to-list 'auto-mode-alist '("\\.cg\\'" . c-mode))
-(add-to-list 'auto-mode-alist '("\\.cgc\\'" . c-mode))
-(add-to-list 'auto-mode-alist '("\\.cgh\\'" . c-mode))
-(add-to-list 'auto-mode-alist '("\\.vert\\'" . c-mode))
-(add-to-list 'auto-mode-alist '("\\.frag\\'" . c-mode))
-(add-to-list 'auto-mode-alist '("\\.glsl\\'" . c-mode))
-(add-to-list 'auto-mode-alist '("\\.hlsl\\'" . c-mode))
+(add-to-list 'auto-mode-alist '("\\.cg\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.cgc\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.cgh\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.vert\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.frag\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.glsl\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.hlsl\\'" . c++-mode))
 
 ;;*** Actionscript ****************************************************************
 (autoload 'actionscript-mode "actionscript-mode" nil t)
