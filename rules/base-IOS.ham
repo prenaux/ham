@@ -34,21 +34,8 @@ switch $(IOS_MINVER) {
     EXIT "E/Unknown iOS version !" ;
 }
 
-if $(WINDOWS) {
-  IPHONE_SDK_DIR = "$(IOS_DIR)/SDK" ;
-}
-else {
-  IPHONE_SDK_DIR = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk ;
-}
-if ! [ FExists $(IPHONE_SDK_DIR) ] {
-  EXIT "Can't find iPhoneSDK dir:" $(IPHONE_SDK_DIR) ;
-}
-
 CLANG_BASE_FLAGS =
   -arch $(IOS_CPUSET:L)
-  -ccc-host-triple $(IOS_CPUSET:L)-apple-ios$(IOS_MINVER).0.0
-  -integrated-as
-  --sysroot "$(IPHONE_SDK_DIR)"
   -fconstant-cfstrings
   -miphoneos-version-min=$(IOS_MINVER).0.0
   -DIPHONE
@@ -57,9 +44,37 @@ CLANG_BASE_FLAGS =
 ;
 
 if $(WINDOWS) {
+  IPHONE_SDK_DIR = "$(IOS_DIR)/SDK" ;
   CLANG_BASE_FLAGS +=
     -fdiagnostics-format=msvc
+    --sysroot "$(IPHONE_SDK_DIR)"
+    -ccc-host-triple $(IOS_CPUSET:L)-apple-ios$(IOS_MINVER).0.0
+    -integrated-as
   ;
+}
+else {
+  IPHONE_SDK_DIR = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/ ;
+  # iOS 7 SDK
+  if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS7.0.sdk ] {
+    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS7.0.sdk ;
+    CLANG_BASE_FLAGS +=
+      -isysroot "$(IPHONE_SDK_DIR)"
+      -fmessage-length=0
+    ;
+  }
+  # iOS 6.1 SDK
+  else if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS6.1.sdk ] {
+    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS6.1.sdk ;
+    CLANG_BASE_FLAGS +=
+      --sysroot "$(IPHONE_SDK_DIR)"
+      -ccc-host-triple $(IOS_CPUSET:L)-apple-ios$(IOS_MINVER).0.0
+      -integrated-as
+    ;
+  }
+}
+
+if ! [ FExists $(IPHONE_SDK_DIR) ] {
+  EXIT "Can't find iPhoneSDK dir:" $(IPHONE_SDK_DIR) ;
 }
 
 CCFLAGS = $(CLANG_BASE_FLAGS) ;
