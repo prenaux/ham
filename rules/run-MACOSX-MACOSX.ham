@@ -10,5 +10,5 @@ actions runInDebugger_
   echo "=== Debugging:" $(RUN_EXE) "with" $(RUN_DEBUGGER)
   cd $(WORK_DIR)
   pwd
-  "$RUN_DEBUGGER" -x $(RUN_EXE).gdb $(DBG0) $(DBG1) $(DBG2) $(DBG3) $(DBG4) $(DBG5) --args $(RUN_EXE) $(A0) $(A1) $(A2) $(A3) $(A4) $(A5) $(A6) $(A7) $(A8) $(A9) $(A10) $(A11) $(A12) $(A13) $(A14) $(A15) $(A16) $(FIXTURE)
+  "$RUN_DEBUGGER" $(DBG0) $(DBG1) $(DBG2) $(DBG3) $(DBG4) $(DBG5) $(RUN_DEBUGGER_PARAMS) $(RUN_EXE) $(A0) $(A1) $(A2) $(A3) $(A4) $(A5) $(A6) $(A7) $(A8) $(A9) $(A10) $(A11) $(A12) $(A13) $(A14) $(A15) $(A16) $(FIXTURE)
 }
