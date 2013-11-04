@@ -17,6 +17,8 @@ case $HAM_OS in
     OSX*)
         . ham-toolset-import.sh xslt_tools
         . ham-toolset-import.sh clang_33
+        # Force to X86 build atm, X64 hasn't been tested yet
+        export OSPLAT=X86
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

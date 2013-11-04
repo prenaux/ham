@@ -16,5 +16,4 @@ DEFINES += $(HAM_OS) _COMPILER_$(LOA_OS:U)_$(LOA_ARCH:U) ;
 POSIX = 1 ;
 if $(OS) = MACOSX {
   OSX = 1 ;
-  OSPLAT ?= X86 ;
 }
