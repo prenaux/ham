@@ -10,6 +10,7 @@ CLANG_CC_ARGS +=
   -Wno-unused-value
 ;
 CLANG_CPP_ARGS +=
+  -stdlib=libc++
   -std=c++11
   -Wno-c++11-narrowing
 ;
@@ -22,7 +23,7 @@ LINKFLAGS +=
 
 ### OSX ###
 if $(OSX) {
-  CLANG_CC_ARGS += -mmacosx-version-min=10.6 -fno-common ;
+  CLANG_CC_ARGS += -mmacosx-version-min=10.7 -fno-common ;
   if $(OSPLAT) = X64 {
     CLANG_CC_ARGS += -arch x86_64 -m64 ;
     LINKFLAGS += -arch x86_64 -m64 ;
