@@ -7,6 +7,7 @@ JSCC_WARN_ARGS =
 -Wno-trigraphs
 -Wno-narrowing
 -Wno-sign-compare
+-Wno-warn-absolute-paths
 ;
 if $(LOA_LINKER) = clang || $(LOA_LINKER) = em {
   JSCC_WARN_ARGS +=
@@ -22,6 +23,10 @@ if $(FLYMAKE) = 1 {
 }
 SUFPCH = .h.gch ;
 
+C++FLAGS +=
+  -std=c++11
+;
+
 ### "Debug" (da) build flags ###
 JSCC_DBG_ARGS = $(STRICT_ALIASING_FLAGS) ;
 JSCC_DBG_ARGS += -O0 ;
@@ -33,14 +38,12 @@ if $(LOA_OS) = webemu {
 JSCC_OPT_ARGS = $(STRICT_ALIASING_FLAGS) ;
 
 ### Link flags ###
-SUFEXE = .js ;
-LINKFLAGS += --pre-js $(BUILD_SCRIPTS)/jscc/pre-js.js --post-js $(BUILD_SCRIPTS)/jscc/post-js.js ;
 LINKFLAGS += -s DISABLE_EXCEPTION_CATCHING=1 ;
 if $(DEBUG) = 1 {
-  LINKFLAGS += -O0 --closure 0 ;
+  LINKFLAGS += -O0 ;
 }
 else {
-  LINKFLAGS += -O2 --closure 1 ;
+  LINKFLAGS += -O2 ;
 }
 ECHO "# JSCC (Web) Link Flags :" $(LINKFLAGS) ;
 
@@ -60,6 +63,22 @@ rule tkCC++Build
     strOpt += "(Optimized) " ;
   }
   logVerbose "- CC++Build: " $(strOpt) ;
+}
+
+rule tkC++Exceptions {
+  ObjectC++Flags $(<) : -fexceptions ;
+}
+rule tkNoC++Exceptions {
+  ObjectC++Flags $(<) : -fno-exceptions ;
+  # Needed to disable exception usage in the standard C++ library
+  ObjectDefines $(<) : _HAS_EXCEPTIONS=0 ;
+}
+
+rule tkC++RTTI {
+  ObjectC++Flags $(<) : -frtti ;
+}
+rule tkNoC++RTTI {
+  ObjectC++Flags $(<) : -fno-rtti ;
 }
 
 rule tkCC++Lint {

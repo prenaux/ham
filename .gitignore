@@ -85,5 +85,6 @@ data/tests/*
 
 # misc
 sources/ham/tests/pi/pi.html
+sources/ham/tests/pi/pi.html.map
 sources/ham/tests/pi/pi.x64
 bin/.bash_history
