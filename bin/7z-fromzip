@@ -1,12 +1,12 @@
-#!bash
+#!/bin/bash
 . $HAM_HOME/bin/ham-bash-lib.sh
 
 CWD=`pwd`
 
 ARCH=$CWD/$1
-if [[ ! -e $ARCH ]]; then
+if [ ! -f "$ARCH" ]; then
     ARCH=$1
-    if [[ ! -e $ARCH ]]; then
+    if [ ! -f "$ARCH" ]; then
         echo "Can't find input archive '$ARCH' !"
         echo "syntax: 7z-fromzip ARCHIVE PASSWORD"
         exit -1
@@ -23,7 +23,7 @@ fi
 PASSWORD=$2
 
 # Make the temporary extraction directory
-TMP_DIR=$TMP/_tmp_ext_`basename $ARCH`
+TMP_DIR=$HOME/.ham/_tmp_ext_`basename $ARCH`
 mkdir -p $TMP_DIR
 errcheck $? ham "Can't create the temporary directory '$TMP_DIR'."
 
