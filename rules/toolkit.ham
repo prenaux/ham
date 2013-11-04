@@ -526,6 +526,7 @@ rule tkDefPackage
   PKGOPTIM = ;
   PKGGROUP = $(3) ;
   PKGTARGET_LIB = ;
+  PKGTARGET_JS = ;
   PKGTARGETF2 = ;
   if $(PKGGROUP) = jar {
     OBJDIR = [ FDirName $(BASEOBJDIR) jvm-$(TK_NAME:L) $(PACKAGE) ] ;
@@ -563,6 +564,10 @@ rule tkDefPackage
       if $(PKGGROUP) = rawbin {
         FilePreserve [ FDirName $(OUTDIR:/) $(PACKAGE:S=$(SUFEXE)) ] : $(PKGTARGET:/) ;
       }
+      if $(SUFEXE) = .html {
+        PKGTARGET_JS = $(PKGBUILD:S=.js) ;
+        FilePreserve [ FDirName $(OUTDIR:/) $(PKGTARGET_JS) ] : $(PKGTARGET_JS:/) ;
+      }
     }
     else {
       PKGTARGET = $(PKGBUILD:S=$(5)) ;
@@ -586,6 +591,9 @@ rule tkDefPackage
   if $(PKGTARGET_LIB) {
     PKGTARGETF2 = $(PKGTARGET_LIB) ;
   }
+  if $(PKGTARGET_JS) {
+    PKGTARGETF2 = $(PKGTARGET_JS) ;
+  }
 
   # Target directory
   LOCATE_TARGET = $(OBJDIR) ;
@@ -599,6 +607,12 @@ rule tkDefPackage
     DEPENDS $(PKGTARGET_LIB) : tkdir ;
     DEPENDS $(PKGTARGET_LIB) : tkimport ;
   }
+  if $(PKGTARGET_JS) {
+    MakeLocate $(PKGTARGET_JS) : $(TK_DIR_BIN) ;
+    MakeLocate $(PKGTARGET_JS) : $(OBJDIR) ;
+    DEPENDS $(PKGTARGET_JS) : tkdir ;
+    DEPENDS $(PKGTARGET_JS) : tkimport ;
+  }
 
   logVerbose "[ $(PKGBUILD) - $(VERSION) : $(PKGGROUP) [$(PKGTYPE)] ]" ;
   logVerbose "- Platform    : $(OS) ($(OSPLAT))" ;
@@ -607,7 +621,7 @@ rule tkDefPackage
   logVerbose "- OutDir      : $(OUTDIR)" ;
   logVerbose "- Target      : $(PKGTARGET)" ;
   logVerbose "- Target File : $(PKGTARGETF)" ;
-  logVerbose "- Target2     :" $(PKGTARGET_LIB) ;
+  logVerbose "- Target2     :" $(PKGTARGETF2) ;
 }
 
 # tkDefModuleEx module_name : version : outdir : depdir : group ;
@@ -892,6 +906,12 @@ rule tkBuildPackage
       DEPENDS $(PACKAGE)_lib : $(p) ;
       f += $(p) ;
     }
+
+    if $(PKGTARGET_JS) {
+      local p = [ tkFile $(PKGTARGET_JS:B)$(_stamp)$(PKGTARGET_JS:S) : $(PKGTARGET_JS) : $(TK_DIR_BIN) ] ;
+      DEPENDS $(PACKAGE)_js : $(p) ;
+      f += $(p) ;
+    }
   }
   else {
     f += $(d) ;
@@ -899,6 +919,11 @@ rule tkBuildPackage
     if $(PKGTARGET_LIB) {
       f += $(PKGTARGET_LIB) ;
       DEPENDS $(PACKAGE)_lib : $(PKGTARGET_LIB) ;
+    }
+
+    if $(PKGTARGET_JS) {
+      f += $(PKGTARGET_JS) ;
+      DEPENDS $(PACKAGE)_js : $(PKGTARGET_JS) ;
     }
   }
 
