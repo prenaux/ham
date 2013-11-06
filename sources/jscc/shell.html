@@ -54,6 +54,7 @@
 
       // connect to canvas
       var Module = {
+        TOTAL_MEMORY: 50*1024*1024,
         preRun: [],
         postRun: [],
         print: printText,
@@ -87,6 +88,7 @@
       };
       Module.setStatus('Downloading...');
     </script>
+    <script type="text/javascript" src="niSDK-data.js"></script>
     {{{ SCRIPT }}}
   </body>
 </html>

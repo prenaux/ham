@@ -262,6 +262,8 @@ rule tkCopyDataToObjDir {
 # tkAPICopy TARGET : MODULE : RELDIRS
 rule tkAPICopy {
   local TARGET = API_$(<) ;
+  NOTFILE $(TARGET) ;
+
   local r ;
   for _i in $(3) {
     local dir ;
@@ -318,6 +320,8 @@ rule tkAPICopy {
 # tkIncludeCopy TARGET : FILES
 rule tkIncludeCopy {
   local TARGET = API_$(<) ;
+  NOTFILE $(TARGET) ;
+
   local r = ;
 
   local DEST_DIR = [ FDirName $(TK_DIR_INCLUDE) ] ;
@@ -610,6 +614,7 @@ rule tkDefPackage
   if $(PKGTARGET_JS) {
     MakeLocate $(PKGTARGET_JS) : $(TK_DIR_BIN) ;
     MakeLocate $(PKGTARGET_JS) : $(OBJDIR) ;
+    DEPENDS $(PKGTARGET_JS) : $(PKGTARGETF) ;
     DEPENDS $(PKGTARGET_JS) : tkdir ;
     DEPENDS $(PKGTARGET_JS) : tkimport ;
   }

@@ -22,6 +22,7 @@ export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/emscripten
 
 # emscripten setup
 export EMSCRIPTEN_ROOT=${HAM_TOOLSET_DIR}/emscripten
+export EMSCRIPTEN=${EMSCRIPTEN_ROOT}
 export LLVM_ROOT=${CLANGDIR}
 export NODE_JS=
 export PATH=${EMSCRIPTEN_ROOT}:$PATH

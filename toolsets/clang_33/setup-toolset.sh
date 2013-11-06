@@ -12,8 +12,6 @@ export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}
 case $HAM_OS in
     NT*)
         export CLANGDIR=${HAM_TOOLSET_DIR}/nt-x86
-        export INCLUDE=${CLANGDIR}/include
-        export LIB=${CLANGDIR}/lib
         export PATH=${CLANGDIR}/bin:${PATH}
         if [ ! -e $CLANGDIR ] || [ -z `type -P clang` ]; then
             toolset_dl clang_33 clang_33_nt-x86
