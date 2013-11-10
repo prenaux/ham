@@ -29,6 +29,9 @@ export PATH=${EMSCRIPTEN_ROOT}:$PATH
 
 EMSCRIPTEN_DEFAULT_DOT_FILE=${HAM_TOOLSET_DIR}/etc/.emscripten
 
+# Make the JSCC temporary folder
+mkdir -p $HOME/.ham/jscc/
+
 # dl if missing
 if [ ! -e $EMSCRIPTEN_ROOT -o ! -e $EMSCRIPTEN_DEFAULT_DOT_FILE ]; then
     toolset_dl emscripten emscripten
