@@ -43,7 +43,7 @@ CLANG_BASE_FLAGS =
   -D__IPHONE_OS_VERSION_MIN_REQUIRED=$(IOS_MINVER)0000
 ;
 
-if $(WINDOWS) {
+if $(NT) {
   IPHONE_SDK_DIR = "$(IOS_DIR)/SDK" ;
   CLANG_BASE_FLAGS +=
     -fdiagnostics-format=msvc
