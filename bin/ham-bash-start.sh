@@ -4,15 +4,17 @@ if [[ -z $HAM_HOME ]]; then
 fi
 
 if [[ `pwd` == "/usr" ]]; then
-    cd $HAM_HOME/..
+    cd "$HAM_HOME/.."
 fi
 
 export BASH_START_PATH=$PATH
-. $HAM_HOME/bin/ham-bash-setenv.sh
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
 
-echo "=== Ham bash shell ==="
-echo "HAM_HOME = $HAM_HOME"
-echo "HAM_OS = $HAM_OS"
-echo "HAM_BIN_LOA = $HAM_BIN_LOA"
+if [[ "$BASH_START_SILENT" = "" ]]; then
+    echo "=== Ham bash shell ==="
+    echo "HAM_HOME = $HAM_HOME"
+    echo "HAM_OS = $HAM_OS"
+    echo "HAM_BIN_LOA = $HAM_BIN_LOA"
+fi
 
 update_prompt

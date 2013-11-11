@@ -137,7 +137,7 @@ unxpath()
 
 thisscriptdir() {
     DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-    echo `unxpath $DIR`
+    echo `unxpath "$DIR"`
 }
 
 update_prompt() {
@@ -182,7 +182,7 @@ toolset_dl() {
     export ARCH_URL1="http://localhost:8123/data/toolsets/$2.7z"
     export ARCH_URL2="https://bitbucket.org/prenaux/ham/downloads/$2.7z"
     export DLFILENAME="_$2.7z"
-    cd ${DIR}
+    cd "${DIR}"
     if [ ! -e "$DLFILENAME" ]; then
         echo "... Trying download from ${ARCH_URL1}"
         wget -c --no-check-certificate $ARCH_URL1 -O"$DLFILENAME.wget"
@@ -198,7 +198,7 @@ toolset_dl() {
     fi
     echo "... Extracting $DLFILENAME"
     7z x -y $DLFILENAME | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
-    cd ${CWD}
+    cd "${CWD}"
 }
 
 ########################################################################
@@ -210,7 +210,7 @@ if [[ -z $HAM_OS ]]; then
         export HAM_OS=NT
         export HAM_BIN_LOA=nt-x86
         if [ -z $HOME ]; then
-            export HOME=`unxpath $USERPROFILE`
+            export HOME=`unxpath "$USERPROFILE"`
         fi
     elif [[ "`uname`" == "Darwin" ]]; then
         export HAM_OS=OSX
@@ -222,8 +222,8 @@ if [[ -z $HAM_OS ]]; then
 fi
 
 if [[ -z $WORK ]]; then
-    export WORK=`nativedir $HAM_HOME/..`
-    export WORK=`unxpath $WORK`
+    export WORK=`nativedir "$HAM_HOME/.."`
+    export WORK=`unxpath "$WORK"`
     echo "W/WORK not set, set to '$WORK' by default."
 fi
 
@@ -233,4 +233,4 @@ if [[ -z $HOME ]]; then
 fi
 
 # Make sure HAM_HOME has the proper unix format
-export HAM_HOME=`unxpath $HAM_HOME`
+export HAM_HOME=`unxpath "$HAM_HOME"`
