@@ -269,9 +269,31 @@
     return r
   }
 
-  function runBash(aScript,abKeepStdOut,abEchoStdout) {
+  function _writeBashScriptToTempFile(aScript) {
     local tmpFilePath = getNewTempFilePath("sh")
-    ::fs.writeString(aScript,tmpFilePath)
+    local text = ""
+
+    // Make the script abort if any command fails
+    text += "set -e\n";
+
+    text += ::format({[export HAM_HOME="%s"]},getHamHome()) + "\n"
+    // text += ::format({[echo ... HAM_HOME: $HAM_HOME]}) + "\n"
+
+    text += ::format({[export WORK="%s"]},getHamHome().removedirback()) + "\n"
+    // text += ::format({[echo ... WORK: $WORK]}) + "\n"
+
+    text += {[export BASH_START_PATH=""]} + "\n"
+    text += {[export BASH_START_SILENT="yes"]} + "\n"
+    text += ::format({[. "$HAM_HOME/bin/ham-bash-start.sh"]}) + "\n"
+
+    text += aScript
+
+    ::fs.writeString(text,tmpFilePath)
+    return tmpFilePath
+  }
+
+  function runBash(aScript,abKeepStdOut,abEchoStdout) {
+    local tmpFilePath = _writeBashScriptToTempFile(aScript)
     if (_debugEchoAll) {
       ::println(::format("I/Running from %s\n-----------------------\n%s\n-----------------------"
                          tmpFilePath, aScript));
@@ -280,8 +302,7 @@
   }
 
   function seqBash(aScript) {
-    local tmpFilePath = getNewTempFilePath("sh")
-    ::fs.writeString(aScript,tmpFilePath)
+    local tmpFilePath = _writeBashScriptToTempFile(aScript)
     if (_debugEchoAll) {
       ::println(::format("I/Running from %s\n-----------------------\n%s\n-----------------------"
                          tmpFilePath, aScript));
