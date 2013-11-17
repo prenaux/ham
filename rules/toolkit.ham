@@ -537,30 +537,37 @@ rule tkDefPackage
     PKGBUILD = $(PACKAGE) ;
     PKGTARGET = $(PKGBUILD:S=.jar) ;
     PKGTYPE = jar ;
-    DEPENDS modplugs : $(PKGGROUP) ;
+    DEPENDS modlibs : $(PKGGROUP) ;
   }
   else {
     OBJDIR = [ FDirName $(BASEOBJDIR) $(LIBS_LOA)-$(TK_NAME:L)-$(BUILD) $(PACKAGE) ] ;
     PKGBUILD = $(PACKAGE)_$(BUILDEXT) ;
-    if $(PKGGROUP) = modules || $(PKGGROUP) = dll || $(PKGGROUP) = dylib || $(PKGGROUP) = tooldll {
-      PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
-      PKGTARGET = $(PKGBUILD:S=$(SUFDLL)) ;
-      PKGTYPE = dll ;
+    if $(PKGGROUP) = modules || $(PKGGROUP) = modulelibs || $(PKGGROUP) = dll || $(PKGGROUP) = tooldll {
       if ( $(PKGGROUP) = tooldll ) {
         DEPENDS tools : tooldll ;
       }
       else {
-        DEPENDS modplugs : $(PKGGROUP) ;
+        DEPENDS modlibs : $(PKGGROUP) ;
       }
-      if ( $(PKGGROUP) = modules ) {
-        PKGTARGET_LIB = $(PKGBUILD:S=$(SUFLIB)) ;
+      if $(NO_DLL) = 1 {
+        PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
+        PKGTARGET = $(PKGBUILD:S=$(SUFLIB)) ;
+        PKGTYPE = library ;
+      }
+      else {
+        PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
+        PKGTARGET = $(PKGBUILD:S=$(SUFDLL)) ;
+        PKGTYPE = dll ;
+        if ( $(PKGGROUP) = modulelibs ) {
+          PKGTARGET_LIB = $(PKGBUILD:S=$(SUFLIB)) ;
+        }
       }
     }
-    else if $(PKGGROUP) = libs || $(PKGGROUP) = modulelibs {
+    else if $(PKGGROUP) = libs {
       PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
       PKGTARGET = $(PKGBUILD:S=$(SUFLIB)) ;
       PKGTYPE = library ;
-      DEPENDS modplugs : $(PKGGROUP) ;
+      DEPENDS modlibs : $(PKGGROUP) ;
     }
     else if $(PKGGROUP) = rawbin || $(PKGGROUP) = tools || $(PKGGROUP) = tests {
       PKGTARGET = $(PKGBUILD:S=$(SUFEXE)) ;
@@ -632,10 +639,6 @@ rule tkDefPackage
 # tkDefModuleEx module_name : version : outdir : depdir : group ;
 rule tkDefModuleEx
 {
-  if $(NO_DLL) && $(5) != modulelibs {
-    EXIT "DLL Not Supported !" ;
-  }
-
   tkDefPackage $(1) : $(2) : $(5) : $(3) ;
   if $(4) {
     DEPHDRS += [ FDirName $(TK_DIR_INCLUDE) $(4) ] ;
@@ -646,13 +649,12 @@ rule tkDefModuleEx
 
 # tkDefModule module_name : version : (depdir) ;
 rule tkDefModule {
-  if $(NO_DLL) = 1 {
-    tkDefModuleEx $(<) : $(>) : $(TK_DIR_LIBS) : $(3) : modulelibs ;
-    DEPENDS modules : modulelibs ;
-  }
-  else {
-    tkDefModuleEx $(<) : $(>) : $(TK_DIR_BIN) : $(3) : modules ;
-  }
+  tkDefModuleEx $(<) : $(>) : $(TK_DIR_BIN) : $(3) : modules ;
+}
+
+# tkDefModule module_name : version : (depdir) ;
+rule tkDefModuleLib {
+  tkDefModuleEx $(<) : $(>) : $(TK_DIR_BIN) : $(3) : modulelibs ;
 }
 
 # tkDefModuleTest module_name : version ;
@@ -952,7 +954,7 @@ rule tkBuildPackage
   }
 
   # Import library, for MSVC, if its also potentially a static library
-  if $(MSVC) = 1 && $(PKGTARGET_LIB) {
+  if $(MSVC) = 1 && $(PKGTYPE) = dll {
     local impLib = $(PKGTARGETF:B:S)$(SUFLIB) ;
     local srcLib = [ FDirName $(OBJDIR) $(impLib) ] ;
     DEPENDS $(srcLib) : $(PKGTARGETF) ;
