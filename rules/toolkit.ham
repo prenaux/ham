@@ -553,6 +553,7 @@ rule tkDefPackage
         PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
         PKGTARGET = $(PKGBUILD:S=$(SUFLIB)) ;
         PKGTYPE = library ;
+        OUTDIR = $(TK_DIR_LIBS) ;
       }
       else {
         PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
@@ -631,6 +632,7 @@ rule tkDefPackage
   logVerbose "- Defines     :" $(DEFINES) ;
   logVerbose "- ObjDir      : $(OBJDIR)" ;
   logVerbose "- OutDir      : $(OUTDIR)" ;
+  logVerbose "- Type        : $(PKGTYPE)" ;
   logVerbose "- Target      : $(PKGTARGET)" ;
   logVerbose "- Target File : $(PKGTARGETF)" ;
   logVerbose "- Target2     :" $(PKGTARGETF2) ;
