@@ -545,9 +545,11 @@ rule tkDefPackage
     if $(PKGGROUP) = modules || $(PKGGROUP) = modulelibs || $(PKGGROUP) = dll || $(PKGGROUP) = tooldll {
       if ( $(PKGGROUP) = tooldll ) {
         DEPENDS tools : tooldll ;
+        PKGTYPE = tooldll ;
       }
       else {
         DEPENDS modlibs : $(PKGGROUP) ;
+        PKGTYPE = dll ;
       }
       if $(NO_DLL) = 1 {
         PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
@@ -558,7 +560,6 @@ rule tkDefPackage
       else {
         PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
         PKGTARGET = $(PKGBUILD:S=$(SUFDLL)) ;
-        PKGTYPE = dll ;
         if ( $(PKGGROUP) = modulelibs ) {
           PKGTARGET_LIB = $(PKGBUILD:S=$(SUFLIB)) ;
         }
@@ -682,15 +683,6 @@ rule tkDefLib
   tkDefPackage $(1) : $(2) : libs : $(TK_DIR_LIBS) ;
 }
 
-# tkDefDylib lib_name : version ;
-rule tkDefDylib
-{
-  tkDefPackage $(1) : $(2) : dylib : $(TK_DIR_LIBS) ;
-  for _l in $(3) {
-    tkLinkLibs $(PKGTARGET) : $(_l) ;
-  }
-}
-
 # tkDefTest test_name : version : static link libs for NO_DLL mode ;
 rule tkDefTest
 {
@@ -796,11 +788,6 @@ rule tkBuildPackage
           _pch = [ tkC++Pch PCH_$(PACKAGE) : stdafx.cpp : $(_src) $(_exsrc) : $(_nopchsrc) : $(>) ] ;
           # _exsrc += stdafx.cpp ;
         }
-        # Compile JNI
-      case jni :
-        _jni = 1 ;
-      case nojni :
-        _jni = 0 ;
         # Require exceptions
       case exc :
         _exc = 1 ;
@@ -879,7 +866,7 @@ rule tkBuildPackage
   local is_exe = 0 ;
   local t = $(PKGBUILD) ;
   logVar PKGBUILD ;
-  if $(PKGTYPE) = dll || $(PKGTYPE) = jni || $(PKGTYPE) = dylib {
+  if $(PKGTYPE) = dll || $(PKGTYPE) = tooldll {
     ObjectDefines $(_allsrc) : _TARGET_DLL ;
     if $(PKGTARGET_LIB) {
       SharedAndStaticLibrary $(t) : $(_src) : : : $(_extra_objs) ;
