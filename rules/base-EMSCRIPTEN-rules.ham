@@ -1,5 +1,25 @@
 # base.ham is setup for GCC by default
 
+
+#
+# Custom Archive rule which will pack the .a library with relative paths
+# instead of absolute ones.
+#
+# This is required because emcc (through tools/shared.py) extracts the .a
+# libraries using "llvm-ar x LIBPATH.a" which outputs the .o files into the
+# directory written in the .a file, which is fixed if its an absolute
+# directory.
+#
+actions updated together piecemeal Archive
+{
+  set -e
+  cd $(BASEOBJDIR)
+  export FILES=" $(>) "
+  export FILES=`echo ${FILES} | sed -e 's~$(BASEOBJDIR)/~~g'`
+  # echo "FILES TO LINK IN AR:" ${FILES}
+  $(AR) $(<) ${FILES}
+}
+
 actions SharedLink {
 }
 
