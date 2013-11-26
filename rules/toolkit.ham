@@ -96,11 +96,12 @@ if $(FEATURES) = "" {
 }
 if $(EMBEDDED) = 1 {
   DEFINES += niEmbedded ;
-  FEATURES ?= 20 ;
+  FEATURES ?= 25 ;
 }
 else {
   FEATURES ?= 30 ;
 }
+DEFINES += _FEATURES=$(FEATURES) ;
 
 if $(FLYMAKE) = 1 {
   DEFINES += _FLYMAKE ;

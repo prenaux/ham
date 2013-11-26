@@ -23,6 +23,7 @@ NO_PCH = 1 ;
 #----------------------------------------------------------------------
 #     TARGET FEATURES
 #----------------------------------------------------------------------
+FEATURES = 20 ;
 TARGET_FEATURE_DLL = ;
 TARGET_FEATURE_CONSOLE = ;
 TARGET_FEATURE_NIAPPLIB = 1 ;
