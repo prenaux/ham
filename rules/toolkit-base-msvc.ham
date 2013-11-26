@@ -16,3 +16,13 @@ DEFINES += _CRT_SECURE_NO_WARNINGS ;
 #     OS Variables
 #----------------------------------------------------------------------
 WINDOWS = 1 ;
+
+#----------------------------------------------------------------------
+#     TARGET FEATURES
+#----------------------------------------------------------------------
+TARGET_FEATURE_DLL = 1 ;
+TARGET_FEATURE_CONSOLE = 1 ;
+TARGET_FEATURE_NIAPPLIB = 1 ;
+if $(BUILD_JNI) = 1 {
+  TARGET_FEATURE_JNI = 1 ;
+}

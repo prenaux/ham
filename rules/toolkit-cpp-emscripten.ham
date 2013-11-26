@@ -41,7 +41,7 @@ JSCC_OPT_ARGS = $(STRICT_ALIASING_FLAGS) ;
 JSCC_OPT_ARGS += -O2 ;
 
 ### Link flags ###
-LINKFLAGS += --shell-file "$(HAM_HOME)/sources/jscc/shell.html" -s DISABLE_EXCEPTION_CATCHING=1 -s WARN_ON_UNDEFINED_SYMBOLS=1 ;
+LINKFLAGS += --shell-file "$(HAM_HOME)/sources/jscc/shell.html" -s DISABLE_EXCEPTION_CATCHING=1 -s WARN_ON_UNDEFINED_SYMBOLS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=1 ;
 if $(DEBUG) = 1 {
   LINKFLAGS += --minify 0 -g2 -O2 ;
 }

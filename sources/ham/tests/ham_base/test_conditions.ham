@@ -1,0 +1,26 @@
+Import assert.ham ;
+
+ALPHA = 0 ;
+if $(ALPHA) {
+  ECHO "... ALPHA0" ;
+}
+else {
+  AssertUnreachable "ALPHA = 0" ;
+}
+
+ALPHA = 1 ;
+if $(ALPHA) {
+  ECHO "... ALPHA1" ;
+}
+else {
+  AssertUnreachable "ALPHA = 1" ;
+}
+
+ALPHA = ;
+if $(ALPHA) {
+  AssertUnreachable "Empty Alpha" ;
+}
+else {
+  AssertVarUndefined ALPHA ;
+  ECHO "... NOT ALPHA EMPTY" ;
+}

@@ -19,6 +19,11 @@ DEFINES += _NO_BOOST ;
 SWF = 1 ;
 POSIX = 1 ;
 EMBEDDED = 1 ;
-NO_DLL = 1 ;
 NO_PCH = 1 ;
-BUILD_JNI = 0 ;
+
+#----------------------------------------------------------------------
+#     TARGET FEATURES
+#----------------------------------------------------------------------
+TARGET_FEATURE_DLL = ;
+TARGET_FEATURE_CONSOLE = ;
+TARGET_FEATURE_NIAPPLIB = 1 ;

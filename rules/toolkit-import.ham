@@ -97,7 +97,7 @@ rule tkImportExe {
 # tkImportDll SrcToolkit : DllName : BUILDEXT ;
 # imports a dll from another toolkit
 rule tkImportDll {
-  if ! $(NO_DLL) = 1 {
+  if ! $(NO_DLL) {
     local srcPath = [ tkImportGetDllPath $(<) : $(>) : $(3) ] ;
     local r = [ tkImportDoCopy tkimport_dll
     : $(srcPath)
@@ -145,7 +145,7 @@ rule tkImportLib {
 # tkImportJar SrcToolkit : JarName : BUILDEXT ;
 # imports a jar from another toolkit
 rule tkImportJar {
-  if $(BUILD_JNI) = 1 {
+  if $(BUILD_JNI) {
     local srcPath = [ tkImportGetJarPath $(<) : $(>) : $(3) ] ;
     local r = [ tkImportDoCopy tkimport_jar
     : $(srcPath)

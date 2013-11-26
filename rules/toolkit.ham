@@ -30,21 +30,43 @@ TK_ENV_FILE = toolkit-base-$(HAM_TOOLSET_NAME).ham ;
 Import $(TK_ENV_FILE) : "E/Can't find toolkit's configuration for toolset:" $(TK_ENV_FILE:B:S) ;
 
 #----------------------------------------------------------------------
+#     TARGET FEATURES
+#----------------------------------------------------------------------
+# Whether dynamic libraries can be built on this target
+logVar TARGET_FEATURE_DLL ;
+if ! $(TARGET_FEATURE_DLL) {
+  NO_DLL = 1 ;
+}
+
+# Whether console applications can be built on this target
+logVar TARGET_FEATURE_CONSOLE ;
+# Whether niAppLib (UI) applications can be built on this target
+logVar TARGET_FEATURE_NIAPPLIB ;
+# Whether the target can/should build JNI interop
+logVar TARGET_FEATURE_JNI ;
+
+#----------------------------------------------------------------------
 #     LOA
 #----------------------------------------------------------------------
 AssertVarDefined LOA_LINKER ;
 AssertVarDefined LOA_OS ;
 AssertVarDefined LOA_ARCH ;
-if $(BUILD_JNI) = 1 {
+if $(TARGET_FEATURE_JNI) {
+  BUILD_JNI = 1 ;
   LOA_ARCH = $(LOA_ARCH)j ;
   DEFINES += _BUILD_JNI ;
+}
+else {
+  BUILD_JNI = ;
 }
 if $(RTCPP) = 1 {
   DEFINES += _RTCPP ;
 }
 
 LIBS_LOA = $(LOA_LINKER)-$(LOA_OS)-$(LOA_ARCH) ;
+logVar LIBS_LOA ;
 BIN_LOA = $(LOA_OS)-$(LOA_ARCH) ;
+logVar BIN_LOA ;
 
 #----------------------------------------------------------------------
 #     DEFINES
@@ -131,7 +153,7 @@ MakeLocate tkdir : $(TK_DIR_LIBS) ;
 
 TK_DIR_JARS ?= [ FDirName $(TK_DIR) libs jars ] ;
 
-if $(NO_DLL) = 1 {
+if $(NO_DLL) {
   SUFDLL = $(SUFLIB) ;
   TK_DIR_DLL = $(TK_DIR_LIBS) ;
 }
@@ -486,7 +508,8 @@ rule tkDepDll {
 }
 
 rule tkLinkDll {
-  if $(NO_DLL) = 1 {
+  if $(NO_DLL) {
+    tkLinkLibs $(<) : $(>) ;
   }
   else {
     if $(DLLIMPLIB) = 1 {
@@ -551,7 +574,7 @@ rule tkDefPackage
         DEPENDS modlibs : $(PKGGROUP) ;
         PKGTYPE = dll ;
       }
-      if $(NO_DLL) = 1 {
+      if $(NO_DLL) {
         PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
         PKGTARGET = $(PKGBUILD:S=$(SUFLIB)) ;
         PKGTYPE = library ;
@@ -660,59 +683,28 @@ rule tkDefModuleLib {
   tkDefModuleEx $(<) : $(>) : $(TK_DIR_BIN) : $(3) : modulelibs ;
 }
 
-# tkDefModuleTest module_name : version ;
-rule tkDefModuleTest
-{
-  tkDefPackage $(1) : $(2) : tests : $(TK_DIR_BIN) ;
-}
-
-# tkDefDLL lib_name : version ;
-rule tkDefDLL
-{
-  if $(NO_DLL) = 1 {
-    tkDefPackage $(1) : $(2) : libs : $(TK_DIR_LIBS) ;
-  }
-  else {
-    tkDefPackage $(1) : $(2) : dll : $(TK_DIR_BIN) ;
-  }
-}
-
 # tkDefLib lib_name : version ;
-rule tkDefLib
-{
+rule tkDefLib {
   tkDefPackage $(1) : $(2) : libs : $(TK_DIR_LIBS) ;
 }
 
-# tkDefTest test_name : version : static link libs for NO_DLL mode ;
-rule tkDefTest
-{
+# tkDefTest test_name : version ;
+rule tkDefTest {
   tkDefPackage $(1) : $(2) : tests : $(TK_DIR_BIN) ;
-  if $(NO_DLL) = 1 {
-    for _l in $(3) {
-      tkLinkLibs $(PKGTARGET) : $(_l) ;
-    }
-  }
 }
 
-# tkDefTool tool_name : version : static link libs for NO_DLL mode : destDir ;
-rule tkDefTool
-{
+# tkDefTool tool_name : version : destDir ;
+rule tkDefTool {
   local destDir = $(TK_DIR_BIN) ;
-  if $(4) {
-    destDir = $(4) ;
+  if $(3) {
+    destDir = $(3) ;
   }
   tkDefPackage $(1) : $(2) : tools : $(destDir) ;
-  if $(NO_DLL) = 1 {
-    for _l in $(3) {
-      tkLinkLibs $(PKGTARGET) : $(_l) ;
-    }
-  }
 }
 
 # tkDefJar lib_name : version ;
-rule tkDefJar
-{
-  if $(BUILD_JNI) = 1 {
+rule tkDefJar {
+  if $(BUILD_JNI) {
     tkDefPackage $(1) : $(2) : jar : $(TK_DIR_JARS) ;
   }
 }
@@ -765,7 +757,7 @@ rule tkBuildPackage
   local _unicode = 0 ;
   local _stamp = "" ;
 
-  if $(BUILD_JNI) = 1 {
+  if $(BUILD_JNI) {
     _jni = 1 ;
   }
 

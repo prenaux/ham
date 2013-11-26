@@ -18,3 +18,11 @@ POSIX = 1 ;
 ANDROID = 1 ;
 EMBEDDED = 1 ;
 NO_PCH = 1 ;
+
+#----------------------------------------------------------------------
+#     TARGET FEATURES
+#----------------------------------------------------------------------
+TARGET_FEATURE_DLL = 1 ;
+TARGET_FEATURE_CONSOLE = ;
+TARGET_FEATURE_NIAPPLIB = ;
+TARGET_FEATURE_JNI = 1 ;
