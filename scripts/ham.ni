@@ -117,7 +117,6 @@
   //          succeeded = true|false,
   //          exitCode = program exit code,
   //          stdout = if abKeepStdOut "output in stdout",
-  //          stderr = if abKeepStdOut "output to stderr"
   //        }
   function runProcess(aCmd,abKeepStdOut,abEchoStdout) {
     local pm = ::gLang.process_manager
@@ -127,11 +126,9 @@
       throw "Couldn't spawn process from command line: " + aCmd
 
     local stdout = ""
-    local stderr = ""
 
     do {
       local procStdOut = proc.file[1]
-      local procStdErr = proc.file[2]
       local validCount = 0
 
       // drain stdout to stdout
@@ -152,24 +149,6 @@
         }
       }
 
-      // drain stderr to stdout
-      if (::lang.isValid(procStdErr)) {
-        ++validCount
-        local line = procStdErr.ReadStringLine()
-        if (!line.?empty()) {
-          if (abEchoStdout || _debugEchoAll) {
-            if (_debugEchoAll) {
-              curProc.file[1].WriteString("D/RUN-STDERR: ")
-            }
-            curProc.file[1].WriteString(line)
-            curProc.file[1].WriteString("\n")
-          }
-          if (abKeepStdOut) {
-            stderr += line + "\n"
-          }
-        }
-      }
-
       if (validCount == 0)
         break
 
@@ -180,7 +159,6 @@
       succeeded = procRet.x
       exitCode = procRet.y
       stdout = stdout
-      stderr = stderr
     }
   }
 
@@ -196,7 +174,6 @@
         if (!_proc)
           throw "Couldn't spawn process from command line: " + _cmd
         _procStdOut <- _proc.file[1]
-        _procStdErr <- _proc.file[2]
       }
 
       function empty() {
@@ -223,7 +200,6 @@
           succeeded = null
           exitCode = invalid
           stdoutLine = ""
-          stderrLine = ""
         }
 
         local debugEchoAll = ::ham._debugEchoAll
@@ -237,18 +213,6 @@
               _curProc.file[1].WriteString("D/SEQ-STDOUT: " + line + "\n")
             }
             r.stdoutLine = line
-          }
-        }
-
-        // drain stderr
-        if (::lang.isValid(_procStdErr)) {
-          ++validCount
-          local line = _procStdErr.ReadStringLine()
-          if (!line.?empty()) {
-            if (debugEchoAll) {
-              _curProc.file[1].WriteString("D/SEQ-STDERR: " + line + "\n")
-            }
-            r.stderrLine = line
           }
         }
 
