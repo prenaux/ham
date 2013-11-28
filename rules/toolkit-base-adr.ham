@@ -24,5 +24,4 @@ NO_PCH = 1 ;
 #----------------------------------------------------------------------
 TARGET_FEATURE_DLL = 1 ;
 TARGET_FEATURE_CONSOLE = ;
-TARGET_FEATURE_NIAPPLIB = ;
 TARGET_FEATURE_JNI = 1 ;

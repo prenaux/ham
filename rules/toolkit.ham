@@ -32,16 +32,30 @@ Import $(TK_ENV_FILE) : "E/Can't find toolkit's configuration for toolset:" $(TK
 #----------------------------------------------------------------------
 #     TARGET FEATURES
 #----------------------------------------------------------------------
-# Whether dynamic libraries can be built on this target
+# Whether native executables can be built for this target
+logVar TARGET_FEATURE_EXE ;
+if ! $(TARGET_FEATURE_EXE) {
+  NO_EXE = 1 ;
+}
+
+# Whether dynamic libraries can be built for this target
 logVar TARGET_FEATURE_DLL ;
 if ! $(TARGET_FEATURE_DLL) {
   NO_DLL = 1 ;
 }
 
-# Whether console applications can be built on this target
+# Whether console applications can be built on this target. Console
+# applications can be ran on the command line. This is different of
+# TARGET_FEATURE_EXE in that this feature indicates that there's a
+# terminal/console available to run other executables. For example running ni
+# scripts test require both TARGET_FEATURE_EXE and TARGET_FEATURE_CONSOLE
+# (since the ni executable needs to be run) whereas a regular test case only
+# needs TARGET_FEATURE_EXE.
 logVar TARGET_FEATURE_CONSOLE ;
-# Whether niAppLib (UI) applications can be built on this target
-logVar TARGET_FEATURE_NIAPPLIB ;
+if $(TARGET_FEATURE_CONSOLE) && ! $(TARGET_FEATURE_EXE) {
+  EXIT "F/TARGET_FEATURE_CONSOLE set but not TARGET_FEATURE_EXE !" ;
+}
+
 # Whether the target can/should build JNI interop
 logVar TARGET_FEATURE_JNI ;
 

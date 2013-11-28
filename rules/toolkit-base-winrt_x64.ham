@@ -19,6 +19,6 @@ WINRT = 1 ;
 #----------------------------------------------------------------------
 #     TARGET FEATURES
 #----------------------------------------------------------------------
+TARGET_FEATURE_EXE = ;
 TARGET_FEATURE_DLL = 1 ;
 TARGET_FEATURE_CONSOLE = ;
-TARGET_FEATURE_NIAPPLIB = 1 ;
