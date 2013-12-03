@@ -34,7 +34,7 @@ C++FLAGS +=
 
 ### "Debug" (da) build flags ###
 JSCC_DBG_ARGS = $(STRICT_ALIASING_FLAGS) ;
-JSCC_DBG_ARGS += --minify 0 -g2 -O2 ;
+JSCC_DBG_ARGS += --minify 0 -g2 -O0 ;
 
 ### Optimized (ra) build flags ###
 JSCC_OPT_ARGS = $(STRICT_ALIASING_FLAGS) ;
@@ -43,7 +43,7 @@ JSCC_OPT_ARGS += -O2 ;
 ### Link flags ###
 LINKFLAGS += --shell-file "$(HAM_HOME)/sources/jscc/shell.html" -s DISABLE_EXCEPTION_CATCHING=1 -s WARN_ON_UNDEFINED_SYMBOLS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=1 ;
 if $(DEBUG) = 1 {
-  LINKFLAGS += --minify 0 -g2 -O2 ;
+  LINKFLAGS += --minify 0 -g2 -O0 -s GL_ASSERTIONS=1 -s SAFE_DYNCALLS=1 ;
 }
 else {
   LINKFLAGS += -O2 ;
