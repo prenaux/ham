@@ -1461,4 +1461,8 @@ With zero ARG, skip the last one and mark next."
  (global-set-key (kbd "C-;")   'previous-line)
  (global-set-key (kbd "C-'")   'next-line)
  (global-set-key (kbd "C-.")   'goto-match-paren2)
+
+ (global-set-key "\C-cy" '(lambda ()
+                            (interactive)
+                            (popup-menu 'yank-menu)))
 )
