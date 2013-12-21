@@ -6,6 +6,7 @@ toolset_info() {
     echo "======================================================="
     echo "=== Main Toolset ======================================"
     echo "======================================================="
+    echo "HAM_IMPORTED_TOOLSET = ${HAM_IMPORTED_TOOLSET}"
     echo "HAM_TOOLSET = ${HAM_TOOLSET}"
     echo "HAM_TOOLSET_VER = ${HAM_TOOLSET_VER}"
     echo "HAM_TOOLSET_NAME = ${HAM_TOOLSET_NAME}"
@@ -24,6 +25,7 @@ do
         echo "E/Toolset '$ARG' setup failed !"
         return 1
     else
+        export HAM_IMPORTED_TOOLSET=default
         echo "I/Toolset '$ARG' setup successfull."
     fi
 done
