@@ -671,6 +671,8 @@ rule tkDefPackage
     DEPENDS $(PKGTARGET_JS) : tkdir ;
     DEPENDS $(PKGTARGET_JS) : tkimport ;
   }
+  DEPENDS $(PKGGROUP) : $(PACKAGE) ;
+  DEPENDS all : $(PKGGROUP) ;
 
   logVerbose "[ $(PKGBUILD) - $(VERSION) : $(PKGGROUP) [$(PKGTYPE)] ]" ;
   logVerbose "- Platform    : $(OS) ($(OSPLAT))" ;
