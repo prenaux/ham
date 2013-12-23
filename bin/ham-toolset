@@ -25,7 +25,7 @@ do
         echo "E/Toolset '$ARG' setup failed !"
         return 1
     else
-        export HAM_IMPORTED_TOOLSET=default
+        export HAM_IMPORTED_TOOLSET=$ARG
         echo "I/Toolset '$ARG' setup successfull."
     fi
 done
