@@ -11,7 +11,7 @@
   _bashPath = null
   _tempDir = null
   _tempFilesCollector = []
-  _debugEchoAll = true
+  _debugEchoAll = false
 
   function getHamPath() {
     if (_hamPath)
@@ -162,18 +162,26 @@
     }
   }
 
-  function seqProcess(aCmd) {
+  function seqProcess(aCmd,aOptions) {
     local r = {
       _cmd = aCmd
+      _options = {
+        differentStdOutAndStdErr = aOptions.?differentStdOutAndStdErr || false
+        drainStdErrBeforeStdIn = aOptions.?drainStdErrBeforeStdIn || false
+      }
 
       function runCommand() {
         _count <- 0
         _pm <- ::gLang.process_manager
         _curProc <- _pm.current_process
-        _proc <- _pm.SpawnProcess(_cmd,::eOSProcessSpawnFlags.StdFiles)
+        _proc <- _pm.SpawnProcess(
+          _cmd,
+          ::eOSProcessSpawnFlags.StdFiles|
+            (_options.differentStdOutAndStdErr ? ::eOSProcessSpawnFlags.DifferentStdOutAndStdErr : 0))
         if (!_proc)
           throw "Couldn't spawn process from command line: " + _cmd
-        _procStdOut <- _proc.file[1]
+        _procStdout <- _proc.file[1]
+        _procStderr <- (_options.differentStdOutAndStdErr) ? _proc.file[2] : null
       }
 
       function empty() {
@@ -200,19 +208,39 @@
           succeeded = null
           exitCode = invalid
           stdoutLine = ""
+          stderrLine = ""
         }
 
         local debugEchoAll = ::ham._debugEchoAll
 
-        // drain stdout
-        if (::lang.isValid(_procStdOut)) {
+        // drain stderr
+        if (::lang.isValid(_procStderr)) {
           ++validCount
-          local line = _procStdOut.ReadStringLine()
+          local line = _procStderr.ReadStringLine()
           if (!line.?empty()) {
             if (debugEchoAll) {
-              _curProc.file[1].WriteString("D/SEQ-STDOUT: " + line + "\n")
+              _curProc.file[1].WriteString("D/SEQ-STDERR: " + line + "\n")
             }
-            r.stdoutLine = line
+            r.stderrLine = line
+          }
+        }
+
+        // drain stdout
+        if (::lang.isValid(_procStdout)) {
+          if (_options.drainStdErrBeforeStdIn &&
+              ::lang.isValid(_procStderr) &&
+              (validCount > 0))
+          {
+          }
+          else {
+            ++validCount
+            local line = _procStdout.ReadStringLine()
+            if (!line.?empty()) {
+              if (debugEchoAll) {
+                _curProc.file[1].WriteString("D/SEQ-STDOUT: " + line + "\n")
+              }
+              r.stdoutLine = line
+            }
           }
         }
 
@@ -265,12 +293,12 @@
     return runProcess(getBashPath() + " " + tmpFilePath,abKeepStdOut,abEchoStdout)
   }
 
-  function seqBash(aScript) {
+  function seqBash(aScript,aOptions) {
     local tmpFilePath = _writeBashScriptToTempFile(aScript)
     if (_debugEchoAll) {
       ::println(::format("I/Running from %s\n-----------------------\n%s\n-----------------------"
                          tmpFilePath, aScript));
     }
-    return seqProcess(getBashPath() + " " + tmpFilePath)
+    return seqProcess(getBashPath() + " " + tmpFilePath,aOptions)
   }
 }
