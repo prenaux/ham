@@ -17,7 +17,7 @@
     if (_hamPath)
       return _hamPath;
 
-    local hamHome = ::gRootFS.GetAbsolutePath(::gLang.property["ni.dirs.main"] + "../ham");
+    local hamHome = ::gRootFS.GetAbsolutePath(::gLang.property["ni.dirs.bin"] + "../../../ham");
 
     local hamPath = "".setdir(hamHome).adddirback("bin").SetFile("ham");
     if (!::gRootFS.FileExists(hamPath,::eFileAttrFlags.AllFiles))
@@ -100,7 +100,9 @@
   function getNewTempFilePath(aExt,aName) {
     local path = getTempDir().setfile((aName || "")+::gLang.CreateGlobalUUID()).setext(aExt || "tmp")
     _tempFilesCollector.Add(path)
-    ::println("... Added temp file:" path)
+    if (_debugEchoAll) {
+      ::dbg("... Added temp file:" path)
+    }
     return path;
   }
 
@@ -109,7 +111,9 @@
     _tempFilesCollector = []
     foreach (f in filesToCollect) {
       local r = ::gRootFS.FileDelete(f)
-      ::println("... Deleted temp file:" f "("+(r ? "yes" : "didnt exist")+")")
+      if (_debugEchoAll) {
+        ::dbg("... Deleted temp file:" f "("+(r ? "yes" : "didnt exist")+")")
+      }
     }
   }
 
@@ -219,7 +223,7 @@
           local line = _procStderr.ReadStringLine()
           if (!line.?empty()) {
             if (debugEchoAll) {
-              _curProc.file[1].WriteString("D/SEQ-STDERR: " + line + "\n")
+              ::dbg("D/SEQ-STDERR: " + line + "\n")
             }
             r.stderrLine = line
           }
@@ -237,7 +241,7 @@
             local line = _procStdout.ReadStringLine()
             if (!line.?empty()) {
               if (debugEchoAll) {
-                _curProc.file[1].WriteString("D/SEQ-STDOUT: " + line + "\n")
+                ::dbg("D/SEQ-STDOUT: " + line + "\n")
               }
               r.stdoutLine = line
             }
@@ -287,8 +291,8 @@
   function runBash(aScript,abKeepStdOut,abEchoStdout) {
     local tmpFilePath = _writeBashScriptToTempFile(aScript)
     if (_debugEchoAll) {
-      ::println(::format("I/Running from %s\n-----------------------\n%s\n-----------------------"
-                         tmpFilePath, aScript));
+      ::dbg(::format("I/Running from %s\n-----------------------\n%s\n-----------------------"
+                     tmpFilePath, aScript));
     }
     return runProcess(getBashPath() + " " + tmpFilePath,abKeepStdOut,abEchoStdout)
   }
@@ -296,8 +300,8 @@
   function seqBash(aScript,aOptions) {
     local tmpFilePath = _writeBashScriptToTempFile(aScript)
     if (_debugEchoAll) {
-      ::println(::format("I/Running from %s\n-----------------------\n%s\n-----------------------"
-                         tmpFilePath, aScript));
+      ::dbg(::format("I/Running from %s\n-----------------------\n%s\n-----------------------"
+                     tmpFilePath, aScript));
     }
     return seqProcess(getBashPath() + " " + tmpFilePath,aOptions)
   }
