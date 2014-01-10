@@ -32,22 +32,47 @@ C++FLAGS +=
   -std=c++11
 ;
 
+EMSCRIPTEN_COMPILATION_SETTINGS =
+  -s DISABLE_EXCEPTION_CATCHING=1 -s WARN_ON_UNDEFINED_SYMBOLS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=1
+;
+
+EMSCRIPTEN_USE_ASM_JS ?= 1 ;
+
+if $(EMSCRIPTEN_USE_ASM_JS) = 1 {
+  EMSCRIPTEN_COMPILATION_SETTINGS +=
+    -s ALLOW_MEMORY_GROWTH=0 -s ASM_JS=1
+  ;
+}
+else {
+  EMSCRIPTEN_COMPILATION_SETTINGS +=
+    -s ALLOW_MEMORY_GROWTH=1 -s ASM_JS=0
+  ;
+}
+
 ### "Debug" (da) build flags ###
 JSCC_DBG_ARGS = $(STRICT_ALIASING_FLAGS) ;
-JSCC_DBG_ARGS += --minify 0 -g2 -O0 ;
+JSCC_DBG_ARGS += -g2 -O1 -s GL_ASSERTIONS=1 -s SAFE_DYNCALLS=1 $(EMSCRIPTEN_COMPILATION_SETTINGS) ;
 
 ### Optimized (ra) build flags ###
 JSCC_OPT_ARGS = $(STRICT_ALIASING_FLAGS) ;
-JSCC_OPT_ARGS += -O2 ;
+JSCC_OPT_ARGS +=
+  -O2 -s ASSERTIONS=0
+  $(EMSCRIPTEN_COMPILATION_SETTINGS)
+  # Experimental flags
+  -s INLINING_LIMIT=150
+  --llvm-opts \"['-Os']\"
+  # --llvm-lto 3 # Increases code size...
+;
 
 ### Link flags ###
-LINKFLAGS += --shell-file "$(HAM_HOME)/sources/jscc/shell.html" -s DISABLE_EXCEPTION_CATCHING=1 -s WARN_ON_UNDEFINED_SYMBOLS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=1 ;
+LINKFLAGS += --shell-file "$(HAM_HOME)/sources/jscc/shell.html" ;
 if $(DEBUG) = 1 {
-  LINKFLAGS += --minify 0 -g2 -O0 -s GL_ASSERTIONS=1 -s SAFE_DYNCALLS=1 ;
+  LINKFLAGS += $(JSCC_DBG_ARGS) ;
 }
 else {
-  LINKFLAGS += -O2 ;
+  LINKFLAGS += $(JSCC_OPT_ARGS) ;
 }
+LINKFLAGS += $(EMSCRIPTEN_COMPILATION_SETTINGS) ;
 ECHO "# JSCC (Web) Link Flags :" $(LINKFLAGS) ;
 
 rule tkCC++Build
