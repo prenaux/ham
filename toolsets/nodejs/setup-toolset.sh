@@ -10,7 +10,7 @@ export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/nodejs
 case $HAM_OS in
     NT*)
         export NODEJS_DIR=${HAM_TOOLSET_DIR}/nt-x86/
-        export PATH=${NODEJS_DIR}:${PATH}
+        export PATH=${NODEJS_DIR}:${HAM_TOOLSET_DIR}/npm:${PATH}
         if [ ! -e $NODEJS_DIR ]; then
             toolset_dl nodejs nodejs_nt-x86
             if [ ! -e $NODEJS_DIR ]; then
