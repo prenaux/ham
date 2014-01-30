@@ -72,7 +72,6 @@ if $(DEBUG) = 1 {
 else {
   LINKFLAGS += $(JSCC_OPT_ARGS) ;
 }
-LINKFLAGS += $(EMSCRIPTEN_COMPILATION_SETTINGS) ;
 ECHO "# JSCC (Web) Link Flags :" $(LINKFLAGS) ;
 
 rule tkCC++Build
