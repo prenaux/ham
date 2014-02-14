@@ -1,0 +1,3 @@
+PROG = bin2h ;
+Main $(PROG) : bin2h.c ;
+RunExe Run_$(PROG) : $(PROG) ;
