@@ -49,7 +49,11 @@ if [ ! -f "$RUN_DEBUGGER" ]; then
     export MSVC_IDE_DIR="`unxpath "$PROGRAMFILES\\Microsoft Visual Studio 11.0\\Common7\\IDE"`"
     export RUN_DEBUGGER="${MSVC_IDE_DIR}/devenv.exe"
     if [ ! -f "$RUN_DEBUGGER" ]; then
-	    echo "E/Can't find debugger 'devenv.exe' in $RUN_DEBUGGER"
+        export MSVC_IDE_DIR="`unxpath "$PROGRAMFILES\\Microsoft Visual Studio 12.0\\Common7\\IDE"`"
+        export RUN_DEBUGGER="${MSVC_IDE_DIR}/devenv.exe"
+        if [ ! -f "$RUN_DEBUGGER" ]; then
+	          echo "E/Can't find debugger 'devenv.exe' in $RUN_DEBUGGER"
+        fi
     fi
 fi
 if [ -f "$RUN_DEBUGGER" ]; then
