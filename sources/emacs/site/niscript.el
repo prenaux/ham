@@ -249,6 +249,8 @@ comments have been removed."
                 "nop"
                 "set-member"
                 "get-member"
+                "set"
+                "get"
                 "match-type"
                 "any-type") 'words)
   "Regular expression matching any future lisp reserved words in niScript.")
