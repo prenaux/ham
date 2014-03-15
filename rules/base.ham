@@ -1793,7 +1793,7 @@ rule SubInclude
 
   if ! $($(<[1]))
   {
-    Exit SubInclude $(<[1]) without prior SubDir $(<[1]) ;
+    Exit SubInclude '$(<[1])' without prior SubDir '$(<[1])' ;
   }
 
   SubDir $(<) ;
