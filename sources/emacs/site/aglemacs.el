@@ -242,8 +242,7 @@ the text to another HTML buffer."
 
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.acc\\'" . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.ncc\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.cni\\'" . c++-mode))
 
 (setq auto-mode-alist
       (cons '("\\.m$" . objc-mode) auto-mode-alist))

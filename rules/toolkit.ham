@@ -401,10 +401,10 @@ Import toolkit-cpp.ham ;
 #     Packages
 #----------------------------------------------------------------------
 if $(OSX) || $(IOS) {
-  DEFAULT_PKGSRC_EXT = .cpp .c .cc .ncc .m .mm ;
+  DEFAULT_PKGSRC_EXT = .cpp .c .cc .cni .m .mm ;
 }
 else {
-  DEFAULT_PKGSRC_EXT = .cpp .c .cc .ncc ;
+  DEFAULT_PKGSRC_EXT = .cpp .c .cc .cni ;
 }
 
 # tkPkgSrc Extensions ;

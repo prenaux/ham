@@ -1313,19 +1313,19 @@ rule Object
       case .s :
         As $(<) : $(>) ;
       case .rc :  ResourceCompiler $(<) : $(>) ;
-      case .ncc : Ncc $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
+      case .cni : Cni $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
       case * :    UserObject $(<) : $(>) ;
     }
   }
 }
 
 # nicc compiler
-rule Ncc
+rule Cni
 {
   local _h ;
-  _h = [ FDirName $(SUBDIR) $(>:BS=.ncc.hpp) ] ;
+  _h = [ FDirName $(SUBDIR) $(>:BS=.cni.hpp) ] ;
   local _cpp ;
-  _cpp = [ FDirName $(SUBDIR) $(>:BS=.ncc.cxx) ] ;
+  _cpp = [ FDirName $(SUBDIR) $(>:BS=.cni.cxx) ] ;
 
   Depends $(_cpp) $(_h) : $(>) ;
   Includes $(_cpp) : $(_h) ;
@@ -1333,7 +1333,7 @@ rule Ncc
 
   RmTemps $(<) : $(_h) $(_cpp) ;
 }
-actions Ncc
+actions Cni
 {
   $(NICC_EXE) $(>)
 }
@@ -1441,7 +1441,7 @@ rule FTargetSuffix
     case .f : return $(SUFOBJ) ;
     case .s : return $(SUFOBJ) ;
     case .rc : return $(SUFOBJ) ;
-    case .ncc : return $(SUFOBJ) ;
+    case .cni : return $(SUFOBJ) ;
   }
   return $(<:S) ;
 }
