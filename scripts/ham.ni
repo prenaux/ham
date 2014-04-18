@@ -1,6 +1,4 @@
-/**
- *  Copyright (C) 2007-2013 TalanSoft, Pierre Renaux
- */
+// Copyright 2007-2014 TalanSoft, Co. All Rights Reserved.
 ::Import("lang.ni")
 ::Import("fs.ni")
 
