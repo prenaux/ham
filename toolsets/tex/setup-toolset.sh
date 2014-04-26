@@ -9,13 +9,20 @@ export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/tex
 # path setup
 case $HAM_OS in
     NT*)
-        export TEXLIVE="L:"
+        export TEXLIVE=$HAM_TOOLSET_DIR/nt-x86
+        if [ ! -e $TEXLIVE ]; then
+            toolset_dl tex tex_nt-x86
+            if [ ! -e $TEXLIVE ]; then
+                echo "E/tex nt-x86 folder doesn't exist in the toolset and can't be downloaded"
+                return 1
+            fi
+        fi
         export TEXOS="win32"
-        export TEXROOT=$WORK/thirdparty/tex
+        export TEXROOT=$TEXLIVE
         export TLROOT=$TEXROOT
         export TEXMFTEMP=$TEXROOT/temp
         export TEXMFVAR=$TEXROOT/texmf-var
-        export TEXMFCNF=$TEXROOT/texmf-var/web2c
+        export TEXMFCNF=$TEXROOT/texmf-dist/web2c
         export TEXISO_BIN=$TEXLIVE/bin/win32
         export PATH=$PATH:$TEXISO_BIN
         if [ ! -e "$TEXROOT" ]; then
