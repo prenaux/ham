@@ -6,9 +6,12 @@ export HAM_TOOLSET_VER=23
 export HAM_TOOLSET_NAME=emacs
 export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/emacs
 
+export EMACS_EXE=emacs
+
 # path setup
 case $HAM_OS in
     NT*)
+        export EMACS_EXE=emacs.exe
         export EMACS_DIR=${HAM_TOOLSET_DIR}/nt-x86/
         export PATH=${EMACS_DIR}/bin:${PATH}
         if [ ! -e $EMACS_DIR ]; then

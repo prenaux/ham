@@ -33,13 +33,6 @@
            t)
           (nil))))
 
-(defun agl-begin-time-block (name)
-  (setq *emacs-time-block-prev-begin* *emacs-time-block-begin*)
-  (setq *emacs-time-block-begin* (float-time))
-  (message (concat "[%3.3fs] [%3.3fs] === " name " ===")
-           (- (float-time) *emacs-time-start*)
-           (- (float-time) *emacs-time-block-prev-begin*)))
-
 (defun agl-found-custom-arg (switch)
   (member switch command-line-args))
 
@@ -58,7 +51,6 @@
 ;;;======================================================================
 ;;; Versions
 ;;;======================================================================
-(agl-begin-time-block "Versions")
 (defmacro Aquamacs (&rest x)
   (list
    'if
@@ -154,9 +146,18 @@
 
 (defmacro DontExecute (&rest x) ())
 
+(defun agl-begin-time-block (name)
+  (setq *emacs-time-block-prev-begin* *emacs-time-block-begin*)
+  (setq *emacs-time-block-begin* (float-time))
+  (NotBatchMode
+   (message (concat "[%3.3fs] [%3.3fs] === " name " ===")
+            (- (float-time) *emacs-time-start*)
+            (- (float-time) *emacs-time-block-prev-begin*))))
+
 ;;;======================================================================
 ;;; OS Environment
 ;;;======================================================================
+
 (defun ni-add-to-PATH-front (aValue)
   (setenv
    "PATH"

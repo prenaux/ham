@@ -308,7 +308,7 @@ DEPTH indicates how many levels of headings to include.  The default is 2."
         ))
     (setq index 1 contents (nreverse contents))
     (let ((depth 1) (sub-open 0) (p (point)))
-      (muse-insert-markup "<div id=\"contents\"><ul>\n")
+      (muse-insert-markup "<div id=\"contents\">\n<ul>\n")
       (while contents
         (muse-insert-markup "<li>\n"
                             "<a href=\"#sec" (int-to-string index) "\">"
@@ -332,7 +332,7 @@ DEPTH indicates how many levels of headings to include.  The default is 2."
       (while (> sub-open 0)
         (muse-insert-markup "</ul>\n")
         (setq sub-open (1- sub-open)))
-      (muse-insert-markup "</ul></div>\n")
+      (muse-insert-markup "</ul>\n</div>\n")
       (muse-publish-mark-read-only p (point)))))
 
 (defun muse-agl-html-denote-headings ()
@@ -363,8 +363,10 @@ t
 
 (muse-derive-style
  "agl-html" "agl-html-0"
- :header (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/empty.html")
- :footer (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/empty.html")
+ ;; :header (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/empty.html")
+ ;; :footer (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/empty.html")
+ :header (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/web-header.html")
+ :footer (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/web-footer.html")
  :before-end 'muse-agl-html-munge-buffer
 )
 
@@ -383,3 +385,4 @@ t
 
 (global-set-key "\C-xp" 'agl-muse-publish-to-html)
 (global-set-key "\C-xP" 'agl-muse-publish-to-html)
+;; (global-set-key "\C-x\C-p" 'agl-muse-publish-to-pdf)
