@@ -1998,19 +1998,31 @@ BEG is modified to be the start of the published markup."
      '(sexp sexp sexp sexp body))
 
 (defun muse-publish-lisp-tag (beg end attrs)
-  (muse-publish-markup-attribute beg end attrs nil
-    (save-excursion
-      (save-restriction
-        (let ((str (muse-eval-lisp
-                    (prog1
-                        (concat "(progn "
-                                (buffer-substring-no-properties (point-min)
-                                                                (point-max))
-                                ")")
-                      (delete-region (point-min) (point-max))
-                      (widen)))))
-          (set-text-properties 0 (length str) nil str)
-          (insert str))))))
+  (let* ((style (cdr (assoc "style" attrs)))
+         (exact (cdr (assoc "exact" attrs)))
+         (exactp (and (stringp exact) (string= exact "t"))))
+    (if (or (not style)
+            (and exactp (equal (muse-style style)
+                               muse-publishing-current-style))
+            (and (not exactp) (muse-style-derived-p style)))
+        ;; then
+        (muse-publish-markup-attribute beg end attrs nil
+          (save-excursion
+            (save-restriction
+              (let ((str (muse-eval-lisp
+                          (prog1
+                              (concat "(progn "
+                                      (buffer-substring-no-properties (point-min)
+                                                                      (point-max))
+                                      ")")
+                            (delete-region (point-min) (point-max))
+                            (widen)))))
+                (set-text-properties 0 (length str) nil str)
+                (insert str)))))
+      ;; else
+      (delete-region beg end)
+
+  )))
 
 (put 'muse-publish-lisp-tag 'muse-dangerous-tag t)
 
@@ -2080,16 +2092,37 @@ BEG is modified to be the start of the published markup."
 
 The `markup' attribute controls how this file is marked up after
 being inserted.  See `muse-publish-markup-attribute' for an
-explanation of how it works."
-  (let ((filename (muse-publish-get-and-delete-attr "file" attrs))
-        (muse-publishing-directives (copy-alist muse-publishing-directives)))
-    (if filename
-        (setq filename (expand-file-name
-                        filename
-                        (file-name-directory muse-publishing-current-file)))
-      (error "No file attribute specified in <include> tag"))
-    (muse-publish-markup-attribute beg end attrs t
-      (muse-insert-file-contents filename))))
+explanation of how it works.
+
+If it contains a \"style\" element, delete the region if the
+current style is neither derived from nor equal to this style.
+
+If it contains both a \"style\" element and an \"exact\" element
+with the value \"t\", delete the region only if the current style
+is exactly this style."
+
+  (let* ((style (cdr (assoc "style" attrs)))
+         (exact (cdr (assoc "exact" attrs)))
+         (exactp (and (stringp exact) (string= exact "t"))))
+    (if (or (not style)
+            (and exactp (equal (muse-style style)
+                               muse-publishing-current-style))
+            (and (not exactp) (muse-style-derived-p style)))
+        ;; then
+        (let ((filename (muse-publish-get-and-delete-attr "file" attrs))
+              (muse-publishing-directives (copy-alist muse-publishing-directives)))
+          (if filename
+              (setq filename (expand-file-name
+                              filename
+                              (file-name-directory muse-publishing-current-file)))
+            (error "No file attribute specified in <include> tag"))
+          (muse-publish-markup-attribute beg end attrs t
+            (muse-insert-file-contents filename)))
+
+      ;; else
+      (delete-region beg end)
+
+  )))
 
 (put 'muse-publish-include-tag 'muse-dangerous-tag t)
 
