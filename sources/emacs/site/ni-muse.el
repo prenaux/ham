@@ -1,5 +1,6 @@
 (provide 'ni-muse)
 (require 'ni-base)
+(require 'ham-setup)
 
 ;;;======================================================================
 ;;; Muse
@@ -30,6 +31,16 @@
 
 (add-hook 'muse-mode-hook 'turn-on-orgtbl)
 
+(defconst MUSE_HTML_HEADER (or (getenv "MUSE_HTML_HEADER") (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/web-header.html")))
+;; (message (concat "MUSE_HTML_HEADER:" MUSE_HTML_HEADER))
+(defconst MUSE_HTML_FOOTER (or (getenv "MUSE_HTML_FOOTER") (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/web-footer.html")))
+;; (message (concat "MUSE_HTML_FOOTER:" MUSE_HTML_FOOTER))
+(defconst MUSE_TEX_HEADER (or (getenv "MUSE_TEX_HEADER") (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/header.tex")))
+(defconst MUSE_TEX_FOOTER (or (getenv "MUSE_TEX_FOOTER") (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/footer.tex")))
+
+(if (not (getenv "HAM_HOME"))
+    (setenv "HAM_HOME" (concat (ham-getenv "WORK") "/ham")))
+
 (custom-set-variables
 ;;  '(muse-blosxom-base-directory (concat ENV_WORK "Blog/"))
  '(muse-colors-autogen-headings (quote outline))
@@ -37,24 +48,18 @@
 ;;  '(muse-completing-read-function (quote ido-completing-read))
  '(muse-html-charset-default "utf-8")
  '(muse-html-encoding-default (quote utf-8))
- '(muse-html-footer (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/empty.html"))
- '(muse-html-header (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/empty.html"))
+ '(muse-html-header MUSE_HTML_HEADER)
+ '(muse-html-footer MUSE_HTML_FOOTER)
  '(muse-html-meta-content-encoding (quote utf-8))
- '(muse-html-style-sheet "<link rel=\"stylesheet\" type=\"text/css\" charset=\"utf-8\" media=\"all\" href=\"/common.css\" />
-<link rel=\"stylesheet\" type=\"text/css\" charset=\"utf-8\" media=\"screen\" href=\"/screen.css\" />
-<link rel=\"stylesheet\" type=\"text/css\" charset=\"utf-8\" media=\"print\" href=\"/print.css\" />")
- '(muse-latex-header (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/header.tex"))
- '(muse-latex-footer (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/footer.tex"))
+ '(muse-latex-header MUSE_TEX_HEADER)
+ '(muse-latex-footer MUSE_TEX_FOOTER)
 ;;  '(muse-mode-hook (quote (flyspell-mode footnote-mode)))
 ;;  '(muse-publish-comments-p t)
  '(muse-publish-date-format "%b. %e, %Y")
  '(muse-publish-desc-transforms (quote (muse-wiki-publish-pretty-title muse-wiki-publish-pretty-interwiki muse-publish-strip-URL)))
  '(muse-wiki-publish-small-title-words (quote ("the" "and" "at" "on" "of" "for" "in" "an" "a" "page")))
- '(muse-xhtml-footer (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/empty.html"))
- '(muse-xhtml-header (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/empty.html"))
- '(muse-xhtml-style-sheet "<link rel=\"stylesheet\" type=\"text/css\" charset=\"utf-8\" media=\"all\" href=\"/common.css\" />
-<link rel=\"stylesheet\" type=\"text/css\" charset=\"utf-8\" media=\"screen\" href=\"/screen.css\" />
-<link rel=\"stylesheet\" type=\"text/css\" charset=\"utf-8\" media=\"print\" href=\"/print.css\" />"))
+ '(muse-xhtml-header MUSE_HTML_HEADER)
+ '(muse-xhtml-footer MUSE_HTML_FOOTER))
 
 ;; (custom-set-faces
 ;;  '(muse-bad-link ((t (:foreground "DeepPink" :underline "DeepPink" :weight bold)))))
@@ -81,8 +86,10 @@
                        (boolean :tag "Nestable" :value nil)
                        function))
   :group 'muse-latex)
-(muse-derive-style "agl-pdf" "pdf"
-				   :tags   'muse-agl-pdf-markup-tags)
+
+(muse-derive-style "agl-pdf" "pdf" :tags 'muse-agl-pdf-markup-tags)
+
+(muse-derive-style "agl-tex" "latex" :tags 'muse-agl-pdf-markup-tags)
 
 (defun muse-agl-pdf-pb-tag (beg end attrs)
   (save-excursion
@@ -361,14 +368,7 @@ t
                    :before-end 'muse-agl-html-munge-final-buffer
                    )
 
-(muse-derive-style
- "agl-html" "agl-html-0"
- ;; :header (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/empty.html")
- ;; :footer (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/empty.html")
- :header (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/web-header.html")
- :footer (concat ENV_DEVENV_EMACS_SCRIPTS "/muse-tpl/web-footer.html")
- :before-end 'muse-agl-html-munge-buffer
-)
+(muse-derive-style "agl-html" "agl-html-0" :before-end 'muse-agl-html-munge-buffer)
 
 (defun agl-muse-publish-to-pdf ()
   ""
@@ -386,3 +386,7 @@ t
 (global-set-key "\C-xp" 'agl-muse-publish-to-html)
 (global-set-key "\C-xP" 'agl-muse-publish-to-html)
 ;; (global-set-key "\C-x\C-p" 'agl-muse-publish-to-pdf)
+
+;; Explicitly set the pdflatex path, this is needed so that muse-publish works from everywhere
+(Windows
+ (setq muse-latex-pdf-program (concat HAM_HOME "/bin/pdflatex")))
