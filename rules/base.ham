@@ -447,6 +447,51 @@ rule Import {
 }
 
 #----------------------------------------------------------------------
+#     Pre-requisit utilities
+#----------------------------------------------------------------------
+rule FDirName
+{
+  # Turn individual elements in $(<) into a usable path.
+
+  local _i ;
+  local _s = $(DOT) ;
+
+  for _i in $(<)
+  {
+    _s = $(_i:R=$(_s)) ;
+  }
+
+  return $(_s) ;
+}
+
+rule FGristDirName
+{
+  return [ FGristFiles [ FDirName $(<) ] ] ;
+}
+
+rule FQuote {
+  if $(<) {
+    return "\"$(<)\"" ;
+  }
+  else {
+    return "\"\"" ;
+  }
+}
+
+rule FQuoteFlag {
+  if $(>) {
+    return $(<)"\"$(>)\"" ;
+  }
+  else {
+    return "\"\"" ;
+  }
+}
+
+rule FQuoteDirName {
+  return [ FQuote [ FDirName $(<) ] ] ;
+}
+
+#----------------------------------------------------------------------
 #     Toolset
 #----------------------------------------------------------------------
 if ! $(HAM_TOOLSET) {
@@ -705,7 +750,7 @@ rule FilePreserveRO
 }
 actions FilePreserveRO
 {
-  $(CP_PRESERVE) $(>) $(<)
+  $(CP_PRESERVE) "$(>)" "$(<)"
 }
 rule FilePreserveEXE
 {
@@ -717,7 +762,7 @@ rule FilePreserveEXE
 }
 actions FilePreserveEXE
 {
-  $(CP_PRESERVE) $(>) $(<)
+  $(CP_PRESERVE) "$(>)" "$(<)"
 }
 
 # Straight copy
@@ -1335,7 +1380,7 @@ rule Cni
 }
 actions Cni
 {
-  $(NICC_EXE) $(>)
+  "$(NICC_EXE)" "$(>)"
 }
 
 # /ObjectOptimFlags  sources : flags ;
@@ -1992,38 +2037,9 @@ rule FIncludesDash { return -I$(<) ; }
 rule FDefinesSlash { return /D$(<) ; }
 rule FIncludesSlash { return /I$(<) ; }
 
-rule FQuote {
-  if $(<) {
-    return "\"$(<)\"" ;
-  }
-  else {
-    return "\"\"" ;
-  }
-}
-
 rule FDefines { return -D$(<) ; }
-rule FIncludes { return -I$(<) ; }
-rule FIncludesLint { return -i$(<) ; }
-
-rule FDirName
-{
-  # Turn individual elements in $(<) into a usable path.
-
-  local _i ;
-  local _s = $(DOT) ;
-
-  for _i in $(<)
-  {
-    _s = $(_i:R=$(_s)) ;
-  }
-
-  return $(_s) ;
-}
-
-rule FGristDirName
-{
-  return [ FGristFiles [ FDirName $(<) ] ] ;
-}
+rule FIncludes { return -I"\"$(<)\"" ; }
+rule FIncludesLint { return -i"\"$(<)\"" ; }
 
 # Remove all .. and . from a list to create a "clean" list that can be used to build absolute path
 rule FCleanDirs {
@@ -2059,37 +2075,37 @@ rule FSubDirAbsName {
 #
 actions updated together piecemeal Archive
 {
-  $(AR) $(<) $(>)
+  "$(AR)" "$(<)" "$(>)"
 }
 
 actions As
 {
-  $(AS) $(ASFLAGS) $(ASHDRS) -o $(<) $(>)
+  "$(AS)" $(ASFLAGS) $(ASHDRS) -o "$(<)" "$(>)"
 }
 
 actions Yasm
 {
-  $(YASM) $(YASMFLAGS) $(YASMHDRS) $(YASMDEFS) -o $(<) $(>)
+  "$(YASM)" $(YASMFLAGS) $(YASMHDRS) $(YASMDEFS) -o "$(<)" "$(>)"
 }
 
 actions Masm
 {
-  ml -nologo -Fo $(<) -c $(>)
+  ml -nologo -Fo "$(<)" -c "$(>)"
 }
 
 actions C++
 {
-  $(C++) -c -o $(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) $(>)
+  $(C++) -c -o "$(<)" $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "$(>)"
 }
 
 actions Cc
 {
-  $(CC) -c -o $(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) $(>)
+  $(CC) -c -o "$(<)" $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "$(>)"
 }
 
 actions C99
 {
-  $(CC) -c -o $(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) $(>)
+  $(CC) -c -o "$(<)" $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "$(>)"
 }
 
 rule LintC
@@ -2100,7 +2116,7 @@ rule LintC
 }
 actions LintC
 {
-  $(LINT_C) $(LINT_HDRS) $(>) ; $(LINT_CANNOT_FAIL)
+  $(LINT_C) $(LINT_HDRS) "$(>)" ; $(LINT_CANNOT_FAIL)
 }
 
 rule LintH
@@ -2111,85 +2127,85 @@ rule LintH
 }
 actions LintH
 {
-  $(LINT_H) $(LINT_HDRS) $(>) ; $(LINT_CANNOT_FAIL)
+  $(LINT_H) $(LINT_HDRS) "$(>)" ; $(LINT_CANNOT_FAIL)
 }
 
 actions Chgrp
 {
-  $(CHGRP) $(GROUP) $(<)
+  $(CHGRP) $(GROUP) "$(<)"
 }
 
 actions Chmod1
 {
-  $(CHMOD) $(MODE) $(<)
+  $(CHMOD) $(MODE) "$(<)"
 }
 
 actions Chown
 {
-  $(CHOWN) $(OWNER) $(<)
+  $(CHOWN) $(OWNER) "$(<)"
 }
 
 actions piecemeal together existing Clean
 {
-  $(RM) $(>)
+  $(RM) "$(>)"
 }
 
 actions Cp
 {
-  $(CP) $(>) $(<)
+  $(CP) "$(>)" "$(<)"
 }
 
 rule Touch {
 }
 actions Touch {
-  touch $(<)
+  touch "$(<)"
 }
 
 actions File
 {
-  $(CP) $(>) $(<)
+  $(CP) "$(>)" "$(<)"
 }
 
 actions FilePreserve
 {
-  $(CP_PRESERVE) $(>) $(<)
+  $(CP_PRESERVE) "$(>)" "$(<)"
 }
 
 if $(UNIX) {
   actions GenFile1 {
     PATH="$PATH:."
-    $(>[1]) $(<) $(>[2-])
+    $(>[1]) "$(<)" "$(>[2-])"
   }
 }
 else {
   actions GenFile1 {
-    $(>[1]) $(<) $(>[2-])
+    $(>[1]) "$(<)" "$(>[2-])"
   }
 }
 
 actions HardLink
 {
-  $(RM) $(<) && $(LN) $(>) $(<)
+  $(RM) "$(<)" && $(LN) "$(>)" "$(<)"
 }
 
 actions Link bind NEEDLIBS
 {
-  $(LINK) $(LINKFLAGS) -o $(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+  $(LINK) $(LINKFLAGS) -o "$(<)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
 }
 
 actions MkDir1
 {
-  $(MKDIR) $(<)
+  $(MKDIR) "$(<)"
 }
 
 actions together Ranlib
 {
-  $(RANLIB) $(<)
+  $(RANLIB) "$(<)"
 }
 
 actions quietly updated piecemeal together RmTemps
 {
-  $(RM) $(>)
+  $(RM) "$(>)"
 }
 
 actions Shell
@@ -2199,12 +2215,12 @@ actions Shell
   NR == 1 && /^[#:]/ { next }
   /^##/ { next }
   { print }
-  ' < $(>) > $(<)
+  ' < "$(>)" > "$(<)"
 }
 
 actions SoftLink
 {
-  $(RM) $(<) && $(LN) -s $(>) $(<)
+  $(RM) "$(<)" && $(LN) -s "$(>)" "$(<)"
 }
 
 #
@@ -2553,7 +2569,7 @@ rule RunExe {
 }
 actions RunExe {
   cd $(WORKDIR)
-  ./$(>)$(SUFEXE) $(A0) $(A1) $(A2) $(A3) $(A4) $(A5) $(A6) $(A7) $(A8) $(A9)
+  "./$(>)$(SUFEXE)" $(A0) $(A1) $(A2) $(A3) $(A4) $(A5) $(A6) $(A7) $(A8) $(A9)
 }
 
 #----------------------------------------------------------------------

@@ -4,12 +4,12 @@
 export HAM_TOOLSET=PERL
 export HAM_TOOLSET_VER=516
 export HAM_TOOLSET_NAME=perl
-export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/perl
+export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/perl"
 
 # path setup
 case $HAM_OS in
     NT*)
-        export STRAW_PERL_HOME=${HAM_TOOLSET_DIR}/nt-x86/
+        export STRAW_PERL_HOME="${HAM_TOOLSET_DIR}/nt-x86/"
         export PATH=${STRAW_PERL_HOME}:${PATH}
         if [ ! -e "$STRAW_PERL_HOME" ]; then
             toolset_dl perl perl_nt-x86

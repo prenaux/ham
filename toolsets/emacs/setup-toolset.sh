@@ -4,7 +4,7 @@
 export HAM_TOOLSET=EMACS
 export HAM_TOOLSET_VER=23
 export HAM_TOOLSET_NAME=emacs
-export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/emacs
+export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/emacs"
 
 export EMACS_EXE=emacs
 
@@ -12,11 +12,11 @@ export EMACS_EXE=emacs
 case $HAM_OS in
     NT*)
         export EMACS_EXE=emacs.exe
-        export EMACS_DIR=${HAM_TOOLSET_DIR}/nt-x86/
-        export PATH=${EMACS_DIR}/bin:${PATH}
-        if [ ! -e $EMACS_DIR ]; then
+        export EMACS_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
+        export PATH="${EMACS_DIR}/bin":${PATH}
+        if [ ! -e "$EMACS_DIR" ]; then
             toolset_dl emacs emacs_nt-x86
-            if [ ! -e $EMACS_DIR ]; then
+            if [ ! -e "$EMACS_DIR" ]; then
                 echo "E/nt-x86 folder doesn't exist in the toolset"
                 return 1
             fi

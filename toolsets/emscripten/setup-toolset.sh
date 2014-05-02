@@ -18,24 +18,24 @@ if [ $? != 0 ]; then return 1; fi
 export HAM_TOOLSET=EMSCRIPTEN
 export HAM_TOOLSET_VER=2
 export HAM_TOOLSET_NAME=emscripten
-export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/emscripten
+export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/emscripten"
 
 # emscripten setup
-export EMSCRIPTEN_ROOT=${HAM_TOOLSET_DIR}/emscripten
-export EMSCRIPTEN=${EMSCRIPTEN_ROOT}
-export LLVM_ROOT=${CLANGDIR}
+export EMSCRIPTEN_ROOT="${HAM_TOOLSET_DIR}/emscripten"
+export EMSCRIPTEN="${EMSCRIPTEN_ROOT}"
+export LLVM_ROOT="${CLANGDIR}"
 export NODE_JS=
-export PATH=${EMSCRIPTEN_ROOT}:$PATH
+export PATH="${EMSCRIPTEN_ROOT}":$PATH
 
-EMSCRIPTEN_DEFAULT_DOT_FILE=${HAM_TOOLSET_DIR}/etc/.emscripten
+EMSCRIPTEN_DEFAULT_DOT_FILE="${HAM_TOOLSET_DIR}/etc/.emscripten"
 
 # Make the JSCC temporary folder
-mkdir -p $HOME/.ham/jscc/
+mkdir -p "$HOME/.ham/jscc/"
 
 # dl if missing
-if [ ! -e $EMSCRIPTEN_ROOT -o ! -e $EMSCRIPTEN_DEFAULT_DOT_FILE ]; then
+if [ ! -e "$EMSCRIPTEN_ROOT" -o ! -e "$EMSCRIPTEN_DEFAULT_DOT_FILE" ]; then
     toolset_dl emscripten emscripten
-    if [ ! -e $EMSCRIPTEN_ROOT -o ! -e $EMSCRIPTEN_DEFAULT_DOT_FILE ]; then
+    if [ ! -e "$EMSCRIPTEN_ROOT" -o ! -e "$EMSCRIPTEN_DEFAULT_DOT_FILE" ]; then
         echo "emscripten folder doesn't exist in the toolset"
         return 1
     fi
@@ -48,7 +48,7 @@ export _JAVA_OPTIONS="-Xms256m -Xmx768m"
 # copy a configured .emscripten if needed
 if [ ! -f "$HOME/.emscripten" -o ! -f "$HOME/.emscripten_sanity" ]; then
     echo "# Copying default .emscripten"
-    cp -f $EMSCRIPTEN_DEFAULT_DOT_FILE $HOME/.emscripten
+    cp -f "$EMSCRIPTEN_DEFAULT_DOT_FILE" "$HOME/.emscripten"
     emcc --version
 fi
 

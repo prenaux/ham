@@ -20,7 +20,7 @@ esac
 export HAM_TOOLSET=VISUALC
 export HAM_TOOLSET_VER=10
 export HAM_TOOLSET_NAME=msvc_10_x86
-export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}
+export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}"
 
 export MSVCDIR="${HAM_TOOLSET_DIR}/nt-x86"
 if [ ! -e "$MSVCDIR/bin/cl.exe" ]; then

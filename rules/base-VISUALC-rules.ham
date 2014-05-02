@@ -10,27 +10,27 @@ rule ResourceCompiler {
 }
 
 actions ResourceCompiler {
-  rc -fo $(<) $(CCHDRS) $(RCFLAGS) $(>)
+  rc -fo "$(<)" $(CCHDRS) $(RCFLAGS) "$(>)"
 }
 
 actions Archive {
-  $(AR) -NOLOGO -WX:NO -out:$(<) $(>)
+  $(AR) -NOLOGO -WX:NO -out:"$(<)" "$(>)"
 }
 
 actions Cc {
-  $(CC) -c -Fo$(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) -Tc$(>)
+  $(CC) -c -Fo"$(<)" $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I"$(STDHDRS)" -Tc"$(>)"
 }
 
 actions C++ {
-  $(C++) -c -Fo$(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) -Tp$(>)
+  $(C++) -c -Fo"$(<)" $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I"$(STDHDRS)" -Tp"$(>)"
 }
 
 actions Link bind NEEDLIBS {
-  $(LINK) $(LINKFLAGS) -DEBUG -out:$(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+  $(LINK) $(LINKFLAGS) -DEBUG -out:"$(<)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
 }
 
 actions DllLink bind NEEDLIBS {
-  $(LINK) $(LINKFLAGS) -DLL -DEBUG -out:$(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+  $(LINK) $(LINKFLAGS) -DLL -DEBUG -out:"$(<)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
 }
 
 # No C99 support
@@ -47,7 +47,7 @@ else if $(HAM_C99) = icl {
   LINKFLAGS += -LIBPATH:$(ICLDIR)/lib/$(ICL_ARCH)/ ;
 
   actions C99 {
-    icl -nologo -Qstd=c99 -Qdiag-disable:82,120,133,144,167,177,186,188,344,424,869,981,1011,1419,1572,1786,2259 -Qdiag-error:266 -I$(ICLDIR)/include/$(ICL_ARCH) -I$(ICLDIR)/include -c -Fo$(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) -Tc$(>)
+    icl -nologo -Qstd=c99 -Qdiag-disable:82,120,133,144,167,177,186,188,344,424,869,981,1011,1419,1572,1786,2259 -Qdiag-error:266 -I$(ICLDIR)/include/$(ICL_ARCH) -I$(ICLDIR)/include -c -Fo"$(<)" $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I"$(STDHDRS)" -Tc"$(>)"
   }
 }
 # C99 using GCC
@@ -55,7 +55,7 @@ else if $(HAM_C99) = gcc {
   ECHO "I/MSVC: Using GCC for C99 code." ;
 
   actions C99 {
-    $(HAM_C99) -mno-stack-arg-probe -O2 -D_CRTIMP= -D__MINGW32__ -I${GCCDIR}/include -c -o $(<) $(C99_FLAGS) $(C99_OPTIM) $(CCDEFS) $(CCHDRS) $(>)
+    $(HAM_C99) -mno-stack-arg-probe -O2 -D_CRTIMP= -D__MINGW32__ -I${GCCDIR}/include -c -o "$(<)" $(C99_FLAGS) $(C99_OPTIM) $(CCDEFS) $(CCHDRS) "$(>)"
   }
 }
 # Unknown C99

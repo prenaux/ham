@@ -6,11 +6,11 @@ if [ $? != 0 ]; then return 1; fi
 export HAM_TOOLSET=ANT
 export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=ant
-export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/ant
+export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/ant"
 
 # path setup
-export ANT_BIN_DIR=${HAM_TOOLSET_DIR}/jvm/bin
-export PATH=${ANT_BIN_DIR}:${PATH}
+export ANT_BIN_DIR="${HAM_TOOLSET_DIR}/jvm/bin"
+export PATH="${ANT_BIN_DIR}":${PATH}
 if [ ! -e "$ANT_BIN_DIR" ]; then
     toolset_dl ant ant_1_jvm
     if [ ! -e "$ANT_BIN_DIR" ]; then
@@ -20,7 +20,7 @@ if [ ! -e "$ANT_BIN_DIR" ]; then
 fi
 
 # path
-export PATH=${HAM_TOOLSET_DIR}:${PATH}
+export PATH="${HAM_TOOLSET_DIR}":${PATH}
 
 # version
 VER="--- ant ----------------------"

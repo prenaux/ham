@@ -1,4 +1,8 @@
 #!bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-$DIR/../nt-x86/bash.exe $*
-
+windir() {
+    DIRPATH=$1
+    2>/dev/null cd "$DIRPATH"; pwd -W
+}
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../nt-x86" && pwd )"
+DIR="`windir ${DIR}`"
+"$DIR/bash.exe" "$@"

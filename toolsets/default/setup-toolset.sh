@@ -4,6 +4,8 @@
 case $HAM_OS in
     NT*)
         . ham-toolset-import.sh xslt_tools
+        if [ $? != 0 ]; then return 1; fi
+
         ### We're using VS 2010 because VS 2012 **CANNOT** target WinXP ###
         # MSVCDIR="`unxpath "$PROGRAMFILES\\Microsoft Visual Studio 11.0\\VC"`"
         # if [ -e "$MSVCDIR/bin/cl.exe" ]; then
@@ -12,6 +14,7 @@ case $HAM_OS in
         # else
             echo "I/Default Toolset: Using VC10 legacy package"
             . ham-toolset-import.sh msvc_10_x86
+            if [ $? != 0 ]; then return 1; fi
         # fi
         ;;
     OSX*)

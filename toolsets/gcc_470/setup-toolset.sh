@@ -4,17 +4,17 @@
 export HAM_TOOLSET=GCC
 export HAM_TOOLSET_VER=470
 export HAM_TOOLSET_NAME=gcc_470
-export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/gcc_470
+export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/gcc_470"
 
 # path setup
 case $HAM_OS in
 
     NT*)
-        export GCCDIR=${HAM_TOOLSET_DIR}/nt-x86
-        export PATH=${GCCDIR}/bin:${PATH}
-        if [ ! -e $GCCDIR ] || [ -z `type -P gcc` ]; then
+        export GCCDIR="${HAM_TOOLSET_DIR}/nt-x86"
+        export PATH="${GCCDIR}/bin":${PATH}
+        if [ ! -e "$GCCDIR" ] || [ -z "`type -P gcc`" ]; then
             toolset_dl gcc_470 gcc_470_nt-x86
-            if [ ! -e $GCCDIR ] || [ -z `type -P gcc` ]; then
+            if [ ! -e "$GCCDIR" ] || [ -z "`type -P gcc`" ]; then
                 echo "E/nt-x86 folder doesn't exist in the toolset"
                 return 1
             fi

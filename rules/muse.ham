@@ -34,9 +34,9 @@ actions MusePublish bind PUBLISH {
   # Remove the starting '.' of the extension
   TYPE=${TYPE:1:${#TYPE}-1}
   MUSE_PUBLISH_DEST=${SRC%.muse}.${TYPE}
-  export MUSE_HTML_HEADER=$(MUSE_HTML_HEADER)
+  export MUSE_HTML_HEADER="$(MUSE_HTML_HEADER)"
   # echo MUSE_HTML_HEADER: ${MUSE_HTML_HEADER}
-  export MUSE_HTML_FOOTER=$(MUSE_HTML_FOOTER)
+  export MUSE_HTML_FOOTER="$(MUSE_HTML_FOOTER)"
   # echo MUSE_HTML_FOOTER: ${MUSE_HTML_FOOTER}
   # echo "MusePublish:" $(>) "->" ${MUSE_PUBLISH_DEST} "(" ${TYPE} ")"
   cd "${SRCDIR}"

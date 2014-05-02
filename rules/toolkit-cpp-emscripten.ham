@@ -65,7 +65,7 @@ JSCC_OPT_ARGS +=
 ;
 
 ### Link flags ###
-LINKFLAGS += --shell-file "$(HAM_HOME)/sources/jscc/shell.html" ;
+LINKFLAGS += --shell-file [ FQuote $(HAM_HOME)/sources/jscc/shell.html ] ;
 if $(DEBUG) = 1 {
   LINKFLAGS += $(JSCC_DBG_ARGS) ;
 }

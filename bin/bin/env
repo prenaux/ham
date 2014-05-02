@@ -1,5 +1,6 @@
 #!bash
 export PROG=$1
 shift
-$PROG $*
+"$PROG" "$@"
+
 

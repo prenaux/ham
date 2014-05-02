@@ -1,38 +1,38 @@
 actions together piecemeal Archive
 {
-  $(AR) $(<) $(>:T)
+  $(AR) "$(<)" "$(>:T)"
 }
 
 actions Cc
 {
-  $(CC) -c -o $(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) $(>)
+  $(CC) -c -o $(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I"$(STDHDRS)" "$(>)"
 }
 
 actions C++
 {
-  $(C++) -c -o $(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I$(STDHDRS) $(>)
+  $(C++) -c -o $(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I"$(STDHDRS)" "$(>)"
 }
 
 if $(OS) = MACOSX
 {
-  LINKFLAGS_DLL = -rpath @loader_path/. ;
-  LINKFLAGS_EXE = -rpath @loader_path/. ;
+  LINKFLAGS_DLL = -rpath "@loader_path/." ;
+  LINKFLAGS_EXE = -rpath "@loader_path/." ;
   actions DllLink
   {
-    $(LINK) -install_name @rpath/$(<:B:S) $(LINKFLAGS) $(LINKFLAGS_DLL) -dynamiclib $(>) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
+    $(LINK) -install_name @rpath/"$(<:B:S)" $(LINKFLAGS) $(LINKFLAGS_DLL) -dynamiclib "$(>)" "$(NEEDLIBS)" "$(LINKLIBS)" "$(SYSTEM_LINKLIBS)" -o "$(<)"
   }
   actions Link bind NEEDLIBS
   {
-    $(LINK) $(LINKFLAGS) $(LINKFLAGS_EXE) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
+    $(LINK) $(LINKFLAGS) $(LINKFLAGS_EXE) $(UNDEFS) "$(>)" "$(NEEDLIBS)" "$(NEEDLIBS)" "$(LINKLIBS)" "$(SYSTEM_LINKLIBS)" -o "$(<)"
   }
 }
 else {
   actions DllLink
   {
-    $(LINK) $(LINKFLAGS) $(>) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
+    $(LINK) $(LINKFLAGS) "$(>)" "$(NEEDLIBS)" "$(LINKLIBS)" "$(SYSTEM_LINKLIBS)" -o "$(<)"
   }
   actions Link bind NEEDLIBS
   {
-    $(LINK) $(LINKFLAGS) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o $(<)
+    $(LINK) $(LINKFLAGS) $(UNDEFS) "$(>)" "$(NEEDLIBS)" "$(LINKLIBS)" "$(SYSTEM_LINKLIBS)" -o "$(<)"
   }
 }

@@ -7,13 +7,13 @@ if [ $? != 0 ]; then return 1; fi
 export HAM_TOOLSET=IOS
 export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=ios
-export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/ios
+export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/ios"
 
 # path setup
 case $HAM_OS in
     NT*)
-        export IOS_DIR=${HAM_TOOLSET_DIR}/nt-x86/
-        export PATH=${HAM_TOOLSET_DIR}/:${IOS_DIR}/Toolchain/:${PATH}
+        export IOS_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
+        export PATH="${HAM_TOOLSET_DIR}/":"${IOS_DIR}/Toolchain/":${PATH}
         if [ ! -e $IOS_DIR ] || [ -z `type -P clang` ]; then
             toolset_dl ios ios_nt-x86
             if [ ! -e $IOS_DIR ] || [ -z `type -P clang` ]; then

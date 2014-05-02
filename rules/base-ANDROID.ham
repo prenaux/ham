@@ -17,9 +17,9 @@ if $(ADR_LLVM_VERSION) {
   C++ = clang++ ;
   LINK = clang ;
 
-  CCFLAGS = -gcc-toolchain $(GCC_DIR) -target $(LLVM_TRIPLE) ;
-  C++FLAGS = -gcc-toolchain $(GCC_DIR) -target $(LLVM_TRIPLE) ;
-  LINKFLAGS = -gcc-toolchain $(GCC_DIR) -no-canonical-prefixes -target $(LLVM_TRIPLE) ;
+  CCFLAGS = -gcc-toolchain [ FQuote $(GCC_DIR) ] -target $(LLVM_TRIPLE) ;
+  C++FLAGS = -gcc-toolchain [ FQuote $(GCC_DIR) ] -target $(LLVM_TRIPLE) ;
+  LINKFLAGS = -gcc-toolchain [ FQuote $(GCC_DIR) ] -no-canonical-prefixes -target $(LLVM_TRIPLE) ;
 }
 else {
   ECHO "# Using GCC for Android build." ;

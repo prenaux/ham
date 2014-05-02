@@ -17,7 +17,7 @@ $(PICFLAGS)
 -D__ARM_ARCH_5TE
 -DANDROID
 -D__LITTLE_ENDIAN__
--I$(ADR_DIR_NDK_USR)/include
+[ FQuoteFlag -I : $(ADR_DIR_NDK_USR)/include ]
 -Werror -Wall
 # -Wno-psabi
 -Wno-trigraphs
@@ -71,12 +71,12 @@ ANDROID_CPP_ARGS +=
 -Wno-conversion-null
 -Wno-reorder # Warnings valid for C++ only
 $(ADR_LIBCPP_DEFINES)
--I$(ADR_LIBCPP_DIR_INCLUDE)
--I$(ADR_LIBCPP_DIR_LIBS)/include
+[ FQuoteFlag -I : $(ADR_LIBCPP_DIR_INCLUDE) ]
+[ FQuoteFlag -I : $(ADR_LIBCPP_DIR_LIBS)/include ]
 ;
 
 ANDROID_LINK_BASE_ARGS +=
--L$(ADR_DIR_NDK_USR)/lib
+[ FQuoteFlag -L : $(ADR_DIR_NDK_USR)/lib ]
 -nostdlib
 ;
 
@@ -88,9 +88,9 @@ ANDROID_LINK_EXE_ARGS = $(ANDROID_LINK_BASE_ARGS)
 -Wl,--gc-sections
 -Wl,-z,nocopyreloc
 -Wl,--no-undefined
--Wl,-rpath-link=$(ADR_DIR_NDK_USR)/lib
-$(ADR_DIR_NDK_USR)/lib/crtend_android.o
-$(ADR_DIR_NDK_USR)/lib/crtbegin_dynamic.o
+[ FQuoteFlag -Wl,-rpath-link= : $(ADR_DIR_NDK_USR)/lib/crtend_android.o ]
+[ FQuote $(ADR_DIR_NDK_USR)/lib/crtend_android.o ]
+[ FQuote $(ADR_DIR_NDK_USR)/lib/crtbegin_dynamic.o ]
 ;
 
 ANDROID_LINK_DLL_ARGS = $(ANDROID_LINK_BASE_ARGS)
@@ -101,7 +101,7 @@ ANDROID_LINK_DLL_ARGS = $(ANDROID_LINK_BASE_ARGS)
 -Wl,--no-undefined
 -Wl,-shared,-Bsymbolic
 -Wl,--no-whole-archive
--Wl,-rpath-link=$(ADR_DIR_NDK_USR)/lib
+[ FQuoteFlag -Wl,-rpath-link= : $(ADR_DIR_NDK_USR)/lib ]
 ;
 
 switch $(ADR_CPU_PROFILE)
@@ -130,7 +130,7 @@ switch $(ADR_CPU_PROFILE)
     EXIT "Unknown Android CPU profile '"$(ADR_CPU_PROFILE)"' !" ;
 }
 
-SYSTEM_LINKLIBS = -L$(ADR_LIBCPP_DIR_LIBS) -llog -lc $(ADR_LIBCPP_LINKER_LIB) -ldl -lm -lgcc ;
+SYSTEM_LINKLIBS = [ FQuoteFlag -L : $(ADR_LIBCPP_DIR_LIBS) ] -llog -lc $(ADR_LIBCPP_LINKER_LIB) -ldl -lm -lgcc ;
 SYSTEM_LINKLIBS += $(ADR_SYSTEM_LINKLIBS) ;
 
 CCFLAGS   += $(ANDROID_CC_ARGS) ;

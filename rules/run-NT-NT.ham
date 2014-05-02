@@ -1,16 +1,16 @@
 if $(SUFEXE) = .html {
   actions runInDir_ {
     echo "=== Running:" $(RUN_EXE)
-    cd $(WORK_DIR)
+    cd "$(WORK_DIR)"
     pwd
-    start $(RUN_EXE)
+    start "$(RUN_EXE)"
   }
   actions runInDebugger_
   {
     echo "=== Debugging:" $(RUN_EXE)
-    cd $(WORK_DIR)
+    cd "$(WORK_DIR)"
     pwd
-    start $(RUN_EXE)
+    start "$(RUN_EXE)"
   }
 }
 else {

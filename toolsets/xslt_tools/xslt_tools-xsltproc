@@ -1,4 +1,13 @@
 #!/bin/bash
 . ham-bash-lib.sh
-xsltproc $*
+args=()
+for PARAM in "$@"
+do
+    if [ ${PARAM:0:1} = "-" ]; then
+        args+=(${PARAM})
+    else
+        args+=("${PARAM}")
+    fi
+done
+xsltproc "${args[@]}"
 exit $?

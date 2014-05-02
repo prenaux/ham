@@ -13,11 +13,11 @@
 actions updated together piecemeal Archive
 {
   set -e
-  cd $(BASEOBJDIR)
+  cd "$(BASEOBJDIR)"
   export FILES=" $(>) "
   export FILES=`echo ${FILES} | sed -e 's~$(BASEOBJDIR)/~~g'`
   # echo "FILES TO LINK IN AR:" ${FILES}
-  $(AR) $(<) ${FILES}
+  $(AR) "$(<)" ${FILES}
 }
 
 actions SharedLink {
@@ -25,5 +25,5 @@ actions SharedLink {
 
 actions DllLink bind NEEDLIBS
 {
-  $(LINK) $(LINKFLAGS) -fvisibility=hidden -shared -o $(<) $(UNDEFS) $(>) $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+  $(LINK) $(LINKFLAGS) -fvisibility=hidden -shared -o "$(<)" $(UNDEFS) "$(>)" "$(NEEDLIBS)" "$(LINKLIBS)" "$(SYSTEM_LINKLIBS)"
 }

@@ -313,16 +313,16 @@
       ::dbg(::format("I/Running from %s\n-----------------------\n%s\n-----------------------"
                      tmpFilePath, aScript));
     }
-    return runProcess(getBashPath() + " " + tmpFilePath,abKeepStdOut,abEchoStdout)
+    return runProcess("\"" + getBashPath() + "\" " + tmpFilePath,abKeepStdOut,abEchoStdout)
   }
 
   function runDetachedBash(aScript) {
     local tmpFilePath = _writeBashScriptToTempFile(aScript)
-    if (_debugEchoAll) {
+    {
       ::dbg(::format("I/Running detached from %s\n-----------------------\n%s\n-----------------------"
                      tmpFilePath, aScript));
     }
-    return runDetachedProcess(getBashPath() + " " + tmpFilePath)
+    return runDetachedProcess("\"" + getBashPath() + "\" " + tmpFilePath,true,true)
   }
 
   function seqBash(aScript,aOptions) {
@@ -331,6 +331,6 @@
       ::dbg(::format("I/Running from %s\n-----------------------\n%s\n-----------------------"
                      tmpFilePath, aScript));
     }
-    return seqProcess(getBashPath() + " " + tmpFilePath,aOptions)
+    return seqProcess("\"" + getBashPath() + "\" " + tmpFilePath,aOptions)
   }
 }

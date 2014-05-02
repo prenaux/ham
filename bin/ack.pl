@@ -16,7 +16,6 @@ our $VERSION = '1.96';
 
 # These are all our globals.
 
-
 MAIN: {
     if ( $App::Ack::VERSION ne $main::VERSION ) {
         App::Ack::die( "Program/library version mismatch\n\t$0 is $main::VERSION\n\t$INC{'App/Ack.pm'} is $App::Ack::VERSION" );

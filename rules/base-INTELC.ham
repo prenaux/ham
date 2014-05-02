@@ -7,7 +7,7 @@ LINK        ?= xilink -nologo ;
 LINKFLAGS   ?= "" ;
 LINKLIBS    ?= advapi32.lib oldnames.lib kernel32.lib ;
 OPTIM       ?= "" ;
-STDHDRS     ?= $(INTELC)/include $(VISUALC)/include ;
+STDHDRS     ?= "$(INTELC)/include" "$(VISUALC)/include" ;
 UNDEFFLAG   ?= "-u _" ;
 
 Import base-VISUALC.ham ;

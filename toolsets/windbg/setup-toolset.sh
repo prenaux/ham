@@ -4,12 +4,12 @@
 export HAM_TOOLSET=WINDBG
 export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=windbg
-export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/windbg
+export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/windbg"
 
 # path setup
 case $HAM_OS in
     NT*)
-        export WINDBG_DIR=${HAM_TOOLSET_DIR}/nt-x86/
+        export WINDBG_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
         export PATH=${WINDBG_DIR}/debugger_x86:${PATH}
         if [ ! -e "$WINDBG_DIR" ]; then
             toolset_dl windbg windbg_nt-x86

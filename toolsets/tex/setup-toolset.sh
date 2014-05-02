@@ -4,12 +4,12 @@
 export HAM_TOOLSET=TEX
 export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=tex
-export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/tex
+export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/tex"
 
 # path setup
 case $HAM_OS in
     NT*)
-        export TEXLIVE=$HAM_TOOLSET_DIR/nt-x86
+        export TEXLIVE="$HAM_TOOLSET_DIR/nt-x86"
         if [ ! -e $TEXLIVE ]; then
             toolset_dl tex tex_nt-x86
             if [ ! -e $TEXLIVE ]; then
@@ -20,11 +20,11 @@ case $HAM_OS in
         export TEXOS="win32"
         export TEXROOT=$TEXLIVE
         export TLROOT=$TEXROOT
-        export TEXMFTEMP=$TEXROOT/temp
-        export TEXMFVAR=$TEXROOT/texmf-var
-        export TEXMFCNF=$TEXROOT/texmf-dist/web2c
-        export TEXISO_BIN=$TEXLIVE/bin/win32
-        export PATH=$PATH:$TEXISO_BIN
+        export TEXMFTEMP="$TEXROOT/temp"
+        export TEXMFVAR="$TEXROOT/texmf-var"
+        export TEXMFCNF="$TEXROOT/texmf-dist/web2c"
+        export TEXISO_BIN="$TEXLIVE/bin/win32"
+        export PATH=$PATH:"$TEXISO_BIN"
         if [ ! -e "$TEXROOT" ]; then
             echo "E/Can't find TEXROOT directory: $TEXROOT"
             return 1

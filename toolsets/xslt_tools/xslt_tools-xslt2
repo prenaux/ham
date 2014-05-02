@@ -1,16 +1,4 @@
 #!/bin/bash
 . ham-bash-lib.sh
-if [ -e "${1}" ]; then
-    XSLTPATH=$1
-else
-    echo "Can't find XSLT: $1"
-    exit 1
-fi
-if [ -z "$3" ]; then
-    OUTPUT=
-else
-    OUTPUT="-o:$3"
-fi
-# echo "XSLT2: $2 -> '$(basename ${XSLTPATH})' -> $OUTPUT"
-xslt_tools-saxon -s:$2 -versionmsg:off -warnings:silent -xsl:$XSLTPATH $OUTPUT
+xslt_tools-saxon "$1" "$2" "$3"
 exit $?

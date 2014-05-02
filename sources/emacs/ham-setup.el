@@ -26,11 +26,30 @@
 (require 'ham-shell)
 
 (Windows
- (setq explicit-ham-shell-file-name (concat HAM_HOME "/bin/ham-shell.cmd")))
+ (setq explicit-ham-shell-file-name (concat HAM_HOME "/bin/ham-shell.cmd"))
+ (add-to-list ' explicit-ham-shell-file-name (concat HAM_HOME "/bin/ham-shell.cmd"))
+ (setq explicit-bash-ham-args (list))
+ )
+
 (Linux
- (setq explicit-ham-shell-file-name "/bin/bash"))
+ (setq explicit-ham-shell-file-name "/bin/bash")
+ (setq explicit-bash-ham-args
+       (list
+        "--rcfile"
+        (concat HAM_HOME "/bin/ham-bash-start.sh")
+        "-i"))
+ )
+
 (OSX
- (setq explicit-ham-shell-file-name "/bin/bash"))
+ (setq explicit-ham-shell-file-name "/bin/bash")
+ (setq explicit-bash-ham-args
+       (list
+        "--rcfile"
+        (concat HAM_HOME "/bin/ham-bash-start.sh")
+        "-i"))
+ )
+
+(setq shell-file-name explicit-ham-shell-file-name)
 
 (defmacro PrognInHamShell (&rest x)
   (setq prev-shell-file-name shell-file-name)
@@ -38,16 +57,6 @@
   (let ((result (cons 'progn x)))
     (setq shell-file-name prev-shell-file-name)
     result))
-
-(setq shell-file-name explicit-ham-shell-file-name)
-
-;; (setq explicit-bash-ham-startfile "")
-
-(setq explicit-bash-ham-args
-      (list
-       "--rcfile"
-       (concat HAM_HOME "/bin/ham-bash-start.sh")
-       "-i"))
 
 ;; (setq shell-file-name explicit-ham-shell-file-name)
 

@@ -490,7 +490,7 @@ rule tkLinkLibsRaw {
     if ! ( $(NO_DEPS) = 1 ) {
       DEPENDS $(<) : $(l) ;
     }
-    VarOnAddToFront LINKLIBS : $(<) : $(l) ;
+    VarOnAddToFront LINKLIBS : $(<) : [ FQuote $(l) ] ;
     # [ VarAddToFront LINKLIBS $(<) $(l) ] ;
     # LINKLIBS on $(<) += $(l) ;
     # ECHO "LINKLIBS: " [ VarOnGet LINKLIBS : $(<) ] ;
@@ -507,7 +507,7 @@ rule tkLinkLibs {
     if ! ( $(NO_DEPS) = 1 ) {
       DEPENDS $(<) : $(l) ;
     }
-    VarOnAddToFront LINKLIBS : $(<) : $(l) ;
+    VarOnAddToFront LINKLIBS : $(<) : [ FQuote $(l) ] ;
     # [ VarAddToFront LINKLIBS $(<) $(l) ] ;
     # LINKLIBS on $(<) += $(l) ;
     # ECHO "LINKLIBS: " [ VarOnGet LINKLIBS : $(<) ] ;
@@ -540,7 +540,7 @@ rule tkLinkDll {
       local dir = $(3) ;
       dir ?= $(TK_DIR_DLL) ;
       local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFDLL) ] ;
-      VarOnAddToFront LINKLIBS : $(<) : $(l) ;
+      VarOnAddToFront LINKLIBS : $(<) : [ FQuote $(l) ] ;
     }
     tkDepDll $(<) : $(>) : $(3) ;
   }
@@ -964,7 +964,7 @@ rule tkBuildPackage
     DEPENDS $(srcLib) : $(PKGTARGETF) ;
 
     LINKFLAGS on $(PKGTARGET) ?= $(LINKFLAGS) ;
-    LINKFLAGS on $(PKGTARGET) += -IMPLIB:$(srcLib) ;
+    LINKFLAGS on $(PKGTARGET) += [ FQuoteFlag -IMPLIB: : $(srcLib) ] ;
 
     local dstLib = [ FDirName $(TK_DIR_LIBS) $(impLib) ] ;
     Touch $(srcLib) ;

@@ -1,5 +1,5 @@
 #!/bin/bash
-. $HAM_HOME/bin/ham-bash-lib.sh
+. "$HAM_HOME/bin/ham-bash-lib.sh"
 
 CWD=`pwd`
 

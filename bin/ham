@@ -1,9 +1,9 @@
 #!/bin/bash
-if [[ -z $HAM_HOME ]]; then
+if [[ -z "$HAM_HOME" ]]; then
     echo "E/HAM_HOME not set !"
     exit 1
 fi
-. $HAM_HOME/bin/ham-bash-lib.sh
+. "$HAM_HOME/bin/ham-bash-lib.sh"
 
 HAM_CMD="$HAM_HOME/bin/$HAM_BIN_LOA/ham"
 
@@ -92,17 +92,17 @@ do
                 echo "E/Can't find directory '$_ARG_DIRECTORY'"
                 usage
             fi
-            _ARG_DIRECTORIES+=($_ARG_DIRECTORY)
+            _ARG_DIRECTORIES+=("$_ARG_DIRECTORY")
             ;;
         B)
-            _ARG_BUILD_BEFORE=$OPTARG
+            _ARG_BUILD_BEFORE="$OPTARG"
             ;;
     esac
 done
 shift $((OPTIND-1))
 
 if [[ "$_ARG_TOOLSET" != "" ]]; then
-    . $HAM_HOME/bin/ham-bash-setenv.sh
+    . "$HAM_HOME/bin/ham-bash-setenv.sh"
     . ham-toolset $_ARG_TOOLSET
     errcheck $? ham "Can't setup the '$_ARG_TOOLSET' toolset."
 fi
@@ -113,11 +113,11 @@ if [[ -z $HAM_TOOLSET ]]; then
 fi
 
 hamIn() {
-    export CWD=`pwd`
+    export CWD="`pwd`"
     export DIR="$1"
     shift
     if [[ "$CWD" != "$DIR" ]]; then
-        pushd $DIR
+        pushd "$DIR"
     fi
     if [[ "$_ARG_BUILD_BEFORE" != "" ]]; then
         "$HAM_CMD" $_ARG_BUILD_BEFORE
@@ -132,12 +132,12 @@ hamIn() {
 
 if [[ "$_ARG_DIRECTORY" != "" ]]; then
     for dir in "${_ARG_DIRECTORIES[@]}"; do
-        hamIn $dir $*
+        hamIn "$dir" $*
     done
 else
     # find the _build.ham file
-    export BUILD_HAM_DIR=`ham-search-build-ham.sh`
-    if [[ -z $BUILD_HAM_DIR ]]; then
+    export BUILD_HAM_DIR="`ham-search-build-ham.sh`"
+    if [[ -z "$BUILD_HAM_DIR" ]]; then
         echo "E/Can't find _build.ham !"
         if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
         # sourced...
@@ -147,5 +147,5 @@ else
             exit 1
         fi
     fi
-    hamIn $BUILD_HAM_DIR $*
+    hamIn "$BUILD_HAM_DIR" $*
 fi

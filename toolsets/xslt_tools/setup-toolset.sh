@@ -7,13 +7,13 @@ if [ $? != 0 ]; then return 1; fi
 export HAM_TOOLSET=XSLT_TOOLS
 export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=xslt_tools
-export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/xslt_tools
+export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/xslt_tools"
 
 # path setup
 case $HAM_OS in
     NT*)
-        export XSLT_TOOLS_BIN_DIR=${HAM_TOOLSET_DIR}/nt-x86/
-        export PATH=${XSLT_TOOLS_BIN_DIR}:${PATH}
+        export XSLT_TOOLS_BIN_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
+        export PATH="${XSLT_TOOLS_BIN_DIR}":${PATH}
         if [ ! -e "$XSLT_TOOLS_BIN_DIR" ]; then
             toolset_dl xslt_tools xslt_tools_1_nt-x86
             if [ ! -e "$XSLT_TOOLS_BIN_DIR" ]; then
@@ -25,7 +25,7 @@ case $HAM_OS in
     OSX)
         # xsltproc is already bundled in OSX
         # Make sure all the xslt_tools scripts are executable
-        chmod +x ${HAM_TOOLSET_DIR}/xslt_tools-*
+        chmod +x "${HAM_TOOLSET_DIR}/xslt_tools-*"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
@@ -34,7 +34,7 @@ case $HAM_OS in
 esac
 
 # jars
-export XSLT_TOOLS_JARS_DIR=${HAM_TOOLSET_DIR}/jars/
+export XSLT_TOOLS_JARS_DIR="${HAM_TOOLSET_DIR}/jars/"
 if [ ! -e "$XSLT_TOOLS_JARS_DIR" ]; then
     toolset_dl xslt_tools xslt_tools_1_jars
     if [ ! -e "$XSLT_TOOLS_JARS_DIR" ]; then
@@ -44,7 +44,7 @@ if [ ! -e "$XSLT_TOOLS_JARS_DIR" ]; then
 fi
 
 # path
-export PATH=${HAM_TOOLSET_DIR}:${PATH}
+export PATH="${HAM_TOOLSET_DIR}":${PATH}
 
 # version
 VER="--- xslt_tools_1 ----------------------"
@@ -55,7 +55,7 @@ if [ "$HAM_NO_VER_CHECK" != "1" ]; then
 --- saxon ------
 `xslt_tools-saxon 2>&1 | grep Saxon`"
     if [ $? != 0 ]; then
-        echo "E/Can't get version."
+        echo "E/Can't get xsltproc version."
         return 1
     fi
 fi

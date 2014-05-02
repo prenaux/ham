@@ -1,5 +1,14 @@
 #!/bin/bash
 . ham-bash-lib.sh
-export SAXONPATH=${HAM_HOME}/toolsets/xslt_tools/jars/saxon9he.jar
-java -cp $SAXONPATH net.sf.saxon.Transform $*
+export SAXONPATH="${HAM_HOME}/toolsets/xslt_tools/jars/saxon9he.jar"
+if [ -z "$1" ]; then
+    # echo "1:" java -cp "$SAXONPATH" net.sf.saxon.Transform
+    java -cp "$SAXONPATH" net.sf.saxon.Transform
+elif [ -z "$3" ]; then
+    # echo "2:" java -cp "$SAXONPATH" net.sf.saxon.Transform -s:"$2" -versionmsg:off -warnings:silent -xsl:"$1"
+    java -cp "$SAXONPATH" net.sf.saxon.Transform -s:"$2" -versionmsg:off -warnings:silent -xsl:"$1"
+else
+    # echo "3:" java -cp "$SAXONPATH" net.sf.saxon.Transform -s:"$2" -versionmsg:off -warnings:silent -xsl:"$1" -o:"$3"
+    java -cp "$SAXONPATH" net.sf.saxon.Transform -s:"$2" -versionmsg:off -warnings:silent -xsl:"$1" -o:"$3"
+fi
 exit $?
