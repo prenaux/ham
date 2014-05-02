@@ -47,6 +47,18 @@
     return "bin/" + getOSArch();
   }
 
+  function getToolsetDir(aToolset) {
+    local path = "".setdir(getHamHome())
+    path = path.adddirback("toolsets")
+    path = path.adddirback(aToolset)
+    return path
+  }
+
+  function getToolsetBinDir(aToolset) {
+    local path = getToolsetDir(aToolset)
+    return path.adddirback(getOSArch())
+  }
+
   function getBashPath() {
     if (_bashPath)
       return _bashPath
@@ -162,6 +174,15 @@
       exitCode = procRet.y
       stdout = stdout
     }
+  }
+
+  function runDetachedProcess(aCmd) {
+    local pm = ::gLang.process_manager
+    local curProc = pm.current_process
+    local proc = pm.SpawnProcess(aCmd,0)
+    if (!proc)
+      throw "Couldn't spawn process from command line: " + aCmd
+    return true
   }
 
   function seqProcess(aCmd,aOptions) {
@@ -293,6 +314,15 @@
                      tmpFilePath, aScript));
     }
     return runProcess(getBashPath() + " " + tmpFilePath,abKeepStdOut,abEchoStdout)
+  }
+
+  function runDetachedBash(aScript) {
+    local tmpFilePath = _writeBashScriptToTempFile(aScript)
+    if (_debugEchoAll) {
+      ::dbg(::format("I/Running detached from %s\n-----------------------\n%s\n-----------------------"
+                     tmpFilePath, aScript));
+    }
+    return runDetachedProcess(getBashPath() + " " + tmpFilePath)
   }
 
   function seqBash(aScript,aOptions) {

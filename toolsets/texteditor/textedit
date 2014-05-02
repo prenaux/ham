@@ -1,0 +1,12 @@
+#!/bin/bash
+. ham-bash-lib.sh
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+case $HAM_OS in
+    NT*)
+        "${DIR}/nt-x86/notepad++.exe" $*
+        ;;
+    *)
+        echo "E/Toolset: Unsupported host OS"
+        return 1
+        ;;
+esac
