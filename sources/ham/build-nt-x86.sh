@@ -15,7 +15,7 @@ rm -f ham0 # Make sure any unix ham0 is cleaned up
 nmake -f builds/win32-visualc.mk
 errcheck $? build-ham-nt-x86 "Ham build failed"
 
-cp bin.ntx86/ham.exe ${HAM_HOME}/bin/nt-x86/ham.exe
+cp bin.ntx86/ham.exe "${HAM_HOME}/bin/nt-x86/ham.exe"
 errcheck $? build-ham-nt-x86 "Ham copy failed"
 
 echo == Cleaning up temporary build files
