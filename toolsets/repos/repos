@@ -1,7 +1,7 @@
 #!/bin/bash
 . ham-bash-lib.sh
 
-REPOFILE=$1
+REPOFILE="$1"
 case "${REPOFILE}" in
     *_repo*)
         echo "== Repo: $REPOFILE"
@@ -32,28 +32,29 @@ then
     exit 1
 fi
 
-CMD=$1
+CMD="$1"
 shift
 
-pushd $WORK/..
+pushd "$WORK/.."
 
-cat $REPOFILE |
+cat "$REPOFILE" |
 while read REPO
 do
-    if [ ${REPO:0:1} != "#" -a ${REPO:0:2} != "//" ]; then
-        arr=(${REPO//;/ })
+    if [ "${REPO:0:1}" != "#" -a "${REPO:0:2}" != "//" ]; then
 
-        # echo "ARR: " ${arr[0]} " -> " ${arr[1]}
-        REPO=${arr[0]}
-        REMOTE=${arr[1]}
-        REMOTE2=${arr[2]}
-        if [ -z $REMOTE ]; then
-            REMOTE=$REPO
-            REMOTE2=$REPO
+        IFS=';' read -a arr <<< "${REPO}"
+
+        # echo "ARR:" ${arr[0]} "->" ${arr[1]}
+        REPO="${arr[0]}"
+        REMOTE="${arr[1]}"
+        REMOTE2="${arr[2]}"
+        if [ -z "$REMOTE" ]; then
+            REMOTE="$REPO"
+            REMOTE2="$REPO"
             echo "::: $REPO :::"
         else
             if [ -z $REMOTE2 ]; then
-                REMOTE2=$REMOTE
+                REMOTE2="$REMOTE"
                 echo "::: $REPO ($REMOTE) :::"
             else
                 echo "::: $REPO ($REMOTE) ($REMOTE2) :::"
@@ -63,11 +64,11 @@ do
         if [ ! -e "${REPO}/.git" -a ! -e "${REPO}/.hg" -a ! -e "${REPO}/.svn" ]; then
             echo "NO REPO: no .git, .hg or .svn folder found."
         else
-            pushd ${REPO} > /dev/null
+            pushd "${REPO}" > /dev/null
             errcheck $? git_repos "can't move to repo's folder !"
-            ARGS0=${*/__REPO__/$REPO}
-            ARGS1=${ARGS0/__REMOTE2__/$REMOTE2}
-            ARGS=${ARGS1/__REMOTE__/$REMOTE}
+            ARGS0="${*/__REPO__/$REPO}"
+            ARGS1="${ARGS0/__REMOTE2__/$REMOTE2}"
+            ARGS="${ARGS1/__REMOTE__/$REMOTE}"
             # echo "Runing: $CMD $ARGS"
             $CMD $ARGS
             RET=$?
