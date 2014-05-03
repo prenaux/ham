@@ -1,4 +1,10 @@
 #!/bin/bash
+if [[ -z "$HAM_HOME" ]]; then
+    echo "E/HAM_HOME not set !"
+    exit 1
+fi
+. "$HAM_HOME/bin/ham-bash-lib.sh"
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
 export FLYMAKE=1
 export HAM_NO_VER_CHECK=1
 export BUILD=da
