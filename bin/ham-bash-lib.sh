@@ -182,8 +182,12 @@ toolset_dl() {
     export ARCH_URL1="http://localhost:8123/data/toolsets/$2.7z"
     export ARCH_URL2="https://bitbucket.org/prenaux/ham/downloads/$2.7z"
     export DLFILENAME="_$2.7z"
-    cd "${DIR}"
-    if [ ! -e "$DLFILENAME" ]; then
+    echo "DIR:" $DIR
+    pushd "${DIR}" > /dev/null
+    if [ $? != 0 ]; then
+        echo "Can't cd to the toolset's directory '$DIR'."
+        return 1;
+    elif [ ! -e "$DLFILENAME" ]; then
         echo "... Trying download from ${ARCH_URL1}"
         wget -c --no-check-certificate $ARCH_URL1 -O"$DLFILENAME.wget"
         if [ $? != 0 ]; then
@@ -191,14 +195,15 @@ toolset_dl() {
             wget -c --no-check-certificate $ARCH_URL2 -O"$DLFILENAME.wget"
             if [ $? != 0 ]; then
                 echo "Download failed !"
+                popd
                 return 1;
             fi
         fi
         mv "$DLFILENAME.wget" "$DLFILENAME"
+        echo "... Extracting $DLFILENAME"
+        7z x -y $DLFILENAME | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
+        popd
     fi
-    echo "... Extracting $DLFILENAME"
-    7z x -y $DLFILENAME | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
-    cd "${CWD}"
 }
 
 ########################################################################
