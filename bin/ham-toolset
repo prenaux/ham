@@ -1,5 +1,5 @@
 #!/bin/bash
-. ham-bash-setenv.sh
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
 . ham-env-clear
 
 toolset_info() {

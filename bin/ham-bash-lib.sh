@@ -224,7 +224,9 @@ fi
 if [[ -z $WORK ]]; then
     export WORK=`nativedir "$HAM_HOME/.."`
     export WORK=`unxpath "$WORK"`
-    echo "W/WORK not set, set to '$WORK' by default."
+    if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+        echo "W/WORK not set, set to '$WORK' by default."
+    fi
 fi
 
 if [[ -z $HOME ]]; then

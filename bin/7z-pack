@@ -1,4 +1,8 @@
 #!/bin/bash
+export HAM_NO_VER_CHECK=1
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
 export ARCH=$1
 shift
 7z a -mx=9 -ms=on -mhc=on -mtc=off -xr\!*/.git/* ./$ARCH $*

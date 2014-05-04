@@ -1,9 +1,6 @@
 #!/bin/bash
-if [[ -z "$HAM_HOME" ]]; then
-    echo "E/HAM_HOME not set !"
-    exit 1
-fi
-. "$HAM_HOME/bin/ham-bash-lib.sh"
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 HAM_CMD="$HAM_HOME/bin/$HAM_BIN_LOA/ham"
 

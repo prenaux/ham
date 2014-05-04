@@ -12,8 +12,7 @@
   (require 'ack-emacs)
   ;; find in files
   (global-set-key "\C-h\C-j" 'ack)
-  (setq ack-command (concat (getenv "HAM_HOME") "/bin/ack"))
-  )
+  (setq ack-command "ack"))
 
  ;; Mouarf... ack-emacs works properly on windows, so I use full-ack on
  ;; Linux/OSX. Note that full-ack is actually much nicer than ack-emacs, we'll

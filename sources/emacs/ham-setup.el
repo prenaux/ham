@@ -27,8 +27,17 @@
 
 (Windows
  (setq explicit-ham-shell-file-name (concat HAM_HOME "/bin/ham-shell.cmd"))
- (add-to-list ' explicit-ham-shell-file-name (concat HAM_HOME "/bin/ham-shell.cmd"))
  (setq explicit-bash-ham-args (list))
+ ;; custom version... we need to force cmdproxy and setup the exec-path
+ (add-to-list 'exec-path (concat HAM_HOME "/bin"))
+ (add-to-list 'exec-path (concat HAM_HOME "/bin/nt-x86"))
+ (defun shell-command-to-string (command)
+   "Execute shell command COMMAND and return its output as a string."
+   (with-output-to-string
+     (with-current-buffer
+         standard-output
+       (call-process "cmdproxy" nil t nil "-c" command))))
+ (setq shell-file-name "cmdproxy")
  )
 
 (Linux
@@ -38,6 +47,7 @@
         "--rcfile"
         (concat HAM_HOME "/bin/ham-bash-start.sh")
         "-i"))
+ (setq shell-file-name explicit-ham-shell-file-name)
  )
 
 (OSX
@@ -47,9 +57,8 @@
         "--rcfile"
         (concat HAM_HOME "/bin/ham-bash-start.sh")
         "-i"))
+ (setq shell-file-name explicit-ham-shell-file-name)
  )
-
-(setq shell-file-name explicit-ham-shell-file-name)
 
 (defmacro PrognInHamShell (&rest x)
   (setq prev-shell-file-name shell-file-name)
@@ -57,8 +66,6 @@
   (let ((result (cons 'progn x)))
     (setq shell-file-name prev-shell-file-name)
     result))
-
-;; (setq shell-file-name explicit-ham-shell-file-name)
 
 (add-hook 'comint-output-filter-functions 'ham-shell-strip-ctrl-m nil t)
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt nil t)
