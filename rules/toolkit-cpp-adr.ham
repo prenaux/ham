@@ -62,13 +62,17 @@ if $(ADR_LLVM_VERSION) {
 else {
   # GCC 4.4.3
   ANDROID_CC_ARGS +=
-    -mthumb-interwork
     -finput-charset=UTF-8
   ;
   ANDROID_CPP_ARGS +=
+    -std=c++11
+    -Wno-narrowing
     # Fix compilation error with BOOST_STATIC_CONSTANT
     -Wno-invalid-offsetof
   ;
+  if $(GCC_VER) = 4.8 {
+    ANDROID_CC_ARGS += -fno-stack-protector ;
+  }
 }
 
 ANDROID_CPP_ARGS +=
@@ -124,6 +128,11 @@ switch $(ADR_CPU_PROFILE)
     -msoft-float
     -mthumb
     ;
+    if ! $(ADR_LLVM_VERSION) {
+      ANDROID_CC_ARGS +=
+      -mthumb-interwork
+      ;
+    }
     ## ARM7A VFPv3 (Cortex A8, NVidia Tegra 2, HTC Desire, ...)
   case ARMv7A :
     ANDROID_SO_DIR = armeabi-v7a ;
@@ -138,6 +147,11 @@ switch $(ADR_CPU_PROFILE)
     -mfloat-abi=softfp
     ;
     ANDROID_LINK_BASE_ARGS = -Wl,--fix-cortex-a8 ;
+    if ! $(ADR_LLVM_VERSION) {
+      ANDROID_CC_ARGS +=
+      -mthumb-interwork
+      ;
+    }
     ## X86
   case X86 :
     ANDROID_SO_DIR = x86 ;
