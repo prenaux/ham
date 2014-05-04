@@ -14,9 +14,9 @@ case $HAM_OS in
     NT*)
         export IOS_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
         export PATH="${HAM_TOOLSET_DIR}/":"${IOS_DIR}/Toolchain/":${PATH}
-        if [ ! -e $IOS_DIR ] || [ -z `type -P clang` ]; then
+        if [ ! -e "$IOS_DIR" ] || [ -z "`type -P clang`" ]; then
             toolset_dl ios ios_nt-x86
-            if [ ! -e $IOS_DIR ] || [ -z `type -P clang` ]; then
+            if [ ! -e "$IOS_DIR" ] || [ -z "`type -P clang`" ]; then
                 echo "E/nt-x86 folder doesn't exist in the toolset"
                 return 1
             fi

@@ -19,7 +19,7 @@ case $HAM_OS in
         export INCLUDE="`nativedir \"${ICLDIR}/include/$ICL_ARCH\"`;`nativedir \"${ICLDIR}/include\"`;$INCLUDE"
         export LIB="`nativedir \"${ICLDIR}/lib/$ICL_ARCH\"`;$LIB"
         export PATH="${ICLDIR}/bin/$ICL_ARCH":${PATH}
-        if [ ! -e "$ICLDIR" ] || [ -z `type -P icl` ]; then
+        if [ ! -e "$ICLDIR" ] || [ -z "`type -P icl`" ]; then
             echo "E/nt-x86 folder doesn't exist in the toolset"
             return 1
         fi

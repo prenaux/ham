@@ -19,7 +19,7 @@ export FLASCC_ROOT="${HAM_TOOLSET_DIR}/nt-x86/"
 export FLASCC="${HAM_TOOLSET_DIR}/nt-x86/sdk"
 export GCCDIR="${HAM_TOOLSET_DIR}/nt-x86/sdk/usr"
 
-if [ ! -e $FLEX ]; then
+if [ ! -e "$FLEX" ]; then
     toolset_dl flascc flascc_flex_sdk
 fi
 

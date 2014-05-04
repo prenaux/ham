@@ -26,7 +26,7 @@ case $HAM_OS in
 esac
 
 VER="--- innosetup ------------------------
-`iscc | grep 'Inno Setup'`"
+`iscc 2>&1 | grep 'Inno Setup'`"
 if [ $? != 0 ]; then
     echo "E/Can't get version."
     return 1
