@@ -10,9 +10,9 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/tex"
 case $HAM_OS in
     NT*)
         export TEXLIVE="$HAM_TOOLSET_DIR/nt-x86"
-        if [ ! -e $TEXLIVE ]; then
+        if [ ! -e "$TEXLIVE" ]; then
             toolset_dl tex tex_nt-x86
-            if [ ! -e $TEXLIVE ]; then
+            if [ ! -e "$TEXLIVE" ]; then
                 echo "E/tex nt-x86 folder doesn't exist in the toolset and can't be downloaded"
                 return 1
             fi
@@ -40,11 +40,15 @@ case $HAM_OS in
         ;;
 esac
 
-VER="--- tex ------------------------
-`$TEXISO_BIN/pdflatex -v | head -n 1`"
-if [ $? != 0 ]; then
-    echo "E/Can't get version."
-    return 1
+VER="--- tex ------------------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
+`\"$TEXISO_BIN/pdflatex\" -v | head -n 1`"
+    if [ $? != 0 ]; then
+        echo "E/Can't get version."
+        return 1
+    fi
 fi
+
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

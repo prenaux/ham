@@ -1,12 +1,18 @@
 #!/bin/bash
-# example: muse agl-html/pdf hello.muse
-. ham-toolset emacs > /dev/null
+# usage: muse agl-html/pdf hello.muse
+
+export HAM_NO_VER_CHECK=1
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+
+. "$HAM_HOME/bin/ham-toolset" emacs > /dev/null
 
 style=$(echo $1 | sed 's/^--//')
 export EMACS_BATCHMODE=1
-SRC_FULLPATH=${2}
+SRC_FULLPATH="${2}"
 SRC_DIR=`dirname ${SRC_FULLPATH}`
+echo "SRC_DIR" ${SRC_DIR}
 SRC_FILENAME=`basename ${SRC_FULLPATH}`
+echo "SRC_FILENAME" ${SRC_FILENAME}
 cd ${SRC_DIR}
 $EMACS_EXE -batch -no-site-file -q \
     -l "${HAM_HOME}/sources/emacs/site/ni-base.el" \
@@ -15,4 +21,4 @@ $EMACS_EXE -batch -no-site-file -q \
     -l "${HAM_HOME}/sources/emacs/site/ni-muse.el" \
     -l muse-regexps.el -l muse.el -l muse-publish.el \
     -l muse-html.el -l muse-latex.el -l muse-texinfo.el \
-    -f muse-batch-publish-files $style --output-dir=. ${SRC_FILENAME}
+    -f muse-batch-publish-files $style --output-dir=. "${SRC_FILENAME}"

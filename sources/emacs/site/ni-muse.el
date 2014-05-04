@@ -386,7 +386,3 @@ t
 (global-set-key "\C-xp" 'agl-muse-publish-to-html)
 (global-set-key "\C-xP" 'agl-muse-publish-to-html)
 ;; (global-set-key "\C-x\C-p" 'agl-muse-publish-to-pdf)
-
-;; Explicitly set the pdflatex path, this is needed so that muse-publish works from everywhere
-(Windows
- (setq muse-latex-pdf-program (concat HAM_HOME "/bin/pdflatex")))

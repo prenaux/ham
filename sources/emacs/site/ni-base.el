@@ -5,7 +5,16 @@
       (replace-regexp-in-string "\\\\" "/" (getenv str))
     ""))
 
+;; If not set "EMACS_DEVENV" is set from HAM_HOME
+(if (not (getenv "EMACS_DEVENV"))
+    (setenv "EMACS_DEVENV" (getenv "HAM_HOME")))
+
+;; If not set "WORK" is the parent folder of EMACS_DEVENV
+(if (not (getenv "WORK"))
+    (setenv "WORK" (expand-file-name (concat EMACS_DEVENV "/.."))))
+
 (defconst ENV_WORK (agl-getenv "WORK"))
+
 (defconst ENV_DEVENV (agl-getenv "EMACS_DEVENV"))
 
 (defconst ENV_DEVENV_EMACS_SCRIPTS (concat ENV_DEVENV "/sources/emacs/site"))
@@ -187,10 +196,6 @@
  (if (not (getenv "NI_OS"))
      (setenv "NI_OS" "OSX"))
  )
-
-;; If not set "WORK" is the parent folder of the devenv
-(if (not (getenv "WORK"))
-    (setenv "WORK" (expand-file-name (concat ENV_DEVENV "/.."))))
 
 ;;;======================================================================
 ;;; Key names for special keys
