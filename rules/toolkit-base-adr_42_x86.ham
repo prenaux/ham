@@ -1,0 +1,7 @@
+Import toolkit-base-adr.ham ;
+LOA_OS = adr42 ;
+DEFINES += _COMPILER_ADR_42_X86 ;
+JAR_ANDROID_PLATFORM = [ FDirName $(ADR_42_ROOT) sdk platforms $(ADR_SDK_PLATFORM) android.jar ] ;
+if ! [ FExists $(JAR_ANDROID_PLATFORM) ] {
+  EXIT "E/Can't find Android SDK platform JAR:" $(JAR_ANDROID_PLATFORM) ;
+}

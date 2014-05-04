@@ -11,10 +11,6 @@ $(PICFLAGS)
 -fstack-protector
 -fno-short-enums
 -fvisibility=hidden
--D__ARM_ARCH_5__
--D__ARM_ARCH_5T__
--D__ARM_ARCH_5E__
--D__ARM_ARCH_5TE
 -DANDROID
 -D__LITTLE_ENDIAN__
 [ FQuoteFlag -I : $(ADR_DIR_NDK_USR)/include ]
@@ -39,7 +35,7 @@ ANDROID_CC_ARGS +=
 ;
 
 if $(ADR_LLVM_VERSION) {
-  # Clang 3.2
+  # Clang
   ANDROID_CC_ARGS +=
     -D__CLANG__
     -Wno-return-type-c-linkage
@@ -54,6 +50,12 @@ if $(ADR_LLVM_VERSION) {
   ANDROID_LINK_BASE_ARGS +=
     # -flto
   ;
+  if $(ADR_LLVM_VERSION) = 3.4 {
+    ANDROID_CC_ARGS +=
+      -Wno-deprecated-register
+      -Wno-non-literal-null-conversion
+    ;
+  }
 }
 else {
   # GCC 4.4.3
@@ -110,6 +112,10 @@ switch $(ADR_CPU_PROFILE)
   case ARMv5 :
     ANDROID_SO_DIR = armeabi ;
     ANDROID_CC_ARGS +=
+    -D__ARM_ARCH_5__
+    -D__ARM_ARCH_5T__
+    -D__ARM_ARCH_5E__
+    -D__ARM_ARCH_5TE
     -D__CPU_ARMv5__
     -march=armv5te
     -mtune=xscale
@@ -120,12 +126,23 @@ switch $(ADR_CPU_PROFILE)
   case ARMv7A :
     ANDROID_SO_DIR = armeabi-v7a ;
     ANDROID_CC_ARGS +=
+    -D__ARM_ARCH_5__
+    -D__ARM_ARCH_5T__
+    -D__ARM_ARCH_5E__
+    -D__ARM_ARCH_5TE
     -D__CPU_ARMv7A__
     -march=armv7-a
     -mfpu=vfpv3
     -mfloat-abi=softfp
     ;
     ANDROID_LINK_BASE_ARGS = -Wl,--fix-cortex-a8 ;
+    ## X86
+  case X86 :
+    ANDROID_SO_DIR = x86 ;
+    ANDROID_CC_ARGS +=
+    -D__CPU_X86__
+    ;
+    ANDROID_LINK_BASE_ARGS = ;
   case * :
     EXIT "Unknown Android CPU profile '"$(ADR_CPU_PROFILE)"' !" ;
 }
