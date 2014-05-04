@@ -54,6 +54,8 @@ if $(ADR_LLVM_VERSION) {
     ANDROID_CC_ARGS +=
       -Wno-deprecated-register
       -Wno-non-literal-null-conversion
+      -Wno-extern-c-compat
+      -Wno-typedef-redefinition
     ;
   }
 }
