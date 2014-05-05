@@ -11,13 +11,15 @@ case $HAM_OS in
     NT*)
         export REPOS_DIR="${HAM_TOOLSET_DIR}/nt-x86"
         export PATH=${HAM_TOOLSET_DIR}:${PATH}:${REPOS_DIR}/bin/:${REPOS_DIR}/git/bin/:${REPOS_DIR}/svn/bin/:${REPOS_DIR}/hg
-        if [ ! -e "$REPOS_DIR" ]; then
+        if [ ! -e "${REPOS_DIR}/git/etc/gitconfig.tpl" ]; then
             toolset_dl repos repos_nt-x86
-            if [ ! -e "$REPOS_DIR" ]; then
+            if [ ! -e "${REPOS_DIR}/git/etc/gitconfig.tpl" ]; then
                 echo "E/nt-x86 folder doesn't exist in the toolset"
                 return 1
             fi
         fi
+        # Update gitconfig
+        sed s~__HAM_HOME__~"`nativedir "${HAM_HOME}"`"~g "${REPOS_DIR}/git/etc/gitconfig.tpl" > "${REPOS_DIR}/git/etc/gitconfig"
         ;;
     OSX*)
         export PATH=${HAM_TOOLSET_DIR}:${PATH}

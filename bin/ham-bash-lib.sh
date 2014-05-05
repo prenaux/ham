@@ -100,13 +100,13 @@ errcheckWait()
 nativedir()
 # usage: NativePathNameVariable=`nativedir "/MSYS/PathName"`
 {
-    DIRPATH=$1
+    DIRPATH="$1"
     case $HAM_OS in
         NT*)
             2>/dev/null cd "$DIRPATH"; pwd -W
             ;;
         *)
-            echo $DIRPATH
+            echo "$DIRPATH"
             ;;
     esac
 }
