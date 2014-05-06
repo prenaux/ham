@@ -1214,7 +1214,7 @@ BEGIN {
     %mappings = (
         ts_scripts => [qw( ni nip niw nil aq aqp aqw gml rml rcss )],
         ts_build   => [qw( ham )],
-        ts_shaders => [qw( cgc cgh cg hlsl )],
+        ts_shaders => [qw( cgc cgh cg hlsl glsl )],
         ts_crap    => [qw( def rc in ac )],
         ts_web     => [qw( html xhtml js css xml )],
         actionscript => [qw( as mxml )],
@@ -1225,7 +1225,7 @@ BEGIN {
         cc          => [qw( c h xs )],
         cfmx        => [qw( cfc cfm cfml )],
         clojure     => [qw( clj )],
-        cpp         => [qw( acc ncc cpp cc cxx m mm hpp hh h hxx )],
+        cpp         => [qw( acc ncc cni cpp cc cxx m mm hpp hh h hxx )],
         csharp      => [qw( cs )],
         css         => [qw( css )],
         delphi      => [qw( pas int dfm nfm dof dpk dproj groupproj bdsgroup bdsproj )],
