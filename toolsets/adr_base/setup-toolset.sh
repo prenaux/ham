@@ -8,21 +8,43 @@ if [ $? != 0 ]; then return 1; fi
 
 # toolset
 export HAM_TOOLSET=ANDROID
-export HAM_TOOLSET_VER=42
-export HAM_TOOLSET_NAME=adr_42_${ADR_CPU_TYPE}
-export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/adr_42_base"
+export HAM_TOOLSET_VER=17
+export HAM_TOOLSET_NAME=adr_${ADR_VERSION}_${ADR_CPU_TYPE}
+export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/adr_base"
 
-# adr_42 setup
-export ADR_42_ROOT="${HAM_TOOLSET_DIR}/nt-x86"
+# adr setup
+export ADR_ROOT_DIR="${HAM_TOOLSET_DIR}/nt-x86"
 
 # dl if missing
-if [ ! -e "$ADR_42_ROOT"  ]; then
-    toolset_dl adr_42_base adr_42_base_nt-x86
-    if [ ! -e "$ADR_42_ROOT" ]; then
-        echo "adr_42_base nt-x86 folder doesn't exist in the toolset"
+if [ ! -e "$ADR_ROOT_DIR"  ]; then
+    toolset_dl adr_base adr_base_nt-x86
+    if [ ! -e "$ADR_ROOT_DIR" ]; then
+        echo "adr_base nt-x86 folder doesn't exist in the toolset"
         return 1
     fi
 fi
+
+# Supported Android Platforms
+# 42: Android 4.2, 4.2.2    17    JELLY_BEAN_MR1
+# 22: Android 2.2.x          8    FROYO
+if [ -z "$ADR_VERSION"  ]; then
+    echo "E/Android toolset: version not defined !"
+    return 1
+fi
+
+case $ADR_VERSION in
+    42)
+        export ADR_SDK_PLATFORM=android-17
+        export ADR_NDK_PLATFORM=android-17
+        ;;
+    22)
+        export ADR_SDK_PLATFORM=android-8
+        export ADR_NDK_PLATFORM=android-8
+        ;;
+    *)
+        echo "E/Android toolset: Unsupported version: '${ADR_VERSION}' !"
+        return 1;
+esac
 
 case $ADR_CPU_TYPE in
     arm)
@@ -38,7 +60,7 @@ case $ADR_CPU_TYPE in
         export ADR_CPU_ABI=x86
         ;;
     *)
-        echo "E/Android 4.2 toolset: Unsupported CPU Type !"
+        echo "E/Android toolset: Unsupported CPU: '${ADR_CPU_TYPE}' !"
         return 1
         ;;
 esac
@@ -46,14 +68,28 @@ esac
 export ADR_NDK_PREBUILT=windows
 
 export ADR_GCC_OPT=-O2
-export ADR_NDK_PLATFORM=android-17
-export ADR_SDK_PLATFORM=android-17
 export ADR_NDK_VERSION=r9d
 export GCC_VER=4.8
 
-export ADR_DIR_BASE="${ADR_42_ROOT}"
-export ADR_DIR_NDK="${ADR_42_ROOT}/ndk_${ADR_NDK_VERSION}"
+export ADR_DIR_BASE="${ADR_ROOT_DIR}"
+export ADR_DIR_NDK="${ADR_ROOT_DIR}/ndk_${ADR_NDK_VERSION}"
 export ADR_DIR_NDK_USR="${ADR_DIR_NDK}/platforms/$ADR_NDK_PLATFORM/arch-${ADR_CPU_TYPE}/usr"
+
+export ADR_SDK_PLATFORM_DIR="${ADR_DIR_BASE}/sdk/platforms/${ADR_SDK_PLATFORM}"
+if [ ! -e "$ADR_SDK_PLATFORM_DIR"  ]; then
+    echo "E/Android toolset: can't find SDK platform:" ${ADR_SDK_PLATFORM_DIR}
+    return 1
+fi
+
+export ADR_NDK_PLATFORM_DIR="${ADR_DIR_NDK}/platforms/${ADR_NDK_PLATFORM}"
+if [ ! -e "$ADR_NDK_PLATFORM_DIR"  ]; then
+    echo "E/Android toolset: can't find NDK platform:" ${ADR_NDK_PLATFORM_DIR}
+    return 1
+fi
+if [ ! -e "$ADR_DIR_NDK_USR"  ]; then
+    echo "E/Android toolset: can't find NDK platform for CPU arch:" ${ADR_DIR_NDK_USR}
+    return 1
+fi
 
 export ADR_SYSTEM_LINKLIBS=""
 
@@ -69,7 +105,7 @@ VER="--- android ------------------------
 cpu: $ADR_CPU_PROFILE, $ADR_CPU_ABI
 sdk: $ADR_SDK_PLATFORM
 ndk: $ADR_NDK_VERSION, $ADR_NDK_PLATFORM, $ADR_NDK_PREBUILT
---- adr_42-gcc ------------------------
+--- adr-gcc ------------------------
 `${GCC_EXE_BASE}gcc --version`"
 if [ $? != 0 ]; then
     echo "E/Can't get gcc version."
@@ -89,7 +125,7 @@ export ADR_LLVM_TOOLCHAIN_PREFIX="${ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT}/bin/"
 export PATH="${ADR_LLVM_TOOLCHAIN_PREFIX}":${PATH}
 
 VER="$VER
---- adr_42-clang ------------------
+--- adr-clang ------------------
 `clang --version`"
 if [ $? != 0 ]; then
     echo "E/Can't get clang version."
