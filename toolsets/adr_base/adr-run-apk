@@ -1,0 +1,16 @@
+#!/bin/bash
+. ham-bash-lib.sh
+PACKAGE_CLASS=${2}
+START_ACTIVITY=${3}
+APK_PATH=${1}
+adr-install-apk "${1}" ${2}
+errcheck $? "Can't install ${APK_NAME} on the device !"
+echo "# Stopping '${PACKAGE_CLASS}'"
+# use force-stop, apparently 'kill' is just a hint ^^
+adb shell am force-stop ${PACKAGE_CLASS}
+echo "# Clearing logcat"
+adb logcat -c
+echo "# Starting '${PACKAGE_CLASS}/.${START_ACTIVITY}'"
+adb shell am start -n ${PACKAGE_CLASS}/.${START_ACTIVITY}
+echo "# Starting logcat"
+adb logcat

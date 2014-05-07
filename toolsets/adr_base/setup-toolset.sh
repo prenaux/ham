@@ -75,6 +75,8 @@ export ADR_DIR_BASE="${ADR_ROOT_DIR}"
 export ADR_DIR_NDK="${ADR_ROOT_DIR}/ndk_${ADR_NDK_VERSION}"
 export ADR_DIR_NDK_USR="${ADR_DIR_NDK}/platforms/$ADR_NDK_PLATFORM/arch-${ADR_CPU_TYPE}/usr"
 
+export ADR_SDK_BASE_DIR="${ADR_DIR_BASE}/sdk"
+
 export ADR_SDK_PLATFORM_DIR="${ADR_DIR_BASE}/sdk/platforms/${ADR_SDK_PLATFORM}"
 if [ ! -e "$ADR_SDK_PLATFORM_DIR"  ]; then
     echo "E/Android toolset: can't find SDK platform:" ${ADR_SDK_PLATFORM_DIR}
@@ -99,7 +101,7 @@ export GCC_EXE_BASE=${GCC_BASE}-
 export GCC_DIR="${ADR_DIR_NDK}/toolchains/${GCC_BASE_DIR}-${GCC_VER}/prebuilt/$ADR_NDK_PREBUILT"
 export ADR_LIBGCC_PATH="${GCC_DIR}/lib/gcc/${GCC_BASE_DIR}/${GCC_VER}/libgcc.a"
 
-export PATH="${ADR_DIR_BASE}/scripts":"${GCC_DIR}/bin":"${ADR_DIR_BASE}/sdk/tools":"${ADR_DIR_BASE}/sdk/platform-tools":${PATH}
+export PATH="${HAM_TOOLSET_DIR}":"${ADR_DIR_BASE}/scripts":"${GCC_DIR}/bin":"${ADR_DIR_BASE}/sdk/tools":"${ADR_DIR_BASE}/sdk/platform-tools":${PATH}
 
 VER="--- android ------------------------
 cpu: $ADR_CPU_PROFILE, $ADR_CPU_ABI

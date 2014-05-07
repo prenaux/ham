@@ -2531,6 +2531,49 @@ rule ListStrAfterI {
   return $(r) ;
 }
 
+# Gather files in a folder recursivly
+# ListFiles DIR : PATTERN : EXCLUDE PATTERN
+rule ListFilesR {
+  local BD = [ FDirName $(1) ] ;
+  local FD = [ ListDirsR $(BD) ] ;
+  local F2 = [ ListFiles $(FD) : $(2) : $(3) ] ;
+  return $(F2) ;
+}
+
+#----------------------------------------------------------------------
+#     File generation rules
+#----------------------------------------------------------------------
+actions EmptyFile {
+  echo "" > "$(<)"
+}
+
+rule FileCat {
+  #   ECHO "CAT: " $(>) " to " $(<) ;
+  DEPENDS $(<) : $(>) ;
+}
+actions FileCat {
+  cat "$(>)" >> "$(<)"
+}
+rule FileCatList {
+  EmptyFile $(<) ;
+  for _i in $(>) {
+    FileCat $(<) : $(_i) ;
+  }
+}
+
+rule FileEcho {
+  NOTFILE $(>) ;
+}
+actions FileEcho {
+  echo "$(>)" >> "$(<)"
+}
+rule FileEchoList {
+  EmptyFile $(<) ;
+  for _i in $(>) {
+    FileEcho $(<) : $(_i) ;
+  }
+}
+
 #----------------------------------------------------------------------
 #     VarOn
 #----------------------------------------------------------------------
