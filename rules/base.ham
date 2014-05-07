@@ -1201,7 +1201,9 @@ rule MakeLocate
     MkDir $(>[1]:G=dir) ;
   }
 }
-rule MakeDir
+
+# MakeDirForTarget TARGET : DIR
+rule MakeDirForTarget
 {
   # Note we grist the directory name with 'dir',
   # so that directory path components and other

@@ -235,7 +235,7 @@ rule tkFileCopy {
   if $(<) != $(>) {
     DEPENDS $(<) : $(>) ;
   }
-  MakeDir $(<) : $(<:D) ;
+  MakeDirForTarget $(<) : $(<:D) ;
   FilePreserve $(<) : $(>) ;
   if $(3) {
     DEPENDS $(3) : $(<) ;
@@ -248,7 +248,7 @@ rule tkFile {
     DEPENDS $(<) : $(>) ;
   }
   local p = [ FDirName $(3) $(<) ] ;
-  MakeDir $(>) : $(p:D) ;
+  MakeDirForTarget $(>) : $(p:D) ;
   FilePreserve $(p) : $(>) ;
   DEPENDS $(p) : $(>) ;
   return $(p) ;
@@ -260,7 +260,7 @@ rule tkFileEXE {
     DEPENDS $(<) : $(>) ;
   }
   local p = [ FDirName $(3) $(<) ] ;
-  MakeDir $(>) : $(p:D) ;
+  MakeDirForTarget $(>) : $(p:D) ;
   FilePreserveEXE $(p) : $(>) ;
   DEPENDS $(p) : $(>) ;
   return $(p) ;
