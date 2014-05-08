@@ -14,12 +14,13 @@
 
 (require 'aglemacs)
 (require 'ni-org)
-;; (require 'ni-js2)
 (require 'ni-muse)
 (require 'ni-templates)
 (require 'ni-file-cache)
 (require 'ni-emacs24-fixup)
 (require 'ni-ham)
+(require 'ni-flymake)
+(require 'ham-flymake)
 
 ;;;======================================================================
 ;;; Font
@@ -125,3 +126,29 @@
     )
   (message (format "Done indenting %d files" num-files))
   )
+
+(define-key global-map (kbd "C-S-i") 'my-indent-buffer)
+
+;;;======================================================================
+;;; --- Disable unneeded warnings ---
+;;;======================================================================
+(put 'dired-find-alternate-file 'disabled nil)
+
+;;;======================================================================
+;;; --- Multi web mode ---
+;;;======================================================================
+(require 'multi-web-mode)
+(setq mweb-default-major-mode 'html-mode)
+(setq mweb-tags '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
+                  (js-mode "<script[^>]*>" "</script>")
+                  (css-mode "<style[^>]*>" "</style>")))
+(setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
+(multi-web-global-mode 1)
+
+;;;======================================================================
+;;; Rainbow delimiters
+;;;======================================================================
+(require 'rainbow-delimiters)
+(add-hook 'niscript-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'c++-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'c-mode-hook 'rainbow-delimiters-mode)
