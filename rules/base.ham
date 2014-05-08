@@ -2043,6 +2043,16 @@ rule FDefines { return -D$(<) ; }
 rule FIncludes { return -I"\"$(<)\"" ; }
 rule FIncludesLint { return -i"\"$(<)\"" ; }
 
+# FOptionPath OPTION : PATH
+rule FOptionPath {
+ return "$(<)""\"$(>)\"" ;
+}
+
+# FOptionPathWithSpace OPTION : PATH
+rule FOptionPathWithSpace {
+ return "$(<)" "\"$(>)\"" ;
+}
+
 # Remove all .. and . from a list to create a "clean" list that can be used to build absolute path
 rule FCleanDirs {
   local r = ;
