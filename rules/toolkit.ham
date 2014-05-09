@@ -111,9 +111,11 @@ if $(FEATURES) = "" {
 if $(EMBEDDED) = 1 {
   DEFINES += niEmbedded ;
   FEATURES ?= 25 ;
+  BUILD_PKGTARGET_LIB ?= 0 ;
 }
 else {
   FEATURES ?= 30 ;
+  BUILD_PKGTARGET_LIB ?= 1 ;
 }
 DEFINES += _FEATURES=$(FEATURES) ;
 
@@ -576,12 +578,17 @@ rule tkDefPackage
   PKGTARGET_LIB = ;
   PKGTARGET_JS = ;
   PKGTARGETF2 = ;
-  if $(PKGGROUP) = jar {
+  if $(PKGGROUP) = jar || $(PKGGROUP) = apk {
     OBJDIR = [ FDirName $(BASEOBJDIR) jvm-$(TK_NAME:L) $(PACKAGE) ] ;
     PKGBUILD = $(PACKAGE) ;
     PKGTARGET = $(PKGBUILD:S=.jar) ;
     PKGTYPE = jar ;
-    DEPENDS modlibs : $(PKGGROUP) ;
+    if $(PKGGROUP) = apk {
+      DEPENDS apps : $(PKGGROUP) ;
+    }
+    else {
+      DEPENDS modlibs : $(PKGGROUP) ;
+    }
   }
   else {
     OBJDIR = [ FDirName $(BASEOBJDIR) $(LIBS_LOA)-$(TK_NAME:L)-$(BUILD) $(PACKAGE) ] ;
@@ -604,7 +611,7 @@ rule tkDefPackage
       else {
         PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
         PKGTARGET = $(PKGBUILD:S=$(SUFDLL)) ;
-        if ( $(PKGGROUP) = modulelibs ) {
+        if ( $(BUILD_PKGTARGET_LIB) = 1 ) && ( $(PKGGROUP) = modulelibs ) {
           PKGTARGET_LIB = $(PKGBUILD:S=$(SUFLIB)) ;
         }
       }
@@ -725,10 +732,17 @@ rule tkDefTool {
   tkDefPackage $(1) : $(2) : tools : $(destDir) ;
 }
 
-# tkDefJar lib_name : version ;
-rule tkDefJar {
-  if $(BUILD_JNI) {
+if $(BUILD_JNI) {
+  # tkDefJar lib_name : version ;
+  rule tkDefJar {
     tkDefPackage $(1) : $(2) : jar : $(TK_DIR_JARS) ;
+  }
+}
+
+if $(ANDROID) {
+  # tkDefJar lib_name : version ;
+  rule tkDefApk {
+    tkDefPackage $(1) : $(2) : apk : $(TK_DIR_JARS) ;
   }
 }
 
