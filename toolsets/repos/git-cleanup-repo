@@ -1,0 +1,7 @@
+#!/bin/bash
+if [ "$1" = "doit" ]; then
+    git clean -d -f -x
+else
+    git clean -d -f -x -n
+    echo "# Type 'git-cleanup-repo doit' to remove the files listed above."
+fi
