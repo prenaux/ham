@@ -86,10 +86,13 @@ do
             else
                 # Work App path
                 _ARG_DIRECTORY="$WORK/$OPTARG/sources/"
-            fi
-            if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                echo "E/Can't find directory '$_ARG_DIRECTORY'"
-                usage
+                if [[ ! -e "$_ARG_DIRECTORY" ]]; then
+                    _ARG_DIRECTORY="$WORK/$OPTARG/"
+                    if [[ ! -e "$_ARG_DIRECTORY" ]]; then
+                        echo "E/Can't find directory '$_ARG_DIRECTORY'"
+                        usage
+                    fi
+                fi
             fi
             _ARG_DIRECTORIES+=("$_ARG_DIRECTORY")
             ;;
