@@ -19,20 +19,20 @@ if $(OS) = MACOSX
   LINKFLAGS_EXE = -rpath "@loader_path/." ;
   actions DllLink
   {
-    $(LINK) -install_name @rpath/"$(<:B:S)" $(LINKFLAGS) $(LINKFLAGS_DLL) -dynamiclib "$(>)" "$(NEEDLIBS)" "$(LINKLIBS)" "$(SYSTEM_LINKLIBS)" -o "$(<)"
+    $(LINK) -install_name @rpath/"$(<:B:S)" $(LINKFLAGS) $(LINKFLAGS_DLL) -dynamiclib "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
   }
   actions Link bind NEEDLIBS
   {
-    $(LINK) $(LINKFLAGS) $(LINKFLAGS_EXE) $(UNDEFS) "$(>)" "$(NEEDLIBS)" "$(NEEDLIBS)" "$(LINKLIBS)" "$(SYSTEM_LINKLIBS)" -o "$(<)"
+    $(LINK) $(LINKFLAGS) $(LINKFLAGS_EXE) $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
   }
 }
 else {
   actions DllLink
   {
-    $(LINK) $(LINKFLAGS) "$(>)" "$(NEEDLIBS)" "$(LINKLIBS)" "$(SYSTEM_LINKLIBS)" -o "$(<)"
+    $(LINK) $(LINKFLAGS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
   }
   actions Link bind NEEDLIBS
   {
-    $(LINK) $(LINKFLAGS) $(UNDEFS) "$(>)" "$(NEEDLIBS)" "$(LINKLIBS)" "$(SYSTEM_LINKLIBS)" -o "$(<)"
+    $(LINK) $(LINKFLAGS) $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
   }
 }
