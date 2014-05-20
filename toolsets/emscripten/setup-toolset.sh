@@ -27,6 +27,9 @@ export LLVM_ROOT="${CLANGDIR}"
 export NODE_JS=
 export PATH="${EMSCRIPTEN_ROOT}":$PATH
 
+# Needed when not using a FASTCOMP enabled clang
+export EMCC_FAST_COMPILER=0
+
 EMSCRIPTEN_DEFAULT_DOT_FILE="${HAM_TOOLSET_DIR}/etc/.emscripten"
 
 # Make the JSCC temporary folder
