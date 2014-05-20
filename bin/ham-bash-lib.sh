@@ -187,6 +187,10 @@ toolset_dl() {
     if [ $? != 0 ]; then
         echo "Can't cd to the toolset's directory '$DIR'."
         return 1;
+    elif [ -e "$DLFILENAME" ]; then
+        echo "... Extracting $DLFILENAME"
+        7z x -y "$DLFILENAME" | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
+        popd
     elif [ ! -e "$DLFILENAME" ]; then
         echo "... Trying download from ${ARCH_URL1}"
         wget -c --no-check-certificate $ARCH_URL1 -O"$DLFILENAME.wget"
@@ -201,7 +205,7 @@ toolset_dl() {
         fi
         mv "$DLFILENAME.wget" "$DLFILENAME"
         echo "... Extracting $DLFILENAME"
-        7z x -y $DLFILENAME | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
+        7z x -y "$DLFILENAME" | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
         popd
     fi
 }

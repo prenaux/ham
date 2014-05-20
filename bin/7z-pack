@@ -5,4 +5,4 @@ if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
 
 export ARCH="$1"
 shift
-7z a -mx=9 -ms=on -mhc=on -mtc=off -xr\!*/.git/* "./$ARCH" $*
+7z a -mmt=on -mx=9 -ms=on -mhc=on -mtc=off -xr\!*/.git/* -xr\!*/.hg/* "./$ARCH" $*
