@@ -4,36 +4,48 @@
 static const int NUM_COLS = 16;
 
 int main(int argc, char** argv) {
+  const char* varName = "_BIN2H";
   FILE* fpIn = NULL;
   FILE* fpOut = NULL;
   char* inputPath;
   char outputPath[_MAX_PATH];
 
-  if (argc < 2) {
-    printf("BIN2H: no input file specified !\n");
+  if (argc < 3) {
+    printf("BIN2H: input output (variable_name)\n");
+    printf("error: Invalid number of parameters !\n");
     goto _error;
   }
 
+  // get the input path
   inputPath = argv[1];
-
-  strcpy(outputPath, inputPath);
-  strcat(outputPath, ".h");
-
   fpIn = fopen(inputPath, "rb");
   if (!fpIn) {
     printf("BIN2H: Can't open input file '%s' !\n", inputPath);
     goto _error;
   }
 
+  // get the output path
+  if (argc > 2) {
+    strcpy(outputPath, argv[2]);
+  }
+  else {
+    strcpy(outputPath, inputPath);
+    strcat(outputPath, ".h");
+  }
   fpOut = fopen(outputPath, "wb");
   if (!fpOut) {
     printf("BIN2H: Can't open output file '%s' !\n", inputPath);
     goto _error;
   }
 
+  // get the variable name
+  if (argc > 3) {
+    varName = argv[3];
+  }
+
   {
     int size = 0;
-    fprintf(fpOut, "unsigned char _BIN2H_DATA[] = {");
+    fprintf(fpOut, "unsigned char %s_DATA[] = {", varName);
     while (1) {
       int byte = fgetc(fpIn);
       if (feof(fpIn))
@@ -50,7 +62,7 @@ int main(int argc, char** argv) {
       ++size;
     }
     fprintf(fpOut, "\n};\n");
-    fprintf(fpOut, "int _BIN2H_DATA_SIZE = %d;\n", size);
+    fprintf(fpOut, "int %s_DATA_SIZE = %d;\n", varName, size);
   }
 
 	return 0;
