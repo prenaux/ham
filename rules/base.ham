@@ -2587,6 +2587,37 @@ rule FileEchoList {
 }
 
 #----------------------------------------------------------------------
+#     Bin2H rules
+#----------------------------------------------------------------------
+
+# Bin2H DEST : SRC ;
+rule Bin2H {
+  # ECHO "DEST:" $(<) ;
+  # ECHO "SRC:" $(>) ;
+  local var = [ Subst $(<:B) : %. : _ ] ;
+  # ECHO "VARNAME:" $(var) ;
+  VARNAME on $(<) = $(var) ;
+  DEPENDS $(<) : $(>) ;
+  DEPENDS bin2h : $(<) ;
+  return $(<) ;
+}
+actions Bin2H {
+  bin2h $(>) $(<) $(VARNAME)
+}
+
+rule Bin2HDataSubDir {
+  local DATA = ;
+  local DATA_SRC = [ DataGlob [ FDirName $(SUBDIR) data ] : : abm bmp dds jpg jpeg png tga xml ] ;
+  # ECHO "DATA_SRC:" $(DATA_SRC) ;
+  for _d in $(DATA_SRC) {
+    # ECHO "_d:" $(_d) "->" $(_d).hxx ;
+    DATA += [ Bin2H $(_d).hxx : $(_d) ] ;
+  }
+  # ECHO "DATA:" $(DATA) ;
+  return $(DATA) ;
+}
+
+#----------------------------------------------------------------------
 #     VarOn
 #----------------------------------------------------------------------
 # VarOnGet VARNAME ONWHAT
