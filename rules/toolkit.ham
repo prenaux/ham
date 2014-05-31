@@ -362,14 +362,20 @@ rule tkAPICopy {
   return $(r) ;
 }
 
-# tkIncludeCopy TARGET : FILES
+# tkIncludeCopy TARGET : FILES : INC_SUBDIR
 rule tkIncludeCopy {
   local TARGET = API_$(<) ;
   NOTFILE $(TARGET) ;
 
   local r = ;
 
-  local DEST_DIR = [ FDirName $(TK_DIR_INCLUDE) ] ;
+  local DEST_DIR ;
+  if $(3) {
+    DEST_DIR = [ FDirName $(TK_DIR_INCLUDE) $(3) ] ;
+  }
+  else {
+    DEST_DIR = [ FDirName $(TK_DIR_INCLUDE) ] ;
+  }
   MakeLocate $(TARGET)_dir : $(DEST_DIR) ;
   NotFile $(TARGET)_dir ;
   NoUpdate $(TARGET)_dir ;
