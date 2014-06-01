@@ -486,39 +486,31 @@ rule tkPkgHdrs {
   return [ GlobSrc $(d) : .h ] ;
 }
 
-# tkLinkLibsRaw TARGET : LIB : DIR : EXT ;
-# LIB is a library contained in the SDK's library folder.
-rule tkLinkLibsRaw {
-  if $(PKGTYPE) != library {
-    local dir = $(3) ;
-    dir ?= $(TK_DIR_LIBS) ;
-    local ext = $(4) ;
-    ext ?= "" ;
-    local l = [ FDirName $(dir) $(>)$(ext) ] ;
-    if ! ( $(NO_DEPS) = 1 ) {
-      DEPENDS $(<) : $(l) ;
+# tkFindImportedLib LIB : BASE_DIR : EXT ;
+rule tkFindImportedLib {
+  local dir = $(2) ;
+  dir ?= $(TK_DIR_LIBS) ;
+  local ext = $(3) ;
+  ext ?= "_$(BUILDEXT)$(SUFLIB)" ;
+  for _importedDir in $(TK_IMPORTED) {
+    local dir = [ FDirName $(WORK) $(_importedDir) libs $(LIBS_LOA) ] ;
+    local l2 = [ FDirName $(dir) $(1)$(ext) ] ;
+    if [ FExists $(l2) ] {
+      return $(l2) ;
     }
-    VarOnAddToFront LINKLIBS : $(<) : [ FQuote $(l) ] ;
-    # [ VarAddToFront LINKLIBS $(<) $(l) ] ;
-    # LINKLIBS on $(<) += $(l) ;
-    # ECHO "LINKLIBS: " [ VarOnGet LINKLIBS : $(<) ] ;
   }
+  return [ FDirName $(dir) $(1)$(ext) ] ;
 }
 
-# tkLinkLibs TARGET : LIB : DIR ;
+# tkLinkLibs TARGET : LIB : DIR : EXT ;
 # LIB is a library contained in the SDK's library folder.
 rule tkLinkLibs {
   if $(PKGTYPE) != library {
-    local dir = $(3) ;
-    dir ?= $(TK_DIR_LIBS) ;
-    local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFLIB) ] ;
+    local l = [ tkFindImportedLib $(>) : $(3) : $(4) ] ;
     if ! ( $(NO_DEPS) = 1 ) {
       DEPENDS $(<) : $(l) ;
     }
     VarOnAddToFront LINKLIBS : $(<) : [ FQuote $(l) ] ;
-    # [ VarAddToFront LINKLIBS $(<) $(l) ] ;
-    # LINKLIBS on $(<) += $(l) ;
-    # ECHO "LINKLIBS: " [ VarOnGet LINKLIBS : $(<) ] ;
   }
 }
 
@@ -542,7 +534,7 @@ rule tkLinkDll {
   }
   else {
     if $(DLLIMPLIB) = 1 {
-      tkLinkLibsRaw $(<) : $(>)_$(BUILDEXT) : : .dll.lib ;
+      tkLinkLibs $(<) : $(>)_$(BUILDEXT) : : .dll.lib ;
     }
     else {
       local dir = $(3) ;
