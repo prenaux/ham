@@ -494,12 +494,12 @@ rule tkFindImportedLib {
   ext ?= "_$(BUILDEXT)$(SUFLIB)" ;
   for _importedDir in $(TK_IMPORTED) {
     local dir = [ FDirName $(WORK) $(_importedDir) libs $(LIBS_LOA) ] ;
-    local l2 = [ FDirName $(dir) $(1)$(ext) ] ;
+    local l2 = [ FDirName $(dir) $(PREFIXDLL)$(1)$(ext) ] ;
     if [ FExists $(l2) ] {
       return $(l2) ;
     }
   }
-  return [ FDirName $(dir) $(1)$(ext) ] ;
+  return [ FDirName $(dir) $(PREFIXDLL)$(1)$(ext) ] ;
 }
 
 # tkLinkLibs TARGET : LIB : DIR : EXT ;
