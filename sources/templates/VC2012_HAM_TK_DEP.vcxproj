@@ -39,14 +39,14 @@
     <NMakePreprocessorDefinitions>_TARGET_DLL;WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>$(USERPROFILE)\.ham\vc2012\$(SolutionName)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(OutDir)</IntDir>
-    <NMakeBuildCommandLine>$(SolutionDir)\..\ham\bin\ham.cmd -T default -D $(ProjectName) BUILD=da</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>"$(SolutionDir)\..\ham\bin\ham.cmd" -T default -D $(ProjectName) BUILD=da</NMakeBuildCommandLine>
     <NMakeIncludeSearchPath>$(SolutionDir)\..\niLang\include;$(SolutionDir)\..\niSDK\include;$(ProjectDir);$(ProjectDir)\src;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <NMakePreprocessorDefinitions>_TARGET_DLL;WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>$(USERPROFILE)\.ham\vc2012\$(SolutionName)\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(OutDir)</IntDir>
-    <NMakeBuildCommandLine>$(SolutionDir)\..\ham\bin\ham.cmd -T default -D $(ProjectName) BUILD=ra</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>"$(SolutionDir)\..\ham\bin\ham.cmd" -T default -D $(ProjectName) BUILD=ra</NMakeBuildCommandLine>
     <NMakeIncludeSearchPath>$(SolutionDir)\..\niLang\include;$(SolutionDir)\..\niSDK\include;$(ProjectDir);$(ProjectDir)\src;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
