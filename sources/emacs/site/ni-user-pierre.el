@@ -21,6 +21,19 @@
 (require 'ni-ham)
 (require 'ni-flymake)
 (require 'ham-flymake)
+(require 'go-mode)
+
+;;;======================================================================
+;;; Search in files
+;;;======================================================================
+(NotBatchMode
+ (require 'pt)
+ (Windows
+  (setq pt-executable (concat HAM_HOME "/bin/nt-x86/pt.exe")))
+ (OSX
+  (setq pt-executable (concat HAM_HOME "/bin/osx-x86/pt")))
+ (global-set-key "\C-h\C-j" 'pt-regexp)
+)
 
 ;;;======================================================================
 ;;; Font
