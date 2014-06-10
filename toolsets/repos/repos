@@ -35,7 +35,7 @@ fi
 CMD="$1"
 shift
 
-pushd "$WORK/.."
+pushd "$WORK"
 
 cat "$REPOFILE" |
 while read REPO
@@ -45,7 +45,7 @@ do
         IFS=';' read -a arr <<< "${REPO}"
 
         # echo "ARR:" ${arr[0]} "->" ${arr[1]}
-        REPO="${arr[0]}"
+        REPO="${WORK}/${arr[0]}"
         REMOTE="${arr[1]}"
         REMOTE2="${arr[2]}"
         if [ -z "$REMOTE" ]; then
