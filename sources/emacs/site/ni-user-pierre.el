@@ -29,11 +29,11 @@
 (NotBatchMode
  (require 'pt)
  (Windows
-  (setq pt-executable (concat HAM_HOME "/bin/nt-x86/pt.exe")))
+  (setq pt-executable (concat "\"" HAM_HOME "/bin/nt-x86/pt.exe" "\"")))
  (OSX
   (setq pt-executable (concat HAM_HOME "/bin/osx-x86/pt")))
  (global-set-key "\C-h\C-j" 'pt-regexp)
-)
+ )
 
 ;;;======================================================================
 ;;; Font
@@ -81,7 +81,7 @@
              " L%l C%c - " ;; C%c to add the column number
              '(-3 . "%p")
              " -%-"))
-)
+ )
 
 ;;;======================================================================
 ;;; Remove crap from the mode-line
