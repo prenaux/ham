@@ -212,7 +212,9 @@ comments have been removed."
 
 (defconst nip-basic-type-re
   (regexp-opt '("local"
-                "void" "bool" "int" "float" "string" "stringarray" "array" "map") 'words)
+                "void" "bool" "int" "float" "string" "stringarray" "array" "map"
+                "const" "constant" "mutable" "mut" "weak" "ref"
+                ) 'words)
   "Regular expression matching any predefined type in niScript.")
 
 (defconst nip-constant-re
@@ -232,6 +234,7 @@ comments have been removed."
                 "defconst"
                 "defenum"
                 "defoperator"
+                "defmacro"
                 "defmeta"
                 "definterface"
                 "deferror"
@@ -247,6 +250,7 @@ comments have been removed."
                 "begin"
                 "undefined"
                 "nop"
+                "set-local"
                 "set-member"
                 "get-member"
                 "set"
