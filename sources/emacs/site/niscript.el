@@ -212,8 +212,8 @@ comments have been removed."
 
 (defconst nip-basic-type-re
   (regexp-opt '("local"
-                "void" "bool" "int" "float" "string" "stringarray" "array" "map"
-                "const" "constant" "mutable" "mut" "weak" "ref"
+                "void" "bool" "int" "float" "string" "array" "map"
+                "const" "mut" "weak" "ref"
                 ) 'words)
   "Regular expression matching any predefined type in niScript.")
 
@@ -250,13 +250,15 @@ comments have been removed."
                 "begin"
                 "undefined"
                 "nop"
-                "set-local"
-                "set-member"
-                "get-member"
-                "set"
-                "get"
-                "match-type"
-                "any-type") 'words)
+                "not_implemented"
+                "set_local"
+                "set_member"
+                "get_member"
+                "match_type"
+                "any_type"
+                "do_mut"
+                "make_mut"
+                "new_mut") 'words)
   "Regular expression matching any future lisp reserved words in niScript.")
 
 (defconst nip-pp-re
@@ -312,18 +314,11 @@ comments have been removed."
       "setdelegate"
       "getparent"
       "invalidate"
-      "isinstance"
       "hasdelegate"
       "new"
       "tostring"
       "tointeger"
       "tofloat"
-      "tobindname"
-      "isbindname"
-      "isvalidbindname"
-      "toidentifier"
-      "isidentifier"
-      "isvalididentifier"
       ) 'words)
   "Regular expression matching any future reserved words in niScript.")
 
