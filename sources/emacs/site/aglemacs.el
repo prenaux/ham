@@ -205,10 +205,11 @@ the text to another HTML buffer."
 (add-to-list 'auto-mode-alist '("\\.sed\\'" . sh-mode))
 
 ;;*** C/C++ Style *******************************************************
-(require 'google-c-style)
-
-(add-hook 'c-mode-common-hook 'google-set-c-style)
-;; (add-hook 'c-mode-common-hook 'ni-make-newline-indent)
+(NotBatchMode
+ (require 'google-c-style)
+ (add-hook 'c-mode-common-hook 'google-set-c-style)
+ ;; (add-hook 'c-mode-common-hook 'ni-make-newline-indent)
+)
 
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
@@ -218,11 +219,13 @@ the text to another HTML buffer."
       (cons '("\\.m$" . objc-mode) auto-mode-alist))
 
 ;;*** Java **************************************************************
-(require 'eclipse-java-style)
+(NotBatchMode
+ (require 'eclipse-java-style)
 
-(add-hook 'java-mode-hook (lambda ()
-                            (eclipse-set-java-style)
-                            (ni-make-newline-indent)))
+ (add-hook 'java-mode-hook (lambda ()
+                             (eclipse-set-java-style)
+                             (ni-make-newline-indent)))
+)
 
 ;;*** LUA ***************************************************************
 (setq auto-mode-alist (cons '("\\.lua$" . lua-mode) auto-mode-alist))
