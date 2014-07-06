@@ -57,6 +57,9 @@
   :type '(repeat (string))
   :group 'pt)
 
+(defvar pt-use-search-in-buffer-name t
+  "If non-nil, use the search string in the pt buffer's name.")
+
 (define-compilation-mode pt-search-mode "Pt"
   "Platinum searcher results compilation mode"
   (set (make-local-variable 'truncate-lines) t)
@@ -72,7 +75,8 @@
   "Run a pt search with REGEXP rooted at DIRECTORY."
   (interactive (list (read-from-minibuffer "Pt search for: " (thing-at-point 'symbol))
                      (read-directory-name "Directory: ")))
-  (let ((default-directory directory))
+  (let ((default-directory directory)
+        (pt-full-buffer-name (concat "*pt-" regexp "*")))
     (compilation-start
      (mapconcat 'identity
                 (append (list pt-executable)
@@ -80,7 +84,15 @@
                         args
                         '("--nogroup" "--nocolor" "--")
                         (list (shell-quote-argument regexp) ".")) " ")
-     'pt-search-mode)))
+     'pt-search-mode
+
+     (when pt-use-search-in-buffer-name
+       (function (lambda (ignore)
+                   pt-full-buffer-name)))
+
+     (regexp-quote regexp)
+
+     )))
 
 ;;;###autoload
 (defun pt-regexp-file-pattern (regexp directory pattern)
