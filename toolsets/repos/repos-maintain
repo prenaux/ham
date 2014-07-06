@@ -12,6 +12,11 @@ echo "########################################################################"
 repos git fetch --all 2>&1 | tee ~/_repos-maintain-report-fetch-all.txt
 
 echo "########################################################################"
+echo "## Pull origin master"
+echo "########################################################################"
+repos git pull origin master 2>&1 | tee ~/_repos-maintain-report-pull-origin-master.txt
+
+echo "########################################################################"
 echo "## Push all"
 echo "########################################################################"
 repos git push --all 2>&1 | tee ~/_repos-maintain-report-push-all.txt
