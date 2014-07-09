@@ -36,6 +36,24 @@
  )
 
 ;;;======================================================================
+;;; Proper handling of automatic window splits
+;;;======================================================================
+(NotBatchMode
+
+ ;; Makes sure the compilation, occur, etc. buffers don't split the window vertically.
+ ;;
+ ;; - Solution found at: http://stackoverflow.com/questions/6619375/how-can-i-tell-emacs-to-not-split-the-window-on-m-x-compile-or-elisp-compilation
+ ;;
+ ;;     My guess is that you want to customize the 'split-window-preferred-function'
+ ;;     variable. The default value is split-window-sensibly. Uou should change it
+ ;;     to a custom version which just switches the current buffer.
+ ;;
+ (defun no-split-window () (interactive) nil)
+ (setq split-window-preferred-function 'no-split-window)
+
+)
+
+;;;======================================================================
 ;;; Font
 ;;;======================================================================
 (NotBatchMode
