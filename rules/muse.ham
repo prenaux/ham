@@ -52,12 +52,12 @@ actions MusePublish bind PUBLISH {
 # MuseDirHtml DIR : HEADER.html : FOOTER.html ;
 rule MuseDirHtml {
   local DIR = $(1) ;
-  local SRC = [ ListFiles $(DIR) : *.muse ] ;
+  local SRC = [ FGristFiles [ ListFiles $(DIR) : *.muse ] ] ;
   if $(2) {
-    INCLUDES $(SRC) : $(2) ;
+    INCLUDES $(SRC) : [ FGristFiles $(2) ] ;
   }
   if $(3) {
-    INCLUDES $(SRC) : $(3) ;
+    INCLUDES $(SRC) : [ FGristFiles $(3) ] ;
   }
   for _i in $(SRC) {
     local dst = [ MuseHtml muse-html : $(_i) ] ;
@@ -73,12 +73,12 @@ rule MuseDirHtml {
 # MuseDirPdf DIR : HEADER.pdf : FOOTER.pdf ;
 rule MuseDirPdf {
   local DIR = $(1) ;
-  local SRC = [ ListFiles $(DIR) : *.muse ] ;
+  local SRC = [ FGristFiles [ ListFiles $(DIR) : *.muse ] ] ;
   if $(2) {
-    INCLUDES $(SRC) : $(2) ;
+    INCLUDES $(SRC) : [ FGristFiles $(2) ] ;
   }
   if $(3) {
-    INCLUDES $(SRC) : $(3) ;
+    INCLUDES $(SRC) : [ FGristFiles $(3) ] ;
   }
   for _i in $(SRC) {
     local dst = [ MusePdf muse-pdf : $(_i) ] ;
