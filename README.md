@@ -6,8 +6,8 @@ Ham is a language agnostic 'make' replacement and a virtual build environment.
 Its aim is to provide an easily replicable build and devlopement environment
 that can be setup on any Windows, OSX & Linux machine in a few minutes.
 
-Once the repository has been clone ham can automatically fetch all the tools
-needed to complete a build of various kind of software.
+Once the repository has been clone ham will automatically fetch all the tools
+needed to complete a build of various kind of software. No install required !
 
 Currently supported languages/framework/targets:
 
