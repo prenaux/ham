@@ -10,16 +10,17 @@ Once the repository has been clone ham can automatically fetch all the tools
 needed to complete a build of various kind of software.
 
 Currently supported languages/framework/targets:
-- Bash Script on Windows, Linux, OSX
-- TeX on Windows, Linux, OSX
-- XSLT on Windows, Linux, OSX
-- C++ on Windows, Linux, OSX, iOS, Android (x86 & ARM), Flash11 (via FlasCC) and HTML5 (via Emscripten)
-- Java on Windows, Linux, OSX and Android
-- ObjectiveC on OSX and iOS
-- NodeJS on Windows, Linux and OSX
-- Python 2.6 & 2.7 on Windows, Linux and OSX
-- Perl 5.6 on Windows, Linux and OSX
-- Git, Mercurial and Svn on Windows, Linux and OSX
+* Bash Script on Windows, Linux, OSX
+* TeX on Windows, Linux, OSX
+* XSLT on Windows, Linux, OSX
+* Emacs & Emacs Muse (for docs) on Windows, Linux, OSX
+* C++ on Windows, Linux, OSX, iOS, Android (x86 & ARM), Flash11 (via FlasCC) and HTML5 (via Emscripten)
+* Java on Windows, Linux, OSX and Android
+* ObjectiveC on OSX and iOS
+* NodeJS on Windows, Linux and OSX
+* Python 2.6 & 2.7 on Windows, Linux and OSX
+* Perl 5.6 on Windows, Linux and OSX
+* Git, Mercurial and Svn on Windows, Linux and OSX
 
 Ham is MIT licensed, see LICENSE.txt.
 
