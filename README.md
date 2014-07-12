@@ -10,6 +10,7 @@ Once the repository has been clone ham can automatically fetch all the tools
 needed to complete a build of various kind of software.
 
 Currently supported languages/framework/targets:
+
 * Bash Script on Windows, Linux, OSX
 * TeX on Windows, Linux, OSX
 * XSLT on Windows, Linux, OSX
