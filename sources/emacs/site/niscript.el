@@ -212,8 +212,8 @@ comments have been removed."
 
 (defconst nip-basic-type-re
   (regexp-opt '("local"
-                "void" "bool" "int" "float" "string" "array" "map"
-                "const" "mut" "weak" "ref"
+                "void" "bool" "int" "float" "string"
+                "mut"
                 ) 'words)
   "Regular expression matching any predefined type in niScript.")
 
@@ -243,14 +243,16 @@ comments have been removed."
                 "cond"
                 "do"
                 "scope"
-                "undefined"
                 "nop"
                 "not_implemented"
                 "set_local"
                 "set_member"
                 "get_member"
                 "match_type"
-                "any_type") 'words)
+                "byreference"
+                "by reference"
+                "byvalue"
+                "by value") 'words)
   "Regular expression matching any future lisp reserved words in niScript.")
 
 (defconst nip-pp-re
@@ -309,9 +311,17 @@ comments have been removed."
       "hasdelegate"
       "new"
       "tostring"
-      "tointeger"
+      "toint"
       "tofloat"
       ) 'words)
+  "Regular expression matching any future reserved words in niScript.")
+
+
+(defconst nip-lisp-builtin-re
+  (regexp-opt
+   '(
+     "alloc"
+     ) 'words)
   "Regular expression matching any future reserved words in niScript.")
 
 (defconst nip-font-lock-keywords-1
@@ -325,6 +335,7 @@ comments have been removed."
           (list (list nip-keyword-re 1 font-lock-keyword-face)
                 (cons nip-lisp-re font-lock-keyword-face)
                 (cons nip-builtin-re font-lock-builtin-face)
+                (cons nip-lisp-builtin-re font-lock-builtin-face)
                 (cons nip-pp-re font-lock-preprocessor-face)
                 (cons nip-basic-type-re font-lock-type-face)
                 (cons nip-constant-re font-lock-constant-face)))
