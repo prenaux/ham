@@ -14,8 +14,10 @@ esac
 ##  Find cl.exe to setup MSVCDIR
 ########################################################################
 export MSVCDIR="`unxpath "$PROGRAMFILES\\Microsoft Visual Studio 12.0\\VC"`"
+export MSVC_VER=12
 if [ ! -e "$MSVCDIR/bin/x86_amd64/cl.exe" ]; then
     export MSVCDIR="`unxpath "$PROGRAMFILES\\Microsoft Visual Studio 11.0\\VC"`"
+    export MSVC_VER=11
     if [ ! -e "$MSVCDIR/bin/x86_amd64/cl.exe" ]; then
 	      echo "E/Can't find cl.exe for $TAG"
 	      return 1
@@ -38,10 +40,15 @@ export RUN_DEBUGGER_PARAMS=-debugexe
 ########################################################################
 ##  Find gacutil.exe to setup WINSDKDIR
 ########################################################################
-export WINSDKDIR="`unxpath "$PROGRAMFILES\\Windows Kits\\8.0"`"
+export WINSDKDIR="`unxpath "$PROGRAMFILES\\Windows Kits\\8.1"`"
+export WINSDKDIR_LIBS="${WINSDKDIR}/Lib/winv6.3/um/x64"
 if [ ! -e "$WINSDKDIR/bin/x64/fxc.exe" ]; then
-	echo "E/Can't find fxc.exe for WinSDK"
-	return 1
+    export WINSDKDIR="`unxpath "$PROGRAMFILES\\Windows Kits\\8.0"`"
+    export WINSDKDIR_LIBS="${WINSDKDIR}/lib/win8/um/x64"
+    if [ ! -e "$WINSDKDIR/bin/x64/fxc.exe" ]; then
+	      echo "E/Can't find fxc.exe for WinSDK"
+	      return 1
+    fi
 fi
 echo "I/Found WindowsSDK in '$WINSDKDIR'"
 
@@ -55,7 +62,7 @@ export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}
 
 export PATH="${WINSDKDIR}/bin/x64":"${MSVCDIR}/bin/x86_amd64":"${MSVCDIR}/bin":"${MSVC_IDE_DIR}":${PATH}
 export INCLUDE="`nativedir \"${WINSDKDIR}/include/um\"`;`nativedir \"${WINSDKDIR}/include/shared\"`;`nativedir \"${MSVCDIR}/include\"`;`nativedir \"${MSVCDIR}/atlmfc/include/\"`"
-export LIB="`nativedir \"${WINSDKDIR}/lib/win8/um/x64\"`;`nativedir \"${MSVCDIR}/lib/amd64\"`;`nativedir \"${MSVCDIR}/atlmfc/lib/amd64\"`"
+export LIB="`nativedir \"${WINSDKDIR_LIBS}\"`;`nativedir \"${MSVCDIR}/lib/amd64\"`;`nativedir \"${MSVCDIR}/atlmfc/lib/amd64\"`"
 
 export HAM_CL="\"$MSVCDIR/bin/x86_amd64/cl.exe\""
 export HAM_LINK="\"$MSVCDIR/bin/x86_amd64/link.exe\""

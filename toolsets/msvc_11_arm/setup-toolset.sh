@@ -14,8 +14,10 @@ esac
 ##  Find cl.exe to setup MSVCDIR
 ########################################################################
 export MSVCDIR="`unxpath "$PROGRAMFILES\\Microsoft Visual Studio 12.0\\VC"`"
+export MSVC_VER=12
 if [ ! -e "$MSVCDIR/bin/x86_arm/cl.exe" ]; then
     export MSVCDIR="`unxpath "$PROGRAMFILES\\Microsoft Visual Studio 11.0\\VC"`"
+    export MSVC_VER=11
     if [ ! -e "$MSVCDIR/bin/x86_arm/cl.exe" ]; then
 	      echo "E/Can't find cl.exe for $TAG"
 	      return 1
