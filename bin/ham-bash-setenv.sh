@@ -15,7 +15,8 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
     esac
 
 else
-    echo "I/Ham environment already setup."
+    # echo "I/Ham environment already setup." # STFU will you...
+    true
 fi
 
 export HAM_ENV_SETUP=1

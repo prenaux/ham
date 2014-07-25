@@ -44,18 +44,40 @@
 If the new path's directories does not exist, create them."
    (let* (
           (backupRootDir (concat ENV_WORK "/_emacs_bak/"))
-          (filePath (replace-regexp-in-string "[A-Za-z]:" "" fpath )) ; remove Windows driver letter in path, C
-          (backupFilePath (replace-regexp-in-string "//" "/" (concat backupRootDir filePath "." (format-time-string "bak_%Y%m%d_%H%M"))))
+          (filePath (replace-regexp-in-string ":" "" fpath)) ; remove ':' from path
+          (backupFilePath
+           (replace-regexp-in-string
+            "//" "/"
+            (concat backupRootDir
+                    (replace-regexp-in-string
+                     "/" "_"
+                     (concat filePath "."
+                             ;; (format-time-string "bak_%Y%m%d_%H%M") ;; Use the current time as save stamp
+                             (ham-hash-file-md5 fpath) ;; Use a MD5 of the buffer as save stamp
+                             )))))
           )
      (make-directory (file-name-directory backupFilePath) (file-name-directory backupFilePath))
      backupFilePath
      )
    )
 
- (add-hook
-  'after-save-hook
-  (lambda ()
-    (copy-file buffer-file-name (my-backup-file-name buffer-file-name) t)))
+ (defun ham-hash-file-md5 (fpath)
+   (agl-bash-cmd-to-string (concat "hash_md5 \"" fpath "\"")))
+
+ (defun my-backup-current-file-handler ()
+   (let ((destBackupFileName (my-backup-file-name buffer-file-name)))
+     (if (not (file-exists-p destBackupFileName))
+         (progn
+           (copy-file buffer-file-name destBackupFileName t)
+           (message (concat "made backup: " destBackupFileName))
+           )
+       (progn
+         (agl-bash-cmd-to-string (concat "touch \"" (my-backup-file-name buffer-file-name) "\""))
+         (message (concat "already backed up: " destBackupFileName))
+         )
+       )))
+
+ (add-hook 'after-save-hook 'my-backup-current-file-handler)
 
  )
 
