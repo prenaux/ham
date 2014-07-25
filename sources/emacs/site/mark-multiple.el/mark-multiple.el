@@ -104,9 +104,9 @@
 (make-variable-buffer-local 'mm/mirrors)
 
 (defvar mm/keymap (make-sparse-keymap))
-(define-key mm/keymap (kbd "C-g") 'mm/deactivate-region-or-clear-all)
-(define-key mm/keymap (kbd "C-m") 'mm/deactivate-region-and-clear-all)
-(define-key mm/keymap (kbd "<return>") 'mm/deactivate-region-and-clear-all)
+(define-key mm/keymap (kbd "C-m") 'mm/deactivate-region-or-clear-all)
+(define-key mm/keymap (kbd "C-g") 'mm/deactivate-region-and-clear-all)
+(define-key mm/keymap [escape] 'mm/deactivate-region-and-clear-all)
 
 (defface mm/master-face
   '((((class color) (background light)) (:background "DarkSeaGreen1"))

@@ -218,6 +218,11 @@
             (setq ido-temp-list choices))))
      (ido-read-buffer prompt)))
 
+ (defun ni-keys-ido ()
+  "Add my keybindings for ido."
+  (define-key ido-completion-map [escape] 'keyboard-escape-quit))
+ (add-hook 'ido-setup-hook 'ni-keys-ido)
+
  (defun jcl-file-cache-ido-find-file (&optional aInitialFile)
    "Open a file from the file cache.
 First select a file from `file-cache-alist'.  If the file exist

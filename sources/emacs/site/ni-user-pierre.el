@@ -24,6 +24,29 @@
 (require 'go-mode)
 
 ;;;======================================================================
+;;; Keyboard
+;;;======================================================================
+(NotBatchMode
+ ;; Map the Escape key to "actually stop whatever NOW" or "please don't screw
+ ;; up my environment randomly..."
+
+ (define-key global-map [escape] 'keyboard-quit)
+ (global-set-key [escape] 'keyboard-quit)
+
+ ;; Yes... close everything... but not the buffers ^^ (yeah really... wtf...)
+ (defadvice keyboard-escape-quit (around my-keyboard-escape-quit activate)
+   (let (orig-one-window-p)
+     (fset 'orig-one-window-p (symbol-function 'one-window-p))
+     (fset 'one-window-p (lambda (&optional nomini all-frames) t))
+     (unwind-protect
+         ad-do-it
+       (fset 'one-window-p (symbol-function 'orig-one-window-p)))))
+
+ (global-set-key [remap keyboard-quit] 'keyboard-escape-quit)
+
+ )
+
+;;;======================================================================
 ;;; Backups
 ;;;======================================================================
 (NotBatchMode
@@ -98,7 +121,8 @@ If the new path's directories does not exist, create them."
 ;;;======================================================================
 (NotBatchMode
 
- ;; Makes sure the compilation, occur, etc. buffers don't split the window vertically.
+ ;; Makes sure that compilations, occur, etc. don't split the window
+ ;; vertically when creating their output buffer.
  ;;
  ;; - Solution found at: http://stackoverflow.com/questions/6619375/how-can-i-tell-emacs-to-not-split-the-window-on-m-x-compile-or-elisp-compilation
  ;;
@@ -109,7 +133,34 @@ If the new path's directories does not exist, create them."
  (defun no-split-window () (interactive) nil)
  (setq split-window-preferred-function 'no-split-window)
 
-)
+ (defun rotate-windows ()
+   "Rotate your windows"
+   (interactive)
+   (cond ((not (> (count-windows)1))
+          (message "You can't rotate a single window!"))
+         (t
+          (setq i 1)
+          (setq numWindows (count-windows))
+          (while  (< i numWindows)
+            (let* (
+                   (w1 (elt (window-list) i))
+                   (w2 (elt (window-list) (+ (% i numWindows) 1)))
+
+                   (b1 (window-buffer w1))
+                   (b2 (window-buffer w2))
+
+                   (s1 (window-start w1))
+                   (s2 (window-start w2))
+                   )
+              (set-window-buffer w1  b2)
+              (set-window-buffer w2 b1)
+              (set-window-start w1 s2)
+              (set-window-start w2 s1)
+              (setq i (1+ i)))))))
+
+ (global-set-key (key "C-3") 'rotate-windows)
+
+ )
 
 ;;;======================================================================
 ;;; Font
@@ -129,6 +180,7 @@ If the new path's directories does not exist, create them."
 ;;;======================================================================
 ;;; Easy input of math symbols
 ;;;======================================================================
+(NotBatchMode
 (require 'xmsi-math-symbols-input)
 (global-set-key (kbd "\C-x\C-x") 'xmsi-change-to-symbol)
 
@@ -136,6 +188,7 @@ If the new path's directories does not exist, create them."
  (set-fontset-font
   "fontset-default" 'unicode
   "-outline-Arial Unicode MS-normal-normal-normal-sans-*-*-*-*-p-*-gb2312.1980-0"))
+)
 
 ;;;======================================================================
 ;;; Look & Customizations
@@ -181,7 +234,15 @@ If the new path's directories does not exist, create them."
  (GNUEmacs24
   (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/company-mode"))
   (require 'company)
-  (add-hook 'after-init-hook 'global-company-mode) ;; enable globaly
+
+  (define-global-minor-mode my-global-company-mode company-mode
+    (lambda ()
+      (when (not (memq major-mode
+                       (list 'slime-repl-mode 'shell-mode 'ham-shell-mode)))
+        (company-mode-on))
+      ))
+  (add-hook 'after-init-hook 'my-global-company-mode) ;; enable globaly
+
   ;; setup company mode to show up instantly
   (setq company-idle-delay 0.01)
   (setq company-minimum-prefix-length 2)
@@ -198,7 +259,11 @@ If the new path's directories does not exist, create them."
   (add-hook 'mark-multiple-enabled-hook 'my-auto-complete-off)
   (add-hook 'mark-multiple-disabled-hook 'my-auto-complete-on)
 
-  (global-set-key (kbd "C-/") 'company-complete-common))
+  (global-set-key (kbd "C-/") 'company-complete-common)
+
+  (diminish 'company-mode)
+
+  )
 )
 
 ;;;======================================================================
@@ -277,3 +342,23 @@ If the new path's directories does not exist, create them."
 (add-hook 'niscript-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'c++-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'c-mode-hook 'rainbow-delimiters-mode)
+
+;;;======================================================================
+;;; Jump to line with feedback
+;;;======================================================================
+(NotBatchMode
+ ;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
+
+ (global-set-key (key "C-l") 'goto-line) ;; Ctrl-l goto line, more convenient than C-c C-g...
+ (global-set-key (key "C-S-l") 'recenter-top-bottom)  ;; Remap recenter-top-bottom (which is map to Ctrl-l by default) to Ctrl-Shift-L
+
+ (defun goto-line-with-feedback ()
+   "Show line numbers temporarily, while prompting for the line number input"
+   (interactive)
+   (unwind-protect
+       (progn
+         (linum-mode 1)
+         (goto-line (read-number "Goto line: ")))
+     (linum-mode -1)))
+
+ )

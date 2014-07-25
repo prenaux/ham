@@ -160,6 +160,7 @@
 ;; Makes sure the CSS isnt inlined so we can customize the html's source code color
 (require 'htmlize)
 
+;; Used by muse, don't remove
 (defun htmlize-region-for-paste (beg end)
   "Htmlize the region and return just the HTML as a string.
 This forces the `inline-css' style and only returns the HTML body,
@@ -472,66 +473,6 @@ BEG and END (region to sort)."
   "Decrement the number under point by `amount'"
   (agl-increment-number-at-point (- (abs amount))))
 
-;; Kills live buffers, leaves some emacs work buffers
-;; optained from http://www.chrislott.org/geek/emacs/dotemacs.html
-(defun agl-kill-buffers (&optional list)
-  "For each buffer in LIST, kill it silently if unmodified. Otherwise ask.
-LIST defaults to all existing live buffers."
-  (interactive)
-  (if (null list)
-      (setq list (buffer-list)))
-  (while list
-    (let* ((buffer (car list))
-	   (name (buffer-name buffer)))
-      (and (not (string-equal name ""))
-	   (not (string-equal name "*Messages*"))
-	  ;; (not (string-equal name "*Buffer List*"))
-	   (not (string-equal name "*buffer-selection*"))
-	   (not (string-equal name "*Shell Command Output*"))
-	   (not (string-equal name "*scratch*"))
-	   (not (string-equal name "*shell*"))
-	   (not (string-equal name "*erlang*"))
-	   (not (string-equal name "shell-0"))
-	   (not (string-equal name "shell-1"))
-	   (not (string-equal name "shell-2"))
-	   (not (string-equal name "shell-3"))
-	   (not (string-equal name "shell-4"))
-	   (not (string-equal name "shell-5"))
-	   (not (string-equal name "shell-vc9"))
-	   (not (string-equal name "shell-icl"))
-	   (not (string-equal name "shell-x64-vc9"))
-	   (not (string-equal name "shell-vc71"))
-	   (not (string-equal name "shell-gcc"))
-	   (not (string-equal name "shell-gcc4"))
-	   (not (string-equal name "shell-gcc3"))
-	   (not (string-equal name "shell-dm"))
-	   (not (string-equal name "*compilation*"))
-	   (/= (aref name 0) ? )
-	   (if (buffer-modified-p buffer)
-	       (if (yes-or-no-p
-		    (format "Buffer %s has been edited. Kill? " name))
-		   (kill-buffer buffer))
-	     (kill-buffer buffer))))
-    (setq list (cdr list))))
-
-(defun no-junk-please-were-unixish ()
-  (let ((coding-str (symbol-name buffer-file-coding-system)))
-	(when (string-match "-\\(?:dos\\|mac\\)$" coding-str)
-	  (setq coding-str
-	        (concat (substring coding-str 0 (match-beginning 0)) "-unix"))
-	  (message "CODING: %s" coding-str)
-	  (set-buffer-file-coding-system (intern coding-str)) )))
-
-;; (NotBatchMode
-;;  (add-hook 'find-file-hooks 'no-junk-please-were-unixish))
-
-(defun start-or-end-kbd-macro ()
-  "Starts recording a keyboard macro, or if already recording, stops recording it."
-  (interactive)
-  (if defining-kbd-macro
-      (end-kbd-macro)
-    (start-kbd-macro nil)))
-
 (defun goto-match-paren (arg)
   "Go to the matching parenthesis if on parenthesis, otherwise insert the character typed."
   (interactive "p")
@@ -553,32 +494,6 @@ LIST defaults to all existing live buffers."
                       :height
                       (floor (* 0.9
                                   (face-attribute 'default :height)))))
-
-; Next buffer
-;;(unless (fboundp 'agl-next-buffer)
-  (defun agl-next-buffer ()
-    "Switch to the next buffer in cyclic order."
-    (interactive)
-    (let ((buffer (current-buffer)))
-      (switch-to-buffer (other-buffer buffer))
-      (bury-buffer buffer)))
-;;)
-
-; Previous buffer
-;;(unless (fboundp 'agl-prev-buffer)
-  (defun agl-prev-buffer ()
-    "Switch to the previous buffer in cyclic order."
-    (interactive)
-    (let ((list (nreverse (buffer-list)))
-          found)
-      (while (and (not found) list)
-        (let ((buffer (car list)))
-          (if (and (not (get-buffer-window buffer))
-                   (not (string-match "\\` " (buffer-name buffer))))
-              (setq found buffer)))
-        (setq list (cdr list)))
-      (switch-to-buffer found)))
-;;)
 
 (defun agl-previous-input ()
   "Console previous input"
@@ -1240,10 +1155,6 @@ LIST defaults to all existing live buffers."
  ;; alias y to yes and n to no
  (defalias 'yes-or-no-p 'y-or-n-p)
 
- ;; Previous/Next buffers
- (define-key global-map "\M-1" 'agl-next-buffer)
- (define-key global-map "\M-2" 'agl-prev-buffer)
-
  ;; Previous/Next errors
  (define-key global-map "\M-3" 'previous-error)
  (define-key global-map "\M-4" 'next-error)
@@ -1276,13 +1187,6 @@ LIST defaults to all existing live buffers."
 )
 
 ;;;======================================================================
-;;; Insert pair
-;;;======================================================================
-(global-set-key (kbd "M-[") 'insert-pair)
-(global-set-key (kbd "M-{") 'insert-pair)
-(global-set-key (kbd "M-\"") 'insert-pair)
-
-;;;======================================================================
 ;;; expand-region
 ;;;======================================================================
 (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/expand-region.el"))
@@ -1296,8 +1200,8 @@ LIST defaults to all existing live buffers."
 ;;;======================================================================
 (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/mark-multiple.el"))
 
-;; (require 'inline-string-rectangle)
-;; (global-set-key (kbd "C-x r t") 'inline-string-rectangle)
+(require 'inline-string-rectangle)
+(global-set-key (kbd "C-x r t") 'inline-string-rectangle)
 
 (require 'mark-more-like-this)
 
@@ -1345,7 +1249,7 @@ With zero ARG, skip the last one and mark next."
    "save a macro. Take a name as argument
      and save the last defined macro under
      this name at the end of your .emacs"
-   (interactive "SName of the macro :")  ; ask for the name of the macro
+   (interactive "Name of the macro :")  ; ask for the name of the macro
    (kmacro-name-last-macro name)         ; use this name for the macro
    (find-file "~/.emacs")                ; open ~/.emacs
    (goto-char (point-max))               ; go to the end of the .emacs
@@ -1353,26 +1257,6 @@ With zero ARG, skip the last one and mark next."
    (insert-kbd-macro name)               ; copy the macro
    (newline)                             ; insert a newline
    (switch-to-buffer nil))               ; return to the initial buffer
-
- (defun macro-next-line-first-char ()
-   (interactive)
-   (end-of-line) (next-line)
-   (back-to-indentation))
-
- (defun macro-next-line-last-char ()
-   (interactive)
-   (end-of-line) (next-line)
-   (end-of-line))
-
- (defun macro-prev-line-first-char ()
-   (interactive)
-   (beginning-of-line) (previous-line)
-   (back-to-indentation))
-
- (defun macro-prev-line-last-char ()
-   (interactive)
-   (beginning-of-line) (previous-line)
-   (end-of-line))
 
  (fset 'macro-join-line
        (lambda (&optional arg)
@@ -1401,10 +1285,6 @@ With zero ARG, skip the last one and mark next."
                           (backward-char 1)))
                    ))))))
 
- (global-set-key (kbd "C-:")   'backward-paragraph)
- (global-set-key (kbd "C-\"")  'forward-paragraph)
- (global-set-key (kbd "C-;")   'previous-line)
- (global-set-key (kbd "C-'")   'next-line)
  (global-set-key (kbd "C-.")   'goto-match-paren2)
 
  (global-set-key "\C-cy" '(lambda ()
