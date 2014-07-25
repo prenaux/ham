@@ -24,6 +24,42 @@
 (require 'go-mode)
 
 ;;;======================================================================
+;;; Backups
+;;;======================================================================
+(NotBatchMode
+ ;;
+ ;; Disable Emacs's built-in backup system and hook our own function after
+ ;; save so that we have a simple and reliable backup system everytime we save
+ ;; a file.
+ ;;
+ ;; Note that this will backup all files saved with Emacs, this could be
+ ;; improved by filtering somehow so that sensitive files aren't backed up.
+ ;;
+
+ (setq make-backup-files nil) ; stop creating those backup~ files
+ (setq auto-save-default nil) ; stop creating those #autosave# files
+
+ (defun my-backup-file-name (fpath)
+   "Return a new file path of a given file path.
+If the new path's directories does not exist, create them."
+   (let* (
+          (backupRootDir (concat ENV_WORK "/_emacs_bak/"))
+          (filePath (replace-regexp-in-string "[A-Za-z]:" "" fpath )) ; remove Windows driver letter in path, C
+          (backupFilePath (replace-regexp-in-string "//" "/" (concat backupRootDir filePath "." (format-time-string "bak_%Y%m%d_%H%M"))))
+          )
+     (make-directory (file-name-directory backupFilePath) (file-name-directory backupFilePath))
+     backupFilePath
+     )
+   )
+
+ (add-hook
+  'after-save-hook
+  (lambda ()
+    (copy-file buffer-file-name (my-backup-file-name buffer-file-name) t)))
+
+ )
+
+;;;======================================================================
 ;;; Search in files
 ;;;======================================================================
 (NotBatchMode

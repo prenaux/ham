@@ -34,18 +34,6 @@
  (require 'tablegen-mode))
 
 ;;;======================================================================
-;;; Backups
-;;;======================================================================
-(NotBatchMode
- (setq backup-directory-alist `(("." . "~/.saves")))
- (setq backup-by-copying t)
- (setq delete-old-versions t
-       kept-new-versions 8
-       kept-old-versions 4
-       version-control t)
-)
-
-;;;======================================================================
 ;;; Encoding
 ;;;======================================================================
 (agl-begin-time-block "Encoding")
