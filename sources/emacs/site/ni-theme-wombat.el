@@ -107,17 +107,6 @@
   '(comint-highlight-prompt ((t (:foreground "pale violet red"))))
 
   ;; Rainbow colors
-  ;; '(rainbow-delimiters-depth-1-face ((t (:foreground "dark red"))))
-  ;; '(rainbow-delimiters-depth-2-face ((t (:foreground "dark green"))))
-  ;; '(rainbow-delimiters-depth-3-face ((t (:foreground "deep pink"))))
-  ;; '(rainbow-delimiters-depth-4-face ((t (:foreground "yellow"))))
-  ;; '(rainbow-delimiters-depth-5-face ((t (:foreground "green"))))
-  ;; '(rainbow-delimiters-depth-6-face ((t (:foreground "light blue"))))
-  ;; '(rainbow-delimiters-depth-7-face ((t (:foreground "orange"))))
-  ;; '(rainbow-delimiters-depth-8-face ((t (:foreground "slate blue"))))
-  ;; '(rainbow-delimiters-depth-9-face ((t (:foreground "light gray"))))
-  ;; '(rainbow-delimiters-unmatched-face ((t (:foreground "white"))))
-
   '(rainbow-delimiters-depth-1-face ((t (:foreground "dark gray"))))
   '(rainbow-delimiters-depth-2-face ((t (:foreground "green"))))
   '(rainbow-delimiters-depth-3-face ((t (:foreground "gold"))))
@@ -130,6 +119,18 @@
   '(rainbow-delimiters-unmatched-face ((t (:foreground "white"))))
 
   )
+
+ ;; Fix the company-mode colors with a dark theme
+ (GNUEmacs24
+  (require 'color)
+  (let ((bg (face-attribute 'default :background)))
+    (custom-set-faces
+     `(company-tooltip ((t (:inherit default :background ,(color-lighten-name bg 30)))))
+     `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 40)))))
+     `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 35)))))
+     `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
+     `(company-tooltip-common ((t (:inherit font-lock-constant-face)))))))
+
  )
 )
 
