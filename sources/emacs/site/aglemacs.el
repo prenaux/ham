@@ -1123,16 +1123,6 @@ LIST defaults to all existing live buffers."
 )
 
 ;;;======================================================================
-;;; PAbbrev
-;;;======================================================================
-(NotBatchMode
- (agl-begin-time-block "PAbbrev")
- (require 'pabbrev)
- (global-pabbrev-mode)
- (setq pabbrev-idle-timer-verbose nil)
-)
-
-;;;======================================================================
 ;;; CMake
 ;;;======================================================================
 (NotBatchMode

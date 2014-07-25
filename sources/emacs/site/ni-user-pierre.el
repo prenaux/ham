@@ -104,8 +104,34 @@
 ;;;======================================================================
 ;;; Remove crap from the mode-line
 ;;;======================================================================
-(require 'diminish)
-(diminish 'pabbrev-mode)
+(NotBatchMode
+ (require 'diminish))
+
+;;;======================================================================
+;;; Auto completion
+;;;======================================================================
+(agl-begin-time-block "auto-completion")
+
+(NotBatchMode
+ (GNUEmacs23
+  (require 'pabbrev)
+  (global-pabbrev-mode)
+  (setq pabbrev-idle-timer-verbose nil)
+  (diminish 'pabbrev-mode))
+
+ (GNUEmacs24
+  (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/company-mode"))
+  (require 'company)
+  (add-hook 'after-init-hook 'global-company-mode) ;; enable globaly
+  ;; setup company mode to show up instantly
+  (setq company-idle-delay 0.01)
+  (setq company-minimum-prefix-length 2)
+  ;; LOL, seriously what's the point of fucking up the text's upper/lower case by default ???
+  ;; Without this set to nil the symbols are lower-cased !?!?
+  (setq company-dabbrev-downcase nil)
+  (setq company-dabbrev-ignore-case nil)
+  )
+)
 
 ;;;======================================================================
 ;;; Buffer cleanup and indentation
