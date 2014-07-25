@@ -175,7 +175,8 @@ If the new path's directories does not exist, create them."
   (require 'pabbrev)
   (global-pabbrev-mode)
   (setq pabbrev-idle-timer-verbose nil)
-  (diminish 'pabbrev-mode))
+  (diminish 'pabbrev-mode)
+  (global-set-key (kbd "C-/") 'make-agl-expand))
 
  (GNUEmacs24
   (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/company-mode"))
@@ -188,7 +189,16 @@ If the new path's directories does not exist, create them."
   ;; Without this set to nil the symbols are lower-cased !?!?
   (setq company-dabbrev-downcase nil)
   (setq company-dabbrev-ignore-case nil)
-  )
+
+  (defun my-auto-complete-off()
+    (setq company-idle-delay nil))
+  (defun my-auto-complete-on()
+    (setq company-idle-delay 0.01))
+
+  (add-hook 'mark-multiple-enabled-hook 'my-auto-complete-off)
+  (add-hook 'mark-multiple-disabled-hook 'my-auto-complete-on)
+
+  (global-set-key (kbd "C-/") 'company-complete-common))
 )
 
 ;;;======================================================================

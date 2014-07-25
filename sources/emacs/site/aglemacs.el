@@ -1214,11 +1214,6 @@ LIST defaults to all existing live buffers."
 
  ;; undo on C-z, move the suspend/iconify to C-/
  (global-set-key "\C-z" 'undo)
- (IsNotTerminal
-  (Windows
-   (global-set-key (kbd "C-/") 'iconify-or-deiconify-frame)))
- (IsTerminal
-  (global-set-key (kbd "C-/") 'suspend-emacs))
 
  ;; remap regex search to Atl-s/r
  (global-set-key "\M-s" 'isearch-forward-regexp)
