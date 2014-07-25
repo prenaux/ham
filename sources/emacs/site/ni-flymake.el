@@ -2,6 +2,7 @@
 
 (require 'ni-base)
 (require 'flymake)
+(require 'flymake-cursor)
 
 ; Set flymake to start only when saving the buffer
 (setq flymake-no-changes-timeout 999999
@@ -10,80 +11,11 @@
 ; Error pattern matching :
 ;   regexp file-idx line-idx col-idx (optional) text-idx(optional), match-end to end of string is error text
 
-(defun ni-flymake-goto-prev-error-disp ()
- "Flymake, goto the previous error and display it in the minibuffer."
-  (interactive)
-  (flymake-goto-prev-error)
-  (ni-flymake-display-err-minibuf)
-)
-
-(defun ni-flymake-goto-next-error-disp ()
- "Flymake, goto the next error and display it in the minibuffer."
-  (interactive)
-  (flymake-goto-next-error)
-  (ni-flymake-display-err-minibuf)
-)
-
-(defun ni-flymake-display-err-minibuf ()
-  "Displays the error/warning for the current line in the minibuffer"
-  (interactive)
-  (let* ((line-no             (flymake-current-line-no))
-         (line-err-info-list  (nth 0 (flymake-find-err-info flymake-err-info line-no)))
-         (count               (length line-err-info-list))
-         )
-    (while (> count 0)
-      (when line-err-info-list
-        (let* ((file       (flymake-ler-file (nth (1- count) line-err-info-list)))
-               (full-file  (flymake-ler-full-file (nth (1- count) line-err-info-list)))
-               (text (flymake-ler-text (nth (1- count) line-err-info-list)))
-               (line       (flymake-ler-line (nth (1- count) line-err-info-list))))
-          (message "%s:%s: %s" full-file line text)
-          )
-        )
-      (setq count (1- count)))))
-
-(defun ni-flymake-follow-err ()
-  "Open the file/line in which the error is described."
-  (interactive)
-  (let* ((line-no             (flymake-current-line-no))
-         (line-err-info-list  (nth 0 (flymake-find-err-info flymake-err-info line-no)))
-         (count               (length line-err-info-list))
-         )
-    (while (> count 0)
-      (when line-err-info-list
-        (let* ((file       (flymake-ler-file (nth (1- count) line-err-info-list)))
-               (full-file  (flymake-ler-full-file (nth (1- count) line-err-info-list)))
-               (text (flymake-ler-text (nth (1- count) line-err-info-list)))
-               (line       (flymake-ler-line (nth (1- count) line-err-info-list))))
-           ;;(message "%s:%s: %s" full-file line text)
-		   (find-file full-file)
-		   (goto-line line)
-          )
-        )
-      (setq count (1- count)))))
-
-(defun ni-flymake-goto-prev-error-disp ()
- "Flymake, goto the previous error and display it in the minibuffer."
-  (interactive)
-  (flymake-goto-prev-error)
-  (ni-flymake-display-err-minibuf)
-)
-
-(defun ni-flymake-goto-next-error-disp ()
- "Flymake, goto the next error and display it in the minibuffer."
-  (interactive)
-  (flymake-goto-next-error)
-  (ni-flymake-display-err-minibuf)
-)
-
 ;; Flymake, show current error
-; (global-set-key XXX 'flymake-display-err-menu-for-current-line) ; show in a menu
-; (global-set-key XXX 'flymake-display-err-minibuf) ; show in the minibuffer
-(global-set-key [f3] 'ni-flymake-goto-prev-error-disp)
+(global-set-key [f3] 'flymake-goto-prev-error)
+(global-set-key [f4] 'flymake-goto-next-error)
 (global-set-key [(control f3)] 'flymake-start-syntax-check)
-(global-set-key [f4] 'ni-flymake-goto-next-error-disp)
 (global-set-key [(control f4)] 'flymake-mode)
-(global-set-key [(meta f3)] 'ni-flymake-follow-err)
 
 ;;**********************************************************************
 ;; Flymake - niScript
