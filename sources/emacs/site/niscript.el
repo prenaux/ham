@@ -223,36 +223,27 @@ comments have been removed."
 
 ;; Lispy stuff @()
 (defconst nip-lisp-re
-  (regexp-opt '("defun"
-                "function"
-                "defoperator"
+  (regexp-opt '("function"
+                "static"
                 "operator"
-                "defmeta"
                 "meta"
-                "defmacro"
                 "macro"
-                "defvars"
-                "vars"
-                "definterface"
-                "defpackage"
+                "macrolib"
                 "package"
-                "interface"
-                "deftype"
                 "type"
+                "class"
+                "interface"
+                "value"
                 "let"
                 "cond"
                 "do"
                 "scope"
-                "nop"
                 "not_implemented"
                 "set_local"
                 "set_member"
                 "get_member"
                 "match_type"
-                "byreference"
-                "by reference"
-                "byvalue"
-                "by value") 'words)
+                ) 'words)
   "Regular expression matching any future lisp reserved words in niScript.")
 
 (defconst nip-pp-re
