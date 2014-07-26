@@ -9,7 +9,7 @@ HAM_CMD="$HAM_HOME/bin/$HAM_BIN_LOA/ham"
 # the help
 usage() {
     echo "usage: ham [ options ] targets..."
-    echo "version:" `${HAM_CMD} -v`
+    echo "version:" `"${HAM_CMD}" -v`
     echo ""
     echo "ham launch script:"
     echo "-h             This help message"
@@ -18,7 +18,7 @@ usage() {
     echo "               (can be specified multiple times)"
     echo "-D directory   Add a toolkit to build - the toolkit should be in $WORK"
     echo "               (can be specified multiple times)"
-    echo "--             Following dash '-' parameters will be passed to ham"
+    echo "--             Following parameters will be passed to ham directly"
     echo ""
     echo "ham process:"
     "${HAM_CMD}" -? | grep "^[- ]"

@@ -61,6 +61,7 @@
 # include "make.h"
 # include "command.h"
 # include "execcmd.h"
+# include "buffer.h"
 
 static void make1a( TARGET *t, TARGET *parent );
 static void make1b( TARGET *t );
@@ -80,6 +81,24 @@ static struct {
 	int	total;
 	int	made;
 } counts[1] ;
+
+static int _final_text_addcount = 0;
+static BUFFER _final_text;
+void _add_final_text(const char* aText) {
+  static int _initialized = 0;
+  if (!_initialized) {
+    _initialized = 1;
+    buffer_init(&_final_text);
+  }
+
+  {
+    int textLen = strlen(aText);
+    if (textLen > 0) {
+      buffer_addstring(&_final_text, aText, textLen);
+      ++_final_text_addcount;
+    }
+  }
+}
 
 /*
  * make1() - execute commands to update a TARGET and all its dependents
@@ -112,6 +131,10 @@ make1( TARGET *t )
 
 	if( DEBUG_MAKE && counts->made )
 	    printf( "...updated %d target(s)...\n", counts->made );
+
+  if (_final_text_addcount > 0) {
+    fputs(buffer_ptr(&_final_text), stdout);
+  }
 
 	return counts->total != counts->made;
 }
@@ -324,12 +347,12 @@ make1c( TARGET *t )
             switch( t->status )
             {
             case EXEC_CMD_OK:
-                ++counts->made;
-                break;
+            ++counts->made;
+            break;
             case EXEC_CMD_FAIL:
-                ++counts->failed;
-                break;
-            }
+            ++counts->failed;
+            break;
+          }
 
 	    /* Tell parents dependent has been built */
 
@@ -406,12 +429,25 @@ make1d(
 
 	if( status == EXEC_CMD_FAIL && DEBUG_MAKE )
 	{
-        printf( "...failed %s ", cmd->rule->name );
-	    list_print( lol_get( &cmd->args, 0 ) );
-	    printf( "...\n" );
-	    if (globs.quitquick) {
-            ++intr;
-	    }
+    printf( "...failed %s ", cmd->rule->name );
+    list_print( lol_get( &cmd->args, 0 ) );
+    printf( "...\n" );
+
+    // push the failed text to be printed at the end as-well
+    {
+      LIST* l = lol_get( &cmd->args, 0 );
+      _add_final_text("...failed ");
+      _add_final_text(cmd->rule->name);
+      _add_final_text(" ");
+      for( ; l; l = list_next( l ) ) {
+        _add_final_text(l->string);
+      }
+      _add_final_text("...\n");
+    }
+
+    if (globs.quitquick) {
+      ++intr;
+    }
 	}
 
 	/* If the command was interrupted or failed and the target */
