@@ -27,13 +27,20 @@
 ;;; Keyboard
 ;;;======================================================================
 (NotBatchMode
- ;; Map the Escape key to "actually stop whatever NOW" or "please don't screw
- ;; up my environment randomly..."
 
+ ;; Disabled the insert key, remap it to control + insert.
+ (define-key global-map [(insert)] nil)
+ (define-key global-map [(control insert)] 'overwrite-mode)
+
+ ;; Map the Escape key to "actually stop whatever NOW" or "please don't screw
+ ;; up my environment randomly...".
+ ;;
+ ;; Without this you're going to have a bad time mmk...
+ ;;
  (define-key global-map [escape] 'keyboard-quit)
  (global-set-key [escape] 'keyboard-quit)
 
- ;; Yes... close everything... but not the buffers ^^ (yeah really... wtf...)
+ ; Yes... close everything... but not the buffers ^^ (yeah really... wtf...)
  (defadvice keyboard-escape-quit (around my-keyboard-escape-quit activate)
    (let (orig-one-window-p)
      (fset 'orig-one-window-p (symbol-function 'one-window-p))
