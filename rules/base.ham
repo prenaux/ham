@@ -2039,9 +2039,19 @@ rule FIncludesDash { return -I$(<) ; }
 rule FDefinesSlash { return /D$(<) ; }
 rule FIncludesSlash { return /I$(<) ; }
 
-rule FDefines { return -D$(<) ; }
-rule FIncludes { return -I"\"$(<)\"" ; }
-rule FIncludesLint { return -i"\"$(<)\"" ; }
+rule FDefines {
+  return -D$(<) ;
+}
+rule FIncludes {
+  local incdir = $(<) ;
+  local absIncdir = [ FGetAbsolutePath $(<) ] ;
+  return -I"\"$(absIncdir)\"" ;
+}
+rule FIncludesLint {
+  local incdir = $(<) ;
+  local absIncdir = [ FGetAbsolutePath $(<) ] ;
+  return -i"\"$(absIncdir)\"" ;
+}
 
 # FOptionPath OPTION : PATH
 rule FOptionPath {
@@ -2102,22 +2112,25 @@ actions Yasm
 
 actions Masm
 {
-  ml -nologo -Fo "$(<)" -c "$(>)"
+   ml -nologo -Fo "$(<)" -c "$(>)"
 }
 
 actions C++
 {
-  $(C++) -c -o "$(<)" $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "$(>)"
+  SRC_ABSPATH="`pwd`/$(>)"
+  $(C++) -c -o "$(<)" $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "${SRC_ABSPATH}"
 }
 
 actions Cc
 {
-  $(CC) -c -o "$(<)" $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "$(>)"
+  SRC_ABSPATH="`pwd`/$(>)"
+  $(CC) -c -o "$(<)" $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "${SRC_ABSPATH}"
 }
 
 actions C99
 {
-  $(CC) -c -o "$(<)" $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "$(>)"
+  SRC_ABSPATH="`pwd`/$(>)"
+  $(CC) -c -o "$(<)" $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "${SRC_ABSPATH}"
 }
 
 rule LintC
