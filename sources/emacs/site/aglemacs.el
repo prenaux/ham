@@ -1102,12 +1102,6 @@ BEG and END (region to sort)."
    (kill-buffer (current-buffer)))
  (global-set-key [(meta delete)] 'kill-current-buffer)
 
- ;; Compile command
- (global-set-key [f5] 'recompile)
- (global-set-key [(control f5)] 'compile)
- (global-set-key [f6] 'previous-error)
- (global-set-key [f7] 'next-error)
-
  ;; Shell
  (global-set-key (kbd "C-0") 'ham-shell-unique)
  (global-set-key (kbd "M-0") 'erase-buffer)
@@ -1161,10 +1155,8 @@ BEG and END (region to sort)."
 
  ;; shift-down comments the current line and goes down
  (define-key global-map [(shift down)] 'agl-comment-and-go-down)
- (define-key global-map (kbd "C-S-n") 'agl-comment-and-go-down)
  ;; shift-up uncomments the current line and goes up
  (define-key global-map [(shift up)] 'agl-uncomment-and-go-up)
- (define-key global-map (kbd "C-S-p") 'agl-uncomment-and-go-up)
  ;; inc number under cursor
  (define-key global-map [(meta up)] 'agl-increment-number-at-point)
  ;; dec number under cursor

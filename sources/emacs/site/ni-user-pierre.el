@@ -28,9 +28,30 @@
 ;;;======================================================================
 (NotBatchMode
 
+ ;; Compile command
+ (defun save-all-and-compile ()
+   (interactive)
+   (save-some-buffers 1)
+   (recompile))
+  (global-set-key [f5] 'save-all-and-compile)
+ (global-set-key [(control f5)] 'compile)
+ (global-set-key [f6] 'previous-error)
+ (global-set-key [f7] 'next-error)
+ (global-set-key (kbd "<C-prior>") 'previous-error) ;; Ctrl-PgUp
+ (global-set-key (kbd "<C-next>")  'next-error) ;; Ctrl-PgDown
+
+ ;; Set compile mode to scroll to the first error
+ (setq compilation-scroll-output 'first-error)
+
  ;; Disabled the insert key, remap it to control + insert.
  (define-key global-map [(insert)] nil)
- (define-key global-map [(control insert)] 'overwrite-mode)
+ (define-key global-map [(control meta insert)] 'overwrite-mode)
+
+ ;; use control insert with yank, cause most of the nav is Ctrl-up/down
+ ;; pageup/pagedown, its just more convenient
+ (define-key global-map [(control insert)] 'yank)
+ (define-key global-map [(control meta insert)] 'yank)
+ (define-key global-map [(meta insert)] 'yank-pop)
 
  ;; Map the Escape key to "actually stop whatever NOW" or "please don't screw
  ;; up my environment randomly...".
@@ -50,6 +71,87 @@
        (fset 'one-window-p (symbol-function 'orig-one-window-p)))))
 
  (global-set-key [remap keyboard-quit] 'keyboard-escape-quit)
+
+ ;; Cancel the mini buffer if it loses focus after clicking the mouse or
+ ;; when switching to another window with C-1/2
+ (defun stop-using-minibuffer ()
+   "kill the minibuffer"
+   (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
+     (abort-recursive-edit)))
+
+ (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
+
+ (defun my-other-window ()
+   ""
+   (interactive)
+   (stop-using-minibuffer)
+   (other-window 1))
+
+ (global-set-key (key "C-1") 'my-other-window)
+ (global-set-key (key "C-2") 'my-other-window)
+
+ )
+
+;;;======================================================================
+;;; Change Highlights
+;;;======================================================================
+(NotBatchMode
+ ;;
+ ;; Track the changes made to the current buffer.
+ ;;
+ ;; Ctrl-Alt-PgUp/PgDown to go the the previous/next changes.
+ ;;
+ ;; Press Ctrl-F6 to toggle on/off the visual marker. Changes are underlined, the
+ ;; red stuff is where things have been removed.
+ ;;
+
+ ;; higlight changes in documents
+ (global-highlight-changes-mode t)
+ (setq highlight-changes-visibility-initial-state nil); initially hide
+
+ (make-empty-face 'highlight-changes-saved-face)
+ (setq highlight-changes-face-list '(highlight-changes-saved-face))
+
+ ;; reset the custom change highlighting
+ (defface highlight-changes-face
+   '((((class color)) (:foreground "#88d" :underline t))
+     (t (:inverse-video t)))
+   "Face used for highlighting changes."
+   :group 'highlight-changes)
+ (set-face-foreground 'highlight-changes nil)
+
+ (defface highlight-changes-delete-face
+   '((((class color)) (:foreground "red" :underline t))
+     (t (:inverse-video t)))
+   "Face used for highlighting deletions."
+   :group 'highlight-changes)
+ ;; (set-face-foreground 'highlight-changes-delete nil)
+
+ (eval-after-load "hilit-chg"
+   '(progn
+      (defvar highlight-fringe-mark 'filled-square
+        "The fringe bitmap name marked at changed line.
+Should be selected from `fringe-bitmaps'.")
+
+      (defadvice hilit-chg-make-ov (after hilit-chg-add-fringe activate)
+        (mapc (lambda (ov)
+                (if (overlay-get ov 'hilit-chg)
+                    (let ((fringe-anchor (make-string 1 ?x)))
+                      (put-text-property 0 1 'display
+                                         (list 'left-fringe highlight-fringe-mark)
+                                         fringe-anchor)
+                      (overlay-put ov 'before-string fringe-anchor))
+                  ))
+              (overlays-at (ad-get-arg 1))))))
+
+ ;; toggle visibility
+ (global-set-key (kbd "C-<f6>") 'highlight-changes-visible-mode) ;; changes
+ ;; remove the change-highlight in region
+ (global-set-key (kbd "S-<f6>") 'highlight-changes-remove-highlight)
+
+ ;; goto previous / next changes...
+ (global-set-key (kbd "<C-M-prior>") 'highlight-changes-previous-change)
+ (global-set-key (kbd "<C-M-next>")  'highlight-changes-next-change)
 
  )
 
