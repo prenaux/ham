@@ -10,8 +10,8 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/doxygen"
 case $HAM_OS in
     NT*)
         export DOXYGEN_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH="${DOXYGEN_DIR}":"${DOXYGEN_DIR}/hhc":${PATH}
-        if [ ! -e "$DOXYGEN_DIR" ]; then
+        export PATH="${DOXYGEN_DIR}":${PATH}
+        if [ ! -e "$DOXYGEN_DIR/doxygen_187.exe" ]; then
             toolset_dl doxygen doxygen_nt-x86
             if [ ! -e "$DOXYGEN_DIR" ]; then
                 echo "E/nt-x86 folder doesn't exist in the toolset"
@@ -26,7 +26,7 @@ case $HAM_OS in
 esac
 
 VER="--- doxygen -------------------------
-`doxygen_184 --version`"
+`doxygen_187 --version`"
 if [ $? != 0 ]; then
     echo "E/Can't get version."
     return 1
