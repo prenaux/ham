@@ -513,42 +513,6 @@ BEG and END (region to sort)."
   (agl-bash-cmd-to-string
    (concat (getenv "HAM_HOME") "/bin/ham-open-in-debugger.sh " (buffer-file-name) " " (number-to-string (line-number-at-pos)))))
 
-(defun agl-show-msdn-topic ()
-  "Open a window showing the MSDN documentation for the word under the point"
-  (interactive)
-  (if (string= "w32" window-system)
-      (start-process "MSDN lookup" nil
-                     "h2viewer.exe"
-		     "/appID" "MSDN-Viewer"
-		     "/helpcol" "MS.VSCC.2003"
- 		     "/filtername" "Visual C++"
-		     "/Index" (current-word))))
-
-(Windows
- (defun agl-show-help-topic ()
-   "Open a window showing the MSDN documentation for the word under the point"
-   (interactive)
-   (start-process "KeyHH" nil
-                  "KeyHH.exe"
-                  "-norbert"
-                  "-\#alink" (current-word)
-                  "k:\\Work\\aglSDK\\redist\\docs\\doxygen\\aglSDK.chm"))
-
- (defun agl-show-help-topic2 ()
-   "Open a window showing the MSDN documentation for the word under the point"
-   (interactive)
-   (message (concat "Looking up " (current-word)))
-   (start-process "MSDN lookup" nil
-                  "h2viewer.exe"
-                  "/appID" "emacs"
-                  "/helpcol" "MS.MSDNQTR.v90.en"
-                  "/index"  (current-word)))
-
- (global-set-key [f1] 'agl-show-help-topic)
- (global-set-key [(control f1)] 'agl-show-help-topic2)
-
- )
-
 (defun day-name ()
   (let ((date (calendar-day-of-week
                (calendar-current-date)))) ; 0-6
