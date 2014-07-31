@@ -6,16 +6,15 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
 ########################################################################
     case $HAM_OS in
         NT*)
-            export PATH=$HAM_HOME/bin:$HAM_HOME/bin/nt-x86:$BASH_START_PATH
+            export PATH=$WORK/niSDK/bin:$HAM_HOME/bin:$HAM_HOME/bin/nt-x86:$BASH_START_PATH
             export PATH=$PATH:`unxpath $WINDIR`/System32
             ;;
         OSX)
-            export PATH=$HAM_HOME/bin:$HAM_HOME/bin/osx-x86:/usr/bin:/bin:/usr/sbin:/sbin:$BASH_START_PATH
+            export PATH=$WORK/niSDK/bin:$HAM_HOME/bin:$HAM_HOME/bin/osx-x86:/usr/bin:/bin:/usr/sbin:/sbin:$BASH_START_PATH
             ;;
     esac
 
 else
-    # echo "I/Ham environment already setup." # STFU will you...
     true
 fi
 

@@ -2654,7 +2654,7 @@ Returns a negative number if the tooltip should be displayed above point."
   "`company-mode' front-end showing the documentation in the echo area."
   (pcase command
     (`post-command (company-echo-show-when-idle 'company-fetch-metadata))
-    (`hide (company-echo-hide))))
+    (`hide "")))
 
 (provide 'company)
 ;;; company.el ends here

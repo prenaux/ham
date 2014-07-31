@@ -33,7 +33,7 @@
    (interactive)
    (save-some-buffers 1)
    (recompile))
-  (global-set-key [f5] 'save-all-and-compile)
+ (global-set-key [f5] 'save-all-and-compile)
  (global-set-key [(control f5)] 'compile)
  (global-set-key [f6] 'previous-error)
  (global-set-key [f7] 'next-error)
@@ -61,7 +61,7 @@
  (define-key global-map [escape] 'keyboard-quit)
  (global-set-key [escape] 'keyboard-quit)
 
- ; Yes... close everything... but not the buffers ^^ (yeah really... wtf...)
+ ;; Yes... close everything... but not the buffers
  (defadvice keyboard-escape-quit (around my-keyboard-escape-quit activate)
    (let (orig-one-window-p)
      (fset 'orig-one-window-p (symbol-function 'one-window-p))
@@ -90,7 +90,7 @@
  (global-set-key (key "C-1") 'my-other-window)
  (global-set-key (key "C-2") 'my-other-window)
 
- )
+)
 
 ;;;======================================================================
 ;;; Change Highlights
@@ -141,7 +141,7 @@ Should be selected from `fringe-bitmaps'.")
                                          (list 'left-fringe highlight-fringe-mark)
                                          fringe-anchor)
                       (overlay-put ov 'before-string fringe-anchor))
-                  ))
+                ))
               (overlays-at (ad-get-arg 1))))))
 
  ;; toggle visibility
@@ -153,7 +153,7 @@ Should be selected from `fringe-bitmaps'.")
  (global-set-key (kbd "<C-M-prior>") 'highlight-changes-previous-change)
  (global-set-key (kbd "<C-M-next>")  'highlight-changes-next-change)
 
- )
+)
 
 ;;;======================================================================
 ;;; Backups
@@ -171,7 +171,7 @@ Should be selected from `fringe-bitmaps'.")
  (setq make-backup-files nil) ; stop creating those backup~ files
  (setq auto-save-default nil) ; stop creating those #autosave# files
 
- (defun my-backup-file-name (fpath)
+ (defun ni-backup-file-name (fpath)
    "Return a new file path of a given file path.
 If the new path's directories does not exist, create them."
    (let* (
@@ -186,32 +186,32 @@ If the new path's directories does not exist, create them."
                      (concat filePath "."
                              ;; (format-time-string "bak_%Y%m%d_%H%M") ;; Use the current time as save stamp
                              (ham-hash-file-md5 fpath) ;; Use a MD5 of the buffer as save stamp
-                             )))))
-          )
+                     )))))
+         )
      (make-directory (file-name-directory backupFilePath) (file-name-directory backupFilePath))
      backupFilePath
-     )
    )
+ )
 
  (defun ham-hash-file-md5 (fpath)
    (agl-bash-cmd-to-string (concat "hash_md5 \"" fpath "\"")))
 
- (defun my-backup-current-file-handler ()
-   (let ((destBackupFileName (my-backup-file-name buffer-file-name)))
+ (defun ni-backup-current-file-handler ()
+   (let ((destBackupFileName (ni-backup-file-name buffer-file-name)))
      (if (not (file-exists-p destBackupFileName))
          (progn
            (copy-file buffer-file-name destBackupFileName t)
-           (message (concat "made backup: " destBackupFileName))
-           )
-       (progn
-         (agl-bash-cmd-to-string (concat "touch \"" (my-backup-file-name buffer-file-name) "\""))
-         (message (concat "already backed up: " destBackupFileName))
+           ;; (message (concat "made backup: " destBackupFileName))
          )
-       )))
+       (progn
+         (agl-bash-cmd-to-string (concat "touch \"" (ni-backup-file-name buffer-file-name) "\""))
+         ;; (message (concat "already backed up: " destBackupFileName))
+       )
+     )))
 
- (add-hook 'after-save-hook 'my-backup-current-file-handler)
+ (add-hook 'after-save-hook 'ni-backup-current-file-handler)
 
- )
+)
 
 ;;;======================================================================
 ;;; Search in files
@@ -223,7 +223,7 @@ If the new path's directories does not exist, create them."
  (OSX
   (setq pt-executable (concat HAM_HOME "/bin/osx-x86/pt")))
  (global-set-key "\C-h\C-j" 'pt-regexp)
- )
+)
 
 ;;;======================================================================
 ;;; Proper handling of automatic window splits
@@ -260,7 +260,7 @@ If the new path's directories does not exist, create them."
 
                    (s1 (window-start w1))
                    (s2 (window-start w2))
-                   )
+                  )
               (set-window-buffer w1  b2)
               (set-window-buffer w2 b1)
               (set-window-start w1 s2)
@@ -269,7 +269,7 @@ If the new path's directories does not exist, create them."
 
  (global-set-key (key "C-3") 'rotate-windows)
 
- )
+)
 
 ;;;======================================================================
 ;;; Font
@@ -278,25 +278,26 @@ If the new path's directories does not exist, create them."
  (agl-begin-time-block "Set Font")
 
  (Windows
+  ;; for 1080p
   (set-face-attribute 'default nil :family "Consolas" :height 105 :weight 'bold)
-  )
+ )
 
  (Linux
   (setq default-frame-alist
         '((font . "-*-Consolas-*-r-*-*-11-108-120-120-c-*-*-*"))))
- )
+)
 
 ;;;======================================================================
 ;;; Easy input of math symbols
 ;;;======================================================================
 (NotBatchMode
-(require 'xmsi-math-symbols-input)
-(global-set-key (kbd "\C-x\C-x") 'xmsi-change-to-symbol)
+ (require 'xmsi-math-symbols-input)
+ (global-set-key (kbd "\C-x\C-x") 'xmsi-change-to-symbol)
 
-(Windows
- (set-fontset-font
-  "fontset-default" 'unicode
-  "-outline-Arial Unicode MS-normal-normal-normal-sans-*-*-*-*-p-*-gb2312.1980-0"))
+ (Windows
+  (set-fontset-font
+   "fontset-default" 'unicode
+   "-outline-Arial Unicode MS-normal-normal-normal-sans-*-*-*-*-p-*-gb2312.1980-0"))
 )
 
 ;;;======================================================================
@@ -319,7 +320,7 @@ If the new path's directories does not exist, create them."
              " L%l C%c - " ;; C%c to add the column number
              '(-3 . "%p")
              " -%-"))
- )
+)
 
 ;;;======================================================================
 ;;; Remove crap from the mode-line
@@ -343,13 +344,14 @@ If the new path's directories does not exist, create them."
  (GNUEmacs24
   (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/company-mode"))
   (require 'company)
+  (require 'company-ni-idl)
 
   (define-global-minor-mode my-global-company-mode company-mode
     (lambda ()
       (when (not (memq major-mode
                        (list 'slime-repl-mode 'shell-mode 'ham-shell-mode)))
         (company-mode-on))
-      ))
+    ))
   (add-hook 'after-init-hook 'my-global-company-mode) ;; enable globaly
 
   ;; setup company mode to show up instantly
@@ -359,6 +361,10 @@ If the new path's directories does not exist, create them."
   ;; Without this set to nil the symbols are lower-cased !?!?
   (setq company-dabbrev-downcase nil)
   (setq company-dabbrev-ignore-case nil)
+
+  (setq company-show-numbers t)
+  (setq company-tooltip-limit 30)
+  (setq company-tooltip-align-annotations t)
 
   (defun my-auto-complete-off()
     (setq company-idle-delay nil))
@@ -370,9 +376,15 @@ If the new path's directories does not exist, create them."
 
   (global-set-key (kbd "C-/") 'company-complete-common)
 
+  (setq company-backends '(company-elisp
+                           company-ni-idl
+                          ))
+
+  (global-set-key (kbd "C-/") 'company-ni-idl-complete)
+
   (diminish 'company-mode)
 
-  )
+ )
 )
 
 ;;;======================================================================
@@ -388,7 +400,7 @@ If the new path's directories does not exist, create them."
         (while (re-search-forward (concat (char-to-string 13) "$") (point-max) t)
           (setq remove-count (+ remove-count 1))
           (replace-match "" nil nil))
-        ))))
+      ))))
 
 (defun dos2unix ()
   "Not exactly but it's easier to remember"
@@ -422,9 +434,9 @@ If the new path's directories does not exist, create them."
     (save-buffer)
     (kill-buffer nil)
     (setq count (+ count 1))
-    )
-  (message (format "Done indenting %d files" num-files))
   )
+  (message (format "Done indenting %d files" num-files))
+)
 
 (define-key global-map (kbd "C-S-i") 'my-indent-buffer)
 
@@ -470,4 +482,4 @@ If the new path's directories does not exist, create them."
          (goto-line (read-number "Goto line: ")))
      (linum-mode -1)))
 
- )
+)
