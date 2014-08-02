@@ -350,36 +350,35 @@ If the new path's directories does not exist, create them."
     (lambda ()
       (when (not (memq major-mode
                        (list 'slime-repl-mode 'shell-mode 'ham-shell-mode)))
+        (setq company-backends '(company-elisp
+                                 company-ni-idl
+                                ))
         (company-mode-on))
     ))
   (add-hook 'after-init-hook 'my-global-company-mode) ;; enable globaly
 
   ;; setup company mode to show up instantly
-  (setq company-idle-delay 0.01)
+  (setq company-idle-delay-default 0.15)
+  (setq company-idle-delay company-idle-delay-default)
   (setq company-minimum-prefix-length 2)
   ;; LOL, seriously what's the point of fucking up the text's upper/lower case by default ???
   ;; Without this set to nil the symbols are lower-cased !?!?
   (setq company-dabbrev-downcase nil)
   (setq company-dabbrev-ignore-case nil)
 
-  (setq company-show-numbers t)
+  (setq company-show-numbers nil)
   (setq company-tooltip-limit 30)
   (setq company-tooltip-align-annotations t)
 
   (defun my-auto-complete-off()
     (setq company-idle-delay nil))
   (defun my-auto-complete-on()
-    (setq company-idle-delay 0.01))
+    (setq company-idle-delay company-idle-delay-default))
 
   (add-hook 'mark-multiple-enabled-hook 'my-auto-complete-off)
   (add-hook 'mark-multiple-disabled-hook 'my-auto-complete-on)
 
-  (global-set-key (kbd "C-/") 'company-complete-common)
-
-  (setq company-backends '(company-elisp
-                           company-ni-idl
-                          ))
-
+  ;; (global-set-key (kbd "C-/") 'company-complete-common)
   (global-set-key (kbd "C-/") 'company-ni-idl-complete)
 
   (diminish 'company-mode)

@@ -1,11 +1,16 @@
 (require 'company)
 (require 'company-dabbrev)
 (require 's)
+(require 'dash)
 
 (ni-add-to-PATH-front (concat (getenv "WORK") "/niSDK/bin"))
 
-(setq company-ni-idl-do-idl-query nil)
-(setq company-ni-idl-query-command "cached_candidates")
+;; when t filter to ONLY use the idl-query results, this is always set when using
+(setq company-ni-idl-idl-query-only nil)
+;; when enabled merge the dabbrev and idl-query results, this means that the list that popups automatically
+(setq company-ni-idl-merge-dabbrev  t)
+;; the idl-query command to use to query the candidates
+(setq company-ni-idl-query-command  "cached_candidates")
 
 (defun ni-idl-build-cache ()
   (interactive)
@@ -16,9 +21,9 @@
 (defun company-ni-idl-complete ()
   (interactive)
   (company-abort)
-  (setq company-ni-idl-do-idl-query t)
+  (setq company-ni-idl-idl-query-only t)
   (let ((r (company-complete-common)))
-    (setq company-ni-idl-do-idl-query nil)
+    (setq company-ni-idl-idl-query-only nil)
     r))
 
 (defun company-ni-idl-candidates (arg)
@@ -72,28 +77,42 @@
     (prefix
      ;; (message "PREFIX:" arg)
      (cond
-      (company-ni-idl-do-idl-query
+      (company-ni-idl-idl-query-only
        (company-ni-idl-grab-symbol))
       (t
        (company-grab-word))
      )
     )
     (candidates
-     (cond
-      (company-ni-idl-do-idl-query
-       (company-ni-idl-candidates arg))
-      (t
-       (progn
-         (let ((words (company-dabbrev--search (company-dabbrev--make-regexp arg)
-                                               company-dabbrev-time-limit
-                                               (pcase company-dabbrev-other-buffers
-                                                 (`t (list major-mode))
-                                                 (`all `all))))
-               (downcase-p (if (eq company-dabbrev-downcase 'case-replace)
-                               case-replace
-                             company-dabbrev-downcase)))
-           words))
-      )
+
+     (let ((dabbrev-candidates
+            (company-dabbrev--search (company-dabbrev--make-regexp arg)
+                                     company-dabbrev-time-limit
+                                     `all)))
+       (cond
+        (company-ni-idl-idl-query-only
+         (let ((idl-candidates (company-ni-idl-candidates arg)))
+           (if idl-candidates
+               idl-candidates
+             dabbrev-candidates)))
+        (company-ni-idl-merge-dabbrev
+         (let ((idl-candidates (company-ni-idl-candidates arg)))
+           (if idl-candidates
+               (-concat
+                idl-candidates
+                ;; dabbrev-candidates minus the idl-candidates
+                (-remove (lambda (aDabbrevEl)
+                           (-any? (lambda (aIdlEl)
+                                    (s-equals? aIdlEl aDabbrevEl))
+                                  idl-candidates))
+                         dabbrev-candidates)
+               )
+             dabbrev-candidates)
+         )
+        )
+        (t
+         dabbrev-candidates)
+       )
      )
     )
     (annotation (get-text-property 0 'anno arg))
@@ -114,7 +133,7 @@
        )
      )
     )
-    (duplicates (not company-ni-idl-do-idl-query))
+    (duplicates (not company-ni-idl-idl-query-only))
     (ignore-case nil)
   )
 )
