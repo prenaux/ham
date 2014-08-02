@@ -1935,6 +1935,7 @@ To show the number next to the candidates in some back-ends, enable
 
 (defun company-doc-buffer (&optional string)
   (with-current-buffer (get-buffer-create "*company-documentation*")
+    (funcall (intern "markdown-mode"))
     (erase-buffer)
     (when string
       (save-excursion
@@ -1969,13 +1970,16 @@ To show the number next to the candidates in some back-ends, enable
 (defun company-show-doc-buffer ()
   "Temporarily show the documentation buffer for the selection."
   (interactive)
-  (company--electric-do
+  ;; (company--electric-do
     (let* ((selected (nth company-selection company-candidates))
            (doc-buffer (or (company-call-backend 'doc-buffer selected)
                            (error "No documentation available"))))
       (with-current-buffer doc-buffer
         (goto-char (point-min)))
-      (display-buffer doc-buffer t))))
+      (display-buffer doc-buffer t)
+    )
+  ;; )
+)
 (put 'company-show-doc-buffer 'company-keep t)
 
 (defun company-show-location ()
