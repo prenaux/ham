@@ -243,6 +243,7 @@ comments have been removed."
                 "set_member"
                 "get_member"
                 "match_type"
+                "defer"
                 ) 'words)
   "Regular expression matching any future lisp reserved words in niScript.")
 
