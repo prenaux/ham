@@ -70,6 +70,14 @@
              (unless (and (char-after) (memq (char-syntax (char-after)) '(?w ?_)))
                ""))))
 
+(defun company--strip-duplicates (list)
+  (let ((new-list nil))
+    (while list
+      (when (and (car list) (not (member (car list) new-list)))
+        (setq new-list (cons (car list) new-list)))
+      (setq list (cdr list)))
+    (nreverse new-list)))
+
 (defun company-ni-idl (command &optional arg &rest ignored)
   (interactive (list 'interactive))
   (case command
@@ -86,9 +94,9 @@
     (candidates
 
      (let ((dabbrev-candidates
-            (company-dabbrev--search (company-dabbrev--make-regexp arg)
-                                     company-dabbrev-time-limit
-                                     `all)))
+            (company--strip-duplicates (company-dabbrev--search (company-dabbrev--make-regexp arg)
+                                                                company-dabbrev-time-limit
+                                                                `all))))
        (cond
         (company-ni-idl-idl-query-only
          (let ((idl-candidates (company-ni-idl-candidates arg)))
@@ -133,7 +141,7 @@
        )
      )
     )
-    (duplicates (not company-ni-idl-idl-query-only))
+    (duplicates nil) ;; duplicates are removed 'by hand'
     (ignore-case nil)
   )
 )
