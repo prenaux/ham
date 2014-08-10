@@ -2055,12 +2055,20 @@ rule FIncludesLint {
 
 # FOptionPath OPTION : PATH
 rule FOptionPath {
- return "$(<)""\"$(>)\"" ;
+  local r = ;
+  for _d in $(>) {
+    r += "$(<)""\"$(_d)\"" ;
+  }
+  return $(r) ;
 }
 
 # FOptionPathWithSpace OPTION : PATH
 rule FOptionPathWithSpace {
- return "$(<)" "\"$(>)\"" ;
+  local r = ;
+  for _d in $(>) {
+    r += "$(<)" "\"$(_d)\"" ;
+  }
+  return $(r) ;
 }
 
 # Remove all .. and . from a list to create a "clean" list that can be used to build absolute path
