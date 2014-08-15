@@ -3,6 +3,7 @@ echo I/Setting up $TAG
 
 case $HAM_OS in
     NT*)
+        export BUILD_BIN_LOA=nt-x64
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

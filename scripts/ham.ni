@@ -4,6 +4,7 @@
 
 @namespace "ham" {
   _osArch = null
+  _build = null
   _hamPath = null
   _hamHome = null
   _bashPath = null
@@ -33,6 +34,13 @@
     // will set ham home
     getHamPath();
     return _hamHome;
+  }
+
+  function getBuild() {
+    if (_build)
+      return _build;
+    _build = ::gLang.property["ni.loa.build"];
+    return _build;
   }
 
   function getOSArch() {
@@ -66,7 +74,7 @@
     local bashPath
     switch (::lang.getHostOS().tolower()) {
       case "nt": {
-        bashPath = getHamHome().adddirback(getBinDir()).setfile("bash.exe")
+        bashPath = getHamHome().adddirback("bin/nt-x86").setfile("bash.exe")
         if (!::gRootFS.FileExists(bashPath,::eFileAttrFlags.AllFiles))
           throw "Can't find bash executable in: " + bashPath
         break;
@@ -296,6 +304,9 @@
 
     text += ::format({[export WORK="%s"]},getHamHome().removedirback()) + "\n"
     // text += ::format({[echo ... WORK: $WORK]}) + "\n"
+
+    text += ::format({[export BUILD_BIN_LOA="%s"]},getOSArch()) + "\n"
+    text += ::format({[export BUILD="%s"]},getBuild()) + "\n"
 
     text += {[export BASH_START_PATH=""]} + "\n"
     text += {[export BASH_START_SILENT="yes"]} + "\n"

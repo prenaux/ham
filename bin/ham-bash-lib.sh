@@ -214,20 +214,22 @@ toolset_dl() {
 ##  Environments
 ########################################################################
 # Set HAM_OS first, its used by the script commands
-if [[ -z $HAM_OS ]]; then
-    if [[ $OS == Windows* ]]; then
-        export HAM_OS=NT
-        export HAM_BIN_LOA=nt-x86
-        if [ -z $HOME ]; then
-            export HOME=`unxpath "$USERPROFILE"`
-        fi
-    elif [[ "`uname`" == "Darwin" ]]; then
-        export HAM_OS=OSX
-        export HAM_BIN_LOA=osx-x86
-    else
-        echo "W/Unknown OS"
-        # exit 1
+if [[ $OS == Windows* ]]; then
+    export HAM_OS=NT
+    export HAM_BIN_LOA=nt-x86
+    if [ -z $HOME ]; then
+        export HOME=`unxpath "$USERPROFILE"`
     fi
+elif [[ "`uname`" == "Darwin" ]]; then
+    export HAM_OS=OSX
+    export HAM_BIN_LOA=osx-x86
+else
+    echo "W/Unknown OS"
+    # exit 1
+fi
+
+if [[ -z $BUILD_BIN_LOA ]]; then
+    export BUILD_BIN_LOA=$HAM_BIN_LOA
 fi
 
 if [[ -z $WORK ]]; then
@@ -240,6 +242,18 @@ export WORK=`unxpath "$WORK"`
 
 if [[ -z $HOME ]]; then
     echo "E/HOME not set !"
+    exit 1
+fi
+if [[ -z $HAM_OS ]]; then
+    echo "E/HAM_OS not set !"
+    exit 1
+fi
+if [[ -z $HAM_BIN_LOA ]]; then
+    echo "E/HAM_BIN_LOA not set !"
+    exit 1
+fi
+if [[ -z $BUILD_BIN_LOA ]]; then
+    echo "E/BUILD_BIN_LOA not set !"
     exit 1
 fi
 
