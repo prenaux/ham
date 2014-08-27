@@ -9,8 +9,8 @@ fi
 if [ -z "$3" ]; then
     OUTPUT=
 else
-    OUTPUT="--output $3"
+    OUTPUT="--output \"$3\""
 fi
-# echo "# XSLT1: $2 -> '$(basename ${XSLTPATH})' -> $3"
+# echo "# XSLT1: $2 -> '$(basename "${XSLTPATH}")' -> $3"
 xslt_tools-xsltproc "$OUTPUT" "$XSLTPATH" "$2"
 exit $?
