@@ -19,7 +19,7 @@ repos git pull origin master 2>&1 | tee ~/_repos-maintain-report-pull-origin-mas
 echo "########################################################################"
 echo "## Push all"
 echo "########################################################################"
-repos git push --all 2>&1 | tee ~/_repos-maintain-report-push-all.txt
+repos git push --all --follow-tags 2>&1 | tee ~/_repos-maintain-report-push-all.txt
 
 echo "########################################################################"
 echo "## Done !"
