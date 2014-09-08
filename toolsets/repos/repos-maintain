@@ -9,6 +9,7 @@ repos git status 2>&1 | tee ~/_repos-maintain-report-status.txt
 echo "########################################################################"
 echo "## Fetch All"
 echo "########################################################################"
+repos git fetch --tags
 repos git fetch --all 2>&1 | tee ~/_repos-maintain-report-fetch-all.txt
 
 echo "########################################################################"
@@ -19,7 +20,8 @@ repos git pull origin master 2>&1 | tee ~/_repos-maintain-report-pull-origin-mas
 echo "########################################################################"
 echo "## Push all"
 echo "########################################################################"
-repos git push --all --follow-tags 2>&1 | tee ~/_repos-maintain-report-push-all.txt
+repos git push --tags
+repos git push --all 2>&1 | tee ~/_repos-maintain-report-push-all.txt
 
 echo "########################################################################"
 echo "## Done !"
