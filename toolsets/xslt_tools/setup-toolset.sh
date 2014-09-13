@@ -25,7 +25,7 @@ case $HAM_OS in
     OSX)
         # xsltproc is already bundled in OSX
         # Make sure all the xslt_tools scripts are executable
-        chmod +x "${HAM_TOOLSET_DIR}/xslt_tools-*"
+        chmod +x "${HAM_TOOLSET_DIR}/xslt_tools-"*
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
