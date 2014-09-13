@@ -212,7 +212,7 @@ comments have been removed."
 
 (defconst nip-basic-type-re
   (regexp-opt '("local"
-                "void" "bool" "int" "float" "string"
+                "void" "any" "bool" "int" "float" "string"
                 "mut"
                 ) 'words)
   "Regular expression matching any predefined type in niScript.")
@@ -229,12 +229,14 @@ comments have been removed."
                 "meta"
                 "macro"
                 "macrolib"
-                "package"
+                "module"
+                "require"
                 "type"
                 "class"
                 "interface"
                 "value"
                 "let"
+                "var"
                 "cond"
                 "do"
                 "scope"
@@ -248,7 +250,7 @@ comments have been removed."
   "Regular expression matching any future lisp reserved words in niScript.")
 
 (defconst nip-pp-re
-  (regexp-opt '("CreateInstance" "CreateGlobalInstance" "QueryInterface" "Import" "NewImport" "import"
+  (regexp-opt '("CreateInstance" "CreateGlobalInstance" "QueryInterface" "Import" "NewImport"
                 "Array" "Table" "List" "Map" "Set"  "Vector"
                 "Vec2" "Vec3" "Vec4" "RGB" "RGBA" "Quat" "Plane" "Rect" "Matrix" "UUID"
                 ) 'words)

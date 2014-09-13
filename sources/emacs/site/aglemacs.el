@@ -245,11 +245,10 @@ the text to another HTML buffer."
 
 ;;*** niScript **********************************************************
 (autoload 'niscript-mode "niscript" nil t)
-(add-to-list 'auto-mode-alist '("\\.nil\\'" . niscript-mode))
-(add-to-list 'auto-mode-alist '("\\.nit\\'" . niscript-mode))
 (add-to-list 'auto-mode-alist '("\\.ni\\'" . niscript-mode))
-(add-to-list 'auto-mode-alist '("\\.niw\\'" . niscript-mode))
+(add-to-list 'auto-mode-alist '("\\.nim\\'" . niscript-mode))
 (add-to-list 'auto-mode-alist '("\\.nip\\'" . niscript-mode))
+(add-to-list 'auto-mode-alist '("\\.niw\\'" . niscript-mode))
 
 ;;*** TScript ***********************************************************
 (add-to-list 'auto-mode-alist '("\\.at\\'" . c-mode))
