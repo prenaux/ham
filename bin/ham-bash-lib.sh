@@ -66,6 +66,14 @@ die()
   exit 1
 }
 
+waitForKey()
+{
+  if [ "${DONT_WAIT_FOR_KEY_AFTER_BUILD}" != "1" ]; then
+    echo "ERROR, Press any key to finish..."
+    read -n 1
+  fi
+}
+
 dieWait()
 # usage: die ModuleName "Message Saying Why"
 #
@@ -76,8 +84,7 @@ dieWait()
 # any fatal condition.
 {
   complain "$@"
-  echo "ERROR, Press any key to finish..."
-  read -n 1
+  waitForKey
   exit 1
 }
 
@@ -255,6 +262,10 @@ fi
 if [[ -z $BUILD_BIN_LOA ]]; then
     echo "E/BUILD_BIN_LOA not set !"
     exit 1
+fi
+
+if [[ "${EMACS}" == "t" ]]; then
+    export DONT_WAIT_FOR_KEY_AFTER_BUILD=1
 fi
 
 # Make sure HAM_HOME has the proper unix format
