@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef _MAX_PATH
+#  include <limits.h>
+#  define _MAX_PATH (PATH_MAX-1)
+#endif
+
 static const int NUM_COLS = 16;
 
 int main(int argc, char** argv) {
