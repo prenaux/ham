@@ -249,10 +249,10 @@ For more on the structure of this list, see
   :group 'muse-html)
 
 (defcustom muse-html-markup-strings
-  '((image-with-desc . "<table class=\"image\" width=\"100%%\">
-  <tr><td align=\"center\"><img src=\"%1%.%2%\" alt=\"%3%\" /></td></tr>
-  <tr><td align=\"center\" class=\"image-caption\">%3%</td></tr>
-</table>")
+  '((image-with-desc . "<div class='muse-image-with-desc'>
+  <img class='muse-image' src='%1%.%2%' alt='%3%'></img>
+  <div class='muse-image-caption'>%3%</div>
+</div>")
     (image           . "<img src=\"%s.%s\" alt=\"\" />")
     (image-link      . "<a class=\"image-link\" href=\"%s\">
 <div class=\"img-shadow\"><img src=\"%s.%s\" /></div></a>")
@@ -334,10 +334,10 @@ differs little between the various styles."
   :group 'muse-html)
 
 (defcustom muse-xhtml-markup-strings
-  '((image-with-desc . "<table class=\"image\" width=\"100%%\">
-  <tr><td align=\"center\"><img src=\"%1%.%2%\" alt=\"%3%\" /></td></tr>
-  <tr><td align=\"center\" class=\"image-caption\">%3%</td></tr>
-</table>")
+  '((image-with-desc . "<div class='muse-image-with-desc'>
+  <img class='muse-image' src='%1%.%2%' alt='%3%'></img>
+  <div class='muse-image-caption'>%3%</div>
+</div>")
     (image           . "<img src=\"%s.%s\" alt=\"\" />")
     (image-link      . "<a class=\"image-link\" href=\"%s\">
 <img src=\"%s.%s\" alt=\"\" /></a>")
