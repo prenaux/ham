@@ -288,9 +288,6 @@ the text to another HTML buffer."
 (add-to-list 'auto-mode-alist '("\\.xml\\'" . xml-lite-mode))
 (add-to-list 'auto-mode-alist '("\\.xslt\\'" . xml-lite-mode))
 
-;;*** YAWS **************************************************************
-(add-to-list 'auto-mode-alist '("\\.yaws\\'" . html-mode))
-
 ;;*** CSS ***************************************************************
 (setq css-indent-offset 2)
 (add-to-list 'auto-mode-alist '("\\.css\\'" . css-mode))
@@ -319,9 +316,6 @@ the text to another HTML buffer."
 ;;*** Objective-C *****************************************************************
 (add-to-list 'auto-mode-alist '("\\.mm\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.lnt\\'" . c++-mode))
-
-;;*** Rocket HTML  ****************************************************************
-(add-to-list 'auto-mode-alist '("\\.rml\\'" . xml-lite-mode))
 
 ;;*** XML *************************************************************************
 (add-to-list 'auto-mode-alist '("\\.xml\\'" . xml-lite-mode))
