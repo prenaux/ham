@@ -186,8 +186,8 @@ toolset_import_once() {
 toolset_dl() {
     export CWD=`pwd`
     export DIR="${HAM_HOME}/toolsets/$1"
-    export ARCH_URL1="http://localhost:8123/data/toolsets/$2.7z"
-    export ARCH_URL2="https://bitbucket.org/prenaux/ham/downloads/$2.7z"
+    # export ARCH_URL="http://localhost:8123/data/toolsets/$2.7z"
+    export ARCH_URL="https://cdn2.talansoft.com/toolsets/$2.7z"
     export DLFILENAME="_$2.7z"
     echo "DIR:" $DIR
     pushd "${DIR}" > /dev/null
@@ -199,16 +199,12 @@ toolset_dl() {
         7z x -y "$DLFILENAME" | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
         popd
     elif [ ! -e "$DLFILENAME" ]; then
-        echo "... Trying download from ${ARCH_URL1}"
-        wget -c --no-check-certificate $ARCH_URL1 -O"$DLFILENAME.wget"
+        echo "... Trying download from ${ARCH_URL}"
+        wget -c --no-check-certificate $ARCH_URL -O"$DLFILENAME.wget"
         if [ $? != 0 ]; then
-            echo "... Trying download from ${ARCH_URL2}"
-            wget -c --no-check-certificate $ARCH_URL2 -O"$DLFILENAME.wget"
-            if [ $? != 0 ]; then
-                echo "Download failed !"
-                popd
-                return 1;
-            fi
+            echo "Download failed !"
+            popd
+            return 1;
         fi
         mv "$DLFILENAME.wget" "$DLFILENAME"
         echo "... Extracting $DLFILENAME"
