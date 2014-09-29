@@ -1,0 +1,4 @@
+#!/bin/bash
+. ham-bash-lib.sh
+ffmpeg -i "$1" -c:a libopus -vbr on -compression_level 8 "$2"
+
