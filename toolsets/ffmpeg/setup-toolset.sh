@@ -25,6 +25,9 @@ case $HAM_OS in
         ;;
 esac
 
+# path
+export PATH="${HAM_TOOLSET_DIR}":${PATH}
+
 VER="--- ffmpeg ------------------------
 `ffmpeg 2>&1 | grep 'ffmpeg version'`"
 if [ $? != 0 ]; then
