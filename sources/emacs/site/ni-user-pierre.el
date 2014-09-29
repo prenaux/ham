@@ -24,6 +24,18 @@
 (require 'go-mode)
 
 ;;;======================================================================
+;;; Disable all the auto-indent / eletric mode BS that drives me nuts
+;;;======================================================================
+(NotBatchMode
+
+ (setq c-electric-pound-behavior nil)
+ (setq css-electric-keys nil)
+ (setq minibuffer-electric-default-mode nil)
+ (setq xml-lite-electric-slash nil)
+
+)
+
+;;;======================================================================
 ;;; Keyboard
 ;;;======================================================================
 (NotBatchMode
