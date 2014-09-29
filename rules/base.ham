@@ -2628,7 +2628,11 @@ actions Bin2H {
 
 rule Bin2HDataSubDir {
   local DATA = ;
-  local DATA_SRC = [ DataGlob [ FDirName $(SUBDIR) data ] : : abm bmp dds jpg jpeg png tga xml ] ;
+  local EXTS = $(1) ;
+  if ! $(EXTS) {
+    EXTS = abm bmp dds jpg jpeg png tga xml wav ogg mp3 mp4 hdr psd ;
+  }
+  local DATA_SRC = [ DataGlob [ FDirName $(SUBDIR) data ] : : $(EXTS) ] ;
   # ECHO "DATA_SRC:" $(DATA_SRC) ;
   for _d in $(DATA_SRC) {
     # ECHO "_d:" $(_d) "->" $(_d).hxx ;
