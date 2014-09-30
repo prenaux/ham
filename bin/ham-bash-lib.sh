@@ -204,7 +204,7 @@ toolset_dl() {
     export CWD=`pwd`
     export DIR="${HAM_HOME}/toolsets/$1"
     # export ARCH_URL="http://localhost:8123/data/toolsets/$2.7z"
-    export ARCH_URL="https://cdn2.talansoft.com/toolsets/$2.7z"
+    export ARCH_URL="http://cdn2.talansoft.com/toolsets/$2.7z"
     export DLFILENAME="_$2.7z"
     echo "DIR:" $DIR
     pushd "${DIR}" > /dev/null
