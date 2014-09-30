@@ -1,52 +1,55 @@
 #!/bin/bash
 
-# import dependencies
-toolset_import repos
-if [ $? != 0 ]; then return 1; fi
-toolset_import clang_33
-if [ $? != 0 ]; then return 1; fi
-toolset_import nodejs_081
-if [ $? != 0 ]; then return 1; fi
-toolset_import java_jdk16
-if [ $? != 0 ]; then return 1; fi
 toolset_import python_27
+if [ $? != 0 ]; then return 1; fi
+toolset_import nodejs
 if [ $? != 0 ]; then return 1; fi
 toolset_import xslt_tools
 if [ $? != 0 ]; then return 1; fi
 
 # toolset
 export HAM_TOOLSET=EMSCRIPTEN
-export HAM_TOOLSET_VER=2
+export HAM_TOOLSET_VER=1_25
 export HAM_TOOLSET_NAME=emscripten
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/emscripten"
-
-# emscripten setup
-export EMSCRIPTEN_ROOT="${HAM_TOOLSET_DIR}/emscripten"
-export EMSCRIPTEN="${EMSCRIPTEN_ROOT}"
-export LLVM_ROOT="${CLANGDIR}"
-export NODE_JS=
-export PATH="${EMSCRIPTEN_ROOT}":$PATH
-
-# Needed when not using a FASTCOMP enabled clang
-export EMCC_FAST_COMPILER=0
-
-EMSCRIPTEN_DEFAULT_DOT_FILE="${HAM_TOOLSET_DIR}/etc/.emscripten"
 
 # Make the JSCC temporary folder
 mkdir -p "$HOME/.ham/jscc/"
 
-# dl if missing
-if [ ! -e "$EMSCRIPTEN_ROOT" -o ! -e "$EMSCRIPTEN_DEFAULT_DOT_FILE" ]; then
-    toolset_dl emscripten emscripten
-    if [ ! -e "$EMSCRIPTEN_ROOT" -o ! -e "$EMSCRIPTEN_DEFAULT_DOT_FILE" ]; then
-        echo "emscripten folder doesn't exist in the toolset"
+export EMSCRIPTEN_ROOT="${WORK}/emscripten"
+export EMSCRIPTEN="${EMSCRIPTEN_ROOT}"
+export NODE_JS="node"
+export PYTHON="python"
+export PATH="${EMSCRIPTEN_ROOT}":$PATH
+
+# When not using a FASTCOMP enabled clang
+# export EMCC_FAST_COMPILER=0
+
+# path setup
+case $HAM_OS in
+    NT*)
+        export LLVM_ROOT="${HAM_TOOLSET_DIR}/nt-x86/clang"
+        if [ ! -e "$LLVM_ROOT/clang.exe" ]; then
+            toolset_dl emscripten emscripten_nt-x86
+            if [ ! -e "$LLVM_ROOT/clang.exe" ]; then
+                echo "E/nt-x86 folder doesn't exist in the toolset"
+                return 1
+            fi
+        fi
+        export PATH="${LLVM_ROOT}":${PATH}
+        ;;
+    *)
+        echo "E/Toolset: Unsupported host OS"
         return 1
-    fi
+        ;;
+esac
+
+if [ ! -e "$EMSCRIPTEN_ROOT/emcc" ]; then
+    echo "Clone the emscripten repo (https://github.com/prenaux/emscripten.git) into your WORK folder."
+    return 1
 fi
 
-# set JVM mem (need for big code base to build and for the JVM to not sometime
-# fail to instantiate)
-export _JAVA_OPTIONS="-Xms256m -Xmx768m"
+EMSCRIPTEN_DEFAULT_DOT_FILE="${HAM_TOOLSET_DIR}/dot_emscripten"
 
 # copy a configured .emscripten if needed
 if [ ! -f "$HOME/.emscripten" -o ! -f "$HOME/.emscripten_sanity" ]; then

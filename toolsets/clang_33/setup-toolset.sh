@@ -10,17 +10,6 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}"
 
 # path setup
 case $HAM_OS in
-    NT*)
-        export CLANGDIR="${HAM_TOOLSET_DIR}/nt-x86"
-        export PATH="${CLANGDIR}/bin":${PATH}
-        if [ ! -e "$CLANGDIR" ] || [ -z "`type -P clang`" ]; then
-            toolset_dl clang_33 clang_33_nt-x86
-            if [ ! -e "$CLANGDIR" ] || [ -z "`type -P clang`" ]; then
-                echo "E/nt-x86 folder doesn't exist in the toolset"
-                return 1
-            fi
-        fi
-        ;;
     OSX)
         export RUN_DEBUGGER=lldb
         export RUN_DEBUGGER_PARAMS=-f

@@ -29,6 +29,7 @@ if $(FLYMAKE) = 1 {
 SUFPCH = .h.gch ;
 
 C++FLAGS +=
+  --memory-init-file 0
   -std=c++11
 ;
 
@@ -65,7 +66,7 @@ JSCC_OPT_ARGS +=
 ;
 
 ### Link flags ###
-LINKFLAGS += --shell-file [ FQuote $(HAM_HOME)/sources/jscc/shell.html ] ;
+LINKFLAGS += --memory-init-file 0 --shell-file [ FQuote $(HAM_HOME)/sources/jscc/shell.html ] ;
 if $(DEBUG) = 1 {
   LINKFLAGS += $(JSCC_DBG_ARGS) ;
 }
