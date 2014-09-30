@@ -68,8 +68,8 @@ die()
 
 waitForKey()
 {
-  if [ "${DONT_WAIT_FOR_KEY_AFTER_BUILD}" != "1" ]; then
-    echo "ERROR, Press any key to finish..."
+  if [[ "${EMACS}" != "t" ]]; then
+    echo "Press any key to finish..."
     read -n 1
   fi
 }
