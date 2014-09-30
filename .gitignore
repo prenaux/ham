@@ -55,6 +55,7 @@ publish
 
 # Don't put the binary toolsets in the repo...
 toolsets/*/*/
+!toolsets/*/*_patch/
 toolsets/*/*.7z
 
 ### Ham ####################################
