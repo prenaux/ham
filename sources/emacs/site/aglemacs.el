@@ -101,59 +101,6 @@
         ("\\.hxx\\'" (".cxx"))))
 
 ;;;======================================================================
-;;; Imenu
-;;;======================================================================
-(NotBatchMode
- (agl-begin-time-block "Imenu")
-
- (setq imenu-auto-rescan nil)
- (setq which-func-modes t)
- (which-function-mode)
-
- (defun try-to-add-imenu ()
-   (condition-case nil (imenu-add-menubar-index) (error nil)))
- (add-hook 'font-lock-mode-hook 'try-to-add-imenu)
-
- (defun agl-imenu-rescan () ""
-   (interactive)
-   (imenu--cleanup)
-   (setq imenu--index-alist nil)
-   (imenu-update-menubar)
-   (imenu--make-index-alist t))
-
- (defun agl-goto-symbol ()
-   "Will update the imenu index and then use ido to select a symbol to navigate to"
-   (interactive)
-   (agl-imenu-rescan)
-   (let ((name-and-pos '())
-         (symbol-names '()))
-     (flet ((addsymbols (symbol-list)
-                        (when (listp symbol-list)
-                          (dolist (symbol symbol-list)
-                            (let ((name nil) (position nil))
-                              (cond
-                               ((and (listp symbol) (imenu--subalist-p symbol))
-                                (addsymbols symbol))
-
-                               ((listp symbol)
-                                (setq name (car symbol))
-                                (setq position (cdr symbol)))
-
-                               ((stringp symbol)
-                                (setq name symbol)
-                                (setq position (get-text-property 1 'org-imenu-marker symbol))))
-
-                              (unless (or (null position) (null name))
-                                (add-to-list 'symbol-names name)
-                                (add-to-list 'name-and-pos (cons name position))))))))
-       (addsymbols imenu--index-alist))
-     (let* ((selected-symbol (ido-completing-read "Symbol? " symbol-names))
-            (position (cdr (assoc selected-symbol name-and-pos))))
-       (goto-char position))))
-
-)
-
-;;;======================================================================
 ;;; Htmlize
 ;;;======================================================================
 (agl-begin-time-block "Htmlize")
@@ -356,11 +303,9 @@ the text to another HTML buffer."
 
  (setq
   ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]"))
-  ido-save-directory-list-file "~/.emacs.d/emacs-ido-last"
-                                        ;ido-work-directory-list '("~/" "~/Docs" "~/Work")
-  ido-ignore-buffers                    ; Ignore buffers:
-  '("\\` " "^\*Back" "^\*Compile-Log" "^\*Ido")
-                                        ;ido-confirm-unique-completion t ; Wait for RET, even on unique
+  ido-save-directory-list-file nil
+  ido-ignore-buffers '("\\` " "^\*Back" "^\*Compile-Log" "^\*Ido")
+  ;; ido-confirm-unique-completion t    ; Wait for RET, even on unique
   ido-everywhere t                      ; Enabled for various dialogs
   ido-case-fold  t                      ; Case-insensitive
   ido-use-filename-at-point nil         ; Use filename at point
@@ -369,23 +314,11 @@ the text to another HTML buffer."
   ido-max-prospects 8                   ; Keep minibuffer clean
   ido-create-new-buffer 'always
   ido-enable-tramp-completion nil
+  ido-enable-last-directory-history nil
+  ido-record-commands nil
+  ido-max-work-directory-list 0
+  ido-max-work-file-list 0
   )
-
- (defun agl-ido-shell ()
-   "Use ido to select a recently opened file from the `recentf-list'"
-   (let ((history nil)
-         (index (1- (ring-length comint-input-ring))))
-     ;; We have to build up a list ourselves from the ring vector.
-     (while (>= index 0)
-       (setq history (cons (ring-ref comint-input-ring index) history)
-             index (1- index)))
-     (comint-previous-matching-input
-      (ido-completing-read "History: "
-                           history
-                           nil t)
-      -1
-      )
-     ))
 )
 
 ;;;======================================================================
@@ -500,12 +433,6 @@ BEG and END (region to sort)."
   (goto-char (point-max))
   (comint-next-input 1))
 
-(defun agl-ide-open-current-buffer ()
-  "Open file in the default IDE"
-  (interactive)
-  (agl-bash-cmd-to-string
-   (concat (getenv "HAM_HOME") "/bin/ham-open-in-debugger.sh " (buffer-file-name) " " (number-to-string (line-number-at-pos)))))
-
 (defun day-name ()
   (let ((date (calendar-day-of-week
                (calendar-current-date)))) ; 0-6
@@ -552,44 +479,6 @@ BEG and END (region to sort)."
 ;;; Search / Find in files
 ;;;======================================================================
 (agl-begin-time-block "Search / Find in files")
-(defun agl-replace-identifier ()
-  "Replace thing at point with another string."
-  (interactive)
-  (let* ((old-string (prog1
-                         (agl-get-symbol-at-point "Replace: " current-prefix-arg)
-                       (when isearch-mode (isearch-done))))
-         (new-string (read-string (concat "Replace '" old-string "' with: ") "" nil old-string)))
-    (save-excursion
-      (deactivate-mark)
-      (goto-char (point-min))
-      (query-replace-regexp old-string new-string))))
-
-(defun agl-occur-identifier ()
-  "Open occur buffer with identifier at point."
-  (interactive)
-  (occur (agl-get-symbol-at-point "Find occurances in buffer (regex): ") current-prefix-arg)
-  (agl-resize-other-window))
-
-(defun agl-get-symbol-at-point (&optional msg-prompt prompt-always no-regexp-quote)
-  "Get the symbol at the cursor's position, optionally shows a prompt that permits to change it"
-  (interactive)
-  ;;(message "agl-get-symbol-at-point %s %s" isearch-mode isearch-string)
-  (let* ((region-string
-          (if mark-active
-              (buffer-substring-no-properties (region-beginning) (region-end))
-            nil))
-         (symbol (cond
-                  (isearch-mode
-                   isearch-string)
-                  (mark-active
-                   (progn
-                     (setq region-string (if no-regexp-quote region-string (regexp-quote region-string)))))
-                  (t (thing-at-point 'symbol)))))
-    (when (or prompt-always
-              (not symbol))
-      (when msg-prompt
-        (setq symbol (read-string msg-prompt  symbol))))
-    (when symbol (substring-no-properties symbol))))
 
 ;; hippie expand functions
 ;; 28.11.2003: from MicheleBini (emacs wiki page)
@@ -668,46 +557,6 @@ BEG and END (region to sort)."
 	  (he-init-string b e)
 	  (he-substitute-string (concat " " r))
 	  t)))))))
-
-(defun agl-insert-date (dayincr)
-  "Inserts a date-stamp at point - Format: \"YYYY-MM-DD (wd)\""
-  (interactive "p")
-  (if (null current-prefix-arg) (setq dayincr 0))
-  (let* ((base 65536.0)
-         (nowlist (current-time))
-         (datenum (+ (*  (nth 0 nowlist) base) (nth 1 nowlist)
-                     (* dayincr 60.0 60.0 24.0)))
-         (s (current-time-string
-             (list (truncate( / datenum base)) (truncate(mod datenum base)))))
-         (date))
-    (if (equal current-prefix-arg '(4))
-        (progn
-          (let ((bound (line-beginning-position))
-                (datenum)
-                (datestring))
-            (goto-char (min (point-max) (+ (point) 10)))
-            (re-search-backward "[0-9][0-9]\\.[0-9][0-9]\\.[0-9][0-9][0-9][0-9]" bound)
-            (setq datestring (buffer-substring (point) (+ (point) 10)))
-            (setq datenum (calendar-absolute-from-gregorian
-                           (list
-                            (string-to-number (substring datestring 3 5))
-                            (string-to-number (substring datestring 0 2))
-                            (string-to-number (substring datestring 6 10)))))
-            (setq dayincr (string-to-number (read-string "Increment by days: " "7")))
-            (delete-region (point) (+ 10 (point)))
-            (setq date (calendar-gregorian-from-absolute (+ datenum dayincr)) datestring)))
-      (setq date (list (length (member (substring s 4 7)
-                                       '("Dec" "Nov" "Oct" "Sep" "Aug" "Jul"
-                                         "Jun" "May" "Apr" "Mar" "Feb" "Jan")))
-                       (string-to-number (substring s 8 10))
-                       (string-to-number (substring s 20 24)))))
-                       ;;(cdr (assoc (substring s 0 3)
-                       ;;            '(("Son" . "So")("Mon" . "Mo")("Tue" . "Di")
-                       ;;              ("Wed" . "Mi")("Thu" . "Do")("Fri" . "Fr")
-                       ;;              ("Sat" ."Sa")))))))
-
-    (insert (format "%04d-%02d-%02d" (nth 2 date) (nth 0 date) (nth 1 date)))))
-    ;(message "%s" date)))
 
 ;;;======================================================================
 ;;; Overlays
@@ -796,18 +645,6 @@ BEG and END (region to sort)."
   ;; it's not loaded yet, so add our bindings to the load-hook
   (add-hook 'dired-load-hook 'my-dired-init))
 )
-
-;;;======================================================================
-;;; gnuplot
-;;;======================================================================
-(agl-begin-time-block "gnuplot")
-;; these lines enable the use of gnuplot mode
-(autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
-(autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot mode" t)
-
-;; this line automatically causes all files with the .gp extension to
-;; be loaded into gnuplot mode
-(setq auto-mode-alist (append '(("\\.gp$" . gnuplot-mode)) auto-mode-alist))
 
 ;;;======================================================================
 ;;; WindMove
@@ -950,7 +787,9 @@ BEG and END (region to sort)."
  (agl-begin-time-block "Autoindent yank")
 
 ;; automatically indenting yanked text if in programming-modes
-(defvar yank-indent-modes '(emacs-lisp-mode erlang-mode niscript-mode
+(defvar yank-indent-modes '(emacs-lisp-mode
+                            erlang-mode
+                            niscript-mode
                             c-mode c++-mode
                             tcl-mode sql-mode
                             perl-mode cperl-mode
@@ -1022,27 +861,10 @@ BEG and END (region to sort)."
       (cons '("\\.markdown" . markdown-mode) auto-mode-alist))
 
 ;;;======================================================================
-;;; Command Shortcuts
-;;;======================================================================
-(NotBatchMode
- (defalias '_io 'agl-ide-open-current-buffer)
-)
-
-;;;======================================================================
 ;;; Main Keyboard Shortcuts
 ;;;======================================================================
 (NotBatchMode
  (agl-begin-time-block "Main Keyboard Shortcuts")
-
- (defun toggle-fullscreen (&optional f)
-   (interactive)
-   (let ((current-value (frame-parameter nil 'fullscreen)))
-     (set-frame-parameter nil 'fullscreen
-                          (if (equal 'fullboth current-value)
-                              (if (boundp 'old-fullscreen) old-fullscreen nil)
-                            (progn (setq old-fullscreen current-value)
-                                   'fullboth)))))
- (global-set-key [f11] 'toggle-fullscreen)
 
  (defun make-agl-expand ()
    (make-hippie-expand-function
@@ -1136,15 +958,6 @@ BEG and END (region to sort)."
 )
 
 ;;;======================================================================
-;;; expand-region
-;;;======================================================================
-(add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/expand-region.el"))
-(require 'expand-region)
-;; Expand region (increases selected region by semantic units)
-(global-set-key (kbd "C-@") 'er/expand-region)
-;; (global-set-key [double-mouse-1] 'er/expand-region)
-
-;;;======================================================================
 ;;; mark-multiple.el
 ;;;======================================================================
 (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/mark-multiple.el"))
@@ -1234,7 +1047,7 @@ With zero ARG, skip the last one and mark next."
                           (backward-char 1)))
                    ))))))
 
- (global-set-key (kbd "C-.")   'goto-match-paren2)
+ (global-set-key (kbd "C-.") 'goto-match-paren2)
 
  (global-set-key "\C-cy" '(lambda ()
                             (interactive)

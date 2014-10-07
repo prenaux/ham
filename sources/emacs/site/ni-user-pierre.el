@@ -101,70 +101,6 @@
 
  (global-set-key (key "C-1") 'my-other-window)
  (global-set-key (key "C-2") 'my-other-window)
-
-)
-
-;;;======================================================================
-;;; Change Highlights
-;;;======================================================================
-(NotBatchMode
- ;;
- ;; Track the changes made to the current buffer.
- ;;
- ;; Ctrl-Alt-PgUp/PgDown to go the the previous/next changes.
- ;;
- ;; Press Ctrl-F6 to toggle on/off the visual marker. Changes are underlined, the
- ;; red stuff is where things have been removed.
- ;;
-
- ;; higlight changes in documents
- (global-highlight-changes-mode t)
- (setq highlight-changes-visibility-initial-state nil); initially hide
-
- (make-empty-face 'highlight-changes-saved-face)
- (setq highlight-changes-face-list '(highlight-changes-saved-face))
-
- ;; reset the custom change highlighting
- (defface highlight-changes-face
-   '((((class color)) (:foreground "#88d" :underline t))
-     (t (:inverse-video t)))
-   "Face used for highlighting changes."
-   :group 'highlight-changes)
- (set-face-foreground 'highlight-changes nil)
-
- (defface highlight-changes-delete-face
-   '((((class color)) (:foreground "red" :underline t))
-     (t (:inverse-video t)))
-   "Face used for highlighting deletions."
-   :group 'highlight-changes)
- ;; (set-face-foreground 'highlight-changes-delete nil)
-
- (eval-after-load "hilit-chg"
-   '(progn
-      (defvar highlight-fringe-mark 'filled-square
-        "The fringe bitmap name marked at changed line.
-Should be selected from `fringe-bitmaps'.")
-
-      (defadvice hilit-chg-make-ov (after hilit-chg-add-fringe activate)
-        (mapc (lambda (ov)
-                (if (overlay-get ov 'hilit-chg)
-                    (let ((fringe-anchor (make-string 1 ?x)))
-                      (put-text-property 0 1 'display
-                                         (list 'left-fringe highlight-fringe-mark)
-                                         fringe-anchor)
-                      (overlay-put ov 'before-string fringe-anchor))
-                ))
-              (overlays-at (ad-get-arg 1))))))
-
- ;; toggle visibility
- (global-set-key (kbd "C-<f6>") 'highlight-changes-visible-mode) ;; changes
- ;; remove the change-highlight in region
- (global-set-key (kbd "S-<f6>") 'highlight-changes-remove-highlight)
-
- ;; goto previous / next changes...
- (global-set-key (kbd "<C-M-prior>") 'highlight-changes-previous-change)
- (global-set-key (kbd "<C-M-next>")  'highlight-changes-next-change)
-
 )
 
 ;;;======================================================================
@@ -222,7 +158,6 @@ If the new path's directories does not exist, create them."
      )))
 
  (add-hook 'after-save-hook 'ni-backup-current-file-handler)
-
 )
 
 ;;;======================================================================
@@ -424,14 +359,6 @@ If the new path's directories does not exist, create them."
 ;;; Web mode
 ;;;======================================================================
 (NotBatchMode
- ;; (require 'multi-web-mode)
- ;; (setq mweb-default-major-mode 'html-mode)
- ;; (setq mweb-tags '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
-                   ;; (js-mode "<script[^>]*>" "</script>")
-                   ;; (css-mode "<style[^>]*>" "</style>")))
- ;; (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
- ;; (multi-web-global-mode 1)
-
  (require 'web-mode)
  (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
  (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
@@ -445,4 +372,3 @@ If the new path's directories does not exist, create them."
 
  (setq web-mode-enable-current-element-highlight t)
 )
-
