@@ -1,3 +1,4 @@
+#!/bin/bash
 if [[ -z $HAM_HOME ]]; then
     echo "E/HAM_HOME not set !"
     exit 1
@@ -240,7 +241,7 @@ if [[ $OS == Windows* ]]; then
     if [ -z $HOME ]; then
         export HOME=`unxpath "$USERPROFILE"`
     fi
-elif [[ "`uname`" == "Darwin" ]]; then
+elif [[ "$OSTYPE" == "darwin"* ]]; then
     export HAM_OS=OSX
     export HAM_BIN_LOA=osx-x86
 else
