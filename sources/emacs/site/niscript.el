@@ -320,21 +320,21 @@ comments have been removed."
 
 (defconst nip-font-lock-keywords-1
   (list
-   (list nip-function-heading-1-re 1 font-lock-function-name-face)
    (list "[=(][ \t]*\\(/.*?[^\\]/\\w*\\)" 1 font-lock-string-face))
   "Level one font lock.")
 
 (defconst nip-font-lock-keywords-2
   (append nip-font-lock-keywords-1
-          (list (list nip-keyword-re 1 font-lock-keyword-face)
-                (cons nip-lisp-re font-lock-keyword-face)
-                (cons nip-builtin-re font-lock-builtin-face)
-                (cons nip-lisp-builtin-re font-lock-builtin-face)
-                (cons nip-pp-re font-lock-preprocessor-face)
-                (cons nip-basic-type-re font-lock-type-face)
-                (cons nip-constant-re font-lock-constant-face)))
+          (list
+           (list nip-function-heading-1-re 1 font-lock-function-name-face)
+           (list nip-keyword-re 1 font-lock-keyword-face)
+           (cons nip-lisp-re font-lock-keyword-face)
+           (cons nip-builtin-re font-lock-builtin-face)
+           (cons nip-lisp-builtin-re font-lock-builtin-face)
+           (cons nip-pp-re font-lock-preprocessor-face)
+           (cons nip-basic-type-re font-lock-type-face)
+           (cons nip-constant-re font-lock-constant-face)))
   "Level two font lock.")
-
 
 ;; Limitations with variable declarations: There seems to be no
 ;; sensible way to highlight variables occuring after an initialized
@@ -382,7 +382,6 @@ comments have been removed."
 (defconst nip-font-lock-keywords
   '(nip-font-lock-keywords-3)
   "See `font-lock-keywords'.")
-
 
 ;; --- Indentation ---
 
