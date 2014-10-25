@@ -150,6 +150,7 @@ the text to another HTML buffer."
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.cni\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.metal\\'" . c++-mode))
 
 (setq auto-mode-alist
       (cons '("\\.m$" . objc-mode) auto-mode-alist))
