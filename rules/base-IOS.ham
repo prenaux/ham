@@ -7,15 +7,30 @@ CC = clang ;
 C++ = clang++ ;
 LINK = ld ;
 
-# Define here the CPU instruction set to use (armv6, armv7, armv7f or armv7s)
+# Define here the CPU instruction set to use (armv6, armv7, armv7f, armv7s or arm64)
 # The armv6 instruction set is used in old devices, prior to the iPhone 3GS.
 # The armv7 set extends the armv6 and is used in all modern iOS devices.
 # The armv7f set adds dual-core instructions to armv7 for Apple A5 devices.
 # The armv7s set adds integer division optimizations for Apple A6 devices.
-IOS_CPUSET ?= ARMv7 ;
+# The arm64 set is for the A7, A8 and A8X devices, 64bit CPUs.
+IOS_ARCH ?= ARM64 ;
+switch $(IOS_ARCH) {
+  case armv6 :
+    IOS_ARCH = $(IOS_ARCH) ;
+  case armv7 :
+    IOS_ARCH = $(IOS_ARCH) ;
+  case armv7f :
+    IOS_ARCH = $(IOS_ARCH) ;
+  case armv7s :
+    IOS_ARCH = $(IOS_ARCH) ;
+  case arm64 :
+    IOS_ARCH = $(IOS_ARCH) ;
+  case * :
+    EXIT "E/Unknown IOS_ARCH: '$(IOS_ARCH)'. Should be armv6, armv7, armv7f, armv7s or arm64." ;
+}
 
 # Define here the minimal iOS version's MAJOR number (iOS3, iOS4 or iOS5)
-IOS_MINVER ?= 4 ;
+IOS_MINVER ?= 8 ;
 
 switch $(IOS_MINVER) {
   case 3 :
@@ -30,16 +45,22 @@ switch $(IOS_MINVER) {
   case 6 :
     IOS_FRAMEWORKS = -framework Accelerate -framework Accounts  -framework AdSupport -framework AssetsLibrary  -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreBluetooth -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreImage -framework CoreLocation -framework CoreMedia -framework CoreMIDI -framework CoreMotion -framework CoreTelephony -framework CoreText -framework CoreVideo -framework EventKit -framework EventKitUI -framework ExternalAccessory -framework Foundation -framework GameKit -framework GLKit -framework GSS -framework iAd -framework ImageIO -framework IOKit -framework MapKit -framework MediaPlayer -framework MediaToolbox -framework MessageUI -framework MobileCoreServices -framework NewsstandKit -framework OpenGLES -framework PassKit -framework QuartzCore -framework QuickLook -framework Security -framework Social -framework StoreKit -framework SystemConfiguration -framework Twitter -framework UIKit -framework VideoToolbox ;
 
+  case 7 :
+    IOS_FRAMEWORKS = -framework Accelerate -framework Accounts  -framework AdSupport -framework AssetsLibrary  -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreBluetooth -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreImage -framework CoreLocation -framework CoreMedia -framework CoreMIDI -framework CoreMotion -framework CoreTelephony -framework CoreText -framework CoreVideo -framework EventKit -framework EventKitUI -framework ExternalAccessory -framework Foundation -framework GameKit -framework GLKit -framework GSS -framework iAd -framework ImageIO -framework IOKit -framework MapKit -framework MediaPlayer -framework MediaToolbox -framework MessageUI -framework MobileCoreServices -framework NewsstandKit -framework OpenGLES -framework PassKit -framework QuartzCore -framework QuickLook -framework Security -framework Social -framework StoreKit -framework SystemConfiguration -framework Twitter -framework UIKit -framework VideoToolbox ;
+
+  case 8 :
+    IOS_FRAMEWORKS = -framework Accelerate -framework Accounts  -framework AdSupport -framework AssetsLibrary  -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreBluetooth -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreImage -framework CoreLocation -framework CoreMedia -framework CoreMIDI -framework CoreMotion -framework CoreTelephony -framework CoreText -framework CoreVideo -framework EventKit -framework EventKitUI -framework ExternalAccessory -framework Foundation -framework GameKit -framework GLKit -framework GSS -framework iAd -framework ImageIO -framework IOKit -framework MapKit -framework MediaPlayer -framework MediaToolbox -framework MessageUI -framework MobileCoreServices -framework NewsstandKit -framework OpenGLES -framework PassKit -framework QuartzCore -framework QuickLook -framework Security -framework Social -framework StoreKit -framework SystemConfiguration -framework Twitter -framework UIKit -framework VideoToolbox ;
+
   case * :
     EXIT "E/Unknown iOS version !" ;
 }
 
 CLANG_BASE_FLAGS =
-  -arch $(IOS_CPUSET:L)
+  -arch $(IOS_ARCH:L)
   -fconstant-cfstrings
   -miphoneos-version-min=$(IOS_MINVER).0.0
   -DIPHONE
-  -D__CPU_$(IOS_CPUSET)__
+  -D__CPU_$(IOS_ARCH)__
   -D__IPHONE_OS_VERSION_MIN_REQUIRED=$(IOS_MINVER)0000
 ;
 
@@ -48,14 +69,22 @@ if $(NT) {
   CLANG_BASE_FLAGS +=
     -fdiagnostics-format=msvc
     --sysroot "\"$(IPHONE_SDK_DIR)\""
-    -ccc-host-triple $(IOS_CPUSET:L)-apple-ios$(IOS_MINVER).0.0
+    -ccc-host-triple $(IOS_ARCH:L)-apple-ios$(IOS_MINVER).0.0
     -integrated-as
   ;
 }
 else {
   IPHONE_SDK_DIR = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/ ;
+  # iOS 8.1 SDK
+  if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS8.1.sdk ] {
+    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS8.1.sdk ;
+    CLANG_BASE_FLAGS +=
+      -isysroot "\"$(IPHONE_SDK_DIR)\""
+      -fmessage-length=0
+    ;
+  }
   # iOS 7 SDK
-  if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS7.0.sdk ] {
+  else if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS7.0.sdk ] {
     IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS7.0.sdk ;
     CLANG_BASE_FLAGS +=
       -isysroot "\"$(IPHONE_SDK_DIR)\""
@@ -67,9 +96,12 @@ else {
     IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS6.1.sdk ;
     CLANG_BASE_FLAGS +=
       --sysroot "\"$(IPHONE_SDK_DIR)\""
-      -ccc-host-triple $(IOS_CPUSET:L)-apple-ios$(IOS_MINVER).0.0
+      -ccc-host-triple $(IOS_ARCH:L)-apple-ios$(IOS_MINVER).0.0
       -integrated-as
     ;
+  }
+  else {
+    EXIT "Can't set IPHONE_SDK_DIR !" ;
   }
 }
 
