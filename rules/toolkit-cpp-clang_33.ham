@@ -57,7 +57,7 @@ if $(OSX) {
     LINKFLAGS_EXE += -s -dead_strip ;
     LINKFLAGS_DLL += -s -dead_strip ;
   }
-  LINKLIBS += -framework Foundation -framework CoreServices -framework Cocoa -framework IOKit -framework OpenGL -framework AGL -lstdc++ -lpthread -ldl ;
+  LINKLIBS += -framework Foundation -framework CoreServices -framework AudioUnit -framework CoreAudio -framework Cocoa -framework IOKit -framework OpenGL -framework AGL -lstdc++ -lpthread -ldl ;
 }
 
 CCFLAGS   += $(CLANG_CC_ARGS) ;
