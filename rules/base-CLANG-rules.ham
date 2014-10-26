@@ -3,16 +3,6 @@ actions together piecemeal Archive
   $(AR) "$(<)" "$(>:T)"
 }
 
-actions Cc
-{
-  $(CC) -c -o $(<) $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I"$(STDHDRS)" "$(>)"
-}
-
-actions C++
-{
-  $(C++) -c -o $(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) -I"$(STDHDRS)" "$(>)"
-}
-
 if $(OS) = MACOSX
 {
   LINKFLAGS_DLL = -rpath "@loader_path/." ;

@@ -6,10 +6,6 @@
 #
 
 #
-# JAMBASE - jam 2.5 ruleset providing make(1)-like functionality
-#
-# Supports UNIX, NT, and VMS.
-#
 # 12/27/93 (seiwald) - purturb library sources with SOURCE_GRIST
 # 04/18/94 (seiwald) - use '?=' when setting OS specific vars
 # 04/21/94 (seiwald) - do RmTemps together
@@ -35,6 +31,30 @@
 # 11/21/96 (peterk) - Support for BeOS
 # 07/19/99 (sickel) - Support for Mac OS X Server (and maybe client)
 # 02/18/00 (belmonte)- Support for Cygwin.
+
+#
+# Variables modifiers:
+#
+# :B -> Select filename base. This does not include the suffix.
+# :S -> Select last filename suffix, if any; this includes the last dot (.)
+# :D -> Select directory path
+# :P -> Select "parent" directory path.
+# :G -> Select the grist.
+#
+# :B=basename -> Replace each element's base name. Does not change the suffix.
+# :S=suffix -> Replace each element's last suffix by suffix.
+# :D=path -> Replace each element's directory path by path.
+# :G=grist -> Replace each element's grist by path.
+# :R=root -> Prepend root to each element, if it's not already rooted/absolute.
+#
+# :E -> Expand to the empty string if the variable is undefined, or normally otherwise.
+# :E=value -> Expand to a given value if the variable is undefined, or normally otherwise.
+# :J=separator -> Expands the variable into a single string, by concatenating its element with separator.
+# :/ -- convert all \ to /
+#	:\ -- convert all / to \
+# :L -> Lowercase the variable.
+# :U -> Uppercase the variable.
+#
 
 # Special targets defined in this file:
 #
@@ -557,11 +577,15 @@ SUFLIB      ?= .a ;
 SUFOBJ      ?= .o ;
 UNDEFFLAG   ?= "-u _" ;
 RCFLAGS     ?= ;
-SUFAQO      ?= .aq ;
 SUFJAVAC    ?= .class ;
 
 HDRPATTERN =
 "^[ 	]*#[ 	]*include[ 	]*[<\"]([^\">]*)[\">].*$" ;
+
+# the OS envvar is declared by Xcode in OSX, so we override it here
+if $(OS) = MACOS {
+  OS = MACOSX ;
+}
 
 OSFULL = $(OS)$(OSVER)$(OSPLAT) $(OS)$(OSPLAT) $(OS)$(OSVER) $(OS) ;
 
@@ -1470,9 +1494,6 @@ rule FTargetSuffix
     case .java : return $(SUFJAVAC) ;
     case .scala : return $(SUFJAVAC) ;
     case .erl :	return $(SUFBEAM) ;
-    case .aq : return $(SUFAQO) ;
-    case .aqw :	return $(SUFAQO) ;
-    case .aqp :	return $(SUFAQO) ;
     case .asm : return $(SUFOBJ) ;
     case .masm : return $(SUFOBJ) ;
     case .c : return $(SUFOBJ) ;
@@ -1513,9 +1534,6 @@ rule ObjectSuf
     case .beam :
       Object $(d) : $(_i) ;
       Depends beam : $(d) ;
-    case $(SUFAQO) :
-      Object $(d) : $(_i) ;
-      Depends aqo : $(d) ;
     case * :
       Object $(d) : $(_i) ;
       Depends obj : $(d) ;
@@ -2123,12 +2141,6 @@ actions Masm
    ml -nologo -Fo "$(<)" -c "$(>)"
 }
 
-actions C++
-{
-  SRC_ABSPATH="`pwd`/$(>)"
-  $(C++) -c -o "$(<)" $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "${SRC_ABSPATH}"
-}
-
 actions Cc
 {
   SRC_ABSPATH="`pwd`/$(>)"
@@ -2139,6 +2151,12 @@ actions C99
 {
   SRC_ABSPATH="`pwd`/$(>)"
   $(CC) -c -o "$(<)" $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "${SRC_ABSPATH}"
+}
+
+actions C++
+{
+  SRC_ABSPATH="`pwd`/$(>)"
+  $(C++) -c -o "$(<)" $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "${SRC_ABSPATH}"
 }
 
 rule LintC
@@ -2707,7 +2725,7 @@ rule FlyMakeSetup
 #----------------------------------------------------------------------
 #     Standard directories and the cache file
 #----------------------------------------------------------------------
-TEMPDIR ?= [ FDirName $(HOME) .ham ] ;
+TEMPDIR ?= [ FDirName $(HOME) _ham ] ;
 BASEOBJDIR ?= [ FDirName $(TEMPDIR) obj ] ;
 HCACHEFILE ?= [ FDirName $(TEMPDIR) _cache.ham ] ;
 

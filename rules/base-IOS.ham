@@ -14,17 +14,17 @@ LINK = ld ;
 # The armv7s set adds integer division optimizations for Apple A6 devices.
 # The arm64 set is for the A7, A8 and A8X devices, 64bit CPUs.
 IOS_ARCH ?= ARM64 ;
-switch $(IOS_ARCH) {
+switch $(IOS_ARCH:L) {
   case armv6 :
-    IOS_ARCH = $(IOS_ARCH) ;
+    IOS_ARCH = $(IOS_ARCH:U) ;
   case armv7 :
-    IOS_ARCH = $(IOS_ARCH) ;
+    IOS_ARCH = $(IOS_ARCH:U) ;
   case armv7f :
-    IOS_ARCH = $(IOS_ARCH) ;
+    IOS_ARCH = $(IOS_ARCH:U) ;
   case armv7s :
-    IOS_ARCH = $(IOS_ARCH) ;
+    IOS_ARCH = $(IOS_ARCH:U) ;
   case arm64 :
-    IOS_ARCH = $(IOS_ARCH) ;
+    IOS_ARCH = $(IOS_ARCH:U) ;
   case * :
     EXIT "E/Unknown IOS_ARCH: '$(IOS_ARCH)'. Should be armv6, armv7, armv7f, armv7s or arm64." ;
 }

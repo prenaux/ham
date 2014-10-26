@@ -114,13 +114,14 @@ nativedir()
             2>/dev/null cd "$DIRPATH"; pwd -W
             ;;
         *)
-            echo "$DIRPATH"
+            # echo "$DIRPATH"
+            echo $( cd "$DIRPATH" && pwd )
             ;;
     esac
 }
 
 unxpath()
-# usage: NativePathNameVariable=`unx32path "/MSYS/PathName"`
+# usage: NativePathNameVariable=`unxpath "/MSYS/PathName"`
 #
 # Determine the native Native path name equivalent for the POSIX style
 # "/MSYS/PathName";  (CAVEAT:  the specified "/MSYS/PathName" *must*
