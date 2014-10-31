@@ -21,6 +21,8 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        # Set to armv7 explicitly because the Windows toolchain doesnt support arm64
+        export IOS_ARCH=armv7
         ;;
     OSX)
         ;;
