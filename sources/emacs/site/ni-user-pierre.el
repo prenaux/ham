@@ -24,6 +24,26 @@
 (require 'go-mode)
 
 ;;;======================================================================
+;;; Speedbar
+;;;======================================================================
+;; (NotBatchMode
+ ;; (require 'ni-speedbar)
+ ;; (sr-speedbar-open) ;; use (sr-speedbar-close) if you dont want it to be opened when emacs starts
+;; )
+
+;;;======================================================================
+;;; Font Lock
+;;;======================================================================
+
+;; Copy the following in .emacs if you don't like the christmas like syntax highlighting
+;; (NotBatchMode
+ ;; (setq font-lock-maximum-decoration 1)
+ ;; (global-font-lock-mode t)
+ ;; (setq font-lock-maximum-decoration
+       ;; '((c-mode . 1) (c++-mode . 1) (niscript-mode . 1)))
+;; )
+
+;;;======================================================================
 ;;; Disable all the auto-indent / eletric mode BS that drives me nuts
 ;;;======================================================================
 (NotBatchMode
@@ -188,34 +208,6 @@ If the new path's directories does not exist, create them."
  ;;
  (defun no-split-window () (interactive) nil)
  (setq split-window-preferred-function 'no-split-window)
-
- (defun rotate-windows ()
-   "Rotate your windows"
-   (interactive)
-   (cond ((not (> (count-windows)1))
-          (message "You can't rotate a single window!"))
-         (t
-          (setq i 1)
-          (setq numWindows (count-windows))
-          (while  (< i numWindows)
-            (let* (
-                   (w1 (elt (window-list) i))
-                   (w2 (elt (window-list) (+ (% i numWindows) 1)))
-
-                   (b1 (window-buffer w1))
-                   (b2 (window-buffer w2))
-
-                   (s1 (window-start w1))
-                   (s2 (window-start w2))
-                  )
-              (set-window-buffer w1  b2)
-              (set-window-buffer w2 b1)
-              (set-window-start w1 s2)
-              (set-window-start w2 s1)
-              (setq i (1+ i)))))))
-
- (global-set-key (key "C-3") 'rotate-windows)
-
 )
 
 ;;;======================================================================
@@ -371,4 +363,28 @@ If the new path's directories does not exist, create them."
  (add-to-list 'auto-mode-alist '("\\.htm?\\'" . web-mode))
 
  (setq web-mode-enable-current-element-highlight t)
+
+ (set-face-attribute 'web-mode-current-element-highlight-face nil :background "LightYellow2")
+ (set-face-attribute 'web-mode-current-column-highlight-face nil :background "LightYellow2")
+)
+
+;;;======================================================================
+;;; Autocomplete
+;;;======================================================================
+(NotBatchMode
+
+ ;; pabbrev by default
+ (require 'ni-autocomplete-pabbrev)
+
+ ;; company-mode only when Ctrl+/ is pressed
+ (require 'ni-autocomplete-company)
+ (setq company-ni-idl-merge-dabbrev  nil)
+
+ ;; put the following in your .emacs if you want company to show up automatically without pressing Ctrl+/
+ ;; (setq company-idle-delay-default 0.15)
+ ;; (setq company-ni-idl-merge-dabbrev  t)
+
+ ;; you'll want this in your .emacs you can also call it by hand when you want
+ ;; if it takes too long for you to have at every emacs startup
+ ;; (ni-idl-build-cache)
 )

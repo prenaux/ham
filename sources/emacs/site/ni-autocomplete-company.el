@@ -9,7 +9,12 @@
  (define-global-minor-mode my-global-company-mode company-mode
    (lambda ()
      (when (not (memq major-mode
-                      (list 'slime-repl-mode 'shell-mode 'ham-shell-mode)))
+                      (list
+                       ;; modes for which company mode isn't enabled
+                       'slime-repl-mode
+                       'shell-mode
+                       'ham-shell-mode
+                      )))
        (setq company-backends '(company-elisp
                                 company-ni-idl
                                ))
@@ -17,14 +22,18 @@
    ))
  (add-hook 'after-init-hook 'my-global-company-mode) ;; enable globaly
 
- ;; setup company mode to show up instantly
- (setq company-idle-delay-default 0.15)
+ (setq company-idle-delay-default nil) ;; setup company to show only when Ctrl+/ is pressed
+ ;; (setq company-idle-delay-default 0.15)  ;; setup company mode to show up instantly
+
  (setq company-idle-delay company-idle-delay-default)
  (setq company-minimum-prefix-length 2)
  ;; LOL, seriously what's the point of fucking up the text's upper/lower case by default ???
  ;; Without this set to nil the symbols are lower-cased !?!?
  (setq company-dabbrev-downcase nil)
  (setq company-dabbrev-ignore-case nil)
+
+ (setq company-require-match nil)
+ (setq company-transformers '(company-sort-by-occurrence))
 
  (setq company-show-numbers nil)
  (setq company-tooltip-limit 30)
