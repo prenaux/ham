@@ -33,3 +33,20 @@ derivative of the Jam build tool, based and 100% compatible with Jam 2.5.
 
 - The FT-Jam homepage: http://www.freetype.org/jam/
 - The original Jam homepage: http://www.perforce.com/jam/jam.html
+
+Setup
+=====
+
+## Windows
+
+No setup is required, just run ham-shell.cmd from the ham/bin directory and you'll be dropped in a Bash shell which has access to all the bash and ham commands. You can also use ham.cmd to run ham from third-party applications or from cmd.exe.
+
+## OSX / Linux
+
+Add this to your shell's .profile:
+
+    export WORK="${HOME}/My Work"
+    export HAM_HOME="$WORK/ham"
+    export PATH="${PATH}:$HAM_HOME/bin"
+
+Note that the previous snippet is for the bash shell, if you're using another shell you should modify accordingly.
