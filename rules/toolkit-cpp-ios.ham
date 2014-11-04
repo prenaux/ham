@@ -6,14 +6,34 @@ DEFINES += TARGET_OS_IPHONE ;
 STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
 
 CLANG_CC_ARGS +=
-  -Wno-return-type-c-linkage
-  -Wno-switch
-  -Wno-#pragma-messages
-  -Wno-unused-value
+-fmessage-length=0
+-fdiagnostics-show-note-include-stack
+-fmacro-backtrace-limit=0
+-fpascal-strings
+-fvisibility=hidden
+-fvisibility-inlines-hidden
+
+-Wno-return-type-c-linkage
+-Wno-switch
+-Wno-#pragma-messages
+-Wno-unused-value
+
+# -Wcast-align
+# -Wno-trigraphs
+-Wparentheses
+-Wempty-body
+-Wuninitialized
+-Wconstant-conversion
+-Wint-conversion
+-Wenum-conversion
+-Wdeprecated-declarations
+-Winvalid-offsetof
 ;
+
 CLANG_CPP_ARGS +=
-  -std=c++11
-  -Wno-c++11-narrowing
+-std=c++11
+-stdlib=libc++
+-Wno-c++11-narrowing
 ;
 
 CCFLAGS  += $(CLANG_CC_ARGS) ;
@@ -31,7 +51,7 @@ else {
   IOS_DBG_ARGS = -g -O0 $(STRICT_ALIASING_FLAGS) ;
 
   ### Optimized (ra) build flags ###
-  IOS_OPT_ARGS = -Os -fomit-frame-pointer $(STRICT_ALIASING_FLAGS) ;
+  IOS_OPT_ARGS = -g -Os $(STRICT_ALIASING_FLAGS) ;
 }
 
 rule tkCC++Build
