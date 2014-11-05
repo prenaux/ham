@@ -32,9 +32,14 @@ CLANG_CC_ARGS +=
 
 CLANG_CPP_ARGS +=
 -std=c++11
--stdlib=libc++
 -Wno-c++11-narrowing
 ;
+
+if ! ( $(OS) = NT ) {
+  CLANG_CPP_ARGS +=
+    -stdlib=libc++
+  ;
+}
 
 CCFLAGS  += $(CLANG_CC_ARGS) ;
 C++FLAGS += $(CLANG_CC_ARGS) $(CLANG_CPP_ARGS) ;
