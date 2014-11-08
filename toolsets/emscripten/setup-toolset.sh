@@ -40,7 +40,7 @@ case $HAM_OS in
         ;;
     OSX*)
         export LLVM_ROOT="${HAM_TOOLSET_DIR}/osx-x64/clang/e1.25.0_64bit/"
-        export TEMP="~/_ham/emscripten"
+        export TEMP="$HOME/_ham/emscripten/"
         mkdir -p $TEMP
         ;;
     *)
