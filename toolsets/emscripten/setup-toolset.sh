@@ -38,6 +38,11 @@ case $HAM_OS in
         fi
         export PATH="${LLVM_ROOT}":${PATH}
         ;;
+    OSX*)
+        export LLVM_ROOT="${HAM_TOOLSET_DIR}/osx-x64/clang/e1.25.0_64bit/"
+        export TEMP="~/_ham/emscripten"
+        mkdir -p $TEMP
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
@@ -45,7 +50,7 @@ case $HAM_OS in
 esac
 
 if [ ! -e "$EMSCRIPTEN_ROOT/emcc" ]; then
-    echo "Clone the emscripten repo (https://github.com/prenaux/emscripten.git) into your WORK folder."
+    echo "Clone the emscripten repo into your WORK folder. (git clone https://github.com/prenaux/emscripten.git \"$WORK/emscripten\")"
     return 1
 fi
 
