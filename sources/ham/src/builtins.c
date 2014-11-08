@@ -818,6 +818,22 @@ static int _GetAbsolutePath(const char* input, BUFFER* buff) {
     free(resolvedPath);
     return 1;
   }
+  else {
+    // if 'realpath' failed do what GetFullPathNameA on Windows does: CWD + PATH
+    char cwd[4096];
+    getcwd(cwd,4094); // -2 for the 0 and potential added end slash
+    {
+      const int cwdlen = strlen(cwd);
+      if (cwd[cwdlen-1] != '/') {
+        cwd[cwdlen] = '/';
+        cwd[cwdlen+1] = 0;
+      }
+    }
+    buffer_addstring(buff,cwd,strlen(cwd));
+    buffer_addstring(buff,input,strlen(input));
+    buffer_addchar(buff,0);
+    return 1;
+  }
   return 0;
 }
 #else
