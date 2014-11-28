@@ -45,6 +45,7 @@ do
         IFS=';' read -a arr <<< "${REPO}"
 
         # echo "ARR:" ${arr[0]} "->" ${arr[1]}
+        REPONAME="${arr[0]}"
         REPO="${WORK}/${arr[0]}"
         REMOTE="${arr[1]}"
         REMOTE2="${arr[2]}"
@@ -68,7 +69,8 @@ do
             errcheck $? git_repos "can't move to repo's folder !"
             ARGS0="${*/__REPO__/$REPO}"
             ARGS1="${ARGS0/__REMOTE2__/$REMOTE2}"
-            ARGS="${ARGS1/__REMOTE__/$REMOTE}"
+            ARGS2="${ARGS1/__REPONAME__/$REPONAME}"
+            ARGS="${ARGS2/__REMOTE__/$REMOTE}"
             # echo "Runing: $CMD $ARGS"
             $CMD $ARGS
             RET=$?
