@@ -1,2 +1,0 @@
-#!/bin/bash
-sed -n '1,/FSCommand:TestEnd/ p' "$HOMEDRIVE/Users/$USERNAME/AppData/Roaming/Macromedia/Flash Player/Logs/flashlog.txt"
