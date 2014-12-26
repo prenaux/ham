@@ -1,0 +1,3 @@
+PROG = ham-url ;
+Main $(PROG) : ham-url.c ;
+RunExe Run_$(PROG) : $(PROG) ;
