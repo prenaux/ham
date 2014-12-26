@@ -65,8 +65,8 @@ if $(WINRT) = 1 {
   C++FLAGS    ?= -ZW -Zl $(CCFLAGS) ;
 }
 else {
-  C++FLAGS    ?= ;
-  CCFLAGS     ?= ;
+  C++FLAGS    ?= -W4 ;
+  CCFLAGS     ?= $(CCFLAGS) ;
 }
 
 AR ?= lib ;
