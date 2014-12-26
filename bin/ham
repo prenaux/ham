@@ -75,6 +75,7 @@ do
             # echo "_ARG_TOOLSET:" $_ARG_TOOLSET
             ;;
         D)
+            OPTARG=`ham-url dec "$OPTARG"`
             if  [[ "$OPTARG" == ?:/* ]] || [[ "$OPTARG" == /* ]] || [[ "$OPTARG" == .* ]] ;
             then
                 # Explicit path
