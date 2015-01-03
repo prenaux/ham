@@ -1,6 +1,6 @@
 GCC_EXE_BASE ?= "" ;
 if ! $(OSPLAT) {
-  EXIT "E/{OSPLAT} not defined !" ;
+  EXIT "E/{OSPLAT} not defined." ;
 }
 
 SLASH   ?= / ;

@@ -515,7 +515,7 @@ rule FQuoteDirName {
 #     Toolset
 #----------------------------------------------------------------------
 if ! $(HAM_TOOLSET) {
-  EXIT "F/HAM_TOOLSET not set !" ;
+  EXIT "F/HAM_TOOLSET not set." ;
 }
 Import base-$(HAM_TOOLSET).ham ;
 
@@ -2429,7 +2429,7 @@ rule TestFileExists
     f = $(f:B)$(f:S) ;
     if ! ( $(f) = $(t) ) {
       # 	  Echo "FF: [$(f)] = [$(t)]" ;
-      Exit "Test Failed : $(1) : Can't find '$(3)' in '$(d)' !" ;
+      Exit "Test Failed : $(1) : Can't find '$(3)' in '$(d)'." ;
     }
   }
 }

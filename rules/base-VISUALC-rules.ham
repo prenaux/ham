@@ -36,7 +36,7 @@ actions DllLink bind NEEDLIBS {
 # No C99 support
 if ! $(HAM_C99) {
   actions C99 {
-    echo "E/MSVC: No C99 compiler, can't compile $(>) !"
+    echo "E/MSVC: No C99 compiler, can't compile $(>)."
     exit -1
   }
 }

@@ -8,13 +8,13 @@ rule AssertEq {
 
 rule AssertVarDefined {
   if ! $($(<)) {
-    logFatal "ASSERT:" $(<) "variable should be defined !" ;
+    logFatal "ASSERT:" $(<) "variable should be defined." ;
   }
 }
 
 rule AssertVarUndefined {
   if $($(<)) {
-    logFatal "ASSERT:" $(<) "variable should not be defined !" ;
+    logFatal "ASSERT:" $(<) "variable should not be defined." ;
   }
 }
 

@@ -837,7 +837,7 @@ static int _GetAbsolutePath(const char* input, BUFFER* buff) {
   return 0;
 }
 #else
-#error "_GetAbsolutePath not implemented on this platform !"
+#error "_GetAbsolutePath not implemented on this platform."
 #endif
 
 LIST *

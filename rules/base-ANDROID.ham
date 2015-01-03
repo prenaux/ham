@@ -35,7 +35,7 @@ if $(ADR_LLVM_VERSION)  {
     LINKFLAGS = -gcc-toolchain [ FQuote $(GCC_DIR) ] -no-canonical-prefixes -target $(LLVM_TRIPLE) ;
   }
   else {
-    EXIT "base-ANDROID: Unknown OSPLAT with ADR_LLVM_VERSION !" ;
+    EXIT "base-ANDROID: Unknown OSPLAT with ADR_LLVM_VERSION." ;
   }
 }
 else {

@@ -9,7 +9,7 @@ rule tkFindToolkitDir {
 # tkImport TOOLKIT : DLLS : EXES ;
 rule tkImport {
   if [ ListContains $(TK_IMPORTED) : $(1) ] {
-    EXIT "F/Toolkit $(1) already imported !" ;
+    EXIT "F/Toolkit $(1) already imported." ;
   }
 
   local dirBase = [ FDirName $(WORK) $(1) ] ;
@@ -62,7 +62,7 @@ rule tkImportDoCopy {
       return $(destFile) ;
     }
     else {
-      EXIT "F/Cannot import $(2) to $(3) !" ;
+      EXIT "F/Cannot import $(2) to $(3)." ;
     }
   }
   local p ;

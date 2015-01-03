@@ -160,7 +160,7 @@ switch $(ADR_CPU_PROFILE)
     ;
     ANDROID_LINK_BASE_ARGS = ;
   case * :
-    EXIT "Unknown Android CPU profile '"$(ADR_CPU_PROFILE)"' !" ;
+    EXIT "Unknown Android CPU profile '"$(ADR_CPU_PROFILE)"'." ;
 }
 
 SYSTEM_LINKLIBS = [ FQuoteFlag -L : $(ADR_LIBCPP_DIR_LIBS) ] -llog -lc $(ADR_LIBCPP_LINKER_LIB) -ldl -lm -lgcc ;

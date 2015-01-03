@@ -52,7 +52,7 @@ switch $(IOS_MINVER) {
     IOS_FRAMEWORKS = -framework Accelerate -framework Accounts  -framework AdSupport -framework AssetsLibrary  -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreBluetooth -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreImage -framework CoreLocation -framework CoreMedia -framework CoreMIDI -framework CoreMotion -framework CoreTelephony -framework CoreText -framework CoreVideo -framework EventKit -framework EventKitUI -framework ExternalAccessory -framework Foundation -framework GameKit -framework GLKit -framework GSS -framework iAd -framework ImageIO -framework IOKit -framework MapKit -framework MediaPlayer -framework MediaToolbox -framework MessageUI -framework MobileCoreServices -framework NewsstandKit -framework OpenGLES -framework PassKit -framework QuartzCore -framework QuickLook -framework Security -framework Social -framework StoreKit -framework SystemConfiguration -framework Twitter -framework UIKit -framework VideoToolbox ;
 
   case * :
-    EXIT "E/Unknown iOS version !" ;
+    EXIT "E/Unknown iOS version." ;
 }
 
 CLANG_BASE_FLAGS =
@@ -101,7 +101,7 @@ else {
     ;
   }
   else {
-    EXIT "Can't set IPHONE_SDK_DIR !" ;
+    EXIT "Can't set IPHONE_SDK_DIR." ;
   }
 }
 

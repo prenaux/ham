@@ -80,7 +80,7 @@
         break;
       }
       default: {
-        throw "Unknown platform to found bash's path !"
+        throw "Unknown platform to found bash's path."
       }
     }
 
@@ -112,7 +112,7 @@
       return _tempDir;
     }
 
-    throw "Can't find the temp folder !"
+    throw "Can't find the temp folder."
   }
 
   function getNewTempFilePath(aExt,aName) {

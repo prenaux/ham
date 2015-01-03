@@ -1,5 +1,5 @@
 if ! $(TK_NAME) {
-  EXIT "E/TK_NAME not set !" ;
+  EXIT "E/TK_NAME not set." ;
 }
 if ! [ FExists $(TK_DIR) ] {
   EXIT "E/TK_DIR doesn't exist:" $(TK_DIR) ;
@@ -24,7 +24,7 @@ else if $(NT) {
   BUILD_SUFEXE = .exe ;
 }
 else {
-  EXIT "Toolkit: Unknown host platform to set BUILD_BIN_LOA & BUILD_BIN_SUFEXE !" ;
+  EXIT "Toolkit: Unknown host platform to set BUILD_BIN_LOA & BUILD_BIN_SUFEXE." ;
 }
 TK_ENV_FILE = toolkit-base-$(HAM_TOOLSET_NAME).ham ;
 Import $(TK_ENV_FILE) : "E/Can't find toolkit's configuration for toolset:" $(TK_ENV_FILE:B:S) ;
@@ -53,7 +53,7 @@ if ! $(TARGET_FEATURE_DLL) {
 # needs TARGET_FEATURE_EXE.
 logVar TARGET_FEATURE_CONSOLE ;
 if $(TARGET_FEATURE_CONSOLE) && ! $(TARGET_FEATURE_EXE) {
-  EXIT "F/TARGET_FEATURE_CONSOLE set but not TARGET_FEATURE_EXE !" ;
+  EXIT "F/TARGET_FEATURE_CONSOLE set but not TARGET_FEATURE_EXE." ;
 }
 
 # Whether the target can/should build JNI interop
