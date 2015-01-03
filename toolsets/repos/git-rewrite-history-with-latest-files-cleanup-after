@@ -1,0 +1,6 @@
+#!/bin/bash
+rm -rf .git/refs/original/
+git reflog expire --expire=now --all
+git gc --prune=now
+# optional extra gc. Slow and may not further-reduce the repo size
+git gc --aggressive --prune=now
