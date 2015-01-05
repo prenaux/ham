@@ -78,6 +78,7 @@
  ;; Disabled the insert key, remap it to control + insert.
  (define-key global-map [(insert)] nil)
  (define-key global-map [(control meta insert)] 'overwrite-mode)
+ (define-key global-map [(control shift insert)] 'overwrite-mode)
 
  ;; use control insert with yank, cause most of the nav is Ctrl-up/down
  ;; pageup/pagedown, its just more convenient
