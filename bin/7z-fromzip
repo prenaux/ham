@@ -25,7 +25,7 @@ fi
 PASSWORD="$2"
 
 # Make the temporary extraction directory
-TMP_DIR=$HOME/.ham/_tmp_ext_`basename $ARCH`
+TMP_DIR=$HOME/_ham/_tmp_ext_`basename $ARCH`
 mkdir -p $TMP_DIR
 errcheck $? ham "Can't create the temporary directory '$TMP_DIR'."
 

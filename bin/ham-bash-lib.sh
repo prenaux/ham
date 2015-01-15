@@ -67,41 +67,11 @@ die()
   exit 1
 }
 
-waitForKey()
-{
-  if [[ "${EMACS}" != "t" ]]; then
-    echo "Press any key to finish..."
-    read -n 1
-  fi
-}
-
-dieWait()
-# usage: die ModuleName "Message Saying Why"
-#
-# Display a diagnostic message, and cause the aglDevEnv to abort; this
-# is the function dispatcher invoked by `require', when the specified
-# "aglDevEnv.ModuleName" file cannot be sourced; it may also be invoked
-# directly from any sourced "aglDevEnv.ModuleName" file, to diagnose
-# any fatal condition.
-{
-  complain "$@"
-  waitForKey
-  exit 1
-}
-
 errcheck()
 {
 	if [ $1 != 0 ]
 	then
 		die $2 "$3 (errcode $1)"
-	fi
-}
-
-errcheckWait()
-{
-	if [ $1 != 0 ]
-	then
-		dieWait $2 "$3 (errcode $1)"
 	fi
 }
 
@@ -277,10 +247,6 @@ fi
 if [[ -z $BUILD_BIN_LOA ]]; then
     echo "E/BUILD_BIN_LOA not set !"
     exit 1
-fi
-
-if [[ "${EMACS}" == "t" ]]; then
-    export DONT_WAIT_FOR_KEY_AFTER_BUILD=1
 fi
 
 # Make sure HAM_HOME has the proper unix format

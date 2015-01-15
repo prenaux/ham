@@ -14,7 +14,7 @@ export HAM_TOOLSET_NAME=emscripten
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/emscripten"
 
 # Make the JSCC temporary folder
-mkdir -p "$HOME/.ham/jscc/"
+mkdir -p "$HOME/_ham/jscc/"
 
 export EMSCRIPTEN_ROOT="${WORK}/emscripten"
 export EMSCRIPTEN="${EMSCRIPTEN_ROOT}"
