@@ -187,7 +187,7 @@
   function runDetachedProcess(aCmd) {
     local pm = ::gLang.process_manager
     local curProc = pm.current_process
-    local proc = pm.SpawnProcess(aCmd,0)
+    local proc = pm.SpawnProcess(aCmd,::eOSProcessSpawnFlags.Detached)
     if (!proc)
       throw "Couldn't spawn process from command line: " + aCmd
     return true
