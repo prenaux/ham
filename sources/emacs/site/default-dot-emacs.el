@@ -1,2 +1,2 @@
 (require 'ni-user-pierre)
-(require 'ni-theme-wombat)
+;; (require 'ni-theme-wombat)
