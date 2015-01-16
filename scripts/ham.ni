@@ -199,6 +199,7 @@
       _options = {
         differentStdOutAndStdErr = aOptions.?differentStdOutAndStdErr || false
         drainStdErrBeforeStdIn = aOptions.?drainStdErrBeforeStdIn || false
+        detached = aOptions.?detached || false
       }
 
       function runCommand() {
@@ -208,7 +209,9 @@
         _proc <- _pm.SpawnProcess(
           _cmd,
           ::eOSProcessSpawnFlags.StdFiles|
-            (_options.differentStdOutAndStdErr ? ::eOSProcessSpawnFlags.DifferentStdOutAndStdErr : 0))
+            (_options.differentStdOutAndStdErr ? ::eOSProcessSpawnFlags.DifferentStdOutAndStdErr : 0)|
+            (_options.detached ? ::eOSProcessSpawnFlags.Detached : 0)
+        )
         if (!_proc)
           throw "Couldn't spawn process from command line: " + _cmd
         _procStdout <- _proc.file[1]
