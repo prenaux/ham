@@ -198,12 +198,9 @@ the text to another HTML buffer."
 (add-to-list 'auto-mode-alist '("\\.nip\\'" . niscript-mode))
 (add-to-list 'auto-mode-alist '("\\.niw\\'" . niscript-mode))
 
-;;*** TScript ***********************************************************
-(add-to-list 'auto-mode-alist '("\\.at\\'" . c-mode))
-(add-to-list 'auto-mode-alist '("\\.atc\\'" . c-mode))
-(add-to-list 'auto-mode-alist '("\\.ats\\'" . c-mode))
-(add-to-list 'auto-mode-alist '("\\.atp\\'" . c-mode))
-(add-to-list 'auto-mode-alist '("\\.atd\\'" . c-mode))
+;;*** TypeScript ********************************************************
+(autoload 'typescript-mode "typescript" nil t)
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
 
 ;;*** C# ****************************************************************
 (autoload 'csharp-mode "csharp-mode" nil t)
