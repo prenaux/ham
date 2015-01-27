@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#if !defined _MSC_VER
+#define stricmp strcasecmp
+#endif
+
 static const char* _ErrorTitleMsg = "ham-url (" __DATE__ "): enc/encq/dec input\n";
 static const int _MaxInputSize = 1024 * 1024;
 
