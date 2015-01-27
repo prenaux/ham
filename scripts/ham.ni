@@ -112,6 +112,14 @@
       return _tempDir;
     }
 
+    tempDir = "".setdir(::gLang.env["HOME"])
+    if (::fs.dirExists(tempDir)) {
+      tempDir = tempDir.adddirback("_ham/temp/");
+      ::fs.makeDir(tempDir)
+      _tempDir = tempDir;
+      return _tempDir;
+    }
+
     throw "Can't find the temp folder."
   }
 
