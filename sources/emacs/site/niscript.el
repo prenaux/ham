@@ -213,7 +213,7 @@ comments have been removed."
 (defconst nip-basic-type-re
   (regexp-opt '("local"
                 "void" "any" "bool" "int" "float" "string"
-                "mut" "var"
+                "mut" "var" "out"
                 ) 'words)
   "Regular expression matching any predefined type in niScript.")
 
