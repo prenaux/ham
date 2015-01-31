@@ -20,6 +20,7 @@ case $HAM_OS in
         fi
         ;;
     OSX)
+        export JAVA_HOME=$(/usr/libexec/java_home)
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

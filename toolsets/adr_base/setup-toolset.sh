@@ -13,7 +13,25 @@ export HAM_TOOLSET_NAME=adr_${ADR_VERSION}_${ADR_CPU_TYPE}
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/adr_base"
 
 # adr setup
-export ADR_ROOT_DIR="${HAM_TOOLSET_DIR}/nt-x86"
+case $HAM_OS in
+    NT)
+        export ADR_ROOT_DIR="${HAM_TOOLSET_DIR}/nt-x86"
+        export ADR_NDK_PREBUILT=windows
+        export ADR_NDK_VERSION=r9d
+        export GCC_VER=4.8
+        ;;
+    OSX)
+        export ADR_ROOT_DIR="${HAM_TOOLSET_DIR}/osx-x86"
+        export ADR_NDK_PREBUILT=darwin-x86_64
+        export ADR_NDK_VERSION=r10d
+        export GCC_VER=4.8
+        chmod +x "${HAM_TOOLSET_DIR}/adr-"*
+        ;;
+    *)
+        echo "E/Toolset: Unsupported host OS"
+        return 1
+        ;;
+esac
 
 # dl if missing
 if [ ! -e "$ADR_ROOT_DIR"  ]; then
@@ -65,11 +83,7 @@ case $ADR_CPU_TYPE in
         ;;
 esac
 
-export ADR_NDK_PREBUILT=windows
-
 export ADR_GCC_OPT=-O2
-export ADR_NDK_VERSION=r9d
-export GCC_VER=4.8
 
 export ADR_DIR_BASE="${ADR_ROOT_DIR}"
 export ADR_DIR_NDK="${ADR_ROOT_DIR}/ndk_${ADR_NDK_VERSION}"

@@ -17,6 +17,7 @@ if [ ! -e "$ANT_BIN_DIR" ]; then
         echo "E/jvm folder doesn't exist in the toolset"
         return 1
     fi
+    chmod +x "$ANT_BIN_DIR/"*
 fi
 
 # path
