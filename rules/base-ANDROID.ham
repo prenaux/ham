@@ -11,6 +11,7 @@ else {
 }
 
 Import base-GCC.ham ;
+SUFDLL = .so ;
 
 if $(ADR_LLVM_VERSION)  {
   ECHO "# Using LLVM for Android build." ;
