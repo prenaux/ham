@@ -187,7 +187,6 @@ char g_bash_path[2048] = "bash";
             numProcessors,                      \
             numProcessors > 1 ? "s":"");
 
-
 int
 main( int argc, char **argv, char **arg_environ )
 {
@@ -199,7 +198,6 @@ main( int argc, char **argv, char **arg_environ )
 	int		anyhow = 0;
 	int		status;
 
-    unsigned int startTime = clock(), endTime = 0;
     unsigned int numProcessors = 1;
 #ifdef OS_NT
     {
@@ -516,32 +514,23 @@ main( int argc, char **argv, char **arg_environ )
 	if( globs.cmdout )
 	    fclose( globs.cmdout );
 
-    endTime = clock();
+  {
     {
-        unsigned int numMs, numSecs, numMins;
-        numMs = (endTime-startTime)/(CLOCKS_PER_SEC/1000);
-        numSecs = numMs/1000;
-        numMs -= numSecs*1000;
-        numMins = numSecs/60;
-        numSecs -= numMins*60;
-
-        printf( "...finished in %dm%d.%ds...\n", numMins, numSecs, numMs);
-        {
-            fputs("...targets",stdout);
-            if (!num_targets) {
-                fputs(" all",stdout);
-            }
-            else {
-                int i;
-                for (i = 0; i < num_targets; ++i) {
-                    fputs(" ",stdout);
-                    fputs(targets[i],stdout);
-                }
-            }
-            fputs("...\n",stdout);
+      fputs("...targets",stdout);
+      if (!num_targets) {
+        fputs(" all",stdout);
+      }
+      else {
+        int i;
+        for (i = 0; i < num_targets; ++i) {
+          fputs(" ",stdout);
+          fputs(targets[i],stdout);
         }
-        fflush(stdout);
+      }
+      fputs("...\n",stdout);
     }
+    fflush(stdout);
+  }
 
 	return status ? EXITBAD : EXITOK;
 }
