@@ -47,4 +47,4 @@
         (flymake-mode t)))
 )
 
-(add-hook 'niscript-mode-hook 'flymake-ni-load)
+;; (add-hook 'niscript-mode-hook 'flymake-ni-load)
