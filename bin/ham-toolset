@@ -26,7 +26,7 @@ do
         return 1
     else
         export HAM_IMPORTED_TOOLSET=$ARG
-        echo "I/Toolset '$ARG' setup successfull."
+        echo "I/Toolset '$ARG' setup successful."
     fi
 done
 
