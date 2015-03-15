@@ -267,6 +267,10 @@ the text to another HTML buffer."
 (add-to-list 'auto-mode-alist '("\\.xsl\\'" . xml-lite-mode))
 (add-to-list 'auto-mode-alist '("\\.xslt\\'" . xml-lite-mode))
 
+;;*** Rust ************************************************************************
+(autoload 'rust-mode "rust-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+
 ;;;======================================================================
 ;;; IDO completion
 ;;;======================================================================
