@@ -10,7 +10,7 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
             export PATH=$PATH:`unxpath $WINDIR`/System32
             ;;
         OSX)
-            export PATH=$WORK/niSDK/bin:$HAM_HOME/bin:$HAM_HOME/bin/osx-x86:/usr/bin:/bin:/usr/sbin:/sbin:$BASH_START_PATH
+            export PATH=$WORK/niSDK/bin:$HAM_HOME/bin:$HAM_HOME/bin/osx-x86:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$BASH_START_PATH
             ;;
     esac
 
