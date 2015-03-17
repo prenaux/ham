@@ -362,6 +362,7 @@ If the new path's directories does not exist, create them."
  (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
  (add-to-list 'auto-mode-alist '("\\.htm?\\'" . web-mode))
+ (add-to-list 'auto-mode-alist '("\\.hbs\\'" . web-mode))
 
  (setq web-mode-enable-current-element-highlight t)
 
