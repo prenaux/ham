@@ -1,6 +1,6 @@
 #!/bin/bash
 toolset_import nodejs || return 1
-toolset_import postgres || return 1
+toolset_import ruby || return 1
 
 # toolset
 export HAM_TOOLSET=RAILS
@@ -11,9 +11,12 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/rails"
 # path setup
 case $HAM_OS in
     OSX*)
+        toolset_import postgres || return 1
         export RAILS_DIR="${HAM_TOOLSET_DIR}/osx-x86/"
         export PATH="${RAILS_DIR}/bin":${PATH}
         if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+        ;;
+    NT*)
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
@@ -21,9 +24,7 @@ case $HAM_OS in
         ;;
 esac
 
-VER="--- ruby ------------------------
-`ruby --version`
---- rails ------------------------
+VER="--- rails ------------------------
 `rails --version`"
 if [ $? != 0 ]; then
     echo "E/Can't get version."
