@@ -2,7 +2,7 @@
 
 # toolset
 export HAM_TOOLSET=NODEJS
-export HAM_TOOLSET_VER=0_10
+export HAM_TOOLSET_VER=0_12
 export HAM_TOOLSET_NAME=nodejs
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/nodejs"
 
@@ -10,7 +10,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/nodejs"
 case $HAM_OS in
     NT*)
         export NODEJS_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH="${NODEJS_DIR}":"${HAM_TOOLSET_DIR}/npm":${PATH}
+        export PATH="${NODEJS_DIR}":${PATH}
         if [ ! -e "$NODEJS_DIR" ]; then
             toolset_dl nodejs nodejs_nt-x86
             if [ ! -e "$NODEJS_DIR" ]; then
@@ -21,7 +21,7 @@ case $HAM_OS in
         ;;
     OSX*)
         export NODEJS_DIR="${HAM_TOOLSET_DIR}/osx-x86/"
-        export PATH="${NODEJS_DIR}/bin":"${HAM_TOOLSET_DIR}/npm":${PATH}
+        export PATH="${NODEJS_DIR}/bin":${PATH}
         if [ ! -e "$NODEJS_DIR" ]; then
             toolset_dl nodejs nodejs_osx-x86
             if [ ! -e "$NODEJS_DIR" ]; then
@@ -37,7 +37,9 @@ case $HAM_OS in
 esac
 
 VER="--- nodejs ------------------------
-`node --version`"
+`node --version`
+--- npm ---------------------------
+`npm --version`"
 if [ $? != 0 ]; then
     echo "E/Can't get version."
     return 1
