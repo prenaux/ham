@@ -16,6 +16,9 @@ case $HAM_OS in
         ;;
 esac
 
+# path
+export PATH="${HAM_TOOLSET_DIR}":${PATH}
+
 VER="--- postgres ---------------------
 `postgres --version`"
 if [ $? != 0 ]; then
