@@ -368,6 +368,16 @@ If the new path's directories does not exist, create them."
 
  (set-face-attribute 'web-mode-current-element-highlight-face nil :background "LightYellow2")
  (set-face-attribute 'web-mode-current-column-highlight-face nil :background "LightYellow2")
+
+ (require 'yaml-mode)
+ (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+
+ (require 'haml-mode)
+ (add-to-list 'auto-mode-alist '("\\.haml$" . haml-mode))
+
+ (require 'scss-mode)
+ (add-to-list 'auto-mode-alist '("\\.scss$" . scss-mode))
+
 )
 
 ;;;======================================================================
