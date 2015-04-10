@@ -6,9 +6,7 @@ case "${REPOFILE}" in
     *_repo*)
         echo "== Repo: $REPOFILE"
         shift
-        if [ ! -e "$REPOFILE" ]; then
-            REPOFILE=$WORK/../$REPOFILE
-        fi
+        WORK=`pwd`
         ;;
     *)
         if [ -e "$WORK/$USERNAME/_repos" ]; then
@@ -23,8 +21,6 @@ case "${REPOFILE}" in
         fi
         ;;
 esac
-
-echo "... $REPOFILE:" $REPOFILE
 
 if [ ! -e "$REPOFILE" ]
 then
