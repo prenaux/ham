@@ -270,6 +270,8 @@ the text to another HTML buffer."
 ;;*** Rust ************************************************************************
 (autoload 'rust-mode "rust-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+(autoload 'toml-mode "toml-mode" nil t) ;; used by cargo (rust's build system)
+(add-to-list 'auto-mode-alist '("\\.toml$" . toml-mode))
 
 ;;;======================================================================
 ;;; IDO completion
