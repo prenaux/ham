@@ -1,0 +1,42 @@
+#-----------------------------------------------------------------------------
+#     NodeMonServer
+#-----------------------------------------------------------------------------
+
+#
+# NodeMonServer TARGET : DEPENDENCIES
+#
+# Starts a node based server using nodemon which watches js, html, and ejs
+# files. Also starts jsx to watch all the react/jsx files in the view folder.
+#
+actions NodeMonServer {
+  cd $(TOP)
+  . ham-bash-lib.sh
+
+  echo "================================================================="
+  echo " Config server..."
+  echo "================================================================="
+  . _local-server-config.sh
+  errcheck $? _ "Can't import the local server config."
+
+  echo "================================================================="
+  echo " Starting server..."
+  echo "================================================================="
+
+  # JSX watches all the .jsx files in ./views and output them in ./static/react
+  jsx --harmony --target es5 --extension jsx --no-cache-dir --watch ./views/ ./static/react/ &
+  JSX_PID=$!
+  errcheck $? _ "JSX failed."
+  echo "... JSX Started with PID: ${JSX_PID}"
+
+  # Watches the .jsm .html and .ejs files
+  nodemon -e js,html,ejs -w sources -w views sources/server
+  errcheck $? _ "Nodemon failed."
+
+  echo "================================================================="
+  echo " Stopping server..."
+  echo "================================================================="
+  kill -0 ${JSX_PID}
+}
+rule NodeMonServer {
+  DEPENDS $(<) : $(>) ;
+}
