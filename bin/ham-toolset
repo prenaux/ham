@@ -1,34 +1,43 @@
 #!/bin/bash
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
-. ham-env-clear
 
-toolset_info() {
-    echo "======================================================="
-    echo "=== Main Toolset ======================================"
-    echo "======================================================="
-    echo "HAM_IMPORTED_TOOLSET = ${HAM_IMPORTED_TOOLSET}"
-    echo "HAM_TOOLSET = ${HAM_TOOLSET}"
-    echo "HAM_TOOLSET_VER = ${HAM_TOOLSET_VER}"
-    echo "HAM_TOOLSET_NAME = ${HAM_TOOLSET_NAME}"
-    echo "HAM_TOOLSET_DIR = ${HAM_TOOLSET_DIR}"
-    echo "======================================================="
-    echo "=== Tools Version ====================================="
-    echo -n "======================================================="
-    echo "$HAM_TOOLSET_VERSIONS"
-    echo "======================================================="
-}
+# the help
+usage() {
+    echo "usage: . (ham-toolset|hat) toolsets..."
 
-for ARG in "$@"
-do
-    . ham-toolset-import.sh $ARG
-    if [ $? != 0 ]; then
-        echo "E/Toolset '$ARG' setup failed !"
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        # sourced...
         return 1
     else
-        export HAM_IMPORTED_TOOLSET=$ARG
-        echo "I/Toolset '$ARG' setup successful."
+        # regular call
+        exit 1
     fi
-done
+}
 
-toolset_info
-update_prompt
+# find the _ham_project file
+FOUND_PROJECT_DIR="`hat-search-ham-project.sh`"
+if [[ -e "$FOUND_PROJECT_DIR" ]]; then
+    echo "I/Found _ham_setup in '${FOUND_PROJECT_DIR}'"
+fi
+
+# Check that there is at least one argument...
+if [ $# = 0 ]; then
+    if [[ -z "$FOUND_PROJECT_DIR" ]]; then
+        echo "E/No argument specified and couldn't find a _ham_project file."
+        usage
+    else
+        . ham-env-clear
+        export HAM_PROJECT_DIR=${FOUND_PROJECT_DIR}
+        . "$HAM_PROJECT_DIR/_ham_project"
+    fi
+else
+    . ham-env-clear
+    if [[ -e "$FOUND_PROJECT_DIR" ]]; then
+        export HAM_PROJECT_DIR=${FOUND_PROJECT_DIR}
+    fi
+
+    toolset_import_list "$@"
+
+    toolset_info
+    update_prompt
+fi

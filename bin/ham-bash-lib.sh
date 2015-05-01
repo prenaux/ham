@@ -124,11 +124,18 @@ update_prompt() {
     if [ "$BUILD_JNI" == "1" ]; then
         TOOLSET_EXTRA=" (jni)"
     fi
+
+    if [ -z $HAM_PROJECT_DIR ]; then
+        PROJECT_NAME=`basename "$WORK"`
+    else
+        PROJECT_NAME=`basename "$HAM_PROJECT_DIR"`
+    fi
+
     export PS1='
-\[\033[35m$HAM_TOOLSET_NAME$TOOLSET_EXTRA\033[0m\] \w (\[\033[32m$USERNAME\033[0m\])
+\[\033[35m$PROJECT_NAME$TOOLSET_EXTRA\033[0m\] \w (\[\033[32m$USERNAME\033[0m\]) \[\033[0;33m$HAM_IMPORTED_TOOLSETS\033[0m\]
 $ '
 	# echo -e "\033]0;`pwd`\007"
-    # export PS1="${AGL_TOOLSET_NAME}\$ "
+  # export PS1="${AGL_TOOLSET_NAME}\$ "
 }
 
 upsearch() {
@@ -200,6 +207,36 @@ toolset_dl() {
         7z x -y "$DLFILENAME" | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
         popd
     fi
+}
+
+toolset_info() {
+    echo "======================================================="
+    echo "=== Main Toolset ======================================"
+    echo "======================================================="
+    echo "HAM_IMPORTED_TOOLSETS = ${HAM_IMPORTED_TOOLSETS}"
+    echo "HAM_TOOLSET = ${HAM_TOOLSET}"
+    echo "HAM_TOOLSET_VER = ${HAM_TOOLSET_VER}"
+    echo "HAM_TOOLSET_NAME = ${HAM_TOOLSET_NAME}"
+    echo "HAM_TOOLSET_DIR = ${HAM_TOOLSET_DIR}"
+    echo "======================================================="
+    echo "=== Tools Version ====================================="
+    echo -n "======================================================="
+    echo "$HAM_TOOLSET_VERSIONS"
+    echo "======================================================="
+}
+
+toolset_import_list() {
+    for ARG in $@
+    do
+        . ham-toolset-import.sh $ARG
+        if [ $? != 0 ]; then
+            echo "E/Toolset '$ARG' setup failed !"
+            return 1
+        else
+            export HAM_IMPORTED_TOOLSET=$ARG
+            # echo "I/Toolset '$ARG' setup successful."
+        fi
+    done
 }
 
 ########################################################################

@@ -42,31 +42,31 @@ export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
 
 HG_PATH=`where_inpath hg`
-if [ -z "$HG_PATH" ]; then
-    VER="--- mercurial ---
-W/Mercurial is not installed or not accessible from the PATH !"
-else
+if [ -e "$HG_PATH" ]; then
     VER="--- mercurial ---
 `hg --version | grep 'Mercurial'`"
     if [ $? != 0 ]; then
         echo "E/Can't get Mercurial version."
         return 1
     fi
+else
+    VER="--- mercurial ---
+W/Mercurial is not installed or not accessible from the PATH !"
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
 
 SVN_PATH=`where_inpath svn`
-if [ -z "$SVN_PATH" ]; then
-    VER="--- mercurial ---
-W/SVN is not installed or not accessible from the PATH !"
-else
+if [ -e "$SVN_PATH" ]; then
     VER="--- svn ---
 `svn --version | grep 'svn,'`"
     if [ $? != 0 ]; then
         echo "E/Can't get SVN version."
         return 1
     fi
+else
+    VER="--- svn ---
+W/SVN is not installed or not accessible from the PATH !"
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
