@@ -10,7 +10,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/python_27"
 case $HAM_OS in
     NT*)
         export PYTHON_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH=${PYTHON_DIR}:${PYTHON_DIR}/DLLs:${PATH}
+        export PATH=${PYTHON_DIR}:${PYTHON_DIR}/DLLs:${PYTHON_DIR}/Scripts:${Path}
         if [ ! -e "$PYTHON_DIR" ]; then
             toolset_dl python_27 python_27_nt-x86
             if [ ! -e "$PYTHON_DIR" ]; then
