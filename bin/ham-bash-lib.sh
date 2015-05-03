@@ -132,7 +132,7 @@ update_prompt() {
     fi
 
     export PS1='
-\[\033[35m$PROJECT_NAME$TOOLSET_EXTRA\033[0m\] \w (\[\033[32m$USERNAME\033[0m\]) \[\033[0;34m$HAM_IMPORTED_TOOLSETS\033[0m\]
+\[\033[35m$PROJECT_NAME$TOOLSET_EXTRA\033[0m\] \w (\[\033[32m$USERNAME\033[0m\]) \[\033[0;36m$HAM_IMPORTED_TOOLSETS\033[0m\]
 $ '
 	# echo -e "\033]0;`pwd`\007"
   # export PS1="${AGL_TOOLSET_NAME}\$ "

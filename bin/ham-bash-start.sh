@@ -18,4 +18,8 @@ if [[ "$BASH_START_SILENT" = "" ]]; then
     echo "HAM_BIN_LOA = $HAM_BIN_LOA"
 fi
 
+if [[ -e "$HOME/.ham_bash" ]]; then
+    . "$HOME/.ham_bash"
+fi
+
 update_prompt
