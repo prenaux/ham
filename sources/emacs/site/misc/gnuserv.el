@@ -82,7 +82,7 @@ This variable has no effect in XEmacs versions older than 19.9.")
   "*A function of one argument, a buffer, which removes the buffer after editing.
 Functions such as 'kill-buffer' and 'bury-buffer' are good values.")
 
-(defvar gnuserv-program "gnuserv"
+(defvar gnuserv-program (concat (getenv "EMACS_DEVENV") "/toolsets/emacs/nt-x86/bin/gnuserv.exe")
   "*The program to use as the edit server")
 
 (defvar gnuserv-process nil 
