@@ -632,9 +632,9 @@ rule tkDefPackage
       }
     }
     else {
-      PKGTARGET = $(PKGBUILD:S=$(5)) ;
-      PKGTYPE = $(PKGGROUP) ;
+      EXIT "E/Package '"$(PACKAGE)"', unknown package group '"$(PKGGROUP)"', should be one of: modules, modulelibs, dll, tooldll, libs, rawbin, tools or tests." ;
     }
+
     LINKFLAGS on $(PKGTARGET) ?= $(LINKFLAGS) ;
     LINKLIBS on $(PKGTARGET) ?= $(LINKLIBS) ;
     if $(PKGTARGET_LIB) {
@@ -870,7 +870,7 @@ rule tkBuildPackage
     ObjectDefines $(_allsrc)  : _UNICODE UNICODE ;
   }
   else {
-    ObjectDefines $(_allsrc) : _UTF8 UTF8 ;
+    ObjectDefines $(_allsrc) : _UTF8 ;
   }
   if $(_exc) = 0 {
     tkNoC++Exceptions $(_allsrc) ;
