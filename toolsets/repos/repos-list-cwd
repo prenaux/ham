@@ -1,0 +1,24 @@
+#!/usr/bin/env node-harmony
+// -*- mode: js -*-
+'use strict';
+
+let PATH = require('path');
+let FS = require('fs');
+
+let dirsWithGit = []
+
+{
+  let dirs = FS.readdirSync('./');
+  for (let i in dirs) {
+    let d = dirs[i];
+    let dirWithGit = PATH.join(d, ".git");
+    if (FS.existsSync(dirWithGit)) {
+      dirsWithGit.push(d);
+    }
+  }
+}
+
+for (let i in dirsWithGit) {
+  let d = dirsWithGit[i];
+  console.log(d);
+}

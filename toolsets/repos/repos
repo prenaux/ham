@@ -8,6 +8,22 @@ case "${REPOFILE}" in
         shift
         WORK=`pwd`
         ;;
+    .)
+        echo "== Repo current directory"
+        shift
+        WORK=`pwd`
+        REPOS_CWD=`repos-list-cwd`
+        if [ -z "$REPOS_CWD" ]; then
+            echo "# No repository in the current folder !"
+            exit 1
+        fi
+        REPOFILE="./_repos_cwd"
+        touch "$REPOFILE"
+        echo -n "" > "$REPOFILE"
+        for ARG in $REPOS_CWD; do
+            echo $ARG >> "$REPOFILE"
+        done
+        ;;
     *)
         if [ -e "$WORK/$USERNAME/_repos" ]; then
             REPOFILE="$WORK/$USERNAME/_repos"
