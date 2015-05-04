@@ -636,9 +636,9 @@ Must be used in conjunction with web-mode-enable-block-face."
 
 (defvar web-mode-content-types
   '(("css"        . "\\.\\(s?css\\|css\\.erb\\)\\'")
-    ("javascript" . "\\.\\(js\\|js\\.erb\\)\\'")
+    ("javascript" . "\\.\\(js\\.erb\\)\\'")
     ("json"       . "\\.\\(json\\|jsonld\\)\\'")
-    ("jsx"        . "\\.jsx\\'")
+    ("jsx"        . "\\.\\(js\\|jsx\\)\\'")
     ("html"       . "."))
   "content types")
 
