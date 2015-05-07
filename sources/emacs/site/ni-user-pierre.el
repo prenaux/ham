@@ -24,24 +24,25 @@
 (require 'go-mode)
 
 ;;;======================================================================
-;;; Speedbar
-;;;======================================================================
-;; (NotBatchMode
- ;; (require 'ni-speedbar)
- ;; (sr-speedbar-open) ;; use (sr-speedbar-close) if you dont want it to be opened when emacs starts
-;; )
-
-;;;======================================================================
 ;;; Font Lock
 ;;;======================================================================
 
 ;; Copy the following in .emacs if you don't like the christmas like syntax highlighting
-;; (NotBatchMode
- ;; (setq font-lock-maximum-decoration 1)
- ;; (global-font-lock-mode t)
- ;; (setq font-lock-maximum-decoration
-       ;; '((c-mode . 1) (c++-mode . 1) (niscript-mode . 1)))
-;; )
+(DontExecute
+
+ ;; turn off christmas
+ (progn
+  (setq font-lock-maximum-decoration 1)
+  (global-font-lock-mode t)
+  (setq font-lock-maximum-decoration
+        '((c-mode . 1)
+          (c++-mode . 1)
+          (niscript-mode . 1)
+          (js-mode . 1)
+          (-mode . 1)
+         )))
+
+)
 
 ;;;======================================================================
 ;;; Disable all the auto-indent / eletric mode BS that drives me nuts
@@ -420,4 +421,40 @@ If the new path's directories does not exist, create them."
  ;; you'll want this in your .emacs you can also call it by hand when you want
  ;; if it takes too long for you to have at every emacs startup
  ;; (ni-idl-build-cache)
+)
+
+;;;======================================================================
+;;; Neotree
+;;;======================================================================
+(NotBatchMode
+ (GNUEmacs24
+  (require 'neotree)
+  (setq neo-smart-open t)
+
+  (defun my-neotree-find (&optional path default-path)
+    "Quick select node which specified PATH in NeoTree.
+If path is nil and no buffer file name, then use DEFAULT-PATH,"
+    (interactive)
+    (let* ((ndefault-path (if default-path default-path
+                            (neo-path--get-working-dir)))
+           (npath (if path path
+                    (or (buffer-file-name) ndefault-path)))
+           (do-open-p nil))
+
+      ;; PIERRE: No confirmation, just do it...
+      ;; (if (and (not (neo-global--file-in-root-p npath))
+      ;; (neo-global--window-exists-p))
+      ;; (setq do-open-p (yes-or-no-p "File not found in root path, do you want to change root?"))
+      (setq do-open-p t)
+      ;; )
+      (when do-open-p
+        (neo-global--open-and-find npath))
+      (when neo-auto-indent-point
+        (neo-point-auto-indent)))
+    (neo-global--select-window))
+
+  (global-set-key [M-f8] 'neotree-toggle)
+  (global-set-key [f8] 'my-neotree-find)
+
+ )
 )
