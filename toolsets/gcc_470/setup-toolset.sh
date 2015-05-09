@@ -12,7 +12,6 @@ case $HAM_OS in
     NT*)
         export GCCDIR="${HAM_TOOLSET_DIR}/nt-x86"
         export PATH="${GCCDIR}/bin":${PATH}
-        export CPATH="${GCCDIR}/include"
         if [ ! -e "$GCCDIR" ] || [ -z "`type -P gcc`" ]; then
             toolset_dl gcc_470 gcc_470_nt-x86
             if [ ! -e "$GCCDIR" ] || [ -z "`type -P gcc`" ]; then
