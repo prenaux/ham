@@ -2591,6 +2591,13 @@ rule ListFilesR {
   return $(F2) ;
 }
 
+# Returns the first element in the list
+rule ListGetFirst {
+  for _s in $(<) {
+    return $(_s) ;
+  }
+}
+
 #----------------------------------------------------------------------
 #     File generation rules
 #----------------------------------------------------------------------
