@@ -155,3 +155,27 @@
 (push '("\\(.*?\\):\\([0-9]+\\): warning: \\(.*?\\)\n" 1 2 nil 2 3 (6 compilation-warning-face)) flymake-err-line-patterns)
 (push '(".+\\.java$" ham-flymake-java-init ham-flymake-java-cleanup) flymake-allowed-file-name-masks)
 (push '(".+\\.scala$" ham-flymake-java-init ham-flymake-java-cleanup) flymake-allowed-file-name-masks)
+
+;;**********************************************************************
+;; Flymake - JavaScript
+;;**********************************************************************
+(require 'flymake-eslint)
+
+(Windows
+ (setq flymake-eslint-executable (concat (getenv "WORK") "/ham/toolsets/nodejs/nt-x86/bin/eslint")))
+(OSX
+ (setq flymake-eslint-executable (concat (getenv "WORK") "/ham/toolsets/nodejs/osx-x86/bin/eslint")))
+
+(defun ham-flymake-eslint-init ()
+  (flymake-easy-load 'flymake-eslint-command
+                     flymake-eslint-err-line-patterns
+                     ;; this did not work with the 'tempdir, apparently eslint
+                     ;; got lost and couldn't find its .eslintrc files
+                     'inplace
+                     "js"))
+
+;; do nothing because we compile inplace
+(defun ham-flymake-eslint-cleanup () t)
+
+(push '(".+\\.js$" ham-flymake-eslint-init ham-flymake-eslint-cleanup) flymake-allowed-file-name-masks)
+(push '(".+\\.jsx$" ham-flymake-eslint-init ham-flymake-eslint-cleanup) flymake-allowed-file-name-masks)
