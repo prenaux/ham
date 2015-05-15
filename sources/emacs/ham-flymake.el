@@ -162,7 +162,7 @@
 (require 'flymake-eslint)
 
 (Windows
- (setq flymake-eslint-executable (concat (getenv "WORK") "/ham/toolsets/nodejs/nt-x86/bin/eslint")))
+ (setq flymake-eslint-executable (concat (getenv "WORK") "/ham/toolsets/nodejs/nt-x86/eslint")))
 (OSX
  (setq flymake-eslint-executable (concat (getenv "WORK") "/ham/toolsets/nodejs/osx-x86/bin/eslint")))
 
