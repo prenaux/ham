@@ -519,6 +519,7 @@ rule tkPkgLinkLibs {
   tkLinkLibs $(PKGTARGET) : $(<) : $(>) ;
 }
 
+# tkDepDll TARGET : MODULENAME : DIR
 rule tkDepDll {
   local dir = $(3) ;
   dir ?= $(TK_DIR_DLL) ;
@@ -528,6 +529,7 @@ rule tkDepDll {
   }
 }
 
+# tkLinkDll TARGET : MODULENAME : DIR
 rule tkLinkDll {
   if $(NO_DLL) {
     tkLinkLibs $(<) : $(>) ;

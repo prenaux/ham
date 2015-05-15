@@ -2,7 +2,13 @@ TK_SRC_WORK_DIR ?= $(WORK) ;
 TK_IMPORTED ?= ;
 
 rule tkFindToolkitDir {
-  local dirBase = [ FDirName $(WORK) $(1) ] ;
+  local dirBase = [ FDirName $(TOP) node_modules $(1) ] ;
+  if ! [ FExists $(dirBase) ] {
+    dirBase = [ FDirName $(TOP) .. node_modules $(1) ] ;
+    if ! [ FExists $(dirBase) ] {
+      dirBase = [ FDirName $(WORK) $(1) ] ;
+    }
+  }
   return $(dirBase) ;
 }
 
@@ -12,7 +18,19 @@ rule tkImport {
     EXIT "F/Toolkit $(1) already imported." ;
   }
 
-  local dirBase = [ FDirName $(WORK) $(1) ] ;
+  local doCopy = 0 ;
+  local dirBase = [ FDirName $(TOP) node_modules $(1) ] ;
+  if ! [ FExists $(dirBase) ] {
+    dirBase = [ FDirName $(TOP) .. node_modules $(1) ] ;
+    if ! [ FExists $(dirBase) ] {
+      dirBase = [ FDirName $(WORK) $(1) ] ;
+      if ! [ FExists $(dirBase) ] {
+        EXIT "F/Could not find toolkit $(1) to import." ;
+      }
+      doCopy = 1 ;
+    }
+  }
+
   local dirInclude = [ FDirName $(dirBase) include ] ;
   local dirScripts = [ FDirName $(dirBase) scripts ] ;
 
@@ -23,10 +41,10 @@ rule tkImport {
   }
   if [ FExists $(rulesFile) ] {
     include $(rulesFile) ;
-    ECHO "I/Imported toolkit '$(1)' with custom rules." ;
+    ECHO "I/Imported toolkit '$(1)' with custom rules from: '$(dirBase)'." ;
   }
   else {
-    ECHO "I/Imported toolkit '$(1)'." ;
+    ECHO "I/Imported toolkit '$(1)' from: '$(dirBase)'." ;
   }
 
   # add to the list of imported toolkits
@@ -36,17 +54,25 @@ rule tkImport {
   HDRS += $(dirInclude) ;
   NI_HDRS += $(dirScripts) ;
 
-  # import the dlls
   if ! ( $(NO_DLL) = 1 ) {
+    # import/copy the dlls
     for _i in $(2) {
-      tkImportDll $(1) : $(_i) ;
+      if ( $(doCopy) = 1 ) {
+        tkImportDll $(1) : $(_i) ;
+      }
+      else {
+        tkImportDepDll $(_i) : $(1) : $(_i) ;
+      }
     }
   }
-
   if ! ( $(NO_EXE) = 1 ) {
-    # import the executables
+    # import/copy the executables
     for _i in $(3) {
-      tkImportExe $(1) : $(_i) ;
+      if ( $(doCopy) = 1 ) {
+        tkImportExe $(1) : $(_i) ;
+      }
+      else {
+      }
     }
   }
 
@@ -163,4 +189,16 @@ rule tkImportJar {
 rule tkImportDllAndJar {
   tkImportDll $(<) : $(>) ;
   tkImportJar $(<) : $(>)_jvm ;
+}
+
+# tkImportDepDll TARGET : TOOLKIT : MODULENAME
+rule tkImportDepDll {
+  local tkBinDir = [ FDirName [ tkFindToolkitDir $(2) ] bin $(BIN_LOA) ] ;
+  tkDepDll $(1) : $(3) : $(tkBinDir) ;
+}
+
+# tkImportLinkDll TARGET : TOOLKIT : MODULENAME
+rule tkImportLinkDll {
+  local tkBinDir = [ FDirName [ tkFindToolkitDir $(2) ] bin $(BIN_LOA) ] ;
+  tkLinkDll $(1) : $(3) : $(tkBinDir) ;
 }
