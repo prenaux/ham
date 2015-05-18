@@ -453,6 +453,8 @@ If path is nil and no buffer file name, then use DEFAULT-PATH,"
         (neo-point-auto-indent)))
     (neo-global--select-window))
 
+  (setq neo-theme 'ascii)
+
   (global-set-key [M-f8] 'neotree-toggle)
   (global-set-key [f8] 'my-neotree-find)
 
