@@ -367,6 +367,7 @@ If the new path's directories does not exist, create them."
  (add-to-list 'auto-mode-alist '("\\.hbs\\'" . web-mode))
 
  (setq web-mode-enable-current-element-highlight t)
+ (setq web-mode-enable-auto-quoting nil)
 
  (set-face-attribute 'web-mode-current-element-highlight-face nil :background "LightYellow2")
  (set-face-attribute 'web-mode-current-column-highlight-face nil :background "LightYellow2")
