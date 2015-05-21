@@ -8,6 +8,17 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/postgres"
 
 # path setup
 case $HAM_OS in
+    NT*)
+        export POSTGRES_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
+        export PATH="${POSTGRES_DIR}/bin":${PATH}
+        if [ ! -e "$POSTGRES_DIR" ]; then
+            toolset_dl postgres postgres_nt-x86
+            if [ ! -e "$POSTGRES_DIR" ]; then
+                echo "E/nt-x86 folder doesn't exist in the toolset"
+                return 1
+            fi
+        fi
+        ;;
     OSX*)
         ;;
     *)
@@ -18,6 +29,7 @@ esac
 
 # path
 export PATH="${HAM_TOOLSET_DIR}":${PATH}
+export POSTGRES_DB_DIR="$HOME/_ham/pg"
 
 VER="--- postgres ---------------------
 `postgres --version`"

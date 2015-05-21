@@ -1,0 +1,7 @@
+#!/bin/bash
+if [ -z "$1" -o -z "$2" ] ; then
+    echo "Usage: `basename $0` dbname dump_file" ;
+    exit 1 ;
+fi
+createdb -Upostgres "$1" 2> /dev/null
+pg_restore -Upostgres --clean --dbname="$1" "$2"

@@ -10,8 +10,4 @@ case $HAM_OS in
         ;;
 esac
 
-if [ ! -e "$POSTGRES_DB_DIR/pg_hba.conf" ]; then
-    postgres_initdb
-fi
-
-pg_ctl -D "$POSTGRES_DB_DIR" -l "$POSTGRES_DB_DIR/server.log" start
+pg_ctl -D "$POSTGRES_DB_DIR" stop -s -m fast
