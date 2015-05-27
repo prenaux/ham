@@ -179,3 +179,28 @@
 
 (push '(".+\\.js$" ham-flymake-eslint-init ham-flymake-eslint-cleanup) flymake-allowed-file-name-masks)
 (push '(".+\\.jsx$" ham-flymake-eslint-init ham-flymake-eslint-cleanup) flymake-allowed-file-name-masks)
+
+;;**********************************************************************
+;; Flymake - Typescript
+;;**********************************************************************
+(defconst flymake-typescript-err-line-patterns
+  '(("\\(^[^\\.]+.ts\\)[^(]*(\\([0-9]+\\),\\([0-9]+\\)): \\(.+\\)" 1 2 3 4))) ;; default typescript reporter format
+
+(defun flymake-typescript-command (filename)
+  "Construct a command that flymake can use to run typescript on a file."
+  (list flymake-typescript-executable filename))
+
+(setq flymake-typescript-executable (concat (getenv "WORK") "/ham/toolsets/nodejs/ts-lint"))
+
+(defun ham-flymake-typescript-init ()
+  (flymake-easy-load 'flymake-typescript-command
+                     flymake-typescript-err-line-patterns
+                     ;; this did not work with the 'tempdir, apparently typescript
+                     ;; got lost and couldn't find its .typescriptrc files
+                     'inplace
+                     "ts"))
+
+;; do nothing because we compile inplace
+(defun ham-flymake-typescript-cleanup () t)
+
+(push '(".+\\.ts$" ham-flymake-typescript-init ham-flymake-typescript-cleanup) flymake-allowed-file-name-masks)

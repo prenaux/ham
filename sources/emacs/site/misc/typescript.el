@@ -279,11 +279,11 @@ Match group 1 is the name of the macro.")
 
 (defconst typescript--keyword-re
   (typescript--regexp-opt-symbol
-   '("any" "bool" "boolean" "break" "case" "catch" "class" "constructor"
+   '("any" "bool" "boolean" "break" "case" "catch" "class" "constructor" "const"
      "continue" "declare" "default" "delete" "do" "else"
      "enum" "export" "extends" "extern" "false" "finally" "for"
      "function" "goto" "if" "implements" "import" "in"
-     "instanceof" "interface" "module" "new" "null" "number"
+     "instanceof" "interface" "let" "module" "new" "null" "number"
       "private" "public" "return" "static" "string"
      "super" "switch"  "this" "throw" "true"
      "try" "typeof" "var" "void"
