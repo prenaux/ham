@@ -1,5 +1,14 @@
+[![Build Status](https://travis-ci.org/magit/magit.svg?branch=master)](https://travis-ci.org/magit/magit)
+[![Gratipay](http://img.shields.io/gratipay/magit.png)](https://www.gratipay.com/magit)
+
 It's Magit!  A Git Porcelain inside Emacs
 =========================================
+
+**The Magit wiki contains a list of [FREQUENTLY ASKED QUESTIONS][faq],
+please do consult it.**
+
+**Magit is in [FEATURE FREEZE][roadmap], keep that in mind when making
+feature requests.**
 
 Magit is an interface to the version control system [Git][git],
 implemented as an [Emacs][emacs] package.
@@ -9,42 +18,50 @@ provide a unified interface to various version control systems, Magit
 only supports Git and can therefore better take advantage of its
 native features.
 
-*Magit supports GNU Emacs 23.2 or later; 24.1 or later is recommended.*
-*Magit supports Git 1.7.2.5 or later; 1.8.2 or later is recommended.*
-
-### Table of Contents
-
-* [Installation](#installation)
-* [Getting Started](#getting-started)
-* [Getting Help](#getting-help)
-* [Contributions](#contributions)
-* [Dependencies](#dependencies)
+*Magit 2.0.50 requires at least GNU Emacs 24.4 and Git 1.9.4.*
 
 Installation
 ============
 
-We recommend that you use Emacs' package manager (`package.el`),
-to install Magit from your preferred Elpa archive ([Melpa][melpa],
-[Melpa-Stable][melpa-stable], or [Marmalade][marmalade]).  If you
-haven't used the package manager before, or would like to install
-directly from Magit's Git repository, then consult the detailed
-[installation instructions][install].
+You are looking at the `README.md` of the development branch.  For
+instructions on how to install the stable version of Magit see the
+extended [installation instructions][install] instead.
 
-Getting Started
-===============
+First **uninstall** all instances of `magit`, `git-commit-mode` and
+`git-rebase-mode` that you have currently installed.  Doing this,
+and doing it carefully (e.g. did you also install Magit using your
+distributions package manager at some point?), is **very important**.
+It only takes a few minutes to do this, but if everyone does it, then
+that will save me hours of investigating "impossible" issues, which I
+cannot actually reproduce myself.
 
-To get started with Magit show a summary of its status in a
-new buffer using <kbd>M-x magit-status RET</kbd>.  Navigate the
-buffer using <kbd>n</kbd> and <kbd>p</kbd>, and toggle sections using
-<kbd>TAB</kbd>.  Edit and save some files, refresh the status buffer
-using <kbd>g</kbd>, stage files or individual hunks using <kbd>s</kbd>
-and initiate a commit using <kbd>c c</kbd> the staged changes.  When
-done writing the commit message use <kbd>C-c C-c</kbd> to actually
-create the commit.
+Then install package `dash` using `install-package`.  This is now
+the only external dependency; the libraries `git-commit.el` and
+`git-rebase.el` are now part of the Magit repository.  (These
+libraries were previously part of the Git-Modes repository and their
+names used to end with `-mode.el`).
 
-For more details consult the user manual.  You can read it with
-<kbd>C-u C-h i magit.info RET</kbd> or [on the web][manual].  Magit
-also has a [website][website].
+Then clone the Magit repository and check out the "next" branch:
+
+    $ git clone git://github.com/magit/magit.git ~/.emacs.d/site-lisp/magit
+    $ cd ~/.emacs.d/site-lisp/magit
+    $ git checkout next
+
+Then compile the libraries:
+
+    $ make lisp
+
+Finally add this to your init file:
+
+    (add-to-list 'load-path "~/.emacs.d/site-lisp/magit")
+    (require 'magit)
+
+To update Magit use:
+
+    $ git pull
+    $ make clean lisp
+
+To view all available targets use `make help`.
 
 Getting Help
 ============
@@ -72,52 +89,35 @@ by [Jonas Bernoulli][jonas].  Other Magitians (former maintainers)
 are [Nicolas Dudebout][nicolas], [Peter J. Weisberg][peter],
 [Phil Jackson][phil], [Rémi Vanicat][remi], and [Yann Hodique][yann].
 
-Many more people have [contributed code][stats-authors] and suggested
+Many more people have [contributed code][contributors] and suggested
 features.
 
 Thanks to all of you, may (the history of) the source be with you!
 
-Dependencies
-============
 
-If you install Magit using Emacs' package manager then dependencies
-are automatically being taken care of.  Otherwise you have to track
-down dependencies and install them manually.
+[contributing]: https://github.com/magit/magit/blob/next/CONTRIBUTING.md
+[development]:  https://github.com/magit/magit
+[faq]:          https://github.com/magit/magit/wiki/FAQ
+[install]:      https://github.com/magit/magit/wiki/Installation
+[issues]:       https://github.com/magit/magit/issues
+[pulls]:        https://github.com/magit/magit/pulls
+[roadmap]:      https://github.com/magit/magit/issues/1645
 
-Magit requires the libraries `git-commit-mode` and `git-rebase-mode`
-which are part of the [magit/git-modes][git-modes] repository and are
-distributed as separate packages.
+[contributors]: http://magit.vc/stats/authors.html
+[donations]:    http://magit.vc/donations.html
+[manual]:       http://magit.vc/manual/next
 
-The library `magit-wip` additionally requires the [`git-wip`][git-wip]
-script, which you have to install manually.
-
-
-[contributing]: https://github.com/magit/magit/blob/master/CONTRIBUTING.md
-[development]: http://github.com/magit/magit
-[donations]: http://magit.vc/donations.html
-[emacsstack]: http://emacs.stackexchange.com/questions/tagged/magit
-[faq]: https://github.com/magit/magit/wiki/FAQ
-[group]: https://groups.google.com/forum/?fromgroups#!forum/magit
-[install]: https://github.com/magit/magit/wiki/Installation
-[issues]: https://github.com/magit/magit/issues
-[manual]: http://magit.vc/manual/master
-[pulls]: https://github.com/magit/magit/pulls
-[stats-authors]: http://magit.vc/stats/authors.html
-[website]: http://magit.vc
-
-[jonas]: http://emacsair.me
-[marius]: https://github.com/mvollmer
-[nicolas]: http://dudebout.com
-[peter]: https://github.com/pjweisberg
-[phil]: https://github.com/philjackson
-[remi]: https://github.com/vanicat
-[yann]: http://www.hodique.info
+[emacsstack]:   http://emacs.stackexchange.com/questions/tagged/magit
+[group]:        https://groups.google.com/forum/?fromgroups#!forum/magit
 
 [emacs]: http://www.gnu.org/software/emacs
-[git-wip]: https://github.com/bartman/git-wip
-[git]: http://git-scm.com
-[git-modes]: https://github.com/magit/git-modes
-[marmalade]: http://marmalade-repo.org
-[melpa]: http://melpa.org
-[melpa-stable]: http://stable.melpa.org
-[vc]: http://www.gnu.org/software/emacs/manual/html_node/emacs/Version-Control.html
+[git]:   http://git-scm.com
+[vc]:    http://www.gnu.org/software/emacs/manual/html_node/emacs/Version-Control.html
+
+[jonas]:   http://emacsair.me
+[marius]:  https://github.com/mvollmer
+[nicolas]: http://dudebout.com
+[peter]:   https://github.com/pjweisberg
+[phil]:    https://github.com/philjackson
+[remi]:    https://github.com/vanicat
+[yann]:    http://www.hodique.info

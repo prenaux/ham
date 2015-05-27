@@ -1,9 +1,4 @@
-(define-package "magit" "20150525.1145" "control Git from Emacs"
-  '((cl-lib "0.5")
-    (git-commit-mode "1.0.0")
-    (git-rebase-mode "1.0.0"))
-  :keywords
-  '("vc" "tools"))
-;; Local Variables:
-;; no-byte-compile: t
-;; End:
+(define-package "magit" "2.0.50"
+  "Control Git from Emacs"
+  '((emacs "24.4")
+    (dash "2.10.0")))
