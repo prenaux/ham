@@ -4,4 +4,4 @@ if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 . ham-toolset emacs > /dev/null
-e $*
+emacs "$@"

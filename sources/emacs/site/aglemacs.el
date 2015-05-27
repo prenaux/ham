@@ -844,17 +844,6 @@ BEG and END (region to sort)."
  )
 
 ;;;======================================================================
-;;; GnuServ
-;;;======================================================================
-(NotBatchMode
- (unless (agl-found-custom-arg "-ham-shell")
-   (Windows
-    (load "gnuserv")
-    (gnuserv-start)
-    (setq gnuserv-frame (selected-frame))))
- )
-
-;;;======================================================================
 ;;; MarkDown
 ;;;======================================================================
 (autoload 'markdown-mode "markdown-mode"

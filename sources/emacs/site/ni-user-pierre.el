@@ -24,6 +24,20 @@
 (require 'go-mode)
 
 ;;;======================================================================
+;;; Server for single instance run
+;;;======================================================================
+(NotBatchMode
+ (Windows
+  ;;
+  ;; On Windows:
+  ;;  1) gnuserv & e.exe don't work anymore with Emacs 24.x - as in it'll kind of work but a lot of things will be broken (such as magit, etc... great ^^)
+  ;;  2) Use emacsclientw.exe to open files
+  ;;
+  (require 'server)
+  (unless (server-running-p)
+    (server-start))))
+
+;;;======================================================================
 ;;; Font Lock
 ;;;======================================================================
 
@@ -245,6 +259,8 @@ If the new path's directories does not exist, create them."
 ;;; Look & Customizations
 ;;;======================================================================
 (NotBatchMode
+ (agl-begin-time-block "Look & Customizations")
+
  (setq custom-file "~/emacs.d/my-custom.el")
 
  ;; mode line
@@ -266,6 +282,8 @@ If the new path's directories does not exist, create them."
 ;;;======================================================================
 ;;; Buffer cleanup and indentation
 ;;;======================================================================
+(agl-begin-time-block "Buffer cleanup and indentation")
+
 (defun xsteve-remove-control-M ()
   "Remove ^M at end of line in the whole buffer."
   (interactive)
@@ -319,11 +337,15 @@ If the new path's directories does not exist, create them."
 ;;;======================================================================
 ;;; --- Disable unneeded warnings ---
 ;;;======================================================================
+(agl-begin-time-block "Warnings")
+
 (put 'dired-find-alternate-file 'disabled nil)
 
 ;;;======================================================================
 ;;; Rainbow delimiters
 ;;;======================================================================
+(agl-begin-time-block "Rainbow")
+
 (require 'rainbow-delimiters)
 (add-hook 'niscript-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'c++-mode-hook 'rainbow-delimiters-mode)
@@ -333,6 +355,8 @@ If the new path's directories does not exist, create them."
 ;;; Jump to line with feedback
 ;;;======================================================================
 (NotBatchMode
+ (agl-begin-time-block "Jump to line")
+
  ;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
 
  (global-set-key (key "C-l") 'goto-line) ;; Ctrl-l goto line, more convenient than C-c C-g...
@@ -353,6 +377,8 @@ If the new path's directories does not exist, create them."
 ;;; Web mode
 ;;;======================================================================
 (NotBatchMode
+ (agl-begin-time-block "Web mode")
+
  (require 'web-mode)
  (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
  (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
@@ -407,6 +433,7 @@ If the new path's directories does not exist, create them."
 ;;; Autocomplete
 ;;;======================================================================
 (NotBatchMode
+ (agl-begin-time-block "auto-complete")
 
  ;; pabbrev by default
  (require 'ni-autocomplete-pabbrev)
@@ -428,6 +455,8 @@ If the new path's directories does not exist, create them."
 ;;; Neotree
 ;;;======================================================================
 (NotBatchMode
+ (agl-begin-time-block "Neotree")
+
  (GNUEmacs24
   (require 'neotree)
   (setq neo-smart-open t)
@@ -466,9 +495,14 @@ If path is nil and no buffer file name, then use DEFAULT-PATH,"
 ;;; Magit (see https://vimeo.com/2871241 & http://magit.vc)
 ;;;======================================================================
 (NotBatchMode
+ (agl-begin-time-block "Magit")
+
  (GNUEmacs24
+  (add-to-list 'exec-path (concat (getenv "HAM_HOME") "/toolsets/repos/nt-x86/git/bin/"))
   (add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site/magit"))
   (require 'magit)
   (setq magit-last-seen-setup-instructions "1.4.0")
-  (global-set-key (key "C-c C-v") 'magit-status)
+  (setq git-commit-summary-max-length 255)
+  (setq git-commit-fill-column 255)
+  (global-set-key (key "C-x g") 'magit-status)
  ))

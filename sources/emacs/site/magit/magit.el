@@ -1979,7 +1979,6 @@ library getting in the way.  Then restart Emacs."
 (provide 'magit)
 
 (cl-eval-when (load eval)
-  (magit-version t)
   (require 'magit-sequence)
   (require 'magit-commit)
   (require 'magit-remote)
@@ -1989,7 +1988,9 @@ library getting in the way.  Then restart Emacs."
   (unless (load "magit-autoloads" t t)
     (require 'magit-ediff)
     (require 'magit-extras)
-    (require 'git-rebase)))
+    (require 'git-rebase)
+  )
+)
 
 (if after-init-time
     (magit-startup-asserts)
