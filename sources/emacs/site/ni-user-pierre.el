@@ -461,3 +461,14 @@ If path is nil and no buffer file name, then use DEFAULT-PATH,"
 
  )
 )
+
+;;;======================================================================
+;;; Magit (see https://vimeo.com/2871241 & http://magit.vc)
+;;;======================================================================
+(NotBatchMode
+ (GNUEmacs24
+  (add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site/magit"))
+  (require 'magit)
+  (setq magit-last-seen-setup-instructions "1.4.0")
+  (global-set-key (key "C-c C-v") 'magit-status)
+ ))
