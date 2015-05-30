@@ -79,16 +79,23 @@
   :group 'magit-status
   :type 'hook)
 
-(defcustom magit-status-headers-hook '(magit-insert-tags-header)
+(defcustom magit-status-headers-hook
+  '(magit-insert-head-header
+    magit-insert-upstream-header
+    magit-insert-tags-header)
   "Hook run to insert headers into the status buffer.
 
-This hook is run by `magit-insert-status-headers', which always
-inserts the \"Head\" and \"Upstream\" headers before the headers
-listed here.  `magit-insert-status-headers' has to be a member
-of `magit-insert-status-sections', or no headers are inserted."
+This hook is run by `magit-insert-status-headers', which in turn
+has to be a member of `magit-insert-status-sections' to be used
+at all."
   :package-version '(magit . "2.1.0")
   :group 'magit-status
-  :type 'hook)
+  :type 'hook
+  :options '(magit-insert-repo-header
+             magit-insert-remote-header
+             magit-insert-head-header
+             magit-insert-upstream-header
+             magit-insert-tags-header))
 
 (defcustom magit-status-sections-hook
   '(magit-insert-status-headers
@@ -395,7 +402,8 @@ then offer to initialize it as a new repository."
 (put 'magit-status 'interactive-only 'magit-status-internal)
 
 (defun magit-status-internal (directory &optional switch-function)
-  (let ((default-directory (file-name-as-directory directory)))
+  (let ((default-directory (file-name-as-directory
+                            (expand-file-name directory))))
     (magit-mode-setup magit-status-buffer-name-format
                       (or switch-function
                           magit-status-buffer-switch-function)
@@ -422,45 +430,64 @@ To make this command available use something like:
     (run-hooks 'magit-status-sections-hook))
   (run-hooks 'magit-status-refresh-hook))
 
-(defun magit-insert-status-headers (&optional branch upstream)
+(defun magit-insert-status-headers ()
   "Insert headers appropriate for `magit-status-mode' buffers."
-  (unless branch
-    (setq branch (magit-get-current-branch)))
-  (-if-let  (hash (magit-rev-verify "HEAD"))
-      (let ((line (magit-rev-format "%h %s" "HEAD")))
-        (string-match "^\\([^ ]+\\) \\(.*\\)" line)
-        (magit-bind-match-strings (hash msg) line
-          (magit-insert-section it (branch (or branch hash))
-            (unless branch
-              (setf (magit-section-type it) 'commit))
-            (magit-insert-heading
-              (magit-string-pad "Head: " 10)
-              (propertize hash 'face 'magit-hash) " "
-              (and branch
-                   (concat (propertize branch 'face 'magit-branch-local) " "))
-              msg "\n")
-            (when (and (or upstream
-                           (setq upstream (magit-get-tracked-branch branch)))
-                       (setq line (magit-rev-format "%h %s" upstream)))
-              (string-match "^\\([^ ]+\\) \\(.*\\)" line)
-              (magit-bind-match-strings (hash msg) line
-                (magit-insert-section (branch upstream)
-                  (magit-insert
-                   (concat
-                    (magit-string-pad "Upstream: " 10)
-                    (if hash (propertize hash 'face 'magit-hash) "missing") " "
-                    (and (magit-get-boolean "branch" branch "rebase") "onto ")
-                    (propertize
-                     upstream 'face
-                     (if (string= (magit-get "branch" branch "remote") ".")
-                         'magit-branch-local
-                       'magit-branch-remote))
-                    " " msg "\n")))))
-            (run-hooks 'magit-status-headers-hook)
-            (insert "\n"))))
+  (if (magit-rev-verify "HEAD")
+      (magit-insert-headers magit-status-headers-hook)
     (insert "In the beginning there was darkness\n\n")))
 
-(defun magit-insert-tags-header (&optional pad)
+(defun magit-insert-repo-header ()
+  "Insert a header line showing the path to the repository top-level."
+  (let ((topdir (magit-toplevel)))
+    (magit-insert-section (repo topdir)
+      (magit-insert (format "%-10s%s" "Repo: " topdir)))))
+
+(defun magit-insert-remote-header ()
+  "Insert a header line about the remote of the current branch."
+  (-when-let (remote (magit-get-remote))
+    (magit-insert-section (remote remote)
+      (magit-insert
+       (concat (format "%-10" "Remote: ")
+               (propertize remote 'face 'magit-branch-remote) " "
+               (magit-get "remote" remote "url") "\n")))))
+
+(cl-defun magit-insert-head-header
+    (&optional (branch (magit-get-current-branch)))
+  "Insert a header line about the `HEAD' commit."
+  (let ((output (magit-rev-format "%h %s" "HEAD")))
+    (string-match "^\\([^ ]+\\) \\(.*\\)" output)
+    (magit-bind-match-strings (hash msg) output
+      (magit-insert-section it (branch (or branch hash))
+        (unless branch
+          (setf (magit-section-type it) 'commit))
+        (magit-insert
+         (concat
+          (format "%-10s" "Head: ")
+          (propertize hash 'face 'magit-hash) " "
+          (and branch
+               (concat (propertize branch 'face 'magit-branch-local) " "))
+          msg "\n"))))))
+
+(cl-defun magit-insert-upstream-header
+    (&optional (branch   (magit-get-current-branch))
+               (upstream (magit-get-tracked-branch branch)))
+  "Insert a header line about the upstream branch and its tip."
+  (-when-let (string (and upstream (magit-rev-format "%h %s" upstream)))
+    (string-match "^\\([^ ]+\\) \\(.*\\)" string)
+    (magit-bind-match-strings (hash msg) string
+      (magit-insert-section (branch upstream)
+        (magit-insert
+         (concat
+          (format "%-10s" "Upstream: ")
+          (if hash (propertize hash 'face 'magit-hash) "missing") " "
+          (and (magit-get-boolean "branch" branch "rebase") "onto ")
+          (propertize upstream 'face
+                      (if (string= (magit-get "branch" branch "remote") ".")
+                          'magit-branch-local
+                        'magit-branch-remote))
+          " " msg "\n"))))))
+
+(defun magit-insert-tags-header ()
   "Insert a header line about the current and/or next tag."
   (let* ((this-tag (magit-get-current-tag nil t))
          (next-tag (magit-get-next-tag nil t))
@@ -473,7 +500,7 @@ To make this command available use something like:
       (magit-insert-section (tag (or this-tag next-tag))
         (magit-insert
          (concat
-          (magit-string-pad (if both-tags "Tags: " "Tag: ") (or pad 10))
+          (format "%-10s" (if both-tags "Tags: " "Tag: "))
           (and this-tag (magit-format-status-tag-sentence this-tag this-cnt nil))
           (and both-tags ", ")
           (and next-tag (magit-format-status-tag-sentence next-tag next-cnt t))
@@ -1988,9 +2015,7 @@ library getting in the way.  Then restart Emacs."
   (unless (load "magit-autoloads" t t)
     (require 'magit-ediff)
     (require 'magit-extras)
-    (require 'git-rebase)
-  )
-)
+    (require 'git-rebase)))
 
 (if after-init-time
     (magit-startup-asserts)

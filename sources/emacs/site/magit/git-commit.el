@@ -38,8 +38,8 @@
 ;; line, it is preferable to tell Git to create the commit without
 ;; actually passing it a message.  Git then invokes the `$GIT_EDITOR'
 ;; (or if that is undefined `$EDITOR') asking the user to provide the
-;; message by editing the file ".git/COMMIT_MSG" (or another file in
-;; that directory, e.g. ".git/MERGE_MSG" for merge commits).
+;; message by editing the file ".git/COMMIT_EDITMSG" (or another file
+;; in that directory, e.g. ".git/MERGE_MSG" for merge commits).
 
 ;; When `global-git-commit-mode' is enabled, which it is by default,
 ;; then opening such a file causes the features described below, to
@@ -371,7 +371,8 @@ usually honor this wish and return non-nil."
     (when (= (line-beginning-position)
              (line-end-position))
       (open-line 1)))
-  (run-hooks 'git-commit-setup-hook))
+  (run-hooks 'git-commit-setup-hook)
+  (set-buffer-modified-p nil))
 
 (defun git-commit-setup-font-lock ()
   (let ((table (make-syntax-table (syntax-table))))
