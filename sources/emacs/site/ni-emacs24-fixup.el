@@ -1,5 +1,9 @@
 (provide 'ni-emacs24-fixup)
 
+(GNUEmacs24
+ ;; warf... dont output .# lock-files...
+ (setq create-lockfiles nil))
+
 ;;
 ;;This prevents insanity where, click will 'half-set' the mark so that it
 ;; works as expected mostly, excepted that if you do a search (C-s) right
