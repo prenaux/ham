@@ -497,11 +497,22 @@ If path is nil and no buffer file name, then use DEFAULT-PATH,"
 (NotBatchMode
  (agl-begin-time-block "Magit")
 
+ ;;;
+ ;;; For renamed files to be tracked correctly make sure that diff.renames is
+ ;;; set correctly.
+ ;;;
+ ;;; git config --global diff.renames true
+ ;;;
+ ;;; or in ~/.gitconfig:
+ ;;;
+ ;;; [diff]
+ ;;;   renames = true
+ ;;;
  (GNUEmacs24
   (add-to-list 'exec-path (concat (getenv "HAM_HOME") "/toolsets/repos/nt-x86/git/bin/"))
   (add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site/magit"))
-  (require 'magit)
   (setq magit-last-seen-setup-instructions "1.4.0")
+  (require 'magit)
   (setq git-commit-summary-max-length 255)
   (setq git-commit-fill-column 255)
   (global-set-key (key "C-x g") 'magit-status)
