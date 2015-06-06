@@ -418,6 +418,11 @@ If the new path's directories does not exist, create them."
  (add-hook 'web-mode-hook
            (lambda ()
              (setq comment-start "//")))
+
+
+ (global-set-key (key "C-t") 'tpl-js-flow-type)
+ ;; for flow errors in compile buffer (F5 & C-F5)
+ (add-to-list 'compilation-error-regexp-alist '("^\\(.*?\\):\\([0-9]+\\):.*$" 1 2))
 )
 
 ;;;======================================================================
