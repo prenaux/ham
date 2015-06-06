@@ -410,16 +410,7 @@ If the new path's directories does not exist, create them."
  (require 'less-css-mode)
  (add-to-list 'auto-mode-alist '("\\.scss$" . less-css-mode))
 
- (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
-
- (defadvice web-mode-highlight-part (around tweak-jsx activate)
-   (if (equal web-mode-content-type "jsx")
-       (let (
-             (web-mode-enable-part-face nil)
-             (web-mode-void-elements '())
-            )
-         ad-do-it)
-     ad-do-it))
+ (add-to-list 'auto-mode-alist '("\\.jsx$" . js-mode))
 
  ;; web-mode please close all the tags...
  (setq web-mode-void-elements '())
@@ -513,7 +504,7 @@ If path is nil and no buffer file name, then use DEFAULT-PATH,"
   (add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site/magit"))
   (setq magit-last-seen-setup-instructions "1.4.0")
   (require 'magit)
-  (setq git-commit-summary-max-length 255)
-  (setq git-commit-fill-column 255)
+  (setq git-commit-summary-max-length 1024)
+  (setq git-commit-fill-column 1024)
   (global-set-key (key "C-x g") 'magit-status)
  ))
