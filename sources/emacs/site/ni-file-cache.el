@@ -141,6 +141,10 @@
       (add-to-list 'file-cache-filter-regexps "[.]annot$")
       ;; auto generate files
       (add-to-list 'file-cache-filter-regexps "/_gen_.*")
+      ;; ignore node_modules
+      (add-to-list 'file-cache-filter-regexps "/node_modules")
+      (add-to-list 'file-cache-filter-regexps "/build/client")
+      (add-to-list 'file-cache-filter-regexps "/build/server")
 
       ;; Ignore non-source files
       (dolist (pat (list
