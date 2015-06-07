@@ -17,7 +17,6 @@
 (require 'ni-muse)
 (require 'ni-templates)
 (require 'ni-file-cache)
-(require 'ni-emacs24-fixup)
 (require 'ni-ham)
 (require 'ni-flymake)
 (require 'ham-flymake)
@@ -40,34 +39,31 @@
 ;;;======================================================================
 ;;; Font Lock
 ;;;======================================================================
-
-;; Copy the following in .emacs if you don't like the christmas like syntax highlighting
-(DontExecute
-
- ;; turn off christmas
- (progn
-  (setq font-lock-maximum-decoration 1)
-  (global-font-lock-mode t)
-  (setq font-lock-maximum-decoration
-        '((c-mode . 1)
-          (c++-mode . 1)
-          (niscript-mode . 1)
-          (js-mode . 1)
-          (-mode . 1)
-         )))
-
+(NotBatchMode
+ ;; (ni-turn-off-christmas) if you don't like syntax highlighting
+ (defun ni-turn-off-christmas ()
+   (interactive)
+   ;; turn off christmas
+   (progn
+     (setq font-lock-maximum-decoration 1)
+     (global-font-lock-mode t)
+     (setq font-lock-maximum-decoration
+           '((c-mode . 1)
+             (c++-mode . 1)
+             (niscript-mode . 1)
+             (js-mode . 1)
+             (-mode . 1)
+            ))))
 )
 
 ;;;======================================================================
 ;;; Disable all the auto-indent / eletric mode BS that drives me nuts
 ;;;======================================================================
 (NotBatchMode
-
  (setq c-electric-pound-behavior nil)
  (setq css-electric-keys nil)
  (setq minibuffer-electric-default-mode nil)
  (setq xml-lite-electric-slash nil)
-
 )
 
 ;;;======================================================================
@@ -84,8 +80,6 @@
  (global-set-key [(control f5)] 'compile)
  (global-set-key [f6] 'previous-error)
  (global-set-key [f7] 'next-error)
- (global-set-key (kbd "<C-prior>") 'previous-error) ;; Ctrl-PgUp
- (global-set-key (kbd "<C-next>")  'next-error) ;; Ctrl-PgDown
 
  ;; Set compile mode to scroll to the first error
  (setq compilation-scroll-output 'first-error)
@@ -94,12 +88,6 @@
  (define-key global-map [(insert)] nil)
  (define-key global-map [(control meta insert)] 'overwrite-mode)
  (define-key global-map [(control shift insert)] 'overwrite-mode)
-
- ;; use control insert with yank, cause most of the nav is Ctrl-up/down
- ;; pageup/pagedown, its just more convenient
- (define-key global-map [(control insert)] 'yank)
- (define-key global-map [(control meta insert)] 'yank)
- (define-key global-map [(meta insert)] 'yank-pop)
 
  ;; Map the Escape key to "actually stop whatever NOW" or "please don't screw
  ;; up my environment randomly...".
@@ -235,24 +223,15 @@ If the new path's directories does not exist, create them."
  (Windows
   ;; for 1080p
   (set-face-attribute 'default nil :family "Consolas" :height 105 :weight 'bold)
+  ;; for Unicode support
+  (set-fontset-font
+   "fontset-default" 'unicode
+   "-outline-Arial Unicode MS-normal-normal-normal-sans-*-*-*-*-p-*-gb2312.1980-0")
  )
 
  (Linux
   (setq default-frame-alist
         '((font . "-*-Consolas-*-r-*-*-11-108-120-120-c-*-*-*"))))
-)
-
-;;;======================================================================
-;;; Easy input of math symbols
-;;;======================================================================
-(NotBatchMode
- (require 'xmsi-math-symbols-input)
- (global-set-key (kbd "\C-x\C-x") 'xmsi-change-to-symbol)
-
- (Windows
-  (set-fontset-font
-   "fontset-default" 'unicode
-   "-outline-Arial Unicode MS-normal-normal-normal-sans-*-*-*-*-p-*-gb2312.1980-0"))
 )
 
 ;;;======================================================================
@@ -338,18 +317,18 @@ If the new path's directories does not exist, create them."
 ;;; --- Disable unneeded warnings ---
 ;;;======================================================================
 (agl-begin-time-block "Warnings")
-
 (put 'dired-find-alternate-file 'disabled nil)
 
 ;;;======================================================================
 ;;; Rainbow delimiters
 ;;;======================================================================
 (agl-begin-time-block "Rainbow")
-
 (require 'rainbow-delimiters)
 (add-hook 'niscript-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'c++-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'c-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'js-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'niscript-mode-hook 'rainbow-delimiters-mode)
 
 ;;;======================================================================
 ;;; Jump to line with feedback
@@ -360,7 +339,7 @@ If the new path's directories does not exist, create them."
  ;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
 
  (global-set-key (key "C-l") 'goto-line) ;; Ctrl-l goto line, more convenient than C-c C-g...
- (global-set-key (key "C-S-l") 'recenter-top-bottom)  ;; Remap recenter-top-bottom (which is map to Ctrl-l by default) to Ctrl-Shift-L
+ (global-set-key (key "C-S-l") 'recenter-top-bottom)  ;; Remap recenter-top-bottom (which is mapped to Ctrl-l by default) to Ctrl-Shift-L
 
  (defun goto-line-with-feedback ()
    "Show line numbers temporarily, while prompting for the line number input"
@@ -410,16 +389,10 @@ If the new path's directories does not exist, create them."
  (require 'less-css-mode)
  (add-to-list 'auto-mode-alist '("\\.scss$" . less-css-mode))
 
- (add-to-list 'auto-mode-alist '("\\.jsx$" . js-mode))
-
  ;; web-mode please close all the tags...
  (setq web-mode-void-elements '())
 
- (add-hook 'web-mode-hook
-           (lambda ()
-             (setq comment-start "//")))
-
-
+ ;; Flowtype
  (global-set-key (key "C-t") 'tpl-js-flow-type)
  ;; for flow errors in compile buffer (F5 & C-F5)
  (add-to-list 'compilation-error-regexp-alist '("^\\(.*?\\):\\([0-9]+\\):.*$" 1 2))
@@ -448,43 +421,12 @@ If the new path's directories does not exist, create them."
 )
 
 ;;;======================================================================
-;;; Neotree
+;;; Direx (dired tree view)
 ;;;======================================================================
 (NotBatchMode
- (agl-begin-time-block "Neotree")
-
- (GNUEmacs24
-  (require 'neotree)
-  (setq neo-smart-open t)
-
-  (defun my-neotree-find (&optional path default-path)
-    "Quick select node which specified PATH in NeoTree.
-If path is nil and no buffer file name, then use DEFAULT-PATH,"
-    (interactive)
-    (let* ((ndefault-path (if default-path default-path
-                            (neo-path--get-working-dir)))
-           (npath (if path path
-                    (or (buffer-file-name) ndefault-path)))
-           (do-open-p nil))
-
-      ;; PIERRE: No confirmation, just do it...
-      ;; (if (and (not (neo-global--file-in-root-p npath))
-      ;; (neo-global--window-exists-p))
-      ;; (setq do-open-p (yes-or-no-p "File not found in root path, do you want to change root?"))
-      (setq do-open-p t)
-      ;; )
-      (when do-open-p
-        (neo-global--open-and-find npath))
-      (when neo-auto-indent-point
-        (neo-point-auto-indent)))
-    (neo-global--select-window))
-
-  (setq neo-theme 'ascii)
-
-  (global-set-key [M-f8] 'neotree-toggle)
-  (global-set-key [f8] 'my-neotree-find)
-
- )
+ (agl-begin-time-block "direx")
+ (require 'direx)
+ (define-key global-map "\C-x\C-d" 'direx:jump-to-directory)
 )
 
 ;;;======================================================================

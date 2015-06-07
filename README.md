@@ -96,6 +96,161 @@ Type:
 . hat repos
 ```
 
+## Emacs
+
+Ham includes an emacs toolset on all supported platform. The emacs toolsets contains
+a good default environment that is suitable to edit all the languages supported by ham (and more).
+
+On Windows the Emacs binaries are included in the toolset, on OSX & Linux you should install Emacs 23+.
+
+### .emacs
+Example ~/.emacs file:
+```el
+(setenv "WORK" "/Users/Pierre/MyWork")
+(setenv "HAM_HOME" "/Users/Pierre/MyWork/ham")
+(setenv "EMACS_DEVENV" (getenv "HAM_HOME"))
+(add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs"))
+(add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site"))
+
+(require 'ni-user-pierre)
+;; (require 'ni-theme-wombat)
+
+;; (ni-turn-off-christmas)
+```
+
+Note that on Windows the emacs toolset is will the above .emacs if none exists.
+
+### Keyboard
+
+```
+C-x 1 -> Only one window
+C-x 2 -> Split window horizontally
+C-x 3 -> Split window vertically
+C-x 0 -> Close current window
+C-1 -> Jump to next window
+C-2 -> Jump to previous window
+
+M-w   -> Add to yank ring (Copy)
+C-w   -> Add to yank ring and kill region (Cut)
+C-y   -> Yank (paste)
+M-y   -> Cycle through other yank in ring (after C-y)
+C-c y -> Yank (paste) menu
+
+C-RET -> Open a ham-shell in another frame and run the previouos command in
+         the shell's command history. This is meant to make it more convenient
+         to run test cases and the likes quickly after modifying some code.
+
+C-M-Up -> Jump to previous occurence of word at point.
+C-M-Dn -> Jump to next occurence of word at point.
+
+C-Up, C-{ -> Jump to previous paragraph.
+C-Dn, C-} -> Jump to next paragraph.
+
+S-Up -> Uncomment line and move up one line
+S-Dn -> Comment line and moove down one line
+
+M-Up -> Increment the number at point
+M-Dn -> Decrement the number at point
+
+C-x C-r  -> Revert buffer
+
+C-m, RET -> New line and indent
+
+C-v   -> Page down
+C-S-v -> Page up
+
+M-0 -> Erase/clear buffer
+
+C-6 -> Toggle word wrap
+M-6 -> Toggle whitespace mode
+
+C-= (C +) -> Increase font size
+C-- (C -) -> Decrease font size
+
+C-c C-g, C-l -> goto line
+
+C-z -> Undo
+
+M-s -> Regex search forward
+M-r -> Regex search backward
+
+C-h C-h -> Search and replace regex in current buffer
+
+M-/ -> Expand immediatly, press multiple time to cycle through possible expensions
+C-/ -> Auto-complete popup
+
+M-5 -> Go to matching parenthesis, *only* if you're on a paren character
+C-. -> Go to matching parenthesis, matching to cloesest paran if cusor isnt on one
+
+C-M-g   -> insert uuid1 to buffer (ex: AE09D861-3631-244F-809B-7E45E696BA98)
+C-M-S-g -> insert uuid2 to buffer (ex: 0x5384343a,0xb2d9,0xd946,0x85,0xf2,0xe7,0xb9,0xbe,0x3d,0x4d,0x03)
+M-S-g   -> insert uuid3 to buffer (ed: 39433690_B6F6_8E4C_836C_8BA30C8EA91D)
+
+C-S-a   -> Begining of buffer
+C-S-e   -> End of buffer
+
+C->     -> Mark next occurence (Multimark/cursor)
+C-<     -> Mark prev occurence (Multimark/cursor)
+C-*     -> Mark all occurences
+C-x r t -> Inline rectangle edit
+
+C-M-insert, C-S-insert -> overwrite mode, insert is disabled by default
+
+C-S-i   -> Indent the whole buffer
+C-M-\   -> Indent selection
+```
+
+```
+C-F5 -> Compile, specify compilation command
+F5   -> Compile using the last compilation command specified
+M-3, F6 -> Jump to previous match or compilation error
+M-4, F7 -> Jump to next match or compilation error
+
+C-F4 -> Start flymake on current buffer
+C-F3 -> Restart flymake on current buffer
+F3 -> Previous flymake error
+F4 -> Next flymake error
+```
+
+#### Direx
+Direx opens a dired buffer with expandable sub directories (a tree view).
+
+```
+C-x C-d -> Open Direx
+
+o -> Open file in other window
+e -> Print item infos (file size, access rights, write date, ...)
+RET -> Open file in current window
+TAB -> Toggle item (expand / close directory)
+g -> Refresh tree
+E -> Expand all sub directories
+C -> Copy file
+R -> Rename file
+D -> Delete file
+M -> chmod
+G -> chgrp
+O -> chown
+T -> touch
+```
+
+#### Magit
+Magit is a special mode to manage git repositories from within emacs.
+See https://vimeo.com/2871241 & http://magit.vc.
+
+```
+C-x g -> Start magit, looks for .git folder for the file opened in the current buffer
+```
+
+For renamed files to be displayed as such make sure that the diff.renames option is set in gitconfig:
+```
+git config --global diff.renames true
+```
+or in ~/.gitconfig:
+```
+[diff]
+  renames = true
+```
+
 ## Emscripten
 
 Ham + Emscripten requires about 1GB of disk space.
@@ -120,7 +275,7 @@ HAM_IMPORTED_TOOLSET = emscripten
 HAM_TOOLSET = EMSCRIPTEN
 HAM_TOOLSET_VER = 1_25
 HAM_TOOLSET_NAME = emscripten
-HAM_TOOLSET_DIR = /Users/Pierre/My Work/ham/toolsets/emscripten
+HAM_TOOLSET_DIR = /Users/USERNAME/My Work/ham/toolsets/emscripten
 =======================================================
 === Tools Version =====================================
 =======================================================

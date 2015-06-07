@@ -9,7 +9,6 @@
 (setq vc-handled-backends nil)
 
 (NotBatchMode
-
  ;; Editing files larger than ~500K is really too painfull if
  ;; font-lock and a language mode is enabled so just disable it in
  ;; that case.
@@ -25,13 +24,6 @@
 
  (add-hook 'find-file-hook 'my-find-file-check-make-large-file-fundamental-hook)
 )
-
-;;;======================================================================
-;;; LLVM
-;;;======================================================================
-(NotBatchMode
- (require 'llvm-mode)
- (require 'tablegen-mode))
 
 ;;;======================================================================
 ;;; Encoding
@@ -174,6 +166,7 @@ the text to another HTML buffer."
 (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
 (add-to-list 'auto-mode-alist '("\\.jsw\\'" . js-mode))
 (add-to-list 'auto-mode-alist '("\\.jsr\\'" . js-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx$" . js-mode))
 
 ;;*** CoffeeScript ******************************************************
 (require 'coffee-mode)
@@ -371,7 +364,8 @@ BEG and END (region to sort)."
 
 (NotBatchMode
  (global-set-key '[(control meta up)] 'agl-search-word-backward)
- (global-set-key '[(control meta down)] 'agl-search-word-forward))
+ (global-set-key '[(control meta down)] 'agl-search-word-forward)
+)
 
 (defun agl-comment-and-go-down ()
   "Comments the current line and goes to the next one" (interactive)
@@ -622,35 +616,6 @@ BEG and END (region to sort)."
 )
 
 ;;;======================================================================
-;;; Dired mode
-;;;======================================================================
-(NotBatchMode
- (agl-begin-time-block "Dired mode")
-
-;; Dired customizations
-(setq ls-lisp-dirs-first t)
-
-;; use a single buffer for dired mode
-(require 'dired-single)
-(defun my-dired-init ()
-  "Bunch of stuff to run for dired, either immediately or when it's loaded."
-  ;; add other stuff here
-  (define-key dired-mode-map [return] 'joc-dired-single-buffer)
-  (define-key dired-mode-map [C-return] 'dired-find-file-other-window)
-  (define-key dired-mode-map [mouse-1] 'joc-dired-single-buffer-mouse)
-  (define-key dired-mode-map [delete] 'dired-do-delete)
-  (define-key dired-mode-map "^"
-    (function
-     (lambda nil (interactive) (joc-dired-single-buffer "..")))))
-;; if dired's already loaded, then the keymap will be bound
-(if (boundp 'dired-mode-map)
-    ;; we're good to go; just add our bindings
-    (my-dired-init)
-  ;; it's not loaded yet, so add our bindings to the load-hook
-  (add-hook 'dired-load-hook 'my-dired-init))
-)
-
-;;;======================================================================
 ;;; WindMove
 ;;;======================================================================
 (NotBatchMode
@@ -693,7 +658,9 @@ BEG and END (region to sort)."
  (global-set-key (key "M-`") 'agl-other-frame)
  ;; Forward/Backward paragraph
  (global-set-key (key "M-p") 'backward-paragraph)
+ (global-set-key (key "C-{") 'backward-paragraph)
  (global-set-key (key "M-n") 'forward-paragraph)
+ (global-set-key (key "C-}") 'forward-paragraph)
 )
 
 ;;;======================================================================
@@ -780,9 +747,6 @@ BEG and END (region to sort)."
 ; isearch - the defaults are _so_ annoying...
 (define-key isearch-mode-map (kbd "<backspace>") 'isearch-del-char) ; bs means bs
 (define-key isearch-mode-map (kbd "<delete>")    'isearch-delete-char)  ; delete means delete
-
-(global-set-key [?\C-x ?t] 'anchored-transpose)
-(autoload 'anchored-transpose "anchored-transpose" nil t)
 
 ;;;======================================================================
 ;;; Autoindent yank
@@ -876,6 +840,10 @@ BEG and END (region to sort)."
  (global-set-key (kbd "C-0") 'ham-shell-unique)
  (global-set-key (kbd "M-0") 'erase-buffer)
 
+ ;; PgUp/Dn
+ (global-set-key (kbd "C-v") 'scroll-up-command)
+ (global-set-key (kbd "C-S-v") 'scroll-down-command)
+
  ;; Toggle word wrap
  (global-set-key (kbd "C-6") 'agl-toggle-word-wrap)
  (global-set-key (kbd "M-6") 'whitespace-mode)
@@ -886,10 +854,6 @@ BEG and END (region to sort)."
  ;; Make the sequence "C-c g" execute the `goto-line' command,
  ;; which prompts for a line number to jump to.
  (global-set-key "\C-c\C-g" 'goto-line)
-
- ;; Imenu
- (global-set-key "\C-c\C-f" 'agl-goto-symbol)
- (global-set-key "\C-cf" 'agl-goto-symbol)
 
  ;; undo on C-z, move the suspend/iconify to C-/
  (global-set-key "\C-z" 'undo)
@@ -903,12 +867,6 @@ BEG and END (region to sort)."
  ;; alias qrr to query-replace-regexp
  (defalias 'qrr 'query-replace-regexp)
  (global-set-key "\C-h\C-h" 'qrr)
- ;; dtou
- (global-set-key "\C-h\C-d" 'agl-to-utf8)
- ;; find occurences
- (global-set-key "\C-h\C-i" 'agl-occur-identifier)
- ;; occurences
- (global-set-key "\C-h\C-o" 'occur)
 
  ;; extended expand
  (global-set-key [(meta /)] (make-agl-expand))
@@ -932,9 +890,9 @@ BEG and END (region to sort)."
  ;; dec number under cursor
  (define-key global-map [(meta down)] 'agl-decrement-number-at-point)
  ;; UUID generation
- (global-set-key (kbd "C-M-S-g") 'agl-uuid1-to-buffer)
- (global-set-key (kbd "C-M-g") 'agl-uuid2-to-buffer)
- (global-set-key (kbd "M-G") 'agl-uuid3-to-buffer)
+ (global-set-key (kbd "C-M-g")   'agl-uuid1-to-buffer)
+ (global-set-key (kbd "C-M-S-g") 'agl-uuid2-to-buffer)
+ (global-set-key (kbd "M-G")     'agl-uuid3-to-buffer)
 
  ;; Begin/end of buffer
  (define-key global-map (kbd "C-S-a") 'beginning-of-buffer)
@@ -987,12 +945,7 @@ With zero ARG, skip the last one and mark next."
 
 (global-set-key (kbd "C-<") 'mark-previous-like-this)
 (global-set-key (kbd "C->") 'mark-next-like-this)
-;; like the other two, but takes an argument (negative is previous)
-(global-set-key (kbd "C-M-m") 'mark-more-like-this)
 (global-set-key (kbd "C-*") 'mark-all-like-this)
-
-(require 'rename-sgml-tag)
-(define-key sgml-mode-map (kbd "C-c C-r") 'rename-sgml-tag)
 
 ;;;======================================================================
 ;;; Macros

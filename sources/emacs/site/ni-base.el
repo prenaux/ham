@@ -238,10 +238,13 @@ and their terminal equivalents.")
         (set-window-point (car windows) (point-max))
         (setq windows (cdr windows))))))
 
+(GNUEmacs24
+ ;; warf... dont output .# lock-files...
+ (setq create-lockfiles nil))
+
 ;; These are for people who prefer to have closing parens line up with open parens.
 ;; That is, not have them all bunched up on one line.
 ;; (Pierre) ... as opposed to "lined up at shitty random and unreadable positions ^^"
-
 (defun ctp ()
   "collect trailing parens"
   ;; bunches the `dangling parens' in your code up into the useless and unnatural
