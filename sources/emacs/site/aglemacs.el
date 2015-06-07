@@ -150,7 +150,6 @@ the text to another HTML buffer."
 ;;*** Java **************************************************************
 (NotBatchMode
  (require 'eclipse-java-style)
-
  (add-hook 'java-mode-hook (lambda ()
                              (eclipse-set-java-style)
                              (ni-make-newline-indent)))
@@ -210,21 +209,16 @@ the text to another HTML buffer."
 (add-to-list 'auto-mode-alist '("\\.vbs\\'" . visual-basic-mode))
 
 ;;*** XML ***************************************************************
-(require 'xml-lite)
-(add-hook 'xml-lite-mode-hook
-          '(lambda ()
-             (setq xml-lite-indent-offset 2)
-             (setq sgml-basic-offset 2)
-             ))
-
-(add-hook 'sgml-mode-hook
-          '(lambda ()
-             (xml-lite-mode)
-             ))
-
-(add-to-list 'auto-mode-alist '("\\.gml\\'" . xml-lite-mode))
-(add-to-list 'auto-mode-alist '("\\.xml\\'" . xml-lite-mode))
-(add-to-list 'auto-mode-alist '("\\.xslt\\'" . xml-lite-mode))
+;; associate xml, xsd, etc with nxml-mode
+(add-to-list 'auto-mode-alist
+             (cons (concat "\\." (regexp-opt
+                                  '("xml" "xsd" "rng"
+                                    "xslt" "xsl" "gml"
+                                   ) t) "\\'")
+                   'nxml-mode))
+(setq nxml-slash-auto-complete-flag t)
+(setq nxml-attribute-indent 2)
+(setq nxml-child-indent 2)
 
 ;;*** CSS ***************************************************************
 (setq css-indent-offset 2)
@@ -254,11 +248,6 @@ the text to another HTML buffer."
 ;;*** Objective-C *****************************************************************
 (add-to-list 'auto-mode-alist '("\\.mm\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.lnt\\'" . c++-mode))
-
-;;*** XML *************************************************************************
-(add-to-list 'auto-mode-alist '("\\.xml\\'" . xml-lite-mode))
-(add-to-list 'auto-mode-alist '("\\.xsl\\'" . xml-lite-mode))
-(add-to-list 'auto-mode-alist '("\\.xslt\\'" . xml-lite-mode))
 
 ;;*** Rust ************************************************************************
 (autoload 'rust-mode "rust-mode" nil t)

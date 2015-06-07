@@ -359,6 +359,7 @@ If the new path's directories does not exist, create them."
  (agl-begin-time-block "Web mode")
 
  (require 'web-mode)
+
  (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
  (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
  (add-to-list 'auto-mode-alist '("\\.[gj]sp\\'" . web-mode))
