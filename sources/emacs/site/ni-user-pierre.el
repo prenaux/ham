@@ -455,4 +455,26 @@ If the new path's directories does not exist, create them."
   (setq git-commit-summary-max-length 1024)
   (setq git-commit-fill-column 1024)
   (global-set-key (key "C-x g") 'magit-status)
+
+  (defun magit-toggle-whitespace ()
+    (interactive)
+    (if (member "--ignore-space-change" magit-diff-forced-options)
+        (magit-dont-ignore-whitespace)
+      (magit-ignore-whitespace)))
+
+  (defun magit-ignore-whitespace ()
+    (interactive)
+    (setq magit-diff-forced-options (remove "--ignore-space-change" magit-diff-forced-options))
+    (setq magit-diff-forced-options (remove "--ignore-all-space" magit-diff-forced-options))
+    (add-to-list 'magit-diff-forced-options "--ignore-space-change" "--ignore-all-space")
+    (magit-refresh))
+
+  (defun magit-dont-ignore-whitespace ()
+    (interactive)
+    (setq magit-diff-forced-options (remove "--ignore-space-change" magit-diff-forced-options))
+    (setq magit-diff-forced-options (remove "--ignore-all-space" magit-diff-forced-options))
+    (magit-refresh))
+
+  (define-key magit-status-mode-map (kbd "W") 'magit-toggle-whitespace)
+
  ))

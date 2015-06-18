@@ -47,6 +47,9 @@
 (declare-function magit-blame-mode 'magit-blame)
 (defvar magit-blame-mode)
 
+;; PIERRE: This is the only way I found to ignore whitespaces
+(defvar magit-diff-forced-options (quote ("--ignore-space-change" "--ignore-all-space")))
+
 (require 'diff-mode)
 (require 'smerge-mode)
 
@@ -962,6 +965,7 @@ Type \\[magit-reverse] to reverse the change at point in the worktree.
     (magit-insert-section (diffbuf)
       (magit-git-wash #'magit-diff-wash-diffs
         "diff" range "-p" (and magit-diff-show-diffstat "--stat")
+        magit-diff-forced-options
         "--no-prefix" args "--" files)))
 
 (defvar magit-file-section-map
@@ -1384,7 +1388,9 @@ Type \\[magit-reverse] to reverse the change at point in the worktree.
   (magit-insert-section (unstaged)
     (magit-insert-heading "Unstaged changes:")
     (magit-git-wash #'magit-diff-wash-diffs
-      "diff" magit-diff-section-arguments "--no-prefix")))
+      "diff"
+      magit-diff-forced-options
+      magit-diff-section-arguments "--no-prefix")))
 
 (defvar magit-staged-section-map
   (let ((map (make-sparse-keymap)))
@@ -1403,7 +1409,10 @@ Type \\[magit-reverse] to reverse the change at point in the worktree.
   (magit-insert-section (staged)
     (magit-insert-heading "Staged changes:")
     (magit-git-wash #'magit-diff-wash-diffs
-      "diff" "--cached" magit-diff-section-arguments "--no-prefix")))
+      "diff" "--cached"
+      magit-diff-forced-options
+      magit-diff-section-arguments
+      "--no-prefix")))
 
 ;;; Diff Type
 
