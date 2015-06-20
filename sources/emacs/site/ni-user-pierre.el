@@ -453,7 +453,7 @@ If the new path's directories does not exist, create them."
   (setq magit-last-seen-setup-instructions "1.4.0")
   (require 'magit)
   (setq git-commit-summary-max-length 1024)
-  (setq git-commit-fill-column 1024)
+  (setq git-commit-fill-column 72)
   (global-set-key (key "C-x g") 'magit-status)
 
   (defun magit-toggle-whitespace ()
