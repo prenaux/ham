@@ -222,7 +222,7 @@ If the new path's directories does not exist, create them."
 
  (Windows
   ;; for 1080p
-  (set-face-attribute 'default nil :family "Consolas" :height 105 :weight 'bold)
+  (set-face-attribute 'default nil :family "Consolas" :height 105 :weight 'regular)
   ;; for Unicode support
   (set-fontset-font
    "fontset-default" 'unicode
