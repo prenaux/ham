@@ -13,7 +13,7 @@
 (setq solarized-use-variable-pitch nil)
 
 ;; make the modeline high contrast
-;; (setq solarized-high-contrast-mode-line t)
+(setq solarized-high-contrast-mode-line t)
 
 ;; Use less bolding
 ;; (setq solarized-use-less-bold t)
