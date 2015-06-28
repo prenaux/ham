@@ -1,0 +1,6 @@
+#
+# Placeholder, there's no C++ compiler in the nodejs only toolset.
+#
+LOA_ARCH = js ;
+LOA_OS = nodejs ;
+LOA_LINKER = nodejs ;

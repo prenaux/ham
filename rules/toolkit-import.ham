@@ -202,3 +202,37 @@ rule tkImportLinkDll {
   local tkBinDir = [ FDirName [ tkFindToolkitDir $(2) ] bin $(BIN_LOA) ] ;
   tkLinkDll $(1) : $(3) : $(tkBinDir) ;
 }
+
+#
+# tkImportNodeModule TKDIRNAME : MODULENAME
+#
+# MODULENAME is optional if TKDIRNAME is the same as the module's name
+#
+# This rule updates the node module's code, the module should still be added
+# in the package.json as a local module first.
+#
+rule tkImportNodeModule {
+  local moduleName = $(>) ;
+  if ! $(moduleName) {
+    moduleName = $(<) ;
+  }
+
+  local DSTDIR = [ FDirName $(TK_DIR) node_modules $(moduleName) ] ;
+  if ! [ FExists $(DSTDIR) ] {
+    EXIT "F/Can't find node_module '$(moduleName)', run 'npm install --save ../$(moduleName)' first." ;
+  }
+
+  local SRCFILES ;
+
+  # root dir
+  SRCFILES = [ DataGlob [ FDirName $(WORK) $(<) ] : : js ] ;
+  for _i in $(SRCFILES) {
+    tkImportDoCopy tkimport_nodejs : $(_i) : [ FDirName $(DSTDIR) ] ;
+  }
+
+  # sources dir
+  SRCFILES = [ DataGlob [ FDirName $(WORK) $(<) ] : sources : js ] ;
+  for _i in $(SRCFILES) {
+    tkImportDoCopy tkimport_nodejs : $(_i) : [ FDirName $(DSTDIR) sources ] ;
+  }
+}
