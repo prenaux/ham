@@ -371,6 +371,7 @@ If the new path's directories does not exist, create them."
  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
  (add-to-list 'auto-mode-alist '("\\.htm?\\'" . web-mode))
  (add-to-list 'auto-mode-alist '("\\.hbs\\'" . web-mode))
+ (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
 
  (setq web-mode-enable-current-element-highlight t)
  (setq web-mode-enable-auto-quoting nil)
