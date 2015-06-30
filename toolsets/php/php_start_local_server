@@ -1,0 +1,13 @@
+#!/bin/bash
+case $HAM_OS in
+    NT*)
+        php -S 0.0.0.0:4444 -c ../conf/nt/php.ini
+        ;;
+    OSX*)
+        php -S 0.0.0.0:4444 -c ../conf/osx/php.ini
+        ;;
+    *)
+        echo "E/Toolset: Unsupported host OS"
+        return 1
+        ;;
+esac

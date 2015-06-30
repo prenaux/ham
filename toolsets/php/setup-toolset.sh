@@ -20,6 +20,7 @@ case $HAM_OS in
         fi
         ;;
     OSX*)
+        export PATH="${HAM_TOOLSET_DIR}":${PATH}
         # PHP comes with the OS... yup
         ;;
     *)
