@@ -19,6 +19,9 @@ case $HAM_OS in
             fi
         fi
         ;;
+    OSX*)
+        # PHP comes with the OS... yup
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1

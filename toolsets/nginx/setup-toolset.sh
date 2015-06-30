@@ -19,6 +19,17 @@ case $HAM_OS in
             fi
         fi
         ;;
+    OSX*)
+        export NGINX_DIR="${HAM_TOOLSET_DIR}/osx-x86/"
+        export PATH="${NGINX_DIR}":"${HAM_TOOLSET_DIR}":${PATH}
+        if [ ! -e "$NGINX_DIR/nginx" ]; then
+            toolset_dl nginx nginx_osx-x86
+            if [ ! -e "$NGINX_DIR/nginx" ]; then
+                echo "E/osx-x86 folder doesn't exist in the toolset"
+                return 1
+            fi
+        fi
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
