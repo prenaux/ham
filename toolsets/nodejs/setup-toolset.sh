@@ -29,6 +29,7 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        export NODE_PATH=$NODEJS_DIR/lib/node_modules
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
