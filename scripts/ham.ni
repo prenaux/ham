@@ -79,8 +79,13 @@
           throw "Can't find bash executable in: " + bashPath
         break;
       }
+      case "osx": {
+        bashPath = "/bin/bash"
+        break;
+      }
       default: {
-        throw "Unknown platform to found bash's path."
+        throw ::format("Unknown platform '%s', can't find bash's path.",
+                       ::lang.getHostOS())
       }
     }
 
@@ -162,7 +167,7 @@
       local validCount = 0
 
       // drain stdout to stdout
-      if (::lang.isValid(procStdOut)) {
+      if (::lang.isValid(procStdOut) && !procStdOut.partial_read) {
         ++validCount
         local line = procStdOut.ReadStringLine()
         if (!line.?empty()) {
@@ -186,8 +191,8 @@
 
     local procRet = proc.WaitForExitCode();
     return {
-      succeeded = procRet.x
-      exitCode = procRet.y
+      succeeded = procRet.x.toint()
+      exitCode = procRet.y.toint()
       stdout = stdout
     }
   }
@@ -198,7 +203,7 @@
     local proc = pm.SpawnProcess(aCmd,::eOSProcessSpawnFlags.Detached)
     if (!proc)
       throw "Couldn't spawn process from command line: " + aCmd
-    return true
+    return proc
   }
 
   function seqProcess(aCmd,aOptions) {
@@ -256,7 +261,7 @@
         local debugEchoAll = ::ham._debugEchoAll
 
         // drain stderr
-        if (::lang.isValid(_procStderr)) {
+        if (::lang.isValid(_procStderr) && !_procStderr.partial_read) {
           ++validCount
           local line = _procStderr.ReadStringLine()
           if (!line.?empty()) {
@@ -268,9 +273,9 @@
         }
 
         // drain stdout
-        if (::lang.isValid(_procStdout)) {
+        if (::lang.isValid(_procStdout) && !_procStdout.partial_read) {
           if (_options.drainStdErrBeforeStdIn &&
-              ::lang.isValid(_procStderr) &&
+              (::lang.isValid(_procStderr) && !_procStderr.partial_read)
               (validCount > 0))
           {
           }
@@ -289,8 +294,8 @@
         if (validCount == 0) {
           local ret = _proc.WaitForExitCode()
           r.stopped = true
-          r.succeeded = ret.x
-          r.exitCode = ret.y
+          r.succeeded = ret.x.toint()
+          r.exitCode = ret.y.toint()
         }
 
         itr[0] = _count++;
@@ -335,7 +340,9 @@
       ::dbg(::format("I/Running from %s\n-----------------------\n%s\n-----------------------"
                      tmpFilePath, aScript));
     }
-    return runProcess("\"" + getBashPath() + "\" " + tmpFilePath,abKeepStdOut,abEchoStdout)
+    return runProcess(
+      getBashPath().quote() + " " + tmpFilePath.quote(),
+      abKeepStdOut,abEchoStdout)
   }
 
   function runDetachedBash(aScript) {
@@ -344,7 +351,9 @@
       ::dbg(::format("I/Running detached from %s\n-----------------------\n%s\n-----------------------"
                      tmpFilePath, aScript));
     }
-    return runDetachedProcess("\"" + getBashPath() + "\" " + tmpFilePath,true,true)
+    return runDetachedProcess(
+      getBashPath().quote() + " " + tmpFilePath.quote(),
+      true,true)
   }
 
   function seqBash(aScript,aOptions) {
@@ -353,6 +362,8 @@
       ::dbg(::format("I/Running from %s\n-----------------------\n%s\n-----------------------"
                      tmpFilePath, aScript));
     }
-    return seqProcess("\"" + getBashPath() + "\" " + tmpFilePath,aOptions)
+    return seqProcess(
+      getBashPath().quote() + " " + tmpFilePath.quote(),
+      aOptions)
   }
 }
