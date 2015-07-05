@@ -367,3 +367,13 @@
       aOptions)
   }
 }
+
+function ::bash(aScript) {
+  return ::ham.runBash(aScript,true,true)
+}
+function ::bashDetached(aScript) {
+  return ::ham.runDetachedBash(aScript)
+}
+function ::bashSeq(aScript) {
+  return ::ham.seqBash(aScript)
+}
