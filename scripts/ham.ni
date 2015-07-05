@@ -326,7 +326,7 @@
 
     text += {[export BASH_START_PATH=""]} + "\n"
     text += {[export BASH_START_SILENT="yes"]} + "\n"
-    text += ::format({[. "$HAM_HOME/bin/ham-bash-start.sh"]}) + "\n"
+    text += {[. "$HAM_HOME/bin/ham-bash-setenv.sh"]} + "\n"
 
     text += aScript
 
