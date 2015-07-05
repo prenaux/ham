@@ -432,12 +432,19 @@ If the new path's directories does not exist, create them."
 )
 
 ;;;======================================================================
-;;; Direx (dired tree view)
+;;; Direx (dired tree view) & Dired setup
 ;;;======================================================================
 (NotBatchMode
  (agl-begin-time-block "direx")
  (require 'direx)
  (define-key global-map "\C-x\C-d" 'direx:jump-to-directory)
+
+ (add-hook 'dired-mode-hook 'ni-set-dired-buffer-name)
+ (defun ni-set-dired-buffer-name ()
+   "change buffer name to end with slash"
+   (let ((name (buffer-name)))
+     (if (not (string-match "/$" name))
+         (rename-buffer (concat "*dired: " name "/*") t))))
 )
 
 ;;;======================================================================
