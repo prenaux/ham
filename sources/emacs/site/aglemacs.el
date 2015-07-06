@@ -189,6 +189,7 @@ the text to another HTML buffer."
 (add-to-list 'auto-mode-alist '("\\.nim\\'" . niscript-mode))
 (add-to-list 'auto-mode-alist '("\\.nip\\'" . niscript-mode))
 (add-to-list 'auto-mode-alist '("\\.niw\\'" . niscript-mode))
+(add-to-list 'interpreter-mode-alist '("ni" . niscript-mode))
 
 ;;*** TypeScript ********************************************************
 (autoload 'typescript-mode "typescript" nil t)
