@@ -211,7 +211,7 @@ comments have been removed."
   "Regular expression matching any niScript keyword.")
 
 (defconst nip-basic-type-re
-  (regexp-opt '("local"
+  (regexp-opt '("local" "let"
                 "void" "any" "bool" "int" "float" "string"
                 "mut" "var" "out"
                 ) 'words)
@@ -233,7 +233,6 @@ comments have been removed."
                 "class"
                 "value"
                 "interface"
-                "let"
                 "cond"
                 "scope"
                 "not_implemented"
