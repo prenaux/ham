@@ -268,6 +268,11 @@ the text to another HTML buffer."
 
  (ido-mode t)
 
+ ;; Ohhh, yes... please thanks god, this makes sure that ido won't switch to
+ ;; an active frame (window) if the buffer is already opened there. It'll just
+ ;; open in the current frame - as god intended.
+ (setq ido-default-buffer-method 'selected-window)
+
  ;; Fix the Freeze when having a long list of buffer in the fuzzy
  ;; match and typing a miss-spelled name.
  ;; ---- from http://www.emacswiki.org/emacs/TextMate ----
