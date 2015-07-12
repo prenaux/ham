@@ -52,7 +52,7 @@
   :group 'pt)
 
 (defcustom pt-arguments
-  (list "--smart-case")
+  (list "--smart-case" "-e")
   "Default arguments passed to pt."
   :type '(repeat (string))
   :group 'pt)
@@ -118,4 +118,3 @@
 
 (provide 'pt)
 ;;; pt.el ends here
-
