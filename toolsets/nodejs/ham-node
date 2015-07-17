@@ -1,0 +1,3 @@
+#!/bin/bash
+export NODE_PATH=$HAM_HOME/toolsets/nodejs/$HAM_BIN_LOA/node_modules/:`pwd`/node_modules/
+node "$HAM_HOME/toolsets/nodejs/ham-node.js" "$@"
