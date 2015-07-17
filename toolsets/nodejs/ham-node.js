@@ -16,11 +16,7 @@ else {
   NI = require('tkjs-ni');
 }
 
-var globalNodeModulesDir = PATH.join(
-  process.env.HAM_HOME,
-  "toolsets/nodejs/",
-  process.env.HAM_BIN_LOA,
-  "node_modules");
+var globalNodeModulesDir = process.env.NODEJS_GLOBAL_MODULES_DIR;
 // NI.println("... process.env.NODE_PATH: %s", process.env.NODE_PATH);
 
 var baseDir = cwd;

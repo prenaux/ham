@@ -10,6 +10,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/nodejs"
 case $HAM_OS in
     NT*)
         export NODEJS_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
+        export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}node_modules"
         export PATH=${HAM_TOOLSET_DIR}:"${NODEJS_DIR}":${PATH}
         if [ ! -e "$NODEJS_DIR" ]; then
             toolset_dl nodejs nodejs_nt-x86
@@ -21,6 +22,7 @@ case $HAM_OS in
         ;;
     OSX*)
         export NODEJS_DIR="${HAM_TOOLSET_DIR}/osx-x86/"
+        export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}lib/node_modules"
         export PATH=${HAM_TOOLSET_DIR}:"${NODEJS_DIR}/bin":${PATH}
         if [ ! -e "$NODEJS_DIR" ]; then
             toolset_dl nodejs nodejs_osx-x86
