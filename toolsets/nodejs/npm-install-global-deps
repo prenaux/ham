@@ -1,4 +1,4 @@
 #!/bin/bash
 . ham-bash-lib.sh
 . hat default python_27 nodejs
-npm install -g webpack webpack-dev-server eslint eslint-plugin-react mocha react-tools css-loader jsx-loader expose-loader extract-text-webpack-plugin file-loader react-hot-loader react-script-loader script-loader style-loader supertest url-loader less-loader
+npm install -g webpack webpack-dev-server eslint eslint-plugin-react mocha react-tools css-loader jsx-loader expose-loader extract-text-webpack-plugin file-loader react-hot-loader react-script-loader script-loader style-loader supertest url-loader less-loader nodemon
