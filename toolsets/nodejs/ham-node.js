@@ -43,7 +43,7 @@ function lazyLoadWebPack() {
 //======================================================================
 // Front-end
 //======================================================================
-var configFrontEnd = function(aIsDev) {
+var configFrontEnd = function(aIsDev,aUseSourceMap) {
   return {
     resolve: {
       extensions: [ '', '.js', '.jsx' ],
@@ -82,10 +82,22 @@ var configFrontEnd = function(aIsDev) {
           include: PATH.join(baseDir, 'sources')
         },
         { test: /\.css$/, // Only .css files
-          loader: ExtractTextPlugin.extract("style-loader", "css-loader?keepSpecialComments=0"),
+          loader: (
+            aUseSourceMap ?
+              ExtractTextPlugin.extract("style-loader", "css-loader?sourceMap&keepSpecialComments=0") :
+              ExtractTextPlugin.extract("style-loader", "css-loader?keepSpecialComments=0")
+          ),
           include: PATH.join(baseDir, 'sources')
         },
-        { test: /\.(eot|woff|woff2|ttf|svg)$/,
+        { test: /\.less$/,
+          loader: (
+            aUseSourceMap ?
+              ExtractTextPlugin.extract("style-loader", "css-loader?sourceMap&keepSpecialComments=0!less-loader?sourceMap") :
+              ExtractTextPlugin.extract("style-loader", "css-loader?keepSpecialComments=0!less-loader")
+          ),
+          include: PATH.join(baseDir, 'sources')
+        },
+        { test: /\.(otf|eot|woff|woff2|ttf|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
           loader: "file-loader",
           include: PATH.join(baseDir, 'sources')
         },
@@ -96,7 +108,7 @@ var configFrontEnd = function(aIsDev) {
         { test: /\.(png|jpg|gif)$/,
           loader: 'url?limit=10000',
           include: PATH.join(baseDir, 'sources')
-        }
+        },
       ],
       noParse: []
     },
@@ -119,13 +131,15 @@ var configFrontEnd = function(aIsDev) {
 //======================================================================
 // Webpack Tasks
 //======================================================================
-function onBuild(done) {
+function buildOnBuild(done) {
   return function(err, stats) {
     if(err) {
-      console.log('Error', err);
+      NI.error("Build error: %s", err);
+      NI.log("Build failed.");
     }
     else {
-      console.log("... BUILD: " + stats.toString());
+      NI.println(stats.toString());
+      NI.log("Build succeeded.");
     }
     if(done) {
       done();
@@ -133,9 +147,38 @@ function onBuild(done) {
   }
 }
 
-function frontendBuild(done) {
+function frontendBuild() {
   lazyLoadWebPack();
-  var myConfig = configFrontEnd(false);
+  var myConfig = configFrontEnd(false,true);
+
+  function rmDir(dirPath,aRemoveThisDir) {
+    var files = FS.readdirSync(dirPath);
+    if (files.length > 0) {
+      for (var i = 0; i < files.length; i++) {
+        var filePath = dirPath + '/' + files[i];
+        if (FS.statSync(filePath).isFile()) {
+          FS.unlinkSync(filePath);
+        }
+        else {
+          rmDir(filePath,true);
+        }
+      }
+    }
+    if (aRemoveThisDir) {
+      FS.rmdirSync(dirPath);
+    }
+  };
+
+  var outputDir = myConfig.output.path;
+  try {
+    NI.log("Clearing folder '%s'...", outputDir);
+    rmDir(outputDir);
+    NI.log("Done.");
+  }
+  catch (e) {
+    NI.warning("Clearing folder '%s' failed: %s", outputDir, e);
+  }
+
   myConfig.devtool = 'source-map';
   myConfig.plugins = myConfig.plugins.concat(
     new WEBPACK.DefinePlugin({
@@ -150,16 +193,20 @@ function frontendBuild(done) {
       comments: /$a/, // doesnt match anything so that all comments are removed
     })
   );
-  WEBPACK(myConfig).run(onBuild(done));
+
+  NI.log("Started webpack build...");
+  WEBPACK(myConfig).run(buildOnBuild());
 }
 exports.frontendBuild = frontendBuild;
 
-function frontendWatch() {
+function frontendWatch(aParams) {
   lazyLoadWebPack();
-  var myConfig = configFrontEnd(true);
+  var useSourceMap = NI.selectn("useSourceMap",aParams);
+
+  var myConfig = configFrontEnd(true,useSourceMap);
 
   // Use 'eval', its *much* faster than source-map
-  myConfig.devtool = 'eval';
+  myConfig.devtool = useSourceMap ? 'source-map' : 'eval';
 
   // For hot module reloading
   myConfig.entry.common.push('webpack-dev-server/client?http://localhost:'+global.bundlePort);
@@ -227,12 +274,19 @@ function backendWatch() {
 }
 exports.backendWatch = backendWatch;
 
-exports.build = function() {
-  frontendBuild();
+exports.build = function(aParams) {
+  lint(aParams, function() {
+    frontendBuild();
+  });
 }
 
 exports.dev = function() {
   frontendWatch();
+  backendWatch();
+}
+
+exports.devSourceMap = function() {
+  frontendWatch({ useSourceMap: true });
   backendWatch();
 }
 
@@ -248,7 +302,7 @@ exports.test = function(aParams) {
   UT.runAllTests(aParams);
 }
 
-exports.lint = function() {
+function lint(aParams,aDone) {
   var exec = require('child_process').exec;
   exec(
     'eslint --ext .js --ext .jsx ./sources',
@@ -259,8 +313,14 @@ exports.lint = function() {
         // console.log('exec error: ' + error);
         errorExit("Linting failed.");
       }
+      else {
+        if (aDone) {
+          aDone();
+        }
+      }
     });
 }
+exports.lint = lint;
 
 function printHelp() {
   NI.println("syntax: node ./webpack.js TARGETS");
