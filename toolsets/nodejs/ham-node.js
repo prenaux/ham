@@ -199,6 +199,7 @@ function frontendBuild() {
 }
 exports.frontendBuild = frontendBuild;
 
+var webpackServer = undefined;
 function frontendWatch(aParams) {
   lazyLoadWebPack();
   var useSourceMap = NI.selectn("useSourceMap",aParams);
@@ -234,7 +235,7 @@ function frontendWatch(aParams) {
   myConfig.output.publicPath = 'http://localhost:'+global.bundlePort+'/bin/';
   jsxLoader.loaders = ['react-hot'];
 
-  new WebpackDevServer(WEBPACK(myConfig), {
+  webpackServer = new WebpackDevServer(WEBPACK(myConfig), {
     publicPath: '/bin/',
     hot: true,
     quiet: false,
@@ -243,7 +244,9 @@ function frontendWatch(aParams) {
       colors: true
     },
     headers: { 'Access-Control-Allow-Origin': '*' }
-  }).listen(global.bundlePort, 'localhost', function (err /*, result*/) {
+  });
+
+  webpackServer.listen(global.bundlePort, 'localhost', function (err /*, result*/) {
     if(err) {
       console.log(err);
     }
@@ -288,6 +291,28 @@ exports.dev = function() {
 exports.devSourceMap = function() {
   frontendWatch({ useSourceMap: true });
   backendWatch();
+}
+
+var shellProcess;
+function shellRun() {
+  var cp = require('child_process');
+  shellProcess = cp.spawn(
+    PATH.join(globalNodeModulesDir, 'electron-prebuilt/dist/electron'),
+    ['.'], { detached: false });
+  shellProcess.on('exit', function() {
+    NI.log("Shell closed.");
+    if (webpackServer) {
+      webpackServer.invalidate();
+    }
+    process.exit(0);
+  });
+}
+exports.shellRun = shellRun;
+
+exports.shellDev = function() {
+  frontendWatch();
+  backendWatch();
+  shellRun();
 }
 
 exports.test = function(aParams) {
