@@ -266,6 +266,12 @@ function backendWatch() {
     ext: 'js jsx',
     watch: ['sources'],
     ignore: ["*-test.js", "sources/client.js", "sources/client/*"],
+    env: {
+      'NODE_ENV': 'development',
+      // this is to make sure that NODE_PATH is 'empty', the same as on the
+      // production server
+      'NODE_PATH': '~/a_non_existing_path/'
+    }
   });
   NODEMON.on('start', function () {
     console.log('... Nodemon server.js has started');
