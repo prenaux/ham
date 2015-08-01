@@ -376,17 +376,18 @@ function errorHelpExit(aMsg) {
   var paramObject = {};
   var targets = [];
   var numArgs = process.argv.length;
-  for (var i = 2; i < numArgs; ++i) {
+  for (var i = 2; i < numArgs; ) {
     var param = process.argv[i]
     if (NI.stringStartsWith(param,"--")) {
       paramObject[NI.stringAfter(param,"--")] = process.argv[i+1];
-      ++i;
+      i += 2;
     }
     else {
       if (!(param in aTargets)) {
         errorHelpExit(NI.format("Target '%s' not registered.", targetName));
       }
       targets.push(param);
+      i += 1;
     }
   }
 
