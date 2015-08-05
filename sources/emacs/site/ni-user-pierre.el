@@ -22,6 +22,11 @@
 (require 'ham-flymake)
 (require 'go-mode)
 
+(NotBatchMode
+ (require 'ni-sql)
+ (require 'ni-comint-history)
+)
+
 ;;;======================================================================
 ;;; Server for single instance run
 ;;;======================================================================
@@ -398,15 +403,6 @@ If the new path's directories does not exist, create them."
  (global-set-key (key "C-t") 'tpl-js-flow-type)
  ;; for flow errors in compile buffer (F5 & C-F5)
  (add-to-list 'compilation-error-regexp-alist '("^\\(.*?\\):\\([0-9]+\\):.*$" 1 2))
-)
-
-;;;======================================================================
-;;; SQL
-;;;======================================================================
-(NotBatchMode
- (setq sql-indent-offset 2)
- (eval-after-load "sql"
-   '(load-library "sql-indent"))
 )
 
 ;;;======================================================================

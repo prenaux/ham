@@ -754,7 +754,6 @@ BEG and END (region to sort)."
                             erlang-mode
                             niscript-mode
                             c-mode c++-mode
-                            tcl-mode sql-mode
                             perl-mode cperl-mode
                             java-mode jde-mode
                             lisp-interaction-mode
