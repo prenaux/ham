@@ -151,3 +151,5 @@
 (add-to-list 'auto-mode-alist '("\\.sql\\'" . ni-sql-mode))
 (add-to-list 'auto-mode-alist '("\\.psql\\'" . ni-sql-mode))
 (add-to-list 'auto-mode-alist '("\\.mysql\\'" . ni-sql-mode))
+
+(global-set-key (kbd "C-x C-c") 'ni-sql-connect-server)
