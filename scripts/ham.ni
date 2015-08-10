@@ -225,10 +225,14 @@
             (_options.differentStdOutAndStdErr ? ::eOSProcessSpawnFlags.DifferentStdOutAndStdErr : 0)|
             (_options.detached ? ::eOSProcessSpawnFlags.Detached : 0)
         )
-        if (!_proc)
+        if (!_proc) {
           throw "Couldn't spawn process from command line: " + _cmd
+        }
         _procStdout <- _proc.file[1]
         _procStderr <- (_options.differentStdOutAndStdErr) ? _proc.file[2] : null
+        if (!::lang.isValid(_procStderr) && !::lang.isValid(_procStdout)) {
+          throw "Spawn process couldn't get valid stdout/stdin !"
+        }
       }
 
       function empty() {
@@ -274,9 +278,9 @@
 
         // drain stdout
         if (::lang.isValid(_procStdout) && !_procStdout.partial_read) {
-          if (_options.drainStdErrBeforeStdIn &&
-              (::lang.isValid(_procStderr) && !_procStderr.partial_read)
-              (validCount > 0))
+          if (_options.drainStdErrBeforeStdIn
+              && (::lang.isValid(_procStderr) && !_procStderr.partial_read)
+              && (validCount > 0))
           {
           }
           else {
