@@ -3,15 +3,20 @@
 (require 'sql-indent)
 (require 'pgsql-minor-mode)
 
+(Windows
+ (setq sql-postgres-program (concat HAM_HOME "/toolsets/postgres/nt-x86/bin/psql.exe")))
+(OSX
+ (setq sql-postgres-program "/usr/local/bin/psql"))
+
 ;; default connection list
 (setq sql-connection-alist
-      '(("local"
+      '((local
          (sql-product 'postgres)
          (sql-port 5432)
          (sql-server "localhost")
          (sql-user "postgres")
          (sql-database "postgres")
-         (sql-password "")
+         (sql-password "123")
         )
        )
 )
@@ -142,10 +147,91 @@
   (setq indent-line-function 'ig-indent-sql)
 )
 
+(defun ni-sql-beginning-of-sp ()
+  ""
+  (interactive)
+  (search-backward-regexp
+   "^\\(^SELECT\\s-+ni_utils_drop_function\\)\\|\\(^DROP\\s-+FUNCTION\\s-+IF\\s-+EXISTS\\)")
+)
+
+(defun ni-sql-end-of-sp()
+  ""
+  (interactive)
+  (search-forward-regexp "LANGUAGE\\s-+plpgsql;\\s-*$")
+)
+
+(defun ni-sql-mark-sp ()
+  ""
+  (interactive)
+  ;; go to the end of the SP
+  (ni-sql-end-of-sp)
+  ;; enable mark
+  (set-mark-command nil)
+  ;; go to the beginning of the SP
+  (ni-sql-begining-of-sp)
+  ;; dont cancel the mark
+  (setq deactivate-mark nil)
+)
+
+(defun ni-sql-eval-sp ()
+  ""
+  (interactive)
+  (save-excursion
+    (ni-sql-mark-sp)
+    (sql-send-region (region-beginning) (region-end))
+  )
+)
+
+(defun ni-sql-run-last-sql-cmd ()
+  ""
+  (interactive)
+  (if (get-buffer (sql-find-sqli-buffer))
+      (save-excursion
+        (let ((currentBuffer (buffer-name)))
+          (pop-to-buffer (sql-find-sqli-buffer))
+          (goto-char (point-max))
+          (comint-previous-input 1)
+          (comint-send-input)
+          (pop-to-buffer currentBuffer)
+        ))
+    (message "No SQL process started."))
+)
+
+(defun ni-sql-eval-sp-and-run-last-sql-cmd ()
+  ""
+  (interactive)
+  (save-excursion
+    (ni-sql-mark-sp)
+    (sql-send-region (region-beginning) (region-end))
+    (ni-sql-run-last-sql-cmd))
+)
+
+(defvar ni-sql-sp-mode-is-on nil
+  "Buffer local variable to store pgsql-mode state.")
+
+(defvar ni-sql-sp-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-M-a")   'ni-sql-beginning-of-sp)
+    (define-key map (kbd "C-M-e")   'ni-sql-end-of-sp)
+    (define-key map (kbd "C-c C-v") 'ni-sql-mark-sp)
+    (define-key map (kbd "C-c C-x") 'ni-sql-eval-sp)
+    (define-key map (kbd "C-c C-c") 'ni-sql-eval-sp-and-run-last-sql-cmd)
+    map)
+  "keymap for `ni-sql-sp-mode'.")
+
+(define-minor-mode ni-sql-sp-mode
+  "ni-sql stored procedure minor mode."
+  :global nil
+  :variable ni-sql-sp-mode-is-on
+  :keymap ni-sql-sp-mode-map
+  (make-local-variable 'ni-sql-sp-mode-is-on)
+)
+
 (define-derived-mode ni-sql-mode sql-mode "ni-sql"
   "Major mode for editing SQL."
 )
-(add-hook 'ni-sql-mode-hook #'pgsql-mode)
+;; (add-hook 'ni-sql-mode-hook #'pgsql-mode)
+(add-hook 'ni-sql-mode-hook #'ni-sql-sp-mode)
 (add-hook 'ni-sql-mode-hook 'ni-sql-set-ig-indent)
 
 (add-to-list 'auto-mode-alist '("\\.sql\\'" . ni-sql-mode))
