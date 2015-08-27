@@ -147,7 +147,7 @@ function buildOnBuild(done) {
   }
 }
 
-function frontendBuild() {
+function frontendBuild(aParams,aDone) {
   lazyLoadWebPack();
   var myConfig = configFrontEnd(false,true);
 
@@ -195,7 +195,7 @@ function frontendBuild() {
   );
 
   NI.log("Started webpack build...");
-  WEBPACK(myConfig).run(buildOnBuild());
+  WEBPACK(myConfig).run(buildOnBuild(aDone));
 }
 exports.frontendBuild = frontendBuild;
 
@@ -258,7 +258,8 @@ function frontendWatch(aParams) {
 exports.frontendWatch = frontendWatch;
 
 // $ nodemon -e js,jsx --ignore "sources/*-test.js" --ignore "sources/client.js" --ignore "sources/client/*" --watch sources sources/server.js
-function backendWatch() {
+function backendWatch(aParams) {
+  var nodeEnv = NI.selectn("nodeEnv",aParams) || 'development';
   var NODEMON = require('nodemon');
   NODEMON({
     verbose: true,
@@ -267,7 +268,7 @@ function backendWatch() {
     watch: ['sources'],
     ignore: ["*-test.js", "sources/client.js", "sources/client/*"],
     env: {
-      'NODE_ENV': 'development',
+      'NODE_ENV': nodeEnv,
       // this is to make sure that NODE_PATH is 'empty', the same as on the
       // production server
       'NODE_PATH': '~/a_non_existing_path/'
@@ -297,6 +298,16 @@ exports.dev = function() {
 exports.devSourceMap = function() {
   frontendWatch({ useSourceMap: true });
   backendWatch();
+}
+
+exports.testServer = function() {
+  frontendBuild(undefined, function() {
+    backendWatch({ nodeEnv: 'test' });
+  });
+}
+
+exports.testBackend = function() {
+  backendWatch({ nodeEnv: 'test' });
 }
 
 var shellProcess;
