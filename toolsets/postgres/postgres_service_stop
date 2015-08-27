@@ -1,0 +1,11 @@
+#!/bin/bash
+case $HAM_OS in
+    NT*)
+        ;;
+    *)
+        echo "E/Toolset: Unsupported host OS"
+        exit 1
+        ;;
+esac
+postgres_stop
+pg_ctl unregister -N postgres_talansoft
