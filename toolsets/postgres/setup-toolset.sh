@@ -29,7 +29,7 @@ esac
 
 # path
 export PATH="${HAM_TOOLSET_DIR}":${PATH}
-export POSTGRES_DB_DIR="$HOME/_ham/pg"
+export POSTGRES_DB_DIR="$WORK/Server/pg"
 
 VER="--- postgres ---------------------
 `postgres --version`"
