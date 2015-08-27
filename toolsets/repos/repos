@@ -64,13 +64,25 @@ do
         if [ -z "$REMOTE" ]; then
             REMOTE="$REPO"
             REMOTE2="$REPO"
-            echo "::: $REPO :::"
+            if [ -z $EMACS ]; then
+                echo -e "\033[0;36m::: $REPO :::\033[0m"
+            else
+                echo "::: $REPO :::"
+            fi
         else
             if [ -z $REMOTE2 ]; then
                 REMOTE2="$REMOTE"
-                echo "::: $REPO ($REMOTE) :::"
+                if [ -z $EMACS ]; then
+                    echo "\033[0;36m::: $REPO ($REMOTE) :::\033[0m"
+                else
+                    echo "::: $REPO :::"
+                fi
             else
-                echo "::: $REPO ($REMOTE) ($REMOTE2) :::"
+                if [ -z $EMACS ]; then
+                    echo "\033[0;36m::: $REPO ($REMOTE) ($REMOTE2) :::\033[0m"
+                else
+                    echo "::: $REPO ($REMOTE) ($REMOTE2) :::"
+                fi
             fi
         fi
 

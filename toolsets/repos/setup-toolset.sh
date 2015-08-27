@@ -18,6 +18,7 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        export OPENSSL_CONF="${REPOS_DIR}/git/ssl/openssl.cnf"
         ;;
     OSX*)
         export PATH=${HAM_TOOLSET_DIR}:${PATH}
