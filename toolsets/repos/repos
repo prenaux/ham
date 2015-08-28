@@ -48,6 +48,7 @@ CMD="$1"
 shift
 
 pushd "$WORK"
+echo "Running:" $CMD $*
 
 cat "$REPOFILE" |
 while read REPO
