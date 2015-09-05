@@ -119,12 +119,13 @@ the text to another HTML buffer."
 
 (setq standard-indent 2)
 
-(defun ni-make-newline-indent ()
-  "Sets up preferred newline behavior. Not set by default. Meant
-  to be added to `c-mode-common-hook'."
-  (interactive)
-  (define-key c-mode-base-map "\C-m" 'newline-and-indent)
-  (define-key c-mode-base-map [ret] 'newline-and-indent))
+(GNUEmacs23
+ (global-set-key (kbd "RET") 'newline-and-indent)
+ (global-set-key (kbd "<S-return>") 'newline)
+ (OSX
+  (global-set-key (kbd "<kp-delete>") 'delete-char)
+ )
+)
 
 ;;*** DOS BATCH FILES ***************************************************
 (require 'batch-mode)
@@ -136,7 +137,6 @@ the text to another HTML buffer."
 (NotBatchMode
  (require 'google-c-style)
  (add-hook 'c-mode-common-hook 'google-set-c-style)
- ;; (add-hook 'c-mode-common-hook 'ni-make-newline-indent)
 )
 
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
@@ -150,9 +150,7 @@ the text to another HTML buffer."
 ;;*** Java **************************************************************
 (NotBatchMode
  (require 'eclipse-java-style)
- (add-hook 'java-mode-hook (lambda ()
-                             (eclipse-set-java-style)
-                             (ni-make-newline-indent)))
+ (add-hook 'java-mode-hook (lambda () (eclipse-set-java-style)))
 )
 
 ;;*** LUA ***************************************************************
@@ -261,10 +259,6 @@ the text to another HTML buffer."
 ;;;======================================================================
 (NotBatchMode
  (agl-begin-time-block "IDO completion")
-
- (if (< emacs-major-version 22) ;newer version included in Emacs 22, that doesn't work with 21
-     (load-library "ido-old")
-   (require 'ido))
 
  (ido-mode t)
 
