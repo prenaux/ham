@@ -305,6 +305,10 @@ the text to another HTML buffer."
   ido-max-work-directory-list 0
   ido-max-work-file-list 0
   )
+
+ ;; Seems there's an issue with th max directory size on OSX
+ (GNUEmacs23
+  (setq ido-max-directory-size 100000000))
 )
 
 ;;;======================================================================
