@@ -445,50 +445,14 @@ If the new path's directories does not exist, create them."
 )
 
 ;;;======================================================================
-;;; Magit (see https://vimeo.com/2871241 & http://magit.vc)
+;;; Git
 ;;;======================================================================
 (NotBatchMode
- (agl-begin-time-block "Magit")
-
- ;;;
- ;;; For renamed files to be tracked correctly make sure that diff.renames is
- ;;; set correctly.
- ;;;
- ;;; git config --global diff.renames true
- ;;;
- ;;; or in ~/.gitconfig:
- ;;;
- ;;; [diff]
- ;;;   renames = true
- ;;;
- (GNUEmacs24
+ (agl-begin-time-block "Git")
+ (Windows
   (add-to-list 'exec-path (concat (getenv "HAM_HOME") "/toolsets/repos/nt-x86/git/bin/"))
-  (add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site/magit"))
-  (setq magit-last-seen-setup-instructions "1.4.0")
-  (require 'magit)
-  (setq git-commit-summary-max-length 1024)
-  (setq git-commit-fill-column 1024)
-  (global-set-key (key "C-x g") 'magit-status)
-
-  (defun magit-toggle-whitespace ()
-    (interactive)
-    (if (member "--ignore-space-change" magit-diff-forced-options)
-        (magit-dont-ignore-whitespace)
-      (magit-ignore-whitespace)))
-
-  (defun magit-ignore-whitespace ()
-    (interactive)
-    (setq magit-diff-forced-options (remove "--ignore-space-change" magit-diff-forced-options))
-    (setq magit-diff-forced-options (remove "--ignore-all-space" magit-diff-forced-options))
-    (add-to-list 'magit-diff-forced-options "--ignore-space-change" "--ignore-all-space")
-    (magit-refresh))
-
-  (defun magit-dont-ignore-whitespace ()
-    (interactive)
-    (setq magit-diff-forced-options (remove "--ignore-space-change" magit-diff-forced-options))
-    (setq magit-diff-forced-options (remove "--ignore-all-space" magit-diff-forced-options))
-    (magit-refresh))
-
-  (define-key magit-status-mode-map (kbd "W") 'magit-toggle-whitespace)
-
- ))
+ )
+ (require 'git)
+ (require 'git-blame)
+ (global-set-key (key "C-x g") 'git-status)
+)
