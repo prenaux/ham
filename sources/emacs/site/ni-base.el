@@ -238,9 +238,8 @@ and their terminal equivalents.")
         (set-window-point (car windows) (point-max))
         (setq windows (cdr windows))))))
 
-(GNUEmacs24
- ;; warf... dont output .# lock-files...
- (setq create-lockfiles nil))
+;; warf... dont output .# lock-files...
+(setq create-lockfiles nil)
 
 ;; These are for people who prefer to have closing parens line up with open parens.
 ;; That is, not have them all bunched up on one line.
