@@ -43,17 +43,33 @@ Otherwise clone or pull the latest version of the ham repository:
 
 No setup is required, just run ```ham-shell.cmd``` from the ```ham/bin``` directory and you'll be dropped in a Bash shell which has access to all the bash and ham commands. You can also use ```ham.cmd``` to run ham from third-party applications or from cmd.exe.
 
-## OSX / Linux
+## OSX
 
-Add this to your shell's .profile:
+Add this to ~/.profile:
+```bash
+export WORK="$HOME/My Work"
+export HAM_HOME="$WORK/ham"
+export PATH="${PATH}:$HAM_HOME/bin"
+```
 
+So that programs started from the Dock (such as Xcode) have access to $WORK, add this to launchd.conf:
+```bash
+# Open launchd.conf
+sudo vi /etc/launchd.conf
+# Add this in launchd.conf
+setenv WORK /Users/USERNAME/Work
+# Reload the env vars (launchd.conf is applied only when OSX reboots)
+sudo egrep "^setenv\ " /etc/launchd.conf | xargs -t -L 1 launchctl
+```
+
+## Linux
+
+Add this to ~/.profile:
 ```bash
 export WORK="${HOME}/My Work"
 export HAM_HOME="$WORK/ham"
 export PATH="${PATH}:$HAM_HOME/bin"
 ```
-
-Note that the previous snippet is for the bash shell, if you're using another shell you should modify accordingly.
 
 # Toolsets
 
@@ -233,22 +249,9 @@ O -> chown
 T -> touch
 ```
 
-#### Magit
-Magit is a special mode to manage git repositories from within emacs.
-See https://vimeo.com/2871241 & http://magit.vc.
-
+#### Git
 ```
-C-x g -> Start magit, looks for .git folder for the file opened in the current buffer
-```
-
-For renamed files to be displayed as such make sure that the diff.renames option is set in gitconfig:
-```
-git config --global diff.renames true
-```
-or in ~/.gitconfig:
-```
-[diff]
-  renames = true
+C-x g -> Git status
 ```
 
 ## Emscripten
@@ -257,9 +260,9 @@ Ham + Emscripten requires about 1GB of disk space.
 
 - Import the Emscripten toolset in the shell with ```. ham-toolset emscripten```. This can take a while the first time as it will download all the dependencies needed to run Emscripten ; that is: emscripten, nodejs, java_jdk16 and python_27.
 
-- If the download of the packages is interrupted just re-run ```. ham-toolset emscripten``` it will resume where it left off.
+- If the download of the packages is interrupted just re-run ```. ham-toolset emscripten``` it will resume from where it left off.
 
-- Once the toolset has been imported successfully it will print the toolset's info, it should look like this:
+- Once the toolset has been imported it will print the toolset's info, it should look like this:
 
 ```
 I/Imported toolset 'python_27'.
