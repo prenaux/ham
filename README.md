@@ -58,9 +58,11 @@ So that programs started from the Dock (such as Xcode) have access to $WORK, add
 sudo vi /etc/launchd.conf
 # Add this in launchd.conf
 setenv WORK /Users/USERNAME/Work
-# Reload the env vars (launchd.conf is applied only when OSX reboots)
-sudo egrep "^setenv\ " /etc/launchd.conf | xargs -t -L 1 launchctl
+# Reload the env vars
+sudo egrep "^setenv\ " /etc/launchd.conf | sudo xargs -t -L 1 launchctl
 ```
+
+Note that launchd doesnt seem to be applied on reboot anymore in OSX 10.10 (Yosemite), so... there's yet another way to do that in OSX (environment.plist), but since it'll probably break next time Apple update the OS I won't bother - also as an added bonus its a real pain to setup. So the simplest way is to run "sudo egrep "^setenv\ " /etc/launchd.conf | sudo xargs -t -L 1 launchctl" after the OS booted. Its manual, and in 2015 it sucks that this simple stuff doesn't work, but that how it is.
 
 ## Linux
 
