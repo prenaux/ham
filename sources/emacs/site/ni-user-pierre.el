@@ -62,13 +62,15 @@
 )
 
 ;;;======================================================================
-;;; Disable all the auto-indent / eletric mode BS that drives me nuts
+;;; Disable all the auto-indent, eletric mode and other BS that drives me nuts
 ;;;======================================================================
 (NotBatchMode
  (setq c-electric-pound-behavior nil)
  (setq css-electric-keys nil)
  (setq minibuffer-electric-default-mode nil)
  (setq xml-lite-electric-slash nil)
+ ;; Ohhh yes, don't beep you F***... errr mmm...
+ (setq ring-bell-function #'ignore)
 )
 
 ;;;======================================================================
