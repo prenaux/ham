@@ -997,7 +997,7 @@ With zero ARG, skip the last one and mark next."
 
  (global-set-key (kbd "C-.") 'goto-match-paren2)
 
- (global-set-key "\C-cy" '(lambda ()
-                            (interactive)
-                            (popup-menu 'yank-menu)))
+ (global-set-key (kbd "C-S-y") '(lambda ()
+                                  (interactive)
+                                  (popup-menu 'yank-menu)))
 )
