@@ -19,8 +19,7 @@ if $(HAM_TOOLSET_NAME) = msvc_10_x86 ||
 {
   OSPLAT = X86 ;
 }
-else if $(HAM_TOOLSET_NAME) = msvc_10_x64 ||
-        $(HAM_TOOLSET_NAME) = msvc_11_x64 ||
+else if $(HAM_TOOLSET_NAME) = msvc_13_x64 ||
         $(HAM_TOOLSET_NAME) = winrt_x64
 {
   OSPLAT = X64 ;
@@ -30,7 +29,7 @@ else if $(HAM_TOOLSET_NAME) = winrt_arm
   OSPLAT = ARM ;
 }
 else {
-  EXIT "Unknown toolset name:" $(HAM_TOOLSET_NAME) ;
+  EXIT "Unknown VISUALC toolset name:" $(HAM_TOOLSET_NAME) ;
 }
 
 SLASH   ?= / ;
@@ -45,7 +44,7 @@ if ! $(HAM_CL) {
   EXIT "F/HAM_CL not defined." ;
 }
 
-if $(MSVC_VER) = 12 {
+if $(MSVC_VER) >= 12 {
   HAM_CL = $(HAM_CL) -FS ;
 }
 
