@@ -46,7 +46,7 @@ function lazyLoadWebPack() {
 var configFrontEnd = function(aIsDev,aUseSourceMap) {
   return {
     resolve: {
-      extensions: [ '', '.js', '.jsx' ],
+      extensions: [ '', '.js', '.jsx', '.ts' ],
       modulesDirectories: [
         "web_modules", "node_modules",
         globalNodeModulesDir,
@@ -79,6 +79,12 @@ var configFrontEnd = function(aIsDev,aUseSourceMap) {
         { test: /\.jsx$/,
           loader: loaderJSX,
           exclude: /(node_modules|bower_components)/,
+          include: PATH.join(baseDir, 'sources')
+        },
+        {
+          test: /\.ts$/,
+          exclude: /(node_modules|bower_components)/,
+          loader: 'awesome-typescript-loader',
           include: PATH.join(baseDir, 'sources')
         },
         { test: /\.css$/, // Only .css files
@@ -257,16 +263,16 @@ function frontendWatch(aParams) {
 }
 exports.frontendWatch = frontendWatch;
 
-// $ nodemon -e js,jsx --ignore "sources/*-test.js" --ignore "sources/client.js" --ignore "sources/client/*" --watch sources sources/server.js
+// $ nodemon -e js,jsx,ts --ignore "sources/*-test.js" --ignore "sources/client.js" --ignore "sources/client/*" --watch sources sources/server.js
 function backendWatch(aParams) {
   var nodeEnv = NI.selectn("nodeEnv",aParams) || 'development';
   var NODEMON = require('nodemon');
   NODEMON({
     verbose: true,
     script: 'sources/server.js',
-    ext: 'js jsx',
+    ext: 'js jsx ts',
     watch: ['sources'],
-    ignore: ["*-test.js", "sources/client.js", "sources/client/*"],
+    ignore: ["*-test.js", "*-test.ts", "sources/client.js", "sources/client/*"],
     env: {
       'NODE_ENV': nodeEnv,
       // this is to make sure that NODE_PATH is 'empty', the same as on the
