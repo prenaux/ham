@@ -272,7 +272,7 @@ function backendWatch(aParams) {
     script: 'sources/server.js',
     ext: 'js jsx ts',
     watch: ['sources'],
-    ignore: ["*-test.js", "*-test.ts", "sources/client.js", "sources/client/*"],
+    ignore: ["*flymake*.*", "*-test.js", "*-test.ts", "sources/client.js", "sources/client/*"],
     env: {
       'NODE_ENV': nodeEnv,
       // this is to make sure that NODE_PATH is 'empty', the same as on the
