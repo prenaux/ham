@@ -214,8 +214,8 @@
     (define-key map (kbd "C-M-a")   'ni-sql-beginning-of-sp)
     (define-key map (kbd "C-M-e")   'ni-sql-end-of-sp)
     (define-key map (kbd "C-c C-v") 'ni-sql-mark-sp)
-    (define-key map (kbd "C-c C-x") 'ni-sql-eval-sp)
-    (define-key map (kbd "C-c C-c") 'ni-sql-eval-sp-and-run-last-sql-cmd)
+    (define-key map (kbd "C-c C-z") 'ni-sql-eval-sp)
+    (define-key map (kbd "C-c C-x") 'ni-sql-eval-sp-and-run-last-sql-cmd)
     map)
   "keymap for `ni-sql-sp-mode'.")
 

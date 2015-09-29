@@ -13,4 +13,4 @@ case $HAM_OS in
         exit 1
         ;;
 esac
-${TSC} --module commonjs --moduleResolution 'node' "$@" && echo "TypeScript Lint: No Errors."
+${TSC} --noEmit --newline LF --module commonjs --moduleResolution 'node' "$@" && echo "TypeScript Lint: No Errors."
