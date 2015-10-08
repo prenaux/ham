@@ -84,7 +84,7 @@ var configFrontEnd = function(aIsDev,aUseSourceMap) {
         {
           test: /\.ts$/,
           exclude: /(node_modules|bower_components)/,
-          loader: 'awesome-typescript-loader',
+          loader: 'awesome-typescript-loader?emitRequireType=false',
           include: PATH.join(baseDir, 'sources')
         },
         { test: /\.css$/, // Only .css files
