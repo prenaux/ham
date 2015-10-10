@@ -27,8 +27,6 @@ var baseDir = cwd;
 var WEBPACK;
 var ExtractTextPlugin;
 var WebpackDevServer;
-
-var loaderJSX = 'jsx-loader';
 var hotReloadAll = false;
 
 function lazyLoadWebPack() {
@@ -77,14 +75,14 @@ var configFrontEnd = function(aIsDev,aUseSourceMap) {
     module: {
       loaders: [
         { test: /\.jsx$/,
-          loader: loaderJSX,
+          loader: (aIsDev ? 'react-hot!' : '') + 'jsx-loader',
           exclude: /(node_modules|bower_components)/,
           include: PATH.join(baseDir, 'sources')
         },
         {
           test: /\.ts$/,
           exclude: /(node_modules|bower_components)/,
-          loader: 'awesome-typescript-loader?emitRequireType=false',
+          loader: (aIsDev ? 'react-hot!' : '') + 'awesome-typescript-loader?emitRequireType=false&forkChecker=true',
           include: PATH.join(baseDir, 'sources')
         },
         { test: /\.css$/, // Only .css files
@@ -232,14 +230,8 @@ function frontendWatch(aParams) {
   myConfig.plugins.push(new WEBPACK.HotModuleReplacementPlugin());
   myConfig.plugins.push(new WEBPACK.NoErrorsPlugin());
 
-  // Setup hot reloading of jsx
-  var jsxLoader = myConfig.module.loaders[0];
-  if (jsxLoader.loader != loaderJSX) {
-    throw new Error("Invalid jsx-loader, can't patch-in hot reload.");
-  }
-  delete jsxLoader.loader;
+  // Setup the public output path
   myConfig.output.publicPath = 'http://localhost:'+global.bundlePort+'/bin/';
-  jsxLoader.loaders = ['react-hot'];
 
   webpackServer = new WebpackDevServer(WEBPACK(myConfig), {
     publicPath: '/bin/',
