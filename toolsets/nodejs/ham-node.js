@@ -7,13 +7,15 @@ if (FS.existsSync(pathAppConfig)) {
   require(pathAppConfig); // load config
 }
 
-var NI;
+var NI, niFS;
 var pathNI = PATH.join(cwd,'/sources/NI.js');
 if (FS.existsSync(pathNI)) {
   NI = require(pathNI);
+  niFS = require(PATH.join(cwd,'/sources/fs.js'));
 }
 else {
   NI = require('tkjs-ni');
+  niFS = require('tkjs-ni/sources/fs.js');
 }
 
 var globalNodeModulesDir = process.env.NODEJS_GLOBAL_MODULES_DIR;
@@ -42,6 +44,20 @@ function lazyLoadWebPack() {
 // Front-end
 //======================================================================
 var configFrontEnd = function(aIsDev,aUseSourceMap) {
+  var entry = {};
+  var clientFilesDir = PATH.resolve(baseDir, 'sources/client/');
+  var clientFiles = niFS.walkSync(clientFilesDir);
+  // NI.info("clientFiles: %d", clientFiles.length);
+  if (clientFiles.length <= 0) {
+    throw NI.Error("No files in client sources directory: " + clientFilesDir);
+  }
+  NI.forEach(clientFiles, function(file) {
+    var name = NI.stringRBefore(NI.stringRAfter(file,'/'),'.');
+    // NI.info("clientFile: %s, %s", file, name);
+    entry[name] = [ file ]
+  });
+  NI.log("FrontEnd Entries: %K", entry);
+
   return {
     resolve: {
       extensions: [ '', '.js', '.jsx', '.ts' ],
@@ -58,14 +74,7 @@ var configFrontEnd = function(aIsDev,aUseSourceMap) {
       ]
     },
 
-    entry: {
-      client: [
-        PATH.resolve(baseDir, 'sources/client.js')
-      ],
-      common: [
-        PATH.resolve(baseDir, 'sources/client/common.js')
-      ]
-    },
+    entry: entry,
 
     output: {
       path: PATH.resolve(baseDir, 'bin/client_js/'),
