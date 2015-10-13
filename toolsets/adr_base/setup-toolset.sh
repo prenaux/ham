@@ -140,6 +140,9 @@ export ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT="${ADR_LLVM_TOOLCHAIN_ROOT}/prebuilt/$AD
 export ADR_LLVM_TOOLCHAIN_PREFIX="${ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT}/bin/"
 export PATH="${ADR_LLVM_TOOLCHAIN_PREFIX}":${PATH}
 
+export GRADLE_USER_HOME="${ADR_DIR_BASE}/gradle"
+export ANDROID_HOME=${ADR_SDK_BASE_DIR}
+
 VER="$VER
 --- adr-clang ------------------
 `clang --version`"
