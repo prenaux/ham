@@ -458,3 +458,9 @@ If the new path's directories does not exist, create them."
  (require 'git-blame)
  (global-set-key (key "C-x g") 'git-status)
 )
+
+;;;======================================================================
+;;; Flymake hooks
+;;;======================================================================
+(add-hook 'js-mode-hook 'flymake-mode)
+(add-hook 'typescript-mode-hook 'flymake-mode)
