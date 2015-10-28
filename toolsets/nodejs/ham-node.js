@@ -317,6 +317,10 @@ exports.testBackend = function() {
   backendWatch({ nodeEnv: 'test' });
 }
 
+exports.prodServer = function() {
+  backendWatch({ nodeEnv: 'production' });
+}
+
 var shellProcess;
 function shellRun() {
   var cp = require('child_process');
