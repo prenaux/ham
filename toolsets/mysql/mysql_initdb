@@ -1,0 +1,23 @@
+#!/bin/bash
+. ham-bash-lib.sh
+
+case $HAM_OS in
+    NT*) ;;
+    *)
+        echo "E/Toolset: Unsupported host OS"
+        exit 1
+        ;;
+esac
+
+if [ ! -e "$MYSQL_DB_DIR/data/mysql/db.MYD" ]; then
+    mkdir -p "$MYSQL_DB_DIR/data"
+    errcheck $? git_repos "Can't create mysql db data folder '${MYSQL_DB_DIR}'."
+
+    echo "# Initializing mysql DB at '${MYSQL_DB_DIR}/data'..."
+    echo "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('abc123');" > "$MYSQL_DB_DIR/my-initdb-file.sql"
+    mysql_run --initialize --init-file="$MYSQL_DB_DIR/my-initdb-file.sql"
+    # mysql_run --initialize-insecure
+    echo "# Done."
+else
+    echo "# The Mysql DB is already initialized at '${MYSQL_DB_DIR}'."
+fi
