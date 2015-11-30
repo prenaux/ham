@@ -18,7 +18,7 @@
      ;; (setq buffer-read-only t)
      ;; (buffer-disable-undo)
      (fundamental-mode)
-     (setq truncate-lines t)
+     (ni-word-wrap-on)
      (message "Buffer is set to fundamental mode because it is large.")
      ))
 
@@ -664,19 +664,11 @@ BEG and END (region to sort)."
 
  (global-auto-revert-mode 1)
  (global-set-key (key "C-x C-r") 'revert-buffer)
- (set-default 'truncate-partial-width-windows nil)
- (set-default 'truncate-lines nil)
 
  (setq-default fill-column 78)
 
  (put 'erase-buffer 'disabled nil)
  (put 'upcase-region 'disabled nil)
-
- ;; Toggle word wrap
- (defun agl-toggle-word-wrap ()
-   (interactive)
-   (if (eval truncate-lines) (setq truncate-lines nil) (setq truncate-lines t))
-   (recenter))
 
  (show-paren-mode t)
  (setq next-line-add-newlins nil)
@@ -740,6 +732,40 @@ BEG and END (region to sort)."
 ; isearch - the defaults are _so_ annoying...
 (define-key isearch-mode-map (kbd "<backspace>") 'isearch-del-char) ; bs means bs
 (define-key isearch-mode-map (kbd "<delete>")    'isearch-delete-char)  ; delete means delete
+
+;;;======================================================================
+;;; Word wrap
+;;;======================================================================
+(NotBatchMode
+ (require 'adaptive-wrap)
+
+ (set-default 'truncate-partial-width-windows nil)
+ (set-default 'truncate-lines nil)
+ (setq visual-line-fringe-indicators (quote (left-curly-arrow right-curly-arrow)))
+
+ (defun ni-word-wrap-on ()
+   (interactive)
+   (setq truncate-lines t)
+   (visual-line-mode t)
+   (adaptive-wrap-prefix-mode t)
+ )
+
+ (defun ni-word-wrap-off ()
+   (interactive)
+   (setq truncate-lines nil)
+   (visual-line-mode -1)
+   (adaptive-wrap-prefix-mode -1)
+ )
+
+ (defun ni-word-wrap-toggle ()
+   (interactive)
+   (if (bound-and-true-p visual-line-mode)
+       (ni-word-wrap-off)
+     (ni-word-wrap-on))
+   (recenter))
+
+ (global-set-key (kbd "C-6") 'ni-word-wrap-toggle)
+)
 
 ;;;======================================================================
 ;;; Autoindent yank
@@ -837,7 +863,6 @@ BEG and END (region to sort)."
  (global-set-key (kbd "C-S-v") 'scroll-down-command)
 
  ;; Toggle word wrap
- (global-set-key (kbd "C-6") 'agl-toggle-word-wrap)
  (global-set-key (kbd "M-6") 'whitespace-mode)
  ;; Ctrl-=/- increase/decrease font size
  (global-set-key (kbd "C-=") 'agl-increase-font-size)
