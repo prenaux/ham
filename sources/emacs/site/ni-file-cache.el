@@ -290,12 +290,6 @@ Bind this command to C-x C-f to get:
                                                                   (match-end 1)))))
      (jcl-file-cache-ido-find-file)))
 
- ;; C-xC-f repmapped to ni-ffap, which opens the file at point be default, if
- ;; not found calls the default open file
- (global-set-key (key "C-x C-f") 'jcl-file-cache-ido-find-file)
- (define-key global-map (kbd "C-S-r") 'file-cache-ido-find-file)
- (define-key global-map (kbd "C-S-M-r") 'file-cache-update-my-cache)
-
  ;; Save the cache when before we close emacs
  (add-hook 'kill-emacs-hook 'file-cache-save-my-cache-to-file)
 )

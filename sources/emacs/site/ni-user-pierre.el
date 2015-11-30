@@ -83,26 +83,9 @@
    (interactive)
    (save-some-buffers 1)
    (recompile))
- (global-set-key [f5] 'save-all-and-compile)
- (global-set-key [(control f5)] 'compile)
- (global-set-key [f6] 'previous-error)
- (global-set-key [f7] 'next-error)
 
  ;; Set compile mode to scroll to the first error
  (setq compilation-scroll-output 'first-error)
-
- ;; Disabled the insert key, remap it to control + insert.
- (define-key global-map [(insert)] nil)
- (define-key global-map [(control meta insert)] 'overwrite-mode)
- (define-key global-map [(control shift insert)] 'overwrite-mode)
-
- ;; Map the Escape key to "actually stop whatever NOW" or "please don't screw
- ;; up my environment randomly...".
- ;;
- ;; Without this you're going to have a bad time mmk...
- ;;
- (define-key global-map [escape] 'keyboard-quit)
- (global-set-key [escape] 'keyboard-quit)
 
  ;; Yes... close everything... but not the buffers
  (defadvice keyboard-escape-quit (around my-keyboard-escape-quit activate)
@@ -113,8 +96,6 @@
          ad-do-it
        (fset 'one-window-p (symbol-function 'orig-one-window-p)))))
 
- (global-set-key [remap keyboard-quit] 'keyboard-escape-quit)
-
  ;; Cancel the mini buffer if it loses focus after clicking the mouse or
  ;; when switching to another window with C-1/2
  (defun stop-using-minibuffer ()
@@ -122,16 +103,11 @@
    (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
      (abort-recursive-edit)))
 
- (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
-
  (defun my-other-window ()
    ""
    (interactive)
    (stop-using-minibuffer)
    (other-window 1))
-
- (global-set-key (key "C-1") 'my-other-window)
- (global-set-key (key "C-2") 'my-other-window)
 )
 
 ;;;======================================================================
@@ -200,7 +176,6 @@ If the new path's directories does not exist, create them."
   (setq pt-executable (concat "\"" HAM_HOME "/bin/nt-x86/pt.exe" "\"")))
  (OSX
   (setq pt-executable (concat "\"" HAM_HOME "/bin/osx-x86/pt"  "\"")))
- (global-set-key "\C-h\C-j" 'pt-regexp)
 )
 
 ;;;======================================================================
@@ -318,8 +293,6 @@ If the new path's directories does not exist, create them."
   (message (format "Done indenting %d files" num-files))
 )
 
-(define-key global-map (kbd "C-S-i") 'my-indent-buffer)
-
 ;;;======================================================================
 ;;; --- Disable unneeded warnings ---
 ;;;======================================================================
@@ -343,11 +316,6 @@ If the new path's directories does not exist, create them."
 (NotBatchMode
  (agl-begin-time-block "Jump to line")
 
- ;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
-
- (global-set-key (key "C-l") 'goto-line) ;; Ctrl-l goto line, more convenient than C-c C-g...
- (global-set-key (key "C-S-l") 'recenter-top-bottom)  ;; Remap recenter-top-bottom (which is mapped to Ctrl-l by default) to Ctrl-Shift-L
-
  (defun goto-line-with-feedback ()
    "Show line numbers temporarily, while prompting for the line number input"
    (interactive)
@@ -356,7 +324,6 @@ If the new path's directories does not exist, create them."
          (linum-mode 1)
          (goto-line (read-number "Goto line: ")))
      (linum-mode -1)))
-
 )
 
 ;;;======================================================================
@@ -402,8 +369,6 @@ If the new path's directories does not exist, create them."
  ;; web-mode please close all the tags...
  (setq web-mode-void-elements '())
 
- ;; Flowtype
- (global-set-key (key "C-t") 'tpl-js-flow-type)
  ;; for flow errors in compile buffer (F5 & C-F5)
  (add-to-list 'compilation-error-regexp-alist '("^\\(.*?\\):\\([0-9]+\\):.*$" 1 2))
 )
@@ -436,7 +401,6 @@ If the new path's directories does not exist, create them."
 (NotBatchMode
  (agl-begin-time-block "direx")
  (require 'direx)
- (define-key global-map "\C-x\C-d" 'direx:jump-to-directory)
 
  (add-hook 'dired-mode-hook 'ni-set-dired-buffer-name)
  (defun ni-set-dired-buffer-name ()
@@ -456,7 +420,6 @@ If the new path's directories does not exist, create them."
  )
  (require 'git)
  (require 'git-blame)
- (global-set-key (key "C-x g") 'git-status)
 )
 
 ;;;======================================================================
@@ -464,3 +427,9 @@ If the new path's directories does not exist, create them."
 ;;;======================================================================
 (add-hook 'js-mode-hook 'flymake-mode)
 (add-hook 'typescript-mode-hook 'flymake-mode)
+
+;;;======================================================================
+;;; Keymap
+;;;======================================================================
+(NotBatchMode
+ (require 'ni-keymap-pierre))

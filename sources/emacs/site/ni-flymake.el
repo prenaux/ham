@@ -11,12 +11,6 @@
 ; Error pattern matching :
 ;   regexp file-idx line-idx col-idx (optional) text-idx(optional), match-end to end of string is error text
 
-;; Flymake, show current error
-(global-set-key [f3] 'flymake-goto-prev-error)
-(global-set-key [f4] 'flymake-goto-next-error)
-(global-set-key [(control f3)] 'flymake-start-syntax-check)
-(global-set-key [(control f4)] 'flymake-mode)
-
 ;;**********************************************************************
 ;; Flymake - niScript
 ;;**********************************************************************

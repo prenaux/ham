@@ -47,8 +47,5 @@
  (add-hook 'mark-multiple-enabled-hook 'my-auto-complete-off)
  (add-hook 'mark-multiple-disabled-hook 'my-auto-complete-on)
 
- ;; (global-set-key (kbd "C-/") 'company-complete-common)
- (global-set-key (kbd "C-/") 'company-ni-idl-complete)
-
  (diminish 'company-mode)
 )

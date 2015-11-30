@@ -15,12 +15,12 @@
  (defun my-find-file-check-make-large-file-fundamental-hook ()
    "If a file is over a given size, make the buffer read only."
    (when (> (buffer-size) (* 512 1024))
-     ;; (setq buffer-read-only t)
-     ;; (buffer-disable-undo)
-     (fundamental-mode)
+         ;; (setq buffer-read-only t)
+         ;; (buffer-disable-undo)
+         (fundamental-mode)
      (ni-word-wrap-on)
-     (message "Buffer is set to fundamental mode because it is large.")
-     ))
+         (message "Buffer is set to fundamental mode because it is large.")
+   ))
 
  (add-hook 'find-file-hook 'my-find-file-check-make-large-file-fundamental-hook)
 )
@@ -118,14 +118,6 @@ the text to another HTML buffer."
 (agl-begin-time-block "Modes")
 
 (setq standard-indent 2)
-
-(GNUEmacs23
- (global-set-key (kbd "RET") 'newline-and-indent)
- (global-set-key (kbd "<S-return>") 'newline)
- (OSX
-  (global-set-key (kbd "<kp-delete>") 'delete-char)
- )
-)
 
 ;;*** DOS BATCH FILES ***************************************************
 (require 'batch-mode)
@@ -354,11 +346,6 @@ BEG and END (region to sort)."
      (if (re-search-forward (concat "\\_<" (current-word) "\\_>") nil t)
          (match-beginning 0)
        cur))))
-
-(NotBatchMode
- (global-set-key '[(control meta up)] 'agl-search-word-backward)
- (global-set-key '[(control meta down)] 'agl-search-word-forward)
-)
 
 (defun agl-comment-and-go-down ()
   "Comments the current line and goes to the next one" (interactive)
@@ -638,22 +625,6 @@ BEG and END (region to sort)."
    (agl-other-frame)
    (agl-previous-input)
    (comint-send-input))
-
- ;; Open the other frame and run the latest command
- ;; This works only if the other frame is a shell of course...
- (define-key global-map [(control return)] 'agl-other-frame-and-run-last-shell-command)
-
- ;; Move to the 'next' window (in clockwise order)
- (global-set-key (key "C-1") 'other-window)
- (global-set-key (key "C-2") 'other-window)
- ;; Move to the other frame (other OS window)
- (global-set-key (key "M-9") 'agl-make-frame)
- (global-set-key (key "M-`") 'agl-other-frame)
- ;; Forward/Backward paragraph
- (global-set-key (key "M-p") 'backward-paragraph)
- (global-set-key (key "C-{") 'backward-paragraph)
- (global-set-key (key "M-n") 'forward-paragraph)
- (global-set-key (key "C-}") 'forward-paragraph)
 )
 
 ;;;======================================================================
@@ -663,7 +634,6 @@ BEG and END (region to sort)."
  (agl-begin-time-block "Basic stuffs")
 
  (global-auto-revert-mode 1)
- (global-set-key (key "C-x C-r") 'revert-buffer)
 
  (setq-default fill-column 78)
 
@@ -729,10 +699,6 @@ BEG and END (region to sort)."
                                                      ("%b - Dir:  " default-directory)))))))
 )
 
-; isearch - the defaults are _so_ annoying...
-(define-key isearch-mode-map (kbd "<backspace>") 'isearch-del-char) ; bs means bs
-(define-key isearch-mode-map (kbd "<delete>")    'isearch-delete-char)  ; delete means delete
-
 ;;;======================================================================
 ;;; Word wrap
 ;;;======================================================================
@@ -763,8 +729,6 @@ BEG and END (region to sort)."
        (ni-word-wrap-off)
      (ni-word-wrap-on))
    (recenter))
-
- (global-set-key (kbd "C-6") 'ni-word-wrap-toggle)
 )
 
 ;;;======================================================================
@@ -834,10 +798,10 @@ BEG and END (region to sort)."
 (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
 
 ;;;======================================================================
-;;; Main Keyboard Shortcuts
+;;; Misc
 ;;;======================================================================
 (NotBatchMode
- (agl-begin-time-block "Main Keyboard Shortcuts")
+ (agl-begin-time-block "Misc")
 
  (defun make-agl-expand ()
    (make-hippie-expand-function
@@ -852,87 +816,21 @@ BEG and END (region to sort)."
    (interactive)
    (save-buffer)
    (kill-buffer (current-buffer)))
- (global-set-key [(meta delete)] 'kill-current-buffer)
-
- ;; Shell
- (global-set-key (kbd "C-0") 'ham-shell-unique)
- (global-set-key (kbd "M-0") 'erase-buffer)
-
- ;; PgUp/Dn
- (global-set-key (kbd "C-v") 'scroll-up-command)
- (global-set-key (kbd "C-S-v") 'scroll-down-command)
-
- ;; Toggle word wrap
- (global-set-key (kbd "M-6") 'whitespace-mode)
- ;; Ctrl-=/- increase/decrease font size
- (global-set-key (kbd "C-=") 'agl-increase-font-size)
- (global-set-key (kbd "C--") 'agl-decrease-font-size)
-
- ;; Make the sequence "C-c g" execute the `goto-line' command,
- ;; which prompts for a line number to jump to.
- (global-set-key "\C-c\C-g" 'goto-line)
-
- ;; undo on C-z, move the suspend/iconify to C-/
- (global-set-key "\C-z" 'undo)
-
- ;; remap regex search to Atl-s/r
- (global-set-key "\M-s" 'isearch-forward-regexp)
- (global-set-key (kbd "C-M-s") 'isearch-forward-regexp)
- (global-set-key "\M-r" 'isearch-backward-regexp)
- (global-set-key (kbd "C-M-r") 'isearch-forward-regexp)
 
  ;; alias qrr to query-replace-regexp
  (defalias 'qrr 'query-replace-regexp)
- (global-set-key "\C-h\C-h" 'qrr)
-
- ;; extended expand
- (global-set-key [(meta /)] (make-agl-expand))
-
- ;; Matching parenthesis
- (global-set-key "\M-5" 'goto-match-paren)
 
  ;; alias y to yes and n to no
  (defalias 'yes-or-no-p 'y-or-n-p)
-
- ;; Previous/Next errors
- (define-key global-map "\M-3" 'previous-error)
- (define-key global-map "\M-4" 'next-error)
-
- ;; shift-down comments the current line and goes down
- (define-key global-map [(shift down)] 'agl-comment-and-go-down)
- ;; shift-up uncomments the current line and goes up
- (define-key global-map [(shift up)] 'agl-uncomment-and-go-up)
- ;; inc number under cursor
- (define-key global-map [(meta up)] 'agl-increment-number-at-point)
- ;; dec number under cursor
- (define-key global-map [(meta down)] 'agl-decrement-number-at-point)
- ;; UUID generation
- (global-set-key (kbd "C-M-g")   'agl-uuid1-to-buffer)
- (global-set-key (kbd "C-M-S-g") 'agl-uuid2-to-buffer)
- (global-set-key (kbd "M-G")     'agl-uuid3-to-buffer)
-
- ;; Begin/end of buffer
- (define-key global-map (kbd "C-S-a") 'beginning-of-buffer)
- (define-key global-map (kbd "C-S-e") 'end-of-buffer)
-
- ;; Emacs on OSX, put back the keys to a sane (windows/linux-like) default
- (OSX
-  (global-set-key [ns-drag-file] 'ns-find-file)
-  (setq ns-pop-up-frames nil)
-  (global-set-key (kbd "<home>") 'move-beginning-of-line)
-  (global-set-key (kbd "<end>") 'move-end-of-line))
 )
 
 ;;;======================================================================
-;;; mark-multiple.el
+;;; mark-multiple & expand-region
 ;;;======================================================================
 (NotBatchMode
-
  (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/mark-multiple.el"))
 
  (require 'inline-string-rectangle)
- (global-set-key (kbd "C-x r t") 'inline-string-rectangle)
-
  (require 'mark-more-like-this)
 
  (defun mark-next-like-this (arg)
@@ -962,18 +860,8 @@ With zero ARG, skip the last one and mark next."
                (error "no more found \"%s\" forward"
                       (substring-no-properties master-str))))))))
 
- (global-set-key (kbd "C-<") 'mark-previous-like-this)
- (global-set-key (kbd "C->") 'mark-next-like-this)
- (global-set-key (kbd "C-*") 'mark-all-like-this)
-)
-
-;;;======================================================================
-;;; mark-multiple.el
-;;;======================================================================
-(NotBatchMode
  (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/expand-region.el"))
  (require 'expand-region)
- (global-set-key (kbd "C-@") 'er/expand-region)
 )
 
 ;;;======================================================================
@@ -999,7 +887,6 @@ With zero ARG, skip the last one and mark next."
          (interactive "p")
          (kmacro-exec-ring-item
           (quote ([5 67108896 down 134217837 32] 0 "%d")) arg)))
- (global-set-key (kbd "C-S-j") 'macro-join-line)
 
  (defun goto-match-paren2 (arg)
    "Go to the matching parenthesis if on parenthesis. Else go to the
@@ -1019,10 +906,4 @@ With zero ARG, skip the last one and mark next."
                           (backward-list 1)
                           (backward-char 1)))
                    ))))))
-
- (global-set-key (kbd "C-.") 'goto-match-paren2)
-
- (global-set-key (kbd "C-S-y") '(lambda ()
-                                  (interactive)
-                                  (popup-menu 'yank-menu)))
 )

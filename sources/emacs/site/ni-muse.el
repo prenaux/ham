@@ -382,7 +382,3 @@ t
   (muse-publish-this-file
    (muse-style "agl-html")
    (file-name-directory buffer-file-name)))
-
-(global-set-key "\C-xp" 'agl-muse-publish-to-html)
-(global-set-key "\C-xP" 'agl-muse-publish-to-html)
-;; (global-set-key "\C-x\C-p" 'agl-muse-publish-to-pdf)
