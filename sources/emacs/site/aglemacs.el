@@ -1,5 +1,6 @@
 (provide 'aglemacs)
 (require 'ni-base)
+(require 'diminish)
 
 ;;;======================================================================
 ;;; Files handling...
@@ -12,17 +13,23 @@
  ;; Editing files larger than ~500K is really too painfull if
  ;; font-lock and a language mode is enabled so just disable it in
  ;; that case.
- (defun my-find-file-check-make-large-file-fundamental-hook ()
+ (defun ni-find-file-hook-on-file-opened ()
    "If a file is over a given size, make the buffer read only."
-   (when (> (buffer-size) (* 512 1024))
+   (if (> (buffer-size) (* 512 1024))
+       (progn
          ;; (setq buffer-read-only t)
          ;; (buffer-disable-undo)
+         (ni-word-wrap-off)
          (fundamental-mode)
-     (ni-word-wrap-on)
+         (setq truncate-lines t)
          (message "Buffer is set to fundamental mode because it is large.")
+       )
+     (progn
+       (ni-word-wrap-on)
+     )
    ))
 
- (add-hook 'find-file-hook 'my-find-file-check-make-large-file-fundamental-hook)
+ (add-hook 'find-file-hook 'ni-find-file-hook-on-file-opened)
 )
 
 ;;;======================================================================
@@ -711,14 +718,14 @@ BEG and END (region to sort)."
 
  (defun ni-word-wrap-on ()
    (interactive)
-   (setq truncate-lines t)
+   (setq truncate-lines nil)
    (visual-line-mode t)
    (adaptive-wrap-prefix-mode t)
  )
 
  (defun ni-word-wrap-off ()
    (interactive)
-   (setq truncate-lines nil)
+   (setq truncate-lines t)
    (visual-line-mode -1)
    (adaptive-wrap-prefix-mode -1)
  )
@@ -729,6 +736,15 @@ BEG and END (region to sort)."
        (ni-word-wrap-off)
      (ni-word-wrap-on))
    (recenter))
+
+
+ (require 'adaptive-wrap)
+ (setq adaptive-wrap-extra-indent 2)
+ (add-hook 'visual-line-mode-hook
+           (lambda ()
+             (adaptive-wrap-prefix-mode +1)
+             (diminish 'visual-line-mode)))
+
 )
 
 ;;;======================================================================
