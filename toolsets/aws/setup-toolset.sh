@@ -18,7 +18,7 @@ case $HAM_OS in
                 return 1
             fi
         fi
-        export PATH=${AWS_PYTHON_DIR}:${AWS_PYTHON_DIR}/DLLs:${AWS_PYTHON_DIR}/Scripts:${PATH}
+        export PATH=${AWS_PYTHON_DIR}:${AWS_PYTHON_DIR}/DLLs:${PATH}
         ;;
     OSX)
         ## Assume eb is already on the path somehow...
@@ -28,9 +28,10 @@ case $HAM_OS in
         return 1
         ;;
 esac
+export PATH=$HAM_TOOLSET_DIR:${PATH}
 
 VER="--- aws ---------------------------
-`eb --version`"
+`aws-eb --version`"
 if [ $? != 0 ]; then
     echo "E/Can't get version."
     return 1
