@@ -33,6 +33,19 @@ case $HAM_OS in
         fi
         export NODE_PATH=$NODEJS_DIR/lib/node_modules
         ;;
+    LINUX*)
+        export NODEJS_DIR="${HAM_TOOLSET_DIR}/${HAM_BIN_LOA}/"
+        export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}lib/node_modules"
+        export PATH=${HAM_TOOLSET_DIR}:"${NODEJS_DIR}/bin":"${NODEJS_DIR}/lib":${PATH}
+        if [ ! -e "$NODEJS_DIR" ]; then
+            toolset_dl nodejs nodejs_${HAM_BIN_LOA}
+            if [ ! -e "$NODEJS_DIR" ]; then
+                echo "E/osx-x86 folder doesn't exist in the toolset"
+                return 1
+            fi
+        fi
+        export NODE_PATH=$NODEJS_DIR/lib/node_modules
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1

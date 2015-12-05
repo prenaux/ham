@@ -1,4 +1,54 @@
 #!/bin/bash
 . ham-bash-lib.sh
 . hat default python_27 nodejs
-npm install -g webpack webpack-dev-server eslint eslint-plugin-react mocha react-tools css-loader jsx-loader expose-loader extract-text-webpack-plugin file-loader react-hot-loader react-script-loader script-loader style-loader supertest url-loader less-loader nodemon electron-prebuilt typescript awesome-typescript-loader tsd react-native-cli
+# On separated lines because npm onlyshows a spinner... so you have no idea how long things will take...
+NUM_PACKAGES=24
+NPM_INSTALL="npm install -g --no-bin-links"
+echo "I/Installing package 'webpack' (1/$NUM_PACKAGES)"
+${NPM_INSTALL} webpack
+echo "I/Installing package 'webpack-dev-server' (2/$NUM_PACKAGES)"
+${NPM_INSTALL} webpack-dev-server
+echo "I/Installing package 'eslint' (3/$NUM_PACKAGES)"
+${NPM_INSTALL} eslint
+echo "I/Installing package 'eslint-plugin-react' (4/$NUM_PACKAGES)"
+${NPM_INSTALL} eslint-plugin-react
+echo "I/Installing package 'mocha' (5/$NUM_PACKAGES)"
+${NPM_INSTALL} mocha
+echo "I/Installing package 'react-tools' (6/$NUM_PACKAGES)"
+${NPM_INSTALL} react-tools
+echo "I/Installing package 'css-loader' (7/$NUM_PACKAGES)"
+${NPM_INSTALL} css-loader
+echo "I/Installing package 'jsx-loader' (8/$NUM_PACKAGES)"
+${NPM_INSTALL} jsx-loader
+echo "I/Installing package 'expose-loader' (9/$NUM_PACKAGES)"
+${NPM_INSTALL} expose-loader
+echo "I/Installing package 'extract-text-webpack-plugin' (10/$NUM_PACKAGES)"
+${NPM_INSTALL} extract-text-webpack-plugin
+echo "I/Installing package 'file-loader' (11/$NUM_PACKAGES)"
+${NPM_INSTALL} file-loader
+echo "I/Installing package 'react-hot-loader' (12/$NUM_PACKAGES)"
+${NPM_INSTALL} react-hot-loader
+echo "I/Installing package 'react-script-loader' (13/$NUM_PACKAGES)"
+${NPM_INSTALL} react-script-loader
+echo "I/Installing package 'script-loader' (14/$NUM_PACKAGES)"
+${NPM_INSTALL} script-loader
+echo "I/Installing package 'style-loader' (15/$NUM_PACKAGES)"
+${NPM_INSTALL} style-loader
+echo "I/Installing package 'supertest' (16/$NUM_PACKAGES)"
+${NPM_INSTALL} supertest
+echo "I/Installing package 'url-loader' (17/$NUM_PACKAGES)"
+${NPM_INSTALL} url-loader
+echo "I/Installing package 'less-loader' (18/$NUM_PACKAGES)"
+${NPM_INSTALL} less-loader
+echo "I/Installing package 'nodemon' (19/$NUM_PACKAGES)"
+${NPM_INSTALL} nodemon
+echo "I/Installing package 'electron-prebuilt' (20/$NUM_PACKAGES)"
+${NPM_INSTALL} electron-prebuilt
+echo "I/Installing package 'typescript' (21/$NUM_PACKAGES)"
+${NPM_INSTALL} typescript
+echo "I/Installing package 'awesome-typescript-loader' (22/$NUM_PACKAGES)"
+${NPM_INSTALL} awesome-typescript-loader
+echo "I/Installing package 'tsd' (23/$NUM_PACKAGES)"
+${NPM_INSTALL} tsd
+echo "I/Installing package 'react-native-cli' (24/$NUM_PACKAGES)"
+${NPM_INSTALL} react-native-cli

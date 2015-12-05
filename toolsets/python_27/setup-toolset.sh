@@ -22,6 +22,9 @@ case $HAM_OS in
     OSX*)
         ln -s /usr/bin/python2.7 "${HAM_HOME}/bin/osx-x86/python2"
         ;;
+    LINUX*)
+        true # Assume its already available and default on Linux
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1

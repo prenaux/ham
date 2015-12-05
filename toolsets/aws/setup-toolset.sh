@@ -20,7 +20,7 @@ case $HAM_OS in
         fi
         export PATH=${AWS_PYTHON_DIR}:${AWS_PYTHON_DIR}/DLLs:${PATH}
         ;;
-    OSX)
+    LINUX|OSX)
         ## Assume eb is already on the path somehow...
         ;;
     *)

@@ -1,0 +1,29 @@
+#!/bin/bash
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+case $HAM_OS in
+    NT*)
+        echo "### No extra packages need to be installed on Windows ###"
+        ;;
+    OSX)
+        echo "### Installing packages required by ham on OSX (brew) ###"
+        # TODO, I think some stuffs were needed... need to run on a clean OSX to be sure
+        ;;
+    LINUX)
+        echo "### Installing packages required by ham on Linux (apt-get) ###"
+        echo "I/Installing apt-get packages"
+        sudo apt-get -y install xsltproc p7zip-full git
+        echo "I/Installing pip for python"
+        sudo wget https://bootstrap.pypa.io/get-pip.py
+        sudo python get-pip.py
+        rm get-pip.py
+        echo "I/Installing awsebcli"
+        sudo pip install awsebcli
+        sudo pip install --upgrade awsebcli
+        ;;
+    *)
+        echo "E/Toolset: Unsupported host OS"
+        return 1
+        ;;
+esac
+echo "I/Done"

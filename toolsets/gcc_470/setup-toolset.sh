@@ -8,7 +8,6 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/gcc_470"
 
 # path setup
 case $HAM_OS in
-
     NT*)
         export GCCDIR="${HAM_TOOLSET_DIR}/nt-x86"
         export PATH="${GCCDIR}/bin":${PATH}
@@ -20,10 +19,10 @@ case $HAM_OS in
             fi
         fi
         ;;
-
     OSX)
         ;;
-
+    LINUX)
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1

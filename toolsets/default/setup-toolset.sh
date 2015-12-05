@@ -23,6 +23,10 @@ case $HAM_OS in
         # Force to X86 build atm, X64 hasn't been tested yet
         export OSPLAT=X86
         ;;
+    LINUX)
+        . ham-toolset-import.sh xslt_tools
+        . ham-toolset-import.sh gcc_470
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1

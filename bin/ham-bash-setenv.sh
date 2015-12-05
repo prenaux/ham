@@ -12,6 +12,12 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
         OSX)
             export PATH=$WORK/niSDK/bin:$HAM_HOME/bin:$HAM_HOME/bin/osx-x86:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$BASH_START_PATH
             ;;
+        LINUX)
+            export PATH=$WORK/niSDK/bin:$HAM_HOME/bin:$HAM_HOME/bin/$HAM_BIN_LOA:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$BASH_START_PATH
+            ;;
+        *)
+            echo "W/ham-bash-setenv.sh: Unknown HAM_OS: $HAM_OS"
+            ;;
     esac
 
 else

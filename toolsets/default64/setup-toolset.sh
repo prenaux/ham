@@ -12,6 +12,9 @@ case $HAM_OS in
         . ham-toolset-import.sh clang_33
         export OSPLAT=X64
         ;;
+    LINUX*)
+        . ham-toolset-import.sh gcc_470
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1

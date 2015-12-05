@@ -64,6 +64,11 @@ sudo egrep "^setenv\ " /etc/launchd.conf | sudo xargs -t -L 1 launchctl
 
 Note that launchd doesnt seem to be applied on reboot anymore in OSX 10.10 (Yosemite), so... there's yet another way to do that in OSX (environment.plist), but since it'll probably break next time Apple update the OS I won't bother - also as an added bonus its a real pain to setup. So the simplest way is to run "sudo egrep "^setenv\ " /etc/launchd.conf | sudo xargs -t -L 1 launchctl" after the OS booted. Its manual, and in 2015 it sucks that this simple stuff doesn't work, but that how it is.
 
+Run 'ham-install-os-packages' to install the required dependencies using homebrow, this only needs to be done once:
+```bash
+ham-install-os-packages
+```
+
 ## Linux
 
 Add this to ~/.profile:
@@ -71,6 +76,11 @@ Add this to ~/.profile:
 export WORK="${HOME}/My Work"
 export HAM_HOME="$WORK/ham"
 export PATH="${PATH}:$HAM_HOME/bin"
+```
+
+Run 'ham-install-os-packages' to install the required dependencies using apt-get, this only needs to be done once:
+```bash
+ham-install-os-packages
 ```
 
 # Toolsets

@@ -253,7 +253,14 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     export HAM_OS=OSX
     export HAM_BIN_LOA=osx-x86
 else
-    echo "W/Unknown OS"
+    UNAME_STR=`/bin/uname`
+    MACHINE_TYPE=`/bin/uname -m`
+    if [ "$UNAME_STR" == "Linux" ] && [ "$MACHINE_TYPE" == "x86_64" ]; then
+        export HAM_OS=LINUX
+        export HAM_BIN_LOA=lin-x64
+    else
+        echo "W/Unknown OS '$UNAME_STR' '$MACHINE_TYPE'"
+    fi
     # exit 1
 fi
 

@@ -22,6 +22,17 @@ case $HAM_OS in
     OSX)
         export JAVA_HOME=$(/usr/libexec/java_home)
         ;;
+    LINUX)
+        export JAVA_HOME="${HAM_TOOLSET_DIR}/${HAM_BIN_LOA}/"
+        export PATH="${JAVA_HOME}/bin":${PATH}
+        if [ ! -e "$JAVA_HOME/bin/java" -o ! -e "$JAVA_HOME/bin/javac" ]; then
+            toolset_dl java_jdk18 java_jdk18_${HAM_BIN_LOA}
+            if [ ! -e "$JAVA_HOME/bin/java" -o ! -e "$JAVA_HOME/bin/javac" ]; then
+                echo "E/nt-x86 folder doesn't exist in the toolset"
+                return 1
+            fi
+        fi
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1

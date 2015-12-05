@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # toolset
 export HAM_TOOLSET=JAVA_JRE
 export HAM_TOOLSET_VER=6
@@ -21,6 +20,11 @@ case $HAM_OS in
         ;;
     OSX)
         export JAVA_HOME=$(/usr/libexec/java_home)
+        ;;
+    LINUX)
+        # We only support jdk18 on Linux atm...
+        toolset_import java_jdk18
+        return 0
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
