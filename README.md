@@ -71,7 +71,7 @@ ham-install-os-packages
 
 ## Linux
 
-Add this to ~/.profile:
+Add this to ~/.bashrc:
 ```bash
 export WORK="${HOME}/My Work"
 export HAM_HOME="$WORK/ham"
