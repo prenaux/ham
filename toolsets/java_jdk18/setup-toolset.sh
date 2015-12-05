@@ -32,6 +32,8 @@ case $HAM_OS in
                 return 1
             fi
         fi
+	chmod +x "$JAVA_HOME/bin/"*
+	chmod +x "$JAVA_HOME/jre/bin/"*
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

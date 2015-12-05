@@ -16,7 +16,7 @@ case $HAM_OS in
         echo "I/Installing pip for python"
         sudo wget https://bootstrap.pypa.io/get-pip.py
         sudo python get-pip.py
-        rm get-pip.py
+        rm -f get-pip.py
         echo "I/Installing awsebcli"
         sudo pip install awsebcli
         sudo pip install --upgrade awsebcli
