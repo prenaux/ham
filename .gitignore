@@ -54,9 +54,16 @@ publish
 .idea
 
 # Don't put the binary toolsets in the repo...
-toolsets/*/*/
-!toolsets/*/*_patch/
-toolsets/*/*.7z
+toolsets/*/nt-x86/
+toolsets/*/_*nt-x86*.7z
+toolsets/*/osx-x86/
+toolsets/*/_*osx-x86*.7z
+toolsets/*/lin-x64/
+toolsets/*/_*lin-x64*.7z
+toolsets/*/jars/
+toolsets/*/_*jars*.7z
+toolsets/*/jvm/
+toolsets/*/_*jvm*.7z
 
 ### Ham ####################################
 # Symbolic links
