@@ -20,6 +20,7 @@ export HAM_TOOLSET_NAME=msvc_13_x64
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}"
 
 export MSVCDIR="${HAM_TOOLSET_DIR}/nt-x86"
+export VSINSTALLDIR="${HAM_TOOLSET_DIR}/nt-x86"
 export MSVC_VER=13
 if [ ! -e "$MSVCDIR/bin/cl.exe" ]; then
     toolset_dl msvc_13_x64 msvc_13_x64_nt-x86
@@ -59,6 +60,7 @@ if [ ! -e "$WINSDKDIR/bin/x64/fxc.exe" ]; then
 	return 1
 fi
 echo "I/Found WindowsSDK in '$WINSDKDIR'"
+export WindowsSdkDir=$WINSDKDIR
 
 export WINSDKDIR_LIBS="${WINSDKDIR}/Lib/10.0.10240.0/um/x64"
 if [ ! -e "$WINSDKDIR_LIBS/d3d12.lib" ]; then
