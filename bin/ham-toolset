@@ -36,7 +36,7 @@ else
         export HAM_PROJECT_DIR=${FOUND_PROJECT_DIR}
     fi
 
-    toolset_import_list "$@"
+    toolset_import_list "$@" || return 1
 
     toolset_info
     update_prompt

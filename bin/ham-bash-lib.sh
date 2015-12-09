@@ -185,7 +185,7 @@ toolset_dl() {
     # export ARCH_URL="http://localhost:8123/data/toolsets/$2.7z"
     export ARCH_URL="http://cdn2.talansoft.com/toolsets/$2.7z"
     export DLFILENAME="_$2.7z"
-    echo "DIR:" $DIR
+    echo "=== Importing toolset '$1' from $DIR"
     pushd "${DIR}" > /dev/null
     if [ $? != 0 ]; then
         echo "Can't cd to the toolset's directory '$DIR'."
@@ -209,6 +209,13 @@ toolset_dl() {
     fi
 }
 
+toolset_dl_cleanup() {
+    export DLFILENAME="_$1.7z"
+    if [ -e "$DLFILENAME" ]; then
+        rm "$DLFILENAME"
+    fi
+}
+
 toolset_info() {
     echo "======================================================="
     echo "=== Main Toolset ======================================"
@@ -228,15 +235,42 @@ toolset_info() {
 toolset_import_list() {
     for ARG in $@
     do
-        . ham-toolset-import.sh $ARG
-        if [ $? != 0 ]; then
-            echo "E/Toolset '$ARG' setup failed !"
-            return 1
-        else
-            export HAM_IMPORTED_TOOLSET=$ARG
-            # echo "I/Toolset '$ARG' setup successful."
-        fi
+        . ham-toolset-import.sh $ARG || return 1
+        export HAM_IMPORTED_TOOLSET=$ARG
     done
+}
+
+toolset_bak_mv() {
+    if [ -e "$1" ]; then
+        mv -f "$1" "$1__bak"
+    fi;
+}
+
+toolset_bak_rm() {
+    if [ -e "$1__bak" ]; then
+        rm -Rf "$1__bak"
+    fi;
+}
+
+# usage: toolset_check_and_dl_ver name loa version
+# example: toolset_check_and_dl_ver repos nt-x86 v2
+toolset_check_and_dl_ver() {
+    TS_NAME=$1
+    TS_LOA=$2
+    TS_VER=$3
+    TS_DIR="${HAM_HOME}/toolsets/${TS_NAME}/${TS_LOA}"
+    TS_VER_NAME=${TS_NAME}_${TS_LOA}_${TS_VER}
+    TS_VER_FILE_NAME=toolset_${TS_VER_NAME}
+    if [ ! -e "${TS_DIR}/${TS_VER_FILE_NAME}" ]; then
+        toolset_bak_mv ${TS_LOA}
+        toolset_dl ${TS_NAME} ${TS_VER_NAME}
+        if [ ! -e "${TS_DIR}/${TS_VER_FILE_NAME}" ]; then
+            echo "E/Toolset '$TS_NAME': Can't find '${TS_VER_FILE_NAME}' in '${TS_DIR}'."
+            return 1
+        fi
+        toolset_dl_cleanup ${TS_VER_NAME}
+        toolset_bak_rm ${TS_LOA}
+    fi
 }
 
 ########################################################################

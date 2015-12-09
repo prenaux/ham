@@ -36,6 +36,6 @@ else
             export HAM_IMPORTED_TOOLSETS="$HAM_IMPORTED_TOOLSETS $1"
         fi
         ni-hput HAM_IMPORTS $1 1
-        echo -e "I/Imported ${FOUND_SETUP_SCRIPT} $1"
+        echo -e "I/Imported ${FOUND_SETUP_SCRIPT}$1"
     fi
 fi
