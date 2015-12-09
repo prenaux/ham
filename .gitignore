@@ -64,6 +64,8 @@ toolsets/*/jars/
 toolsets/*/_*jars*.7z
 toolsets/*/jvm/
 toolsets/*/_*jvm*.7z
+toolsets/*/python/
+toolsets/*/_*python*.7z
 
 ### Ham ####################################
 # Symbolic links
