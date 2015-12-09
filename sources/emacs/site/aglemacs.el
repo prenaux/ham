@@ -253,6 +253,20 @@ the text to another HTML buffer."
 (autoload 'toml-mode "toml-mode" nil t) ;; used by cargo (rust's build system)
 (add-to-list 'auto-mode-alist '("\\.toml$" . toml-mode))
 
+;;*** Python **********************************************************************
+(add-to-list 'auto-mode-alist '("\\wscript$" . python-mode))
+(add-to-list 'auto-mode-alist '("\\wscript_build$" . python-mode))
+(add-to-list 'auto-mode-alist '("\\SConscript$" . python-mode))
+(add-to-list 'auto-mode-alist '("\\SConstruct$" . python-mode))
+(add-to-list 'auto-mode-alist '("\\SCsub$" . python-mode))
+(add-to-list 'auto-mode-alist '("\\.gd\\'" . python-mode))
+
+;; Python Hook, set indent to two spaces...
+(add-hook 'python-mode-hook
+          (function (lambda ()
+                      (setq indent-tabs-mode nil
+                            tab-width 2))))
+
 ;;;======================================================================
 ;;; IDO completion
 ;;;======================================================================
