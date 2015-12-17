@@ -51,6 +51,9 @@ switch $(IOS_MINVER) {
   case 8 :
     IOS_FRAMEWORKS = -framework Accelerate -framework Accounts  -framework AdSupport -framework AssetsLibrary  -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreBluetooth -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreImage -framework CoreLocation -framework CoreMedia -framework CoreMIDI -framework CoreMotion -framework CoreTelephony -framework CoreText -framework CoreVideo -framework EventKit -framework EventKitUI -framework ExternalAccessory -framework Foundation -framework GameKit -framework GLKit -framework GSS -framework iAd -framework ImageIO -framework IOKit -framework MapKit -framework MediaPlayer -framework MediaToolbox -framework MessageUI -framework MobileCoreServices -framework NewsstandKit -framework OpenGLES -framework PassKit -framework QuartzCore -framework QuickLook -framework Security -framework Social -framework StoreKit -framework SystemConfiguration -framework Twitter -framework UIKit -framework VideoToolbox ;
 
+  case 9 :
+    IOS_FRAMEWORKS = -framework Accelerate -framework Accounts  -framework AdSupport -framework AssetsLibrary  -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreBluetooth -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreImage -framework CoreLocation -framework CoreMedia -framework CoreMIDI -framework CoreMotion -framework CoreTelephony -framework CoreText -framework CoreVideo -framework EventKit -framework EventKitUI -framework ExternalAccessory -framework Foundation -framework GameKit -framework GLKit -framework GSS -framework iAd -framework ImageIO -framework IOKit -framework MapKit -framework MediaPlayer -framework MediaToolbox -framework MessageUI -framework MobileCoreServices -framework NewsstandKit -framework OpenGLES -framework PassKit -framework QuartzCore -framework QuickLook -framework Security -framework Social -framework StoreKit -framework SystemConfiguration -framework Twitter -framework UIKit -framework VideoToolbox ;
+
   case * :
     EXIT "E/Unknown iOS version." ;
 }
@@ -75,8 +78,24 @@ if $(NT) {
 }
 else {
   IPHONE_SDK_DIR = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/ ;
+  # iOS 9.2 SDK
+  if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS9.2.sdk ] {
+    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS9.2.sdk ;
+    CLANG_BASE_FLAGS +=
+      -isysroot "\"$(IPHONE_SDK_DIR)\""
+      -fmessage-length=0
+    ;
+  }
+  # iOS 9.1 SDK
+  else if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS9.1.sdk ] {
+    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS9.1.sdk ;
+    CLANG_BASE_FLAGS +=
+      -isysroot "\"$(IPHONE_SDK_DIR)\""
+      -fmessage-length=0
+    ;
+  }
   # iOS 8.4 SDK
-  if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS8.4.sdk ] {
+  else if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS8.4.sdk ] {
     IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS8.4.sdk ;
     CLANG_BASE_FLAGS +=
       -isysroot "\"$(IPHONE_SDK_DIR)\""
