@@ -99,6 +99,23 @@
         ("\\.cxx\\'" (".hxx" ".hh" ".h"))
         ("\\.hxx\\'" (".cxx"))))
 
+(defun ni-add-custom-c-cc-keywords ()
+  "adds a few special keywords for c and c++ modes"
+  (font-lock-add-keywords
+   nil
+   '(("niLambdaEx" . font-lock-keyword-face)
+     ("niLambdaByRef" . font-lock-keyword-face)
+     ("niLambdaByVal" . font-lock-keyword-face)
+     ("niImpl" . font-lock-keyword-face)
+     ("niOverride" . font-lock-keyword-face)
+     ("fun" . font-lock-keyword-face)
+    )
+  )
+)
+
+(add-hook 'c++-mode-hook 'ni-add-custom-c-cc-keywords)
+(add-hook 'c-mode-hook 'ni-add-custom-c-cc-keywords)
+
 ;;;======================================================================
 ;;; Htmlize
 ;;;======================================================================
