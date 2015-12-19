@@ -1,3 +1,14 @@
+# This is solves problem with tools that really try hard to screw up the
+# environment by reseting the path manually.
+if test -z "$PATH"; then
+    if test -z "$PATH_BACKUP"; then
+        echo "E/No PATH backup to restore"
+    else
+        export PATH=$PATH_BACKUP
+    fi
+fi
+
+# Import the base library
 . "$HAM_HOME/bin/ham-bash-lib.sh"
 
 if [ "${HAM_ENV_SETUP}" != 1 ]; then
@@ -19,7 +30,7 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
             echo "W/ham-bash-setenv.sh: Unknown HAM_OS: $HAM_OS"
             ;;
     esac
-
+    export PATH_BACKUP=$PATH
 else
     true
 fi

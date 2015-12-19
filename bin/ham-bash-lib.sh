@@ -179,7 +179,7 @@ toolset_import_once() {
     fi
 }
 
-toolset_dl() {
+toolset_dl_and_extract() {
     export CWD=`pwd`
     export DIR="${HAM_HOME}/toolsets/$1"
     # export ARCH_URL="http://localhost:8123/data/toolsets/$2.7z"
@@ -188,30 +188,43 @@ toolset_dl() {
     echo "=== Importing toolset '$1' from $DIR"
     pushd "${DIR}" > /dev/null
     if [ $? != 0 ]; then
-        echo "Can't cd to the toolset's directory '$DIR'."
+        echo "E/Can't cd to the toolset's directory '$DIR'."
         return 1;
     elif [ -e "$DLFILENAME" ]; then
-        echo "... Extracting $DLFILENAME"
+        echo "I/Extracting $DLFILENAME"
         7z x -y "$DLFILENAME" | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
+        if [ ${PIPESTATUS[0]} != 0 ]; then
+            echo "E/Extraction failed ! Removing corrupted archive, please re-run the environment setup."
+            rm "$DLFILENAME"
+            popd
+            return 1;
+        fi
         popd
     elif [ ! -e "$DLFILENAME" ]; then
-        echo "... Trying download from ${ARCH_URL}"
+        echo "I/Trying download from ${ARCH_URL}"
         wget -c --no-check-certificate $ARCH_URL -O"$DLFILENAME.wget"
         if [ $? != 0 ]; then
-            echo "Download failed !"
+            echo "E/Download failed !"
             popd
             return 1;
         fi
         mv "$DLFILENAME.wget" "$DLFILENAME"
-        echo "... Extracting $DLFILENAME"
+        echo "I/Extracting $DLFILENAME"
         7z x -y "$DLFILENAME" | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
+        if [ ${PIPESTATUS[0]} != 0 ]; then
+            echo "E/Extraction failed ! Removing corrupted archive, please re-run the environment setup."
+            rm "$DLFILENAME"
+            popd
+            return 1;
+        fi
         popd
     fi
 }
 
 toolset_dl_cleanup() {
-    export DLFILENAME="_$1.7z"
+    export DLFILENAME="${HAM_HOME}/toolsets/$1/_$2.7z"
     if [ -e "$DLFILENAME" ]; then
+        echo "I/Removing downloaded archive: $DLFILENAME"
         rm "$DLFILENAME"
     fi
 }
@@ -252,6 +265,12 @@ toolset_bak_rm() {
     fi;
 }
 
+# usage: toolset_dl TOOLSET_NAME TOOLSET_DL_NAME
+toolset_dl() {
+    toolset_dl_and_extract $@
+    toolset_dl_cleanup $@
+}
+
 # usage: toolset_check_and_dl_ver name loa version
 # example: toolset_check_and_dl_ver repos nt-x86 v2
 toolset_check_and_dl_ver() {
@@ -263,13 +282,15 @@ toolset_check_and_dl_ver() {
     TS_VER_FILE_NAME=toolset_${TS_VER_NAME}
     if [ ! -e "${TS_DIR}/${TS_VER_FILE_NAME}" ]; then
         toolset_bak_mv ${TS_LOA}
-        toolset_dl ${TS_NAME} ${TS_VER_NAME}
+        toolset_dl_and_extract ${TS_NAME} ${TS_VER_NAME}
         if [ ! -e "${TS_DIR}/${TS_VER_FILE_NAME}" ]; then
             echo "E/Toolset '$TS_NAME': Can't find '${TS_VER_FILE_NAME}' in '${TS_DIR}'."
             return 1
         fi
-        toolset_dl_cleanup ${TS_VER_NAME}
+        toolset_dl_cleanup ${TS_NAME} ${TS_VER_NAME}
         toolset_bak_rm ${TS_LOA}
+    else
+        toolset_dl_cleanup ${TS_NAME} ${TS_VER_NAME}
     fi
 }
 
