@@ -755,6 +755,7 @@ rule File
   MODE on $(<) = $(FILEMODE) ;
   Chmod $(<) ;
 }
+
 # Same as file, but preserve time and attributes of the file
 rule FilePreserve
 {
@@ -764,6 +765,7 @@ rule FilePreserve
   MODE on $(<) = $(FILEMODE) ;
   Chmod $(<) ;
 }
+
 rule FilePreserveRO
 {
   Depends files : $(<) ;
@@ -772,10 +774,22 @@ rule FilePreserveRO
   MODE on $(<) = $(FILEMODERO) ;
   Chmod $(<) ;
 }
-actions FilePreserveRO
-{
-  $(CP_PRESERVE) "$(>)" "$(<)"
+
+if $(OS) = MACOSX {
+  actions FilePreserveRO
+  {
+    # unlock the destination if its locked, this can happen if using other file system than HFS on OSX
+    chflags -f nouchg "$(<)"
+    $(CP_PRESERVE) "$(>)" "$(<)"
+  }
 }
+else {
+  actions FilePreserveRO
+  {
+    $(CP_PRESERVE) "$(>)" "$(<)"
+  }
+}
+
 rule FilePreserveEXE
 {
   Depends files : $(<) ;
