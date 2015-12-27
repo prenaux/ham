@@ -23,6 +23,9 @@ LINKFLAGS +=
 
 ### OSX ###
 if $(OSX) {
+  # TODO: Remove this, this is actually a very useful warning.
+  CLANG_CC_ARGS += -Wno-inconsistent-missing-override ;
+
   CLANG_CC_ARGS += -mmacosx-version-min=10.7 -fno-common ;
   if $(OSPLAT) = X64 {
     CLANG_CC_ARGS += -arch x86_64 -m64 ;
