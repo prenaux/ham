@@ -1,0 +1,37 @@
+#!/bin/bash
+. ham-bash-lib.sh
+
+usage() {
+    echo "usage: repos-git-batch [ commands ]"
+    echo ""
+    echo "  Wrapper for git-batch that will run git-batch concurrently on all"
+    echo "  git repos in the current directory."
+    echo ""
+    echo "  The arguments are passed verbatim to git-batch. See below for its"
+    echo "  documentation."
+    echo ""
+    git-batch -h
+
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        # sourced...
+        return 1
+    else
+        # regular call
+        exit 1
+    fi
+}
+
+# Check that there is at least one argument...
+if [ $# = 0 ]; then
+    echo "E/No argument specified"
+    echo ""
+    usage
+fi
+
+WORK=`pwd`
+REPOS_CWD=`repos-list-cwd`
+for ARG in $REPOS_CWD; do
+  git-batch -E "$WORK/$ARG" $* &
+done
+wait
+echo "== Done."
