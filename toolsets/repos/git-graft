@@ -1,0 +1,29 @@
+#!/bin/bash
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+# the help
+usage() {
+    echo "usage: git-graft SRCREPO COMMIT"
+    echo ""
+    echo "  Graft/import a commit from SRCREPO to the current repository."
+    echo ""
+
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        # sourced...
+        return 1
+    else
+        # regular call
+        exit 1
+    fi
+}
+
+# Check that there is at least one argument...
+if [ $# != 2 ]; then
+    echo "E/Invalid number of arguments specified"
+    echo ""
+    usage
+fi
+
+git --git-dir=$1/.git \
+format-patch -k -1 --stdout $2 | \
+git am -3 -k

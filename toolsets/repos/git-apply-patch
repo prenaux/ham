@@ -1,0 +1,2 @@
+#!/bin/bash
+git apply --reject --ignore-space-change --ignore-whitespace "$1"
