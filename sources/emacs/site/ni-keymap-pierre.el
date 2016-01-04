@@ -29,6 +29,8 @@
  ;; Move to the other frame (other OS window)
  (global-set-key (key "M-9") 'agl-make-frame)
  (global-set-key (key "M-`") 'agl-other-frame)
+ (global-set-key (key "C-`") 'agl-other-frame)
+
  ;; Forward/Backward paragraph
  (global-set-key (key "M-p") 'backward-paragraph)
  (global-set-key (key "C-{") 'backward-paragraph)
