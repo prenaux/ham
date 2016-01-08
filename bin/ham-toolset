@@ -21,7 +21,7 @@ if [[ -e "$FOUND_PROJECT_DIR" ]]; then
 fi
 
 # Check that there is at least one argument...
-if [ $# = 0 ]; then
+if [ $# = 0 ] || [ $1 == "." ]; then
     if [[ -z "$FOUND_PROJECT_DIR" ]]; then
         echo "E/No argument specified and couldn't find a _ham_project file."
         usage
