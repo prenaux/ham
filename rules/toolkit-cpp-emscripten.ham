@@ -26,6 +26,9 @@ if $(LOA_LINKER) = clang || $(LOA_LINKER) = em {
 if $(FLYMAKE) = 1 {
   JSCC_WARN_ARGS += -Wno-\#pragma-messages ;
 }
+CCFLAGS += $(JSCC_WARN_ARGS) ;
+C++FLAGS += $(JSCC_WARN_ARGS) ;
+
 SUFPCH = .h.gch ;
 
 C++FLAGS +=
@@ -82,12 +85,12 @@ rule tkCC++Build
   # Set the debug infos generation
   # Set the optimization flags
   if $(DEBUG) = 1 {
-    PKGOPTIM += $(JSCC_WARN_ARGS) $(JSCC_DBG_ARGS) ;
+    PKGOPTIM += $(JSCC_DBG_ARGS) ;
     strOpt += "(DebugOnly) " ;
   }
   # Set debug-only flags
   else {
-    PKGOPTIM += $(JSCC_WARN_ARGS) $(JSCC_OPT_ARGS) ;
+    PKGOPTIM += $(JSCC_OPT_ARGS) ;
     strOpt += "(Optimized) " ;
   }
   logVerbose "- CC++Build: " $(strOpt) ;
