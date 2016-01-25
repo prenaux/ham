@@ -24,7 +24,6 @@
 
 (NotBatchMode
  (require 'ni-sql)
- (require 'ni-comint-history)
 )
 
 ;;;======================================================================
