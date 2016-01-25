@@ -168,6 +168,9 @@ rule tkCC++Build
     else if $(OPT_MINSIZE) = 1 {
       ObjectOptimFlags $(<) : -O1 ;
       strOpt += "(OptMinSize) " ;
+      if $(MSVC_VER) >= 13 {
+        ObjectOptimFlags $(<) : -Zo ; # /Zo (Enhance Optimized Debugging)
+      }
     }
     else {
       ObjectOptimFlags $(<) : -O2 -Ob2 -Oi ;
@@ -178,6 +181,9 @@ rule tkCC++Build
       # if $(EMBEDDED) != 1 {
         # LINKFLAGS on $(PKGTARGETF) += -LTCG ;
       # }
+      if $(MSVC_VER) >= 13 {
+        ObjectOptimFlags $(<) : -Zo ; # /Zo (Enhance Optimized Debugging)
+      }
     }
     if $(HAM_TOOLSET_VER) >= 9 {
       ObjectOptimFlags $(<) : -GS- ;  # Disable buffer security check
@@ -258,7 +264,7 @@ rule tkCC++Lint
   # one-line error message
   -WL
   ;
-  if $(HAM_TOOLSET_VER) >= 10 {
+  if $(MSVC_VER) >= 10 {
     F += -analyze ;
   }
   ObjectOptimFlags $(<) : $(F) ;

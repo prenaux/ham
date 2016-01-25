@@ -77,11 +77,6 @@ fi
 ########################################################################
 ##  Setup the C++ environment
 ########################################################################
-export HAM_TOOLSET=VISUALC
-export HAM_TOOLSET_VER=13
-export HAM_TOOLSET_NAME=msvc_13_x64
-export HAM_TOOLSET_DIR=${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}
-
 export PATH="${WINSDKDIR}/bin/x64":"${MSVCDIR}/bin/x86_amd64":"${MSVCDIR}/bin":"${MSVC_IDE_DIR}":${PATH}
 export INCLUDE="`nativedir \"${WINSDKDIR_INCLUDE}/um\"`;`nativedir \"${WINSDKDIR_INCLUDE}/shared\"`;`nativedir \"${MSVCDIR}/include\"`;`nativedir \"${MSVCDIR}/atlmfc/include/\"`"
 export LIB="`nativedir \"${WINSDKDIR_LIBS}\"`;`nativedir \"${MSVCDIR}/lib/amd64\"`;`nativedir \"${MSVCDIR}/atlmfc/lib/amd64\"`"
