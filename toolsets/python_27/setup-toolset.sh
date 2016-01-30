@@ -18,6 +18,7 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        export PYTHON="${PYTHON_DIR}/python.exe"
         ;;
     OSX*)
         ln -s /usr/bin/python2.7 "${HAM_HOME}/bin/osx-x86/python2"
