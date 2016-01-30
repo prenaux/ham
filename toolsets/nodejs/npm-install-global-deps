@@ -2,7 +2,8 @@
 . ham-bash-lib.sh
 . hat default python_27 nodejs
 # On separated lines because npm onlyshows a spinner... so you have no idea how long things will take...
-NUM_PACKAGES=24
+NUM_PACKAGES=25
+NPM_INSTALL_BIN="npm install -g"
 NPM_INSTALL="npm install -g --no-bin-links"
 echo "I/Installing package 'webpack' (1/$NUM_PACKAGES)"
 ${NPM_INSTALL} webpack
@@ -52,3 +53,5 @@ echo "I/Installing package 'tsd' (23/$NUM_PACKAGES)"
 ${NPM_INSTALL} tsd
 echo "I/Installing package 'react-native-cli' (24/$NUM_PACKAGES)"
 ${NPM_INSTALL} react-native-cli
+echo "I/Installing package 'gulp' (25/$NUM_PACKAGES)"
+${NPM_INSTALL_BIN} gulp
