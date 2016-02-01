@@ -9,15 +9,9 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/texteditor"
 # path setup
 case $HAM_OS in
     NT*)
+        toolset_check_and_dl_ver texteditor nt-x86 v1 || return 1
         export TEXTEDITOR_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
         export PATH="${HAM_TOOLSET_DIR}/":${PATH}
-        if [ ! -e "$TEXTEDITOR_DIR" ]; then
-            toolset_dl texteditor texteditor_nt-x86
-            if [ ! -e "$TEXTEDITOR_DIR" ]; then
-                echo "E/nt-x86 folder doesn't exist in the toolset"
-                return 1
-            fi
-        fi
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

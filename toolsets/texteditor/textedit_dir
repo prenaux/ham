@@ -1,9 +1,10 @@
 #!/bin/bash
+# textedit_dir FILE DIRECTORY
 . ham-bash-lib.sh
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 case $HAM_OS in
     NT*)
-        "${DIR}/nt-x86/TSEdit.exe" "$@"
+        "${DIR}/nt-x86/TSEdit.exe" "$1" "$2"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
