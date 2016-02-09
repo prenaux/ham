@@ -229,6 +229,7 @@ the text to another HTML buffer."
              (cons (concat "\\." (regexp-opt
                                   '("xml" "xsd" "rng"
                                     "xslt" "xsl" "gml"
+                                    "vlk" "level"
                                    ) t) "\\'")
                    'nxml-mode))
 (setq nxml-slash-auto-complete-flag t)
