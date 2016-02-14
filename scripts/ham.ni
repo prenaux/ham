@@ -1,4 +1,4 @@
-// Copyright 2007-2014 TalanSoft, Co. All Rights Reserved.
+// Copyright 2007-2016 TalanSoft, Co. All Rights Reserved.
 ::Import("lang.ni")
 ::Import("fs.ni")
 
