@@ -16,8 +16,8 @@ AssertVarDefined HAM_TOOLSET_NAME ;
 AssertVarDefined HAM_TOOLSET_VER ;
 
 if $(OS) = MACOSX {
-  BUILD_BIN_LOA ?= osx-x86 ;
-  BUILD_SUFEXE = .x86 ;
+  BUILD_BIN_LOA ?= $(BIN_LOA) ;
+  BUILD_SUFEXE = $(SUFEXE) ;
 }
 else if $(NT) {
   BUILD_BIN_LOA ?= nt-x86 ;
