@@ -743,6 +743,7 @@ BEG and END (region to sort)."
 ;;;======================================================================
 (NotBatchMode
  (require 'adaptive-wrap)
+ (setq adaptive-wrap-extra-indent 2)
 
  (set-default 'truncate-partial-width-windows nil)
  (set-default 'truncate-lines nil)
@@ -750,14 +751,14 @@ BEG and END (region to sort)."
 
  (defun ni-word-wrap-on ()
    (interactive)
-   (setq truncate-lines nil)
+   (setq truncate-lines t)
    (visual-line-mode t)
    (adaptive-wrap-prefix-mode t)
  )
 
  (defun ni-word-wrap-off ()
    (interactive)
-   (setq truncate-lines t)
+   (setq truncate-lines nil)
    (visual-line-mode -1)
    (adaptive-wrap-prefix-mode -1)
  )
@@ -769,9 +770,6 @@ BEG and END (region to sort)."
      (ni-word-wrap-on))
    (recenter))
 
-
- (require 'adaptive-wrap)
- (setq adaptive-wrap-extra-indent 2)
  (add-hook 'visual-line-mode-hook
            (lambda ()
              (adaptive-wrap-prefix-mode +1)
