@@ -10,7 +10,7 @@ ${NPM_INSTALL} webpack
 echo "I/Installing package 'webpack-dev-server' (2/$NUM_PACKAGES)"
 ${NPM_INSTALL} webpack-dev-server
 echo "I/Installing package 'eslint' (3/$NUM_PACKAGES)"
-${NPM_INSTALL} eslint
+${NPM_INSTALL_BIN} eslint
 echo "I/Installing package 'eslint-plugin-react' (4/$NUM_PACKAGES)"
 ${NPM_INSTALL} eslint-plugin-react
 echo "I/Installing package 'mocha' (5/$NUM_PACKAGES)"
@@ -46,7 +46,7 @@ ${NPM_INSTALL} nodemon
 echo "I/Installing package 'electron-prebuilt' (20/$NUM_PACKAGES)"
 ${NPM_INSTALL} electron-prebuilt
 echo "I/Installing package 'typescript' (21/$NUM_PACKAGES)"
-${NPM_INSTALL} typescript
+${NPM_INSTALL_BIN} typescript
 echo "I/Installing package 'awesome-typescript-loader' (22/$NUM_PACKAGES)"
 ${NPM_INSTALL} awesome-typescript-loader
 echo "I/Installing package 'tsd' (23/$NUM_PACKAGES)"
