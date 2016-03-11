@@ -294,6 +294,22 @@ toolset_check_and_dl_ver() {
     fi
 }
 
+iso_date() {
+    date +"%Y-%m-%dT%H:%M:%S%z"
+}
+
+iso_datez() {
+    date -u +"%Y-%m-%dT%H:%M:%SZ"
+}
+
+tag_date() {
+    date +"%Y_%m_%dT%H_%M_%S%z"
+}
+
+tag_datez() {
+    date -u +"%Y_%m_%dT%H_%M_%SZ"
+}
+
 ########################################################################
 ##  Environments
 ########################################################################
