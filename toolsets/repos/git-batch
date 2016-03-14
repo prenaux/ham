@@ -24,9 +24,11 @@ usage() {
     echo "  -M remote      Fetch & merge (pull) from the specified remote to '$GIT_BATCH_DEFAULT_BRANCH'"
     echo "  -u             Push all (upload) to '$GIT_BATCH_DEFAULT_REMOTE'"
     echo "  -U remote      Push all (upload) to the specified remote"
+    echo "  -t             Push all tags (upload) to '$GIT_BATCH_DEFAULT_REMOTE'"
+    echo "  -T remote      Push all tags (upload) to the specified remote"
     echo "  -s             Status of the repo"
     echo "  -y             Fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into '$GIT_BATCH_DEFAULT_BRANCH',"
-    echo "                 then push all to '$GIT_BATCH_DEFAULT_REMOTE'. Alias for '-f -m -u'."
+    echo "                 then push all to '$GIT_BATCH_DEFAULT_REMOTE'. Alias for '-f -m -u -t'."
     echo ""
     echo "example:"
     echo "  # fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into '$GIT_BATCH_DEFAULT_BRANCH',"
@@ -57,7 +59,7 @@ if [ $# = 0 ]; then
 fi
 
 # process the arguments
-while getopts "dD:eE:fhlL:mM:uU:sy" OPT
+while getopts "dD:eE:fhlL:mM:uU:tT:sy" OPT
 do
     case "$OPT" in
         h)
@@ -96,6 +98,12 @@ do
         U)
             CMD="git push --all $OPTARG"
             ;;
+        t)
+            CMD="git push --tags $GIT_BATCH_DEFAULT_REMOTE"
+            ;;
+        T)
+            CMD="git push --tags $OPTARG"
+            ;;
         m)
             CMD="git pull $GIT_BATCH_DEFAULT_REMOTE $GIT_BATCH_DEFAULT_BRANCH"
             ;;
@@ -103,7 +111,7 @@ do
             CMD="git pull $OPTARG $GIT_BATCH_DEFAULT_BRANCH"
             ;;
         y)
-            CMD="git-batch -f -m -u"
+            CMD="git-batch -f -m -u -t"
             ;;
     esac
 
