@@ -61,6 +61,19 @@ CC_ADD_FLAGS +=
 # DISABLE: warning C4345: behavior change: an object of POD type constructed with an initializer of the form () will be default-initialized
 -wd4345
 ;
+
+if $(HAM_C99) = clang {
+  C99FLAGS +=
+    -Wno-microsoft
+    -Wno-incompatible-pointer-types
+    -Wno-pointer-sign
+    -Wno-switch
+    -Wno-static-in-inline
+    -Wno-deprecated-declarations
+    -Wno-shift-negative-value
+  ;
+}
+
 CCFLAGS += $(CC_ADD_FLAGS) ;
 C++FLAGS += $(CC_ADD_FLAGS) ;
 
@@ -158,8 +171,8 @@ rule tkCC++Build
   # Set the optimization flags
   if ! $(DEBUG) {
     ObjectOptimFlags $(<) : -GF ;
-    if $(CC_ISCLANG) = 1 {
-      ObjectCcFlags $(<) : -O2 ;
+    if $(HAM_C99) = clang {
+      ObjectC99Flags $(<) : -O2 ;
     }
     if $(OPT_NOOPT) = 1 {
       ObjectOptimFlags $(<) : -Od ;
@@ -192,8 +205,8 @@ rule tkCC++Build
   }
   # Set debug-only flags
   else {
-    if $(CC_ISCLANG) = 1 {
-      ObjectCcFlags $(<) : -O0 ;
+    if $(HAM_C99) = clang {
+      ObjectC99Flags $(<) : -O0 ;
     }
     ObjectOptimFlags $(<) : -Od -RTC1 -GS ;
     # ObjectOptimFlags $(<) : -RTCc ; # Checks invalid cast to smaller type
