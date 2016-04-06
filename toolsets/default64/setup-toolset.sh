@@ -6,7 +6,7 @@ if [ $? != 0 ]; then return 1; fi
 # path setup
 case $HAM_OS in
     NT*)
-        . ham-toolset-import.sh msvc_13_x64
+        . ham-toolset-import.sh msvc_15_x64
         ;;
     OSX*)
         . ham-toolset-import.sh clang_33
