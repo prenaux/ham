@@ -1379,8 +1379,15 @@ rule Object
     $(COMPILER) $(<) : $(>) ;
   }
   else {
+    local COMPILE_AS = [ VarOnGet COMPILE_AS : $(>) ] ;
+    if ! $(COMPILE_AS) {
+      COMPILE_AS = $(>:S) ;
+    }
+
+    # ECHO "COMPILE_AS:" $(>) "::" $(COMPILE_AS) ;
+
     # if source is not .c, generate .c with specific rule
-    switch $(>:S)
+    switch $(COMPILE_AS)
     {
       case .h   : if $(CAN_LINT) { LintH lint_h : $(>) ; }
       case .hpp : if $(CAN_LINT) { LintH lint_h : $(>) ; }
@@ -1388,6 +1395,7 @@ rule Object
       case .masm : Masm $(<) : $(>) ;
       case .c :   Cc $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
       case .m :   Cc $(<) : $(>) ;
+      case .c99 : C99 $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
       case .C :   C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
       case .cc :  C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
       case .cpp : C++ $(<) : $(>) ; if $(CAN_LINT) { LintC lint_c : $(>) ; }
@@ -1402,6 +1410,15 @@ rule Object
       case * :    UserObject $(<) : $(>) ;
     }
   }
+}
+
+# /CompileAs sources : ext ;
+#
+# Compile the specified source files as if it was of the specified extension.
+#
+rule CompileAs
+{
+  COMPILE_AS on [ FGristFiles $(<) ] = $(>) ;
 }
 
 # nicc compiler
@@ -1442,6 +1459,16 @@ rule ObjectOptimFlags
 rule ObjectCcFlags
 {
   CCFLAGS on [ FGristFiles $(<:S=$(SUFOBJ)) ] += $(>) ;
+}
+
+# /ObjectC99Flags  sources : flags ;
+#
+# this rule is used to add compiler flags to the compilation of
+# specific C sources files.
+#
+rule ObjectC99Flags
+{
+  C99FLAGS on [ FGristFiles $(<:S=$(SUFOBJ)) ] += $(>) ;
 }
 
 # /ObjectC++Flags  sources : flags ;
@@ -1511,6 +1538,7 @@ rule FTargetSuffix
     case .asm : return $(SUFOBJ) ;
     case .masm : return $(SUFOBJ) ;
     case .c : return $(SUFOBJ) ;
+    case .c99 : return $(SUFOBJ) ;
     case .m : return $(SUFOBJ) ;
     case .C : return $(SUFOBJ) ;
     case .cc : return $(SUFOBJ) ;
