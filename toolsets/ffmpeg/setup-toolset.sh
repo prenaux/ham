@@ -9,15 +9,9 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/ffmpeg"
 # path setup
 case $HAM_OS in
     NT*)
+        toolset_check_and_dl_ver ffmpeg nt-x86 v2 || return 1
         export FFMPEG_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
         export PATH="${FFMPEG_DIR}":${PATH}
-        if [ ! -e "$FFMPEG_DIR/ffmpeg.exe" ]; then
-            toolset_dl ffmpeg ffmpeg_nt-x86
-            if [ ! -e "$FFMPEG_DIR" ]; then
-                echo "E/nt-x86 folder doesn't exist in the toolset"
-                return 1
-            fi
-        fi
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
