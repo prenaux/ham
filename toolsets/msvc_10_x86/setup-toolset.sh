@@ -1,10 +1,6 @@
 TAG=msvc_10_x86
 echo I/Setting up $TAG
 
-# gcc 4.7 is our C99 compiler
-echo "I/MSVC using GCC as C99 compiler"
-. ham-toolset-import.sh gcc_470
-
 ########################################################################
 ##  Toolset
 ########################################################################

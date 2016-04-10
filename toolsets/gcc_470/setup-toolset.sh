@@ -38,5 +38,3 @@ if [ $? != 0 ]; then
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
-
-export HAM_C99=gcc
