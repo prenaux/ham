@@ -70,6 +70,10 @@ logVar TARGET_FEATURE_JNI ;
 AssertVarDefined LOA_LINKER ;
 AssertVarDefined LOA_OS ;
 AssertVarDefined LOA_ARCH ;
+
+# CPU_ARCH always keeps the raw CPU architecture
+CPU_ARCH = $(LOA_ARCH) ;
+
 if $(TARGET_FEATURE_JNI) {
   BUILD_JNI = 1 ;
   LOA_ARCH = $(LOA_ARCH)j ;
