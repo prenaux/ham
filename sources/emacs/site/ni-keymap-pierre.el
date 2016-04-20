@@ -12,6 +12,14 @@
   )
  )
 
+ (GNUEmacs24
+  ;; Disable electric mode so that 'enter' insert a new line without modifying
+  ;; the current line but indents the actual new line.
+  (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
+  (global-set-key (kbd "RET") 'electric-newline-and-maybe-indent)
+  (global-set-key (kbd "<C-j>") 'newline)
+ )
+
  ;; isearch - the defaults are _so_ annoying...
  (define-key isearch-mode-map (kbd "<backspace>") 'isearch-del-char) ; bs means bs
  (define-key isearch-mode-map (kbd "<delete>")    'isearch-delete-char)  ; delete means delete
