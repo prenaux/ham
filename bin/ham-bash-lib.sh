@@ -117,7 +117,8 @@ unxpath()
 abspath() {
     filename=$(basename "$1")
     filename="${filename%.*}.${filename##*.}"
-    dir=`nativedir $1`
+    dirname=$(dirname "$1")
+    dir=`nativedir $dirname`
     echo "$dir/$filename"
 }
 
