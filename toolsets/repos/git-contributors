@@ -1,0 +1,4 @@
+#!/bin/bash
+# Print all contributors to the repo with each's number of commits
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+git log --format=%ae | sort | uniq -c | sort -nr
