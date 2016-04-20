@@ -1,0 +1,76 @@
+#!/bin/bash
+export HAM_NO_VER_CHECK=1
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+if [[ -e "$HOME/.ham_cloud_copy" ]]; then
+    . "$HOME/.ham_cloud_copy"
+fi;
+
+if [[ -z "$HAM_CLOUD_COPY_AZURE_STORAGE_ACCOUNT" ]]; then
+    if [[ ! -e "$HOME/.ham_cloud_copy" ]]; then
+        echo "W/Couldn't find '$HOME/.ham_cloud_copy'"
+    fi;
+
+    echo "E/HAM_CLOUD_COPY_AZURE_STORAGE_ACCOUNT not set !";
+    echo "- To set it add the following to '$HOME/.ham_cloud_copy' or your environment:";
+    echo "  export HAM_CLOUD_COPY_AZURE_STORAGE_ACCOUNT=\"DefaultEndpointsProtocal=http;AccountName=user;AccountKey=key\"";
+    echo ""
+    exit 1;
+fi
+
+if [[ -z "$HAM_CLOUD_COPY_AZURE_STORAGE_URL" ]]; then
+    if [[ ! -e "$HOME/.ham_cloud_copy" ]]; then
+        echo "W/Couldn't find '$HOME/.ham_cloud_copy'"
+    fi;
+
+    echo "E/HAM_CLOUD_COPY_AZURE_STORAGE_URL not set !";
+    echo "- To set it add the following to '$HOME/.ham_cloud_copy' or your environment:";
+    echo "  export HAM_CLOUD_COPY_AZURE_STORAGE_URL=\"https://myaccount.blob.core.windows.net\"";
+    echo ""
+    exit 1;
+fi
+
+if [[ -z "$HAM_CLOUD_COPY_AZURE_CDN_URL" ]]; then
+    HAM_CLOUD_COPY_AZURE_CDN_URL=$HAM_CLOUD_COPY_AZURE_STORAGE_URL
+fi
+
+print_help() {
+    echo "Error: $1"
+    echo ""
+    echo "Syntax:";
+    echo "  cloud_copy file(s) destination_container";
+    echo ""
+    echo "Destination URL: $HAM_CLOUD_COPY_AZURE_STORAGE_URL"
+    exit 1;
+}
+
+if [[ -z "$1" ]]; then
+    print_help "No file(s) specified."
+fi
+
+FILE=`abspath $1`
+if [[ ! -f "$FILE" ]]; then
+    print_help "Can't find file '$FILE'."
+fi
+shift
+
+if [[ -z "$1" ]]; then
+    print_help "No destination container specified."
+    print_help
+fi
+CONTAINER=$1
+shift
+
+case $HAM_OS in
+    NT*)
+        echo cloudcopy "$FILE" "$HAM_CLOUD_COPY_AZURE_STORAGE_URL/$CONTAINER" "\"$HAM_CLOUD_COPY_AZURE_STORAGE_ACCOUNT\""
+        cloudcopy "$FILE" "$HAM_CLOUD_COPY_AZURE_STORAGE_URL/$CONTAINER" "$HAM_CLOUD_COPY_AZURE_STORAGE_ACCOUNT"
+        errcheck $? ham "Can't copy '$FILE' to '$HAM_CLOUD_COPY_AZURE_STORAGE_URL/$CONTAINER'."
+        echo "Done '$FILE' copied to '$HAM_CLOUD_COPY_AZURE_CDN_URL/$CONTAINER/`path_filename $FILE`'"
+        ;;
+    *)
+        echo "E/OS not supported!"
+        exit 1;
+        ;;
+esac
