@@ -114,6 +114,19 @@ unxpath()
     esac
 }
 
+abspath() {
+    filename=$(basename "$1")
+    filename="${filename%.*}.${filename##*.}"
+    dir=`nativedir $1`
+    echo "$dir/$filename"
+}
+
+path_filename() {
+    filename=$(basename "$1")
+    filename="${filename%.*}.${filename##*.}"
+    echo "$filename"
+}
+
 thisscriptdir() {
     DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     echo `unxpath "$DIR"`
