@@ -1,6 +1,6 @@
 FOUND_SETUP_SCRIPT=no
 if [ "$FOUND_SETUP_SCRIPT" == "no" ]; then
-    export DIR="${HAM_PROJECT_DIR}/toolsets/$1"
+    export DIR="${HAM_PROJECT_DIR}/specs/toolsets/$1"
     export SETUP_SCRIPT="$DIR/setup-toolset.sh"
     if [ -f "$SETUP_SCRIPT" ]; then
         FOUND_SETUP_SCRIPT="from PROJECT:"
@@ -8,7 +8,7 @@ if [ "$FOUND_SETUP_SCRIPT" == "no" ]; then
 fi
 
 if [ "$FOUND_SETUP_SCRIPT" == "no" ]; then
-    export DIR="${HAM_HOME}/toolsets/$1"
+    export DIR="${HAM_HOME}/specs/toolsets/$1"
     export SETUP_SCRIPT="$DIR/setup-toolset.sh"
     if [ -f "$SETUP_SCRIPT" ]; then
         FOUND_SETUP_SCRIPT="from GLOBAL: "
