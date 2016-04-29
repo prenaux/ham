@@ -72,7 +72,7 @@ do
             CMD="popd"
             ;;
         E)
-            CMD="pushd `nativedir $OPTARG`"
+            CMD="pushd \"`nativedir "$OPTARG"`\""
             ;;
         s)
             CMD="git status"
@@ -116,6 +116,6 @@ do
     esac
 
     echo "I/$CMD (in `pwd`)"
-    $CMD
+    eval $CMD
     errcheck $? git_batch "git-batch error: $CMD (in `pwd`)"
 done
