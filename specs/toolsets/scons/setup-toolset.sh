@@ -18,7 +18,7 @@ export PATH="${HAM_HOME}/toolsets/scons/python":$PATH
 VER="--- scons --------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
     VER="$VER
-`scons --version`"
+`scons --version | grep 'script: ' | sed 's|^[[:blank:]]*||g'`"
     if [ $? != 0 ]; then
         echo "E/Can't get scons version."
         return 1
