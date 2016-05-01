@@ -1,17 +1,9 @@
 FOUND_SETUP_SCRIPT=no
 if [ "$FOUND_SETUP_SCRIPT" == "no" ]; then
-    export DIR="${HAM_PROJECT_DIR}/specs/toolsets/$1"
-    export SETUP_SCRIPT="$DIR/setup-toolset.sh"
-    if [ -f "$SETUP_SCRIPT" ]; then
-        FOUND_SETUP_SCRIPT="from PROJECT:"
-    fi
-fi
-
-if [ "$FOUND_SETUP_SCRIPT" == "no" ]; then
     export DIR="${HAM_HOME}/specs/toolsets/$1"
     export SETUP_SCRIPT="$DIR/setup-toolset.sh"
     if [ -f "$SETUP_SCRIPT" ]; then
-        FOUND_SETUP_SCRIPT="from GLOBAL: "
+        FOUND_SETUP_SCRIPT="from GLOBAL."
     fi
 fi
 
@@ -20,7 +12,7 @@ if [ "$FOUND_SETUP_SCRIPT" == "no" ]; then
     return 1
 fi
 
-ALREADY_IMPORTED=`ni-hget HAM_IMPORTS $1`
+ALREADY_IMPORTED=`ni-hget HAM_IMPORTS_TOOLSETS $1`
 if [[ $ALREADY_IMPORTED = "1" ]]; then
     echo "I/Already imported '$1'."
 else
@@ -35,7 +27,7 @@ else
         else
             export HAM_IMPORTED_TOOLSETS="$HAM_IMPORTED_TOOLSETS $1"
         fi
-        ni-hput HAM_IMPORTS $1 1
-        echo -e "I/Imported ${FOUND_SETUP_SCRIPT}$1"
+        ni-hput HAM_IMPORTS_TOOLSETS $1 1
+        echo -e "I/Imported toolset '$1' ${FOUND_SETUP_SCRIPT}"
     fi
 fi
