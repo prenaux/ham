@@ -19,6 +19,17 @@ case $HAM_OS in
             fi
         fi
         ;;
+    OSX*)
+        export YASM_BIN_DIR="${HAM_TOOLSET_DIR}/osx-x86/"
+        export PATH="${YASM_BIN_DIR}":${PATH}
+        if [ ! -e "$YASM_BIN_DIR/yasm" ]; then
+            toolset_dl yasm yasm_osx-x86
+            if [ ! -e "$YASM_BIN_DIR/yasm" ]; then
+                echo "E/osx-x86 folder doesn't exist in the toolset"
+                return 1
+            fi
+        fi
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
