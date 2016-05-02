@@ -200,6 +200,7 @@ toolset_dl_and_extract() {
     export ARCH_URL="http://cdn2.talansoft.com/toolsets/$2.7z"
     export DLFILENAME="_$2.7z"
     echo "=== Importing toolset '$1' from $DIR"
+    mkdir -p "${DIR}"
     pushd "${DIR}" > /dev/null
     if [ $? != 0 ]; then
         echo "E/Can't cd to the toolset's directory '$DIR'."
@@ -458,7 +459,7 @@ if [[ $OS == Windows* ]]; then
     fi
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     export HAM_OS=OSX
-    export HAM_BIN_LOA=osx-x86
+    export HAM_BIN_LOA=osx-x64
 else
     UNAME_STR=`/bin/uname`
     MACHINE_TYPE=`/bin/uname -m`
