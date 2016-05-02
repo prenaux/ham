@@ -78,8 +78,16 @@ if $(NT) {
 }
 else {
   IPHONE_SDK_DIR = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/ ;
+  # iOS 9.3 SDK
+  if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS9.3.sdk ] {
+    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS9.3.sdk ;
+    CLANG_BASE_FLAGS +=
+      -isysroot "\"$(IPHONE_SDK_DIR)\""
+      -fmessage-length=0
+    ;
+  }
   # iOS 9.2 SDK
-  if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS9.2.sdk ] {
+  else if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS9.2.sdk ] {
     IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS9.2.sdk ;
     CLANG_BASE_FLAGS +=
       -isysroot "\"$(IPHONE_SDK_DIR)\""
