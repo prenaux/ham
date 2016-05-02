@@ -1,0 +1,12 @@
+#!/bin/bash
+if [ -z "$HAM_HOME" ]; then
+    echo "E/HAM_HOME not set !"
+    return 1
+fi
+if [ -z "$WORK" ]; then
+    echo "E/WORK not set !"
+    return 1
+fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+pod_up $1 $2 $3

@@ -68,6 +68,9 @@ toolsets/*/_*jvm*.7z
 toolsets/*/python/
 toolsets/*/_*python*.7z
 
+# Don't put pods binaries in the repo
+pods/
+
 # Symbolic links
 bin/osx-x86/python2
 
