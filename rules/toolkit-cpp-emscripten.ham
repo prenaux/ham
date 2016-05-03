@@ -10,7 +10,7 @@ JSCC_WARN_ARGS =
 -Wno-trigraphs
 -Wno-narrowing
 -Wno-sign-compare
--Wno-warn-absolute-paths
+# -Wno-warn-absolute-paths
 -Wno-unused-value
 -Wno-unused-variable
 ;
@@ -23,9 +23,15 @@ if $(LOA_LINKER) = clang || $(LOA_LINKER) = em {
   -Dgnu_printf=printf
   ;
 }
+# Clang 3.7
+JSCC_WARN_ARGS +=
+  -Wno-inconsistent-missing-override
+  -Wno-unused-local-typedef
+;
 if $(FLYMAKE) = 1 {
   JSCC_WARN_ARGS += -Wno-\#pragma-messages ;
 }
+
 CCFLAGS += $(JSCC_WARN_ARGS) ;
 C++FLAGS += $(JSCC_WARN_ARGS) ;
 
