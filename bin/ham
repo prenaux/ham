@@ -7,7 +7,17 @@ fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 export PATH=${PREV_PATH}:${PATH}
 
-HAM_CMD="$HAM_HOME/bin/$HAM_BIN_LOA/ham"
+case $HAM_OS in
+    NT*)
+        HAM_CMD="$HAM_HOME/bin/nt-x86/ham"
+        ;;
+    OSX)
+        HAM_CMD="$HAM_HOME/bin/osx-x86/ham"
+        ;;
+    *)
+        echo "W/ham-bash-setenv.sh: Unknown HAM_OS: $HAM_OS"
+        ;;
+esac
 
 # the help
 usage() {
