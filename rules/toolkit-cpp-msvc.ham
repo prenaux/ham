@@ -60,6 +60,12 @@ CC_ADD_FLAGS +=
 -wd6316
 # DISABLE: warning C4345: behavior change: an object of POD type constructed with an initializer of the form () will be default-initialized
 -wd4345
+# DISABLE: warning C4458: warning C4456: declaration of 'xxx' hides previous local declaration
+-wd4456
+# DISABLE: warning C4459: declaration of 'xxx' hides global declaration
+-wd4459
+# DISABLE: warning C4458: declaration of 'xxx' hides class member
+-wd4458
 ;
 
 if $(HAM_C99) = clang {
