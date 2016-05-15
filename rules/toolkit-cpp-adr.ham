@@ -24,6 +24,7 @@ $(PICFLAGS)
 -Wno-unused
 -Wno-uninitialized
 -Wno-address
+-Werror=return-stack-address
 ;
 ANDROID_CC_ARGS +=
   $(ADR_CC_ARGS)

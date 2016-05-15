@@ -13,6 +13,7 @@ JSCC_WARN_ARGS =
 # -Wno-warn-absolute-paths
 -Wno-unused-value
 -Wno-unused-variable
+-Werror=return-stack-address
 ;
 if $(LOA_LINKER) = clang || $(LOA_LINKER) = em {
   JSCC_WARN_ARGS +=
