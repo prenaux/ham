@@ -3,8 +3,20 @@ export HAM_NO_VER_CHECK=1
 if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
+print_help() {
+    echo "syntax: 7z-pack-dir ARCHIVE DIRECTORY"
+    exit 1
+}
+
+if [[ -z "$1" ]]; then
+    echo "No archive filename specified !"
+    print_help
+fi
+if [[ -z "$2" ]]; then
+    echo "No directory to pack specified !"
+    print_help
+fi
+
 export ARCH="$1"
-shift
-export DIR="$1"
-shift
+export DIR="$2"
 7z a -mmt=on -mx=9 -ms=on -mhc=on -mtc=off -xr\!*/.git/* -xr\!*/.hg/* "./$ARCH" "$DIR"
