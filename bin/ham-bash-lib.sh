@@ -342,7 +342,7 @@ pod_check_and_dl_ver() {
 pod_dl_and_extract() {
     . ham-pod-setenv.sh $1 $2 $3
     export CWD=`pwd`
-    export DLDIR="`nativedir ${HAM_HOME}`/pods/_dl"
+    export DLDIR="`nativedir "${HAM_HOME}"`/pods/_dl"
     export DLFILENAME="${POD_VER_NAME}.7z"
     # export ARCH_URL="http://cdn2.talansoft.com/pods/${DLFILENAME}"
     export ARCH_URL="https://tsdata2.blob.core.windows.net/pods/${DLFILENAME}"
@@ -401,13 +401,22 @@ pod_bak_rm() {
 pod_build() {
     echo "I/Building Pod '$1' $2 $3"
     . ham-pod-setenv.sh $1 $2 $3
+    rm -f _ham_pod_$1
     echo $POD_VER_NAME > $POD_VER_FILE_NAME
     export DLFILENAME="${HAM_HOME}/pods/_dl/${POD_VER_NAME}.7z"
     if [ -e "${DLFILENAME}" ]; then
         mv "${DLFILENAME}" "${DLFILENAME}.bak"
     fi
-    "$WORK/niSDK/bin/ni" -e -I "$WORK/niSDK/scripts" -I "$WORK/ham/scripts"  ./_build_pod_${POD_LOA}.nip
-    errcheck $? _ "Can't build $1 $2 pod."
+    export BUILD_NIP="./_build_pod_${POD_LOA}.nip"
+    if [ ! -e "${BUILD_NIP}" ]; then
+        export BUILD_NIP="../_build_pod_${POD_LOA}.nip"
+        if [ ! -e "${BUILD_NIP}" ]; then
+            echo "Can't find pod build script '_build_pod_${POD_LOA}.nip'"
+            return 1
+        fi
+    fi
+    "$WORK/niSDK/bin/ni" -e -I "$WORK/niSDK/scripts" -I "$WORK/ham/scripts" "${BUILD_NIP}"
+    if [ $? != 0 ]; then echo "Can't build $1 $2 pod."; return 1; fi
 }
 
 # usage: pod_up NAME LOA VERSION

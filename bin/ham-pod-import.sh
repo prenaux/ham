@@ -33,9 +33,10 @@ if [[ $ALREADY_IMPORTED = "1" ]]; then
     echo "I/Already imported pod '$POD_NAME'."
 else
     export PATH=$PATH
-    eval export "HAM_POD_DIR_${POD_NAME}"=`nativedir ${POD_DIR}`
-    eval export "HAM_POD_LOA_${POD_NAME}"=${POD_LOA}
-    eval export "HAM_POD_VER_${POD_NAME}"=${POD_VER}
+    export POD_VAR_NAME=${POD_NAME}_${POD_LOA/-/_}_${POD_VER}
+    eval export "HAM_POD_DIR_${POD_NAME}"=\"`nativedir "${POD_DIR}"`\"
+    eval export "HAM_POD_LOA_${POD_NAME}"="${POD_LOA}"
+    eval export "HAM_POD_VER_${POD_NAME}"="${POD_VER}"
     if [ -e "${POD_DIR}/_ham_pod" ]; then
         source "${POD_DIR}/_ham_pod"
     fi
@@ -51,11 +52,11 @@ else
         return 1
     else
         if [[ -z $HAM_IMPORTED_PODS ]]; then
-            export HAM_IMPORTED_PODS="$POD_NAME"
+            export HAM_IMPORTED_PODS="$POD_VAR_NAME"
         else
-            export HAM_IMPORTED_PODS="$HAM_IMPORTED_PODS $POD_NAME"
+            export HAM_IMPORTED_PODS="$HAM_IMPORTED_PODS $POD_VAR_NAME"
         fi
-        ni-hput HAM_IMPORTS_POD ${POD_NAME} 1
-        echo -e "I/Imported pod '$POD_NAME'."
+        ni-hput HAM_IMPORTS_POD ${POD_VAR_NAME} 1
+        echo -e "I/Imported pod '$POD_VAR_NAME'."
     fi
 fi
