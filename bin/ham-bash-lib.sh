@@ -484,6 +484,19 @@ if [[ -z $WORK ]]; then
 fi
 export WORK=`unxpath "$WORK"`
 
+# Detect the default number of jobs
+if [[ -z $HAM_NUM_JOBS ]]; then
+    if [[ -n $NUMBER_OF_PROCESSORS ]]; then
+        export HAM_NUM_JOBS=$NUMBER_OF_PROCESSORS
+    elif [[ -f /proc/cpuinfo ]]; then
+        export HAM_NUM_JOBS=$(grep -c processor /proc/cpuinfo)
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+	      export HAM_NUM_JOBS=$(sysctl -n machdep.cpu.thread_count)
+    else
+        export HAM_NUM_JOBS=2
+    fi
+fi
+
 if [[ -z $HOME ]]; then
     echo "E/HOME not set !"
     exit 1
