@@ -215,7 +215,7 @@ the text to another HTML buffer."
 
 ;;*** VB.NET ************************************************************
 (autoload 'vbnet-mode "vbnet-mode" "Visual Basic .NET Mode" t)
-(setq auto-mode-alist (append '(("\\.\\(frm\\|bas\\|cls\\)$" .
+(setq auto-mode-alist (append '(("\\.\\(vb\\|frm\\|bas\\|cls\\)$" .
                                  vbnet-mode)) auto-mode-alist))
 
 ;;*** VB ****************************************************************
