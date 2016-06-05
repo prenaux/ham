@@ -52,7 +52,7 @@ ${NPM_INSTALL} awesome-typescript-loader
 echo "I/Installing package 'tsd' (23/$NUM_PACKAGES)"
 ${NPM_INSTALL} tsd
 echo "I/Installing package 'react-native-cli' (24/$NUM_PACKAGES)"
-${NPM_INSTALL} react-native-cli
+${NPM_INSTALL_BIN} react-native-cli
 echo "I/Installing package 'gulp' (25/$NUM_PACKAGES)"
 ${NPM_INSTALL_BIN} gulp
 echo "I/Installing package 'npm-flatten' (26/$NUM_PACKAGES)"
