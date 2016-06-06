@@ -68,6 +68,7 @@ case $HAM_OS in
         cloudcopy "$FILE" "$HAM_CLOUD_COPY_AZURE_STORAGE_URL/$CONTAINER" "$HAM_CLOUD_COPY_AZURE_STORAGE_ACCOUNT"
         errcheck $? ham "Can't copy '$FILE' to '$HAM_CLOUD_COPY_AZURE_STORAGE_URL/$CONTAINER'."
         echo "Done '$FILE' copied to '$HAM_CLOUD_COPY_AZURE_CDN_URL/$CONTAINER/`path_filename $FILE`'"
+        echo "$HAM_CLOUD_COPY_AZURE_CDN_URL/$CONTAINER/`path_filename $FILE`"
         ;;
     *)
         echo "E/OS not supported!"
