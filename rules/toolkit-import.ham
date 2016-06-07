@@ -225,13 +225,15 @@ rule tkImportNodeModule {
   local SRCFILES ;
 
   # root dir
-  SRCFILES = [ DataGlob [ FDirName $(WORK) $(<) ] : : js ] ;
+  SRCFILES = [ ListFiles [ FDirName $(WORK) $(<) ] : *.js ] ;
+  # ECHO "... tkImportNodeModule $(moduleName): root: (SRCFILES):" $(SRCFILES) ;
   for _i in $(SRCFILES) {
     tkImportDoCopy tkimport_nodejs : $(_i) : [ FDirName $(DSTDIR) ] ;
   }
 
   # sources dir
-  SRCFILES = [ DataGlob [ FDirName $(WORK) $(<) ] : sources : js ] ;
+  SRCFILES = [ ListFilesR [ FDirName $(WORK) $(<) sources ] : *.js ] ;
+  # ECHO "... tkImportNodeModule $(moduleName): sources: (SRCFILES):" $(SRCFILES) ;
   for _i in $(SRCFILES) {
     tkImportDoCopy tkimport_nodejs : $(_i) : [ FDirName $(DSTDIR) sources ] ;
   }

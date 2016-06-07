@@ -2525,7 +2525,7 @@ rule ListDirs {
 }
 
 # ListDirsR BASEDIR : PATTERN : EXCLUDE PATTERN
-# Recursively list directories
+# Recursively list directories INSIDE BASEDIR, doesn't list BASEDIR.
 rule ListDirsR {
   local r = [ ListDirs $(<) : $(>) : $(3) ] ;
   for _d in $(r) {
@@ -2629,7 +2629,7 @@ rule ListStrAfterI {
 rule ListFilesR {
   local BD = [ FDirName $(1) ] ;
   local FD = [ ListDirsR $(BD) ] ;
-  local F2 = [ ListFiles $(FD) : $(2) : $(3) ] ;
+  local F2 = [ ListFiles $(BD) $(FD) : $(2) : $(3) ] ;
   return $(F2) ;
 }
 
