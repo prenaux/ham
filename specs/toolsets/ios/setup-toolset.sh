@@ -13,6 +13,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/ios"
 case $HAM_OS in
     NT*)
         export IOS_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
+        export IOSBUILDENV_PATH="${HAM_TOOLSET_DIR}/nt-x86/"
         export PATH="${HAM_TOOLSET_DIR}/":"${IOS_DIR}/Toolchain/":${PATH}
         if [ ! -e "$IOS_DIR" ] || [ -z "`type -P clang`" ]; then
             toolset_dl ios ios_nt-x86
@@ -21,10 +22,12 @@ case $HAM_OS in
                 return 1
             fi
         fi
-        # Set to armv7 explicitly because the Windows toolchain doesnt support arm64
-        export IOS_ARCH=armv7
+        # Default iOS arch
+        export IOS_ARCH=arm64
         ;;
     OSX)
+        # Default iOS arch
+        export IOS_ARCH=arm64
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

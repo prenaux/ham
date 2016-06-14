@@ -35,13 +35,9 @@ CLANG_CPP_ARGS +=
 -Wno-c++11-narrowing
 ;
 
-if ! ( $(OS) = NT ) {
-  # TODO: Remove this, this is actually a very useful warning.
-  CLANG_CC_ARGS += -Wno-inconsistent-missing-override ;
-  CLANG_CPP_ARGS +=
-    -stdlib=libc++
-  ;
-}
+# TODO: Remove this, this is actually a very useful warning.
+CLANG_CC_ARGS += -Wno-inconsistent-missing-override ;
+CLANG_CPP_ARGS += -stdlib=libc++ ;
 
 CCFLAGS  += $(CLANG_CC_ARGS) ;
 C++FLAGS += $(CLANG_CC_ARGS) $(CLANG_CPP_ARGS) ;

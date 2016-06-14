@@ -58,26 +58,38 @@ switch $(IOS_MINVER) {
     EXIT "E/Unknown iOS version." ;
 }
 
-CLANG_BASE_FLAGS =
-  -arch $(IOS_ARCH:L)
-  -fconstant-cfstrings
-  -miphoneos-version-min=$(IOS_MINVER).0.0
-  -DIPHONE
-  -D__CPU_$(IOS_ARCH)__
-  -D__IPHONE_OS_VERSION_MIN_REQUIRED=$(IOS_MINVER)0000
-;
-
 if $(NT) {
-  IPHONE_SDK_DIR = "$(IOS_DIR)/SDK" ;
-  CLANG_BASE_FLAGS +=
+  IPHONE_SDK_DIR = [ FDirName $(IOS_DIR) SDK ] ;
+  if ! $(IPHONE_SDK_DIR) || ! [ FExists $(IPHONE_SDK_DIR) ] {
+    EXIT "Can't find IPHONE_SDK_DIR:" $(IPHONE_SDK_DIR) ;
+  }
+
+  CLANG_BASE_FLAGS =
+    -target $(IOS_ARCH:L)-apple-ios$(IOS_MINVER).0
+    -integrated-as
     -fdiagnostics-format=msvc
     --sysroot "\"$(IPHONE_SDK_DIR)\""
-    -ccc-host-triple $(IOS_ARCH:L)-apple-ios$(IOS_MINVER).0.0
-    -integrated-as
+    -I"\"$(IPHONE_SDK_DIR)/lib/c++/v1\""
+    -fconstant-cfstrings
+    -DIPHONE
+    -D__CPU_$(IOS_ARCH)__
+    -D__IPHONE_OS_VERSION_MIN_REQUIRED=$(IOS_MINVER)0000
   ;
+  if ! ( $(IOS_ARCH:L) = arm64 ) {
+    CLANG_BASE_FLAGS += -mno-thumb ;
+  }
 }
 else {
   IPHONE_SDK_DIR = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/ ;
+  CLANG_BASE_FLAGS =
+    -arch $(IOS_ARCH:L)
+    -fconstant-cfstrings
+    -miphoneos-version-min=$(IOS_MINVER).0.0
+    -DIPHONE
+    -D__CPU_$(IOS_ARCH)__
+    -D__IPHONE_OS_VERSION_MIN_REQUIRED=$(IOS_MINVER)0000
+  ;
+
   # iOS 9.3 SDK
   if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS9.3.sdk ] {
     IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS9.3.sdk ;
@@ -144,7 +156,7 @@ else {
     ;
   }
   else {
-    EXIT "Can't set IPHONE_SDK_DIR." ;
+    EXIT "Can't find IPHONE_SDK_DIR." ;
   }
 }
 

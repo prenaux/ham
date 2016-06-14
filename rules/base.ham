@@ -475,6 +475,11 @@ rule FDirName
 
   local _i ;
   local _s = $(DOT) ;
+  # So that FDirName works when used in the base-*.ham files which doesnt have
+  # the default definition of $(DOT) yet.
+  if ! $(_s) {
+    _s = . ;
+  }
 
   for _i in $(<)
   {
