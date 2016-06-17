@@ -26,6 +26,8 @@
 
  (global-set-key '[(control meta up)] 'agl-search-word-backward)
  (global-set-key '[(control meta down)] 'agl-search-word-forward)
+ (global-set-key '[(meta up)] 'agl-search-word-backward)
+ (global-set-key '[(meta down)] 'agl-search-word-forward)
 
  ;; Open the other frame and run the latest command
  ;; This works only if the other frame is a shell of course...
@@ -90,15 +92,14 @@
  (define-key global-map "\M-3" 'previous-error)
  (define-key global-map "\M-4" 'next-error)
 
-
  ;; shift-down comments the current line and goes down
  (define-key global-map [(shift down)] 'agl-comment-and-go-down)
  ;; shift-up uncomments the current line and goes up
  (define-key global-map [(shift up)] 'agl-uncomment-and-go-up)
  ;; inc number under cursor
- (define-key global-map [(meta up)] 'agl-increment-number-at-point)
+ (define-key global-map (kbd "M-=") 'agl-increment-number-at-point)
  ;; dec number under cursor
- (define-key global-map [(meta down)] 'agl-decrement-number-at-point)
+ (define-key global-map (kbd "M--") 'agl-decrement-number-at-point)
  ;; UUID generation
  (global-set-key (kbd "C-M-g")   'agl-uuid1-to-buffer)
  (global-set-key (kbd "C-M-S-g") 'agl-uuid2-to-buffer)
