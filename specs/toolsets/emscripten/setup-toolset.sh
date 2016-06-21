@@ -6,6 +6,8 @@ toolset_import nodejs
 if [ $? != 0 ]; then return 1; fi
 toolset_import xslt_tools
 if [ $? != 0 ]; then return 1; fi
+toolset_import cmake
+if [ $? != 0 ]; then return 1; fi
 
 # toolset
 export HAM_TOOLSET=EMSCRIPTEN
