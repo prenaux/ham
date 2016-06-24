@@ -1,0 +1,5 @@
+#!/bin/bash
+for BRANCH in `git branch -a | grep remotes | grep -v HEAD | grep -v master `; do
+    echo "I/Tracking branch ${BRANCH}"
+    git branch --track ${BRANCH#remotes/origin/} ${BRANCH}
+done
