@@ -1,4 +1,6 @@
 #!/bin/bash
+. ham-toolset-import.sh java_jdk18
+if [ $? != 0 ]; then return 1; fi
 
 # toolset
 export HAM_TOOLSET=ECLIPSE
