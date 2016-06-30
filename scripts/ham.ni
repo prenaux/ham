@@ -75,6 +75,7 @@
 
       throw ::format("Can't find executable '%s'.", aPath)
     }
+    return aPath;
   }
 
   function getBinDir() {
