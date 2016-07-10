@@ -222,19 +222,25 @@ rule tkImportNodeModule {
     EXIT "F/Can't find node_module '$(moduleName)', run 'npm install --save ../$(moduleName)' first." ;
   }
 
-  local SRCFILES ;
+  local SRCFILES, SRCDIR ;
 
   # root dir
-  SRCFILES = [ ListFiles [ FDirName $(WORK) $(<) ] : *.js ] ;
-  # ECHO "... tkImportNodeModule $(moduleName): root: (SRCFILES):" $(SRCFILES) ;
+  SRCDIR = [ FDirName $(WORK) $(<) ] ;
+  SRCFILES = [ ListFiles $(SRCDIR)  : *.js ] ;
   for _i in $(SRCFILES) {
-    tkImportDoCopy tkimport_nodejs : $(_i) : [ FDirName $(DSTDIR) ] ;
+    local A = [ StrAfterI $(_i:D) : $(SRCDIR) ] ;
+    local C = [ FDirName $(DSTDIR) ] ;
+    local D = $(C)$(A) ;
+    tkImportDoCopy tkimport_nodejs : $(_i) : $(D) ;
   }
 
   # sources dir
-  SRCFILES = [ ListFilesR [ FDirName $(WORK) $(<) sources ] : *.js ] ;
-  # ECHO "... tkImportNodeModule $(moduleName): sources: (SRCFILES):" $(SRCFILES) ;
+  SRCDIR = [ FDirName $(WORK) $(<) sources ] ;
+  SRCFILES = [ ListFilesR $(SRCDIR) : *.js ] ;
   for _i in $(SRCFILES) {
-    tkImportDoCopy tkimport_nodejs : $(_i) : [ FDirName $(DSTDIR) sources ] ;
+    local A = [ StrAfterI $(_i:D) : $(SRCDIR) ] ;
+    local C = [ FDirName $(DSTDIR) sources ] ;
+    local D = $(C)$(A) ;
+    tkImportDoCopy tkimport_nodejs : $(_i) : $(D) ;
   }
 }
