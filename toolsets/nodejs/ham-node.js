@@ -376,7 +376,7 @@ function lint(aParams,aDone) {
 exports.lint = lint;
 
 function printHelp() {
-  NI.println("syntax: node ./webpack.js TARGETS");
+  NI.println("syntax: ham-node --OPTIONS TARGETS");
   NI.println("  %d target(s) registered:", NI.size(exports));
   NI.forEach(exports,function(v,k) {
     NI.println("  - %s", k);
