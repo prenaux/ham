@@ -42,7 +42,8 @@ if $(ADR_LLVM_VERSION) {
     -Wno-return-type-c-linkage
     -Wno-tautological-compare
     -Wno-implicit-exception-spec-mismatch
-  # -flto
+    -Wno-shift-negative-value
+    -Wno-non-literal-null-conversion
   ;
   ANDROID_CPP_ARGS +=
     -std=c++11
@@ -59,6 +60,8 @@ if $(ADR_LLVM_VERSION) {
       -Wno-typedef-redefinition
     ;
   }
+  # TODO: Remove this, this is actually a very useful warning.
+  ANDROID_CC_ARGS += -Wno-inconsistent-missing-override ;
 }
 else {
   # GCC 4.4.3
@@ -153,6 +156,14 @@ switch $(ADR_CPU_PROFILE)
       -mthumb-interwork
       ;
     }
+    ## ARM64v8A
+  case ARM64v8A :
+    ANDROID_SO_DIR = arm64-v8a ;
+    ANDROID_CC_ARGS +=
+    -D__CPU_ARM64__
+    -D__CPU_ARM64_V8A__
+    ;
+    ANDROID_LINK_BASE_ARGS = ;
     ## X86
   case X86 :
     ANDROID_SO_DIR = x86 ;

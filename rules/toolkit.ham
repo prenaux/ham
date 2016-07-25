@@ -550,8 +550,14 @@ rule tkLinkDll {
     else {
       local dir = $(3) ;
       dir ?= $(TK_DIR_DLL) ;
-      local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFDLL) ] ;
-      VarOnAddToFront LINKLIBS : $(<) : [ FQuote $(l) ] ;
+      if $(ANDROID) = 1 {
+        local qdir = [ FQuote $(dir) ] ;
+        VarOnAddToFront LINKLIBS : $(<) : -L$(qdir) -l$(>)_$(BUILDEXT) ;
+      }
+      else {
+        local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFDLL) ] ;
+        VarOnAddToFront LINKLIBS : $(<) : [ FQuote $(l) ] ;
+      }
     }
     tkDepDll $(<) : $(>) : $(3) ;
   }
