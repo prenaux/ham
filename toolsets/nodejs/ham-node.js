@@ -77,7 +77,7 @@ var configFrontEnd = function(aIsDev,aUseSourceMap) {
     entry: entry,
 
     output: {
-      path: PATH.resolve(baseDir, 'bin/client_js/'),
+      path: PATH.resolve(baseDir, 'static/build/'),
       filename: '[name].js'
     },
 
@@ -240,10 +240,10 @@ function frontendWatch(aParams) {
   myConfig.plugins.push(new WEBPACK.NoErrorsPlugin());
 
   // Setup the public output path
-  myConfig.output.publicPath = 'http://localhost:'+global.bundlePort+'/bin/';
+  myConfig.output.publicPath = 'http://localhost:'+global.bundlePort+'/build/';
 
   webpackServer = new WebpackDevServer(WEBPACK(myConfig), {
-    publicPath: '/bin/',
+    publicPath: '/build/',
     hot: true,
     quiet: false,
     noInfo: true,
