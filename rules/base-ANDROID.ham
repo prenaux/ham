@@ -1,10 +1,13 @@
 ANDROID = 1 ;
 
-if $(HAM_TOOLSET_NAME) = adr_22_arm {
+if $(HAM_TOOLSET_NAME) = adr_42_arm {
   OSPLAT = ARM ;
 }
 else if $(HAM_TOOLSET_NAME) = adr_42_x86 {
   OSPLAT = X86 ;
+}
+else if $(HAM_TOOLSET_NAME) = adr_50_arm64 {
+  OSPLAT = ARM64 ;
 }
 else {
   EXIT "base-ANDROID: Unknown toolset name:" $(HAM_TOOLSET_NAME) ;
@@ -17,6 +20,16 @@ if $(ADR_LLVM_VERSION)  {
   ECHO "# Using LLVM for Android build." ;
   if ( $(OSPLAT) = ARM ) {
     LLVM_TRIPLE = armv7-none-linux-androideabi ;
+    CC = clang ;
+    C++ = clang++ ;
+    LINK = clang ;
+
+    CCFLAGS = -gcc-toolchain [ FQuote $(GCC_DIR) ] -target $(LLVM_TRIPLE) ;
+    C++FLAGS = -gcc-toolchain [ FQuote $(GCC_DIR) ] -target $(LLVM_TRIPLE) ;
+    LINKFLAGS = -gcc-toolchain [ FQuote $(GCC_DIR) ] -no-canonical-prefixes -target $(LLVM_TRIPLE) ;
+  }
+  else if ( $(OSPLAT) = ARM64 ) {
+    LLVM_TRIPLE = aarch64-none-linux-android ;
     CC = clang ;
     C++ = clang++ ;
     LINK = clang ;

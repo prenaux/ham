@@ -51,6 +51,33 @@
     return _osArch;
   }
 
+  function getExePath(aPath) {
+    switch (::lang.getHostOS().tolower()) {
+      case "nt": {
+        aPath = aPath.setext("exe")
+        break;
+      }
+      case "osx": {
+        break;
+      }
+      default: {
+        throw ::format("Unknown platform '%s', can't get exe path '%s'.", ::lang.getHostOS(), aPath)
+      }
+    }
+    if (!::gRootFS.FileExists(aPath,::eFileAttrFlags.AllFiles)) {
+      local tryPath = aPath.adddirback(getOSArch())
+      if (::gRootFS.FileExists(tryPath,::eFileAttrFlags.AllFiles))
+        return tryPath;
+
+      tryPath = aPath.adddirback(::gLang.env["HAM_BIN_LOA"])
+      if (::gRootFS.FileExists(tryPath,::eFileAttrFlags.AllFiles))
+        return tryPath;
+
+      throw ::format("Can't find executable '%s'.", aPath)
+    }
+    return aPath;
+  }
+
   function getBinDir() {
     return "bin/" + getOSArch();
   }

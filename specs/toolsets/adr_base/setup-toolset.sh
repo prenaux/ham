@@ -17,8 +17,8 @@ case $HAM_OS in
     NT)
         export ADR_ROOT_DIR="${HAM_TOOLSET_DIR}/nt-x86"
         export ADR_NDK_PREBUILT=windows
-        export ADR_NDK_VERSION=r9d
-        export GCC_VER=4.8
+        export ADR_NDK_VERSION=r12b
+        export GCC_VER=4.9
         ;;
     OSX)
         export ADR_ROOT_DIR="${HAM_TOOLSET_DIR}/osx-x86"
@@ -51,6 +51,10 @@ if [ -z "$ADR_VERSION"  ]; then
 fi
 
 case $ADR_VERSION in
+    50)
+        export ADR_SDK_PLATFORM=android-21
+        export ADR_NDK_PLATFORM=android-21
+        ;;
     42)
         export ADR_SDK_PLATFORM=android-17
         export ADR_NDK_PLATFORM=android-17
@@ -65,6 +69,12 @@ case $ADR_VERSION in
 esac
 
 case $ADR_CPU_TYPE in
+    arm64)
+        export GCC_BASE=aarch64-linux-android
+        export GCC_BASE_DIR=${GCC_BASE}
+        export ADR_CPU_PROFILE=ARM64v8A
+        export ADR_CPU_ABI=arm64-v8a
+        ;;
     arm)
         export GCC_BASE=arm-linux-androideabi
         export GCC_BASE_DIR=${GCC_BASE}
@@ -133,8 +143,8 @@ export ADR_LIBCPP_DIR_LIBS="$ADR_DIR_NDK/sources/cxx-stl/stlport/libs/$ADR_CPU_A
 export ADR_LIBCPP_DEFINES="-DANDROID_STLPORT"
 export ADR_LIBCPP_LINKER_LIB="-lstlport_static"
 
-export ADR_LLVM_VERSION=3.4
-export ADR_LLVM_NAME=llvm-${ADR_LLVM_VERSION}
+export ADR_LLVM_VERSION=3.8
+export ADR_LLVM_NAME=llvm
 export ADR_LLVM_TOOLCHAIN_ROOT="${ADR_DIR_NDK}/toolchains/${ADR_LLVM_NAME}"
 export ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT="${ADR_LLVM_TOOLCHAIN_ROOT}/prebuilt/$ADR_NDK_PREBUILT"
 export ADR_LLVM_TOOLCHAIN_PREFIX="${ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT}/bin/"

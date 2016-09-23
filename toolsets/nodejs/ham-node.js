@@ -77,7 +77,7 @@ var configFrontEnd = function(aIsDev,aUseSourceMap) {
     entry: entry,
 
     output: {
-      path: PATH.resolve(baseDir, 'bin/client_js/'),
+      path: PATH.resolve(baseDir, 'static/build/'),
       filename: '[name].js'
     },
 
@@ -240,10 +240,10 @@ function frontendWatch(aParams) {
   myConfig.plugins.push(new WEBPACK.NoErrorsPlugin());
 
   // Setup the public output path
-  myConfig.output.publicPath = 'http://localhost:'+global.bundlePort+'/bin/';
+  myConfig.output.publicPath = 'http://localhost:'+global.bundlePort+'/build/';
 
   webpackServer = new WebpackDevServer(WEBPACK(myConfig), {
-    publicPath: '/bin/',
+    publicPath: '/build/',
     hot: true,
     quiet: false,
     noInfo: true,
@@ -273,7 +273,7 @@ function backendWatch(aParams) {
     script: 'sources/server.js',
     ext: 'js jsx ts',
     watch: ['sources'],
-    ignore: ["*flymake*.*", "*-test.js", "*-test.ts", "sources/client.js", "sources/client/*"],
+    ignore: ["*flymake*.*", "*-test.js", "*-test.ts", "sources/client.js", "sources/client/*", "sources/components/*"],
     env: {
       'NODE_ENV': nodeEnv,
       // this is to make sure that NODE_PATH is 'empty', the same as on the
@@ -376,7 +376,7 @@ function lint(aParams,aDone) {
 exports.lint = lint;
 
 function printHelp() {
-  NI.println("syntax: node ./webpack.js TARGETS");
+  NI.println("syntax: ham-node --OPTIONS TARGETS");
   NI.println("  %d target(s) registered:", NI.size(exports));
   NI.forEach(exports,function(v,k) {
     NI.println("  - %s", k);
