@@ -13,6 +13,11 @@ case $HAM_OS in
         export FFMPEG_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
         export PATH="${FFMPEG_DIR}":${PATH}
         ;;
+    OSX*)
+        toolset_check_and_dl_ver ffmpeg osx-x64 v3 || return 1
+        export FFMPEG_DIR="${HAM_TOOLSET_DIR}/osx-x64/"
+        export PATH="${FFMPEG_DIR}":${PATH}
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
