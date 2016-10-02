@@ -204,3 +204,24 @@
 (defun ham-flymake-typescript-cleanup () t)
 
 (push '(".+\\.ts$" ham-flymake-typescript-init ham-flymake-typescript-cleanup) flymake-allowed-file-name-masks)
+
+;;**********************************************************************
+;; Flymake - Json
+;;**********************************************************************
+(require 'flymake-json)
+
+(Windows
+ (setq flymake-json-executable (concat (getenv "WORK") "/ham/toolsets/nodejs/nt-x86/json")))
+(OSX
+ (setq flymake-json-executable (concat (getenv "WORK") "/ham/toolsets/nodejs/osx-x86/bin/json")))
+
+(defun ham-flymake-json-init ()
+  (flymake-easy-load 'flymake-json-command
+                     flymake-json-err-line-patterns
+                     'inplace
+                     "json"))
+
+;; do nothing because we compile inplace
+(defun ham-flymake-json-cleanup () t)
+
+(push '(".+\\.json$" ham-flymake-json-init ham-flymake-json-cleanup) flymake-allowed-file-name-masks)
