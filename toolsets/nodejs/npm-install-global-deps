@@ -2,7 +2,7 @@
 . ham-bash-lib.sh
 . hat default python_27 nodejs
 # On separated lines because npm onlyshows a spinner... so you have no idea how long things will take...
-NUM_PACKAGES=27
+NUM_PACKAGES=28
 NPM_INSTALL_BIN="npm install -g"
 NPM_INSTALL="npm install -g --no-bin-links"
 echo "I/Installing package 'webpack' (1/$NUM_PACKAGES)"
@@ -59,3 +59,5 @@ echo "I/Installing package 'npm-flatten' (26/$NUM_PACKAGES)"
 ${NPM_INSTALL_BIN} npm-flatten
 echo "I/Installing package 'jsonlint' (27/$NUM_PACKAGES)"
 ${NPM_INSTALL_BIN} jsonlint
+echo "I/Installing package 'eslint-plugin-promise' (28/$NUM_PACKAGES)"
+${NPM_INSTALL} eslint-plugin-promise
