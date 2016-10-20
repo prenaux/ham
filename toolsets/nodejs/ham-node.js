@@ -29,6 +29,7 @@ var baseDir = cwd;
 var WEBPACK;
 var ExtractTextPlugin;
 var WebpackDevServer;
+var hotReload = true;
 var hotReloadAll = false;
 
 function lazyLoadWebPack() {
@@ -225,18 +226,20 @@ function frontendWatch(aParams) {
   // For hot module reloading
   myConfig.entry.common.push('webpack-dev-server/client?http://localhost:'+global.bundlePort);
 
-  // NOTE: Hot reloading fully seems to work well enought, if you change a
-  //       react component it'll reload only that, if you change a .css or
-  //       other resource it'll refresh the whole browser.
-  if (hotReloadAll) {
-    // hot reload when any client side changes
-    myConfig.entry.common.push('webpack/hot/dev-server');
+  if (hotReload) {
+    // NOTE: Hot reloading fully seems to work well enought, if you change a
+    //       react component it'll reload only that, if you change a .css or
+    //       other resource it'll refresh the whole browser.
+    if (hotReloadAll) {
+      // hot reload when any client side changes
+      myConfig.entry.common.push('webpack/hot/dev-server');
+    }
+    else {
+      // hot reload react component only
+      myConfig.entry.common.push('webpack/hot/only-dev-server');
+    }
+    myConfig.plugins.push(new WEBPACK.HotModuleReplacementPlugin());
   }
-  else {
-    // hot reload react component only
-    myConfig.entry.common.push('webpack/hot/only-dev-server');
-  }
-  myConfig.plugins.push(new WEBPACK.HotModuleReplacementPlugin());
   myConfig.plugins.push(new WEBPACK.NoErrorsPlugin());
 
   // Setup the public output path
@@ -244,7 +247,9 @@ function frontendWatch(aParams) {
 
   webpackServer = new WebpackDevServer(WEBPACK(myConfig), {
     publicPath: '/build/',
-    hot: true,
+    hot: hotReload,
+    lazy: !hotReload,
+    filename: myConfig.output.filename,
     quiet: false,
     noInfo: true,
     stats: {
@@ -273,7 +278,7 @@ function backendWatch(aParams) {
     script: 'sources/server.js',
     ext: 'js jsx ts',
     watch: ['sources'],
-    ignore: ["*flymake*.*", "*-test.js", "*-test.ts", "sources/client.js", "sources/client/*", "sources/components/*"],
+    ignore: ["*flymake*.*", "*-test.js", "*-test.ts", "sources/client.js", "sources/client/*", "sources/components/*", "node_modules/*"],
     env: {
       'NODE_ENV': nodeEnv,
       // this is to make sure that NODE_PATH is 'empty', the same as on the
