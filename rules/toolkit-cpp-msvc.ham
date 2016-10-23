@@ -68,6 +68,13 @@ CC_ADD_FLAGS +=
 -wd4458
 ;
 
+if $(MSVC_VER) >= 15 {
+  CC_ADD_FLAGS +=
+  # DISABLE: warning C4312: 'type cast': conversion from 'const ni::tU32' to 'ni::iUnknown *' of greater size
+  -wd4312
+  ;
+}
+
 if $(HAM_C99) = clang {
   C99FLAGS +=
     -Wno-microsoft
