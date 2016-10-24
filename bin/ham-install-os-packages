@@ -10,7 +10,6 @@ case $HAM_OS in
         # TODO, I think some stuffs were needed... need to run on a clean OSX to be sure
         ;;
     LINUX)
-
         if [ $(type apt-get 2>/dev/null | wc -l) = 1 ]; then
             echo "### Installing packages required by ham on Linux (apt-get) ###"
             echo "I/Installing apt-get packages"
@@ -32,7 +31,6 @@ case $HAM_OS in
         sudo pip install awsebcli
         sudo pip install --upgrade awsebcli
         ;;
-
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
