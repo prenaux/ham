@@ -807,7 +807,7 @@ static int _GetAbsolutePath(const char* input, BUFFER* buff) {
   }
   return 0;
 }
-#elif defined OS_MACOSX
+#elif defined OS_MACOSX || defined OS_LINUX
 static int _GetAbsolutePath(const char* input, BUFFER* buff) {
   char* resolvedPath = realpath(input,NULL);
   // reset the output buffer so that its empty if _GetAbsolutPath fails

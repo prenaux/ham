@@ -14,6 +14,9 @@ case $HAM_OS in
     OSX)
         HAM_CMD="$HAM_HOME/bin/osx-x86/ham"
         ;;
+    LINUX)
+        HAM_CMD="$HAM_HOME/bin/lin-x64/ham"
+        ;;
     *)
         echo "W/ham-bash-setenv.sh: Unknown HAM_OS: $HAM_OS"
         ;;
