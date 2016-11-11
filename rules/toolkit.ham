@@ -24,6 +24,15 @@ if $(OS) = MACOSX {
     BUILD_SUFEXE = .x64 ;
   }
 }
+else if $(OS) = LINUX {
+  BUILD_BIN_LOA ?= $(BIN_LOA) ;
+  if $(BUILD_BIN_LOA) = lin-x64 {
+    BUILD_SUFEXE = .x64 ;
+  }
+  else {
+    BUILD_SUFEXE = .x64 ;
+  }
+}
 else if $(NT) {
   BUILD_BIN_LOA ?= nt-x86 ;
   BUILD_SUFEXE = .exe ;
