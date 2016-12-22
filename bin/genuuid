@@ -3,4 +3,11 @@ export HAM_NO_VER_CHECK=1
 if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
-"$HAM_HOME/bin/$HAM_BIN_LOA/genuuid" $*
+case $HAM_OS in
+    OSX)
+        "$HAM_HOME/bin/osx-x86/genuuid" $*
+        ;;
+    *)
+        "$HAM_HOME/bin/$HAM_BIN_LOA/genuuid" $*
+        ;;
+esac
