@@ -91,7 +91,6 @@
         ("\\.hh\\'"  (".cc" ".C"))
 
         ("\\.c\\'"   (".h"))
-        ("\\.cl\\'"   (".h"))
         ("\\.h\\'"   (".c" ".cc" ".C" ".CC" ".cxx" ".cpp" ".m" ".mm"))
 
         ("\\.m\\'"    (".h"))
@@ -171,7 +170,6 @@ the text to another HTML buffer."
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.cni\\'" . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.metal\\'" . c++-mode))
 
 (setq auto-mode-alist
       (cons '("\\.m$" . objc-mode) auto-mode-alist))
@@ -267,6 +265,8 @@ the text to another HTML buffer."
 (add-to-list 'auto-mode-alist '("\\.frag\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.glsl\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.hlsl\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.metal\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.cl\\'" . c++-mode))
 
 ;;*** Actionscript ****************************************************************
 (autoload 'actionscript-mode "actionscript-mode" nil t)
