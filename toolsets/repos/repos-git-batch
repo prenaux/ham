@@ -28,7 +28,6 @@ if [ $# = 0 ]; then
     usage
 fi
 
-WORK=`pwd`
 if [[ -e "$WORK/$1" ]]; then
     REPOS_CWD=`cat "$WORK/$1"`
     shift
@@ -36,6 +35,7 @@ elif [[ -e "$WORK/_repos_$1" ]]; then
     REPOS_CWD=`cat "$WORK/_repos_$1"`
     shift
 else
+    WORK=`pwd`
     REPOS_CWD=`repos-list-cwd`
 fi
 for ARG in $REPOS_CWD; do
