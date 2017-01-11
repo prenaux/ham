@@ -5,6 +5,8 @@
 NUM_PACKAGES=28
 NPM_INSTALL_BIN="npm install -g"
 NPM_INSTALL="npm install -g --no-bin-links"
+echo "I/Installing package 'node-pre-gyp' (0/$NUM_PACKAGES)"
+${NPM_INSTALL_BIN} node-pre-gyp
 echo "I/Installing package 'webpack' (1/$NUM_PACKAGES)"
 ${NPM_INSTALL} webpack
 echo "I/Installing package 'webpack-dev-server' (2/$NUM_PACKAGES)"
