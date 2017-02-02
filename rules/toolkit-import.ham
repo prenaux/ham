@@ -223,15 +223,17 @@ rule tkImportNodeModule {
   }
 
   local SRCFILES, SRCDIR ;
+  local COUNT = 0 ;
 
   # root dir
   SRCDIR = [ FDirName $(WORK) $(<) ] ;
-  SRCFILES = [ ListFiles $(SRCDIR)  : *.js ] ;
+  SRCFILES = [ ListFiles $(SRCDIR) : *.js ] ;
   for _i in $(SRCFILES) {
     local A = [ StrAfterI $(_i:D) : $(SRCDIR) ] ;
     local C = [ FDirName $(DSTDIR) ] ;
     local D = $(C)$(A) ;
     tkImportDoCopy tkimport_nodejs : $(_i) : $(D) ;
+    COUNT = COUNT + 1 ;
   }
 
   # sources dir
@@ -242,5 +244,10 @@ rule tkImportNodeModule {
     local C = [ FDirName $(DSTDIR) sources ] ;
     local D = $(C)$(A) ;
     tkImportDoCopy tkimport_nodejs : $(_i) : $(D) ;
+    COUNT = COUNT + 1 ;
+  }
+  if $(COUNT) = 0 {
+    SRCDIR = [ FDirName $(WORK) $(<) ] ;
+    ECHO "W/tkImportNodeModule, no source found for '$(moduleName)' at '$(SRCDIR)'." ;
   }
 }
