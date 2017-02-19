@@ -218,6 +218,7 @@
  (global-set-key (key "C-2") 'my-other-window)
 
  (global-set-key "\C-h\C-j" 'pt-regexp)
+ (global-set-key "\C-h\C-g" 'occur)
 
  ;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
 
