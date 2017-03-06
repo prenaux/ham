@@ -2,64 +2,62 @@
 . ham-bash-lib.sh
 . hat default python_27 nodejs
 # On separated lines because npm onlyshows a spinner... so you have no idea how long things will take...
-NUM_PACKAGES=28
+NUM_PACKAGES=27
 NPM_INSTALL_BIN="npm install -g"
 NPM_INSTALL="npm install -g --no-bin-links"
 echo "I/Installing package 'node-pre-gyp' (0/$NUM_PACKAGES)"
 ${NPM_INSTALL_BIN} node-pre-gyp
 echo "I/Installing package 'webpack' (1/$NUM_PACKAGES)"
-${NPM_INSTALL} webpack
+${NPM_INSTALL} webpack@1.x
 echo "I/Installing package 'webpack-dev-server' (2/$NUM_PACKAGES)"
-${NPM_INSTALL} webpack-dev-server
+${NPM_INSTALL} webpack-dev-server@1.x
 echo "I/Installing package 'eslint' (3/$NUM_PACKAGES)"
-${NPM_INSTALL_BIN} eslint
+${NPM_INSTALL_BIN} eslint@3.x
 echo "I/Installing package 'eslint-plugin-react' (4/$NUM_PACKAGES)"
-${NPM_INSTALL} eslint-plugin-react
+${NPM_INSTALL} eslint-plugin-react@3.5.x
 echo "I/Installing package 'mocha' (5/$NUM_PACKAGES)"
-${NPM_INSTALL} mocha
+${NPM_INSTALL} mocha@2.2.x
 echo "I/Installing package 'react-tools' (6/$NUM_PACKAGES)"
-${NPM_INSTALL} react-tools
+${NPM_INSTALL} react-tools@0.13.x
 echo "I/Installing package 'css-loader' (7/$NUM_PACKAGES)"
-${NPM_INSTALL} css-loader
+${NPM_INSTALL} css-loader@0.15.x
 echo "I/Installing package 'jsx-loader' (8/$NUM_PACKAGES)"
-${NPM_INSTALL} jsx-loader
+${NPM_INSTALL} jsx-loader@0.13.x
 echo "I/Installing package 'expose-loader' (9/$NUM_PACKAGES)"
-${NPM_INSTALL} expose-loader
+${NPM_INSTALL} expose-loader@0.7.x
 echo "I/Installing package 'extract-text-webpack-plugin' (10/$NUM_PACKAGES)"
-${NPM_INSTALL} extract-text-webpack-plugin
+${NPM_INSTALL} extract-text-webpack-plugin@0.8.x
 echo "I/Installing package 'file-loader' (11/$NUM_PACKAGES)"
-${NPM_INSTALL} file-loader
+${NPM_INSTALL} file-loader@0.8.x
 echo "I/Installing package 'react-hot-loader' (12/$NUM_PACKAGES)"
-${NPM_INSTALL} react-hot-loader
+${NPM_INSTALL} react-hot-loader@1.2.x
 echo "I/Installing package 'react-script-loader' (13/$NUM_PACKAGES)"
-${NPM_INSTALL} react-script-loader
+${NPM_INSTALL} react-script-loader@0.0.1
 echo "I/Installing package 'script-loader' (14/$NUM_PACKAGES)"
-${NPM_INSTALL} script-loader
+${NPM_INSTALL} script-loader@0.6.x
 echo "I/Installing package 'style-loader' (15/$NUM_PACKAGES)"
-${NPM_INSTALL} style-loader
+${NPM_INSTALL} style-loader@0.12.x
 echo "I/Installing package 'supertest' (16/$NUM_PACKAGES)"
-${NPM_INSTALL} supertest
+${NPM_INSTALL} supertest@1.x
 echo "I/Installing package 'url-loader' (17/$NUM_PACKAGES)"
-${NPM_INSTALL} url-loader
+${NPM_INSTALL} url-loader@0.5.x
 echo "I/Installing package 'less-loader' (18/$NUM_PACKAGES)"
-${NPM_INSTALL} less-loader
+${NPM_INSTALL} less@2.5.x less-loader@2.2.x
 echo "I/Installing package 'nodemon' (19/$NUM_PACKAGES)"
-${NPM_INSTALL} nodemon
-echo "I/Installing package 'electron-prebuilt' (20/$NUM_PACKAGES)"
-${NPM_INSTALL} electron-prebuilt
-echo "I/Installing package 'typescript' (21/$NUM_PACKAGES)"
-${NPM_INSTALL_BIN} typescript
-echo "I/Installing package 'awesome-typescript-loader' (22/$NUM_PACKAGES)"
-${NPM_INSTALL} awesome-typescript-loader
-echo "I/Installing package 'tsd' (23/$NUM_PACKAGES)"
-${NPM_INSTALL} tsd
-echo "I/Installing package 'react-native-cli' (24/$NUM_PACKAGES)"
-${NPM_INSTALL_BIN} react-native-cli
-echo "I/Installing package 'gulp' (25/$NUM_PACKAGES)"
-${NPM_INSTALL_BIN} gulp
-echo "I/Installing package 'npm-flatten' (26/$NUM_PACKAGES)"
+${NPM_INSTALL} nodemon@1.3.x
+echo "I/Installing package 'typescript' (20/$NUM_PACKAGES)"
+${NPM_INSTALL_BIN} typescript@2.2.x
+echo "I/Installing package 'awesome-typescript-loader' (21/$NUM_PACKAGES)"
+${NPM_INSTALL} awesome-typescript-loader@3.x
+echo "I/Installing package 'tsd' (22/$NUM_PACKAGES)"
+${NPM_INSTALL} tsd@0.6.x
+echo "I/Installing package 'react-native-cli' (23/$NUM_PACKAGES)"
+${NPM_INSTALL_BIN} react-native-cli@0.1.x
+echo "I/Installing package 'gulp' (24/$NUM_PACKAGES)"
+${NPM_INSTALL_BIN} gulp@3.x
+echo "I/Installing package 'npm-flatten' (25/$NUM_PACKAGES)"
 ${NPM_INSTALL_BIN} npm-flatten
-echo "I/Installing package 'jsonlint' (27/$NUM_PACKAGES)"
-${NPM_INSTALL_BIN} jsonlint
-echo "I/Installing package 'eslint-plugin-promise' (28/$NUM_PACKAGES)"
-${NPM_INSTALL} eslint-plugin-promise
+echo "I/Installing package 'jsonlint' (26/$NUM_PACKAGES)"
+${NPM_INSTALL_BIN} jsonlint@1.6.x
+echo "I/Installing package 'eslint-plugin-promise' (27/$NUM_PACKAGES)"
+${NPM_INSTALL} eslint-plugin-promise@3.5.x
