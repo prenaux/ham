@@ -133,6 +133,10 @@ thisscriptdir() {
     echo `unxpath "$DIR"`
 }
 
+current_git_branch() {
+    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1) /'
+}
+
 update_prompt() {
     TOOLSET_EXTRA=
     if [ "$BUILD_JNI" == "1" ]; then
@@ -146,7 +150,7 @@ update_prompt() {
     fi
 
     export PS1='
-\[\033[35m$PROJECT_NAME$TOOLSET_EXTRA\033[0m\] \w (\[\033[32m$USERNAME\033[0m\]) \[\033[0;36m$HAM_IMPORTED_TOOLSETS\033[0m\]
+\[\033[35m$PROJECT_NAME$TOOLSET_EXTRA\033[0m\] \[\033[32m$(current_git_branch)\033[0m\]\w (\[\033[32m$USERNAME\033[0m\]) \[\033[0;36m$HAM_IMPORTED_TOOLSETS\033[0m\]
 $ '
 	# echo -e "\033]0;`pwd`\007"
   # export PS1="${AGL_TOOLSET_NAME}\$ "
