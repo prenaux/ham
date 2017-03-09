@@ -1,0 +1,20 @@
+#!/bin/bash
+for branch in $(git branch --merged master | grep origin | grep -v develop | grep -v master | sed -E "s|^ *origin/||g")
+do
+    echo "I/Deleting local branch '$branch'."
+    if [ "$1" = "doit_local" ]; then
+        git branch -d $branch
+    fi
+done
+
+for branch in $(git branch -r --merged master | grep origin | grep -v develop | grep -v master | sed -E "s|^ *origin/||g")
+do
+    echo "I/Deleting remote branch '$branch'."
+    if [ "$1" = "doit_remote" ]; then
+        git push origin $branch --delete
+    fi
+done
+
+if [[ "$1" != "doit_local" && "$1" != "doit_remote" ]]; then
+    echo "# Type 'git-delete-merged-branches doit_local/remote' to remove the branches listed above."
+fi
