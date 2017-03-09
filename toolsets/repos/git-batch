@@ -78,13 +78,13 @@ do
             CMD="git status"
             ;;
         d)
-            CMD="git fetch $GIT_BATCH_DEFAULT_REMOTE"
+            CMD="git fetch --prune $GIT_BATCH_DEFAULT_REMOTE"
             ;;
         D)
-            CMD="git fetch --all $OPTARG"
+            CMD="git fetch --prune $OPTARG"
             ;;
         f)
-            CMD="git fetch --all"
+            CMD="git fetch --prune --all"
             ;;
         l)
             CMD="git log -4"
