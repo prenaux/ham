@@ -3,6 +3,10 @@
 (add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site/haskell-mode"))
 (require 'haskell-mode-autoloads)
 
+(Windows
+ (add-to-list 'exec-path (concat (getenv "HAM_HOME") "/toolsets/haskell/nt-x86/bin"))
+ (setenv "HASKELL_BIN_DIR" (concat (getenv "HAM_HOME") "/toolsets/haskell/nt-x86/bin/"))
+)
 (OSX
  (add-to-list 'exec-path (concat (getenv "HAM_HOME") "/toolsets/haskell/osx-x86/ghc.app/Contents/bin"))
  (setenv "HASKELL_BIN_DIR" (concat (getenv "HAM_HOME") "/toolsets/haskell/osx-x86/ghc.app/Contents/bin/"))
