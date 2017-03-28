@@ -22,3 +22,27 @@
 
 (add-hook 'haskell-mode-hook 'haskell-indent-mode)
 (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+
+(defun ni-haskell-mode-save-buffer-and-load-file ()
+  (interactive)
+  (save-buffer)
+  (haskell-process-load-or-reload)
+  (haskell-interactive-bring))
+
+(defun ni-haskell-mode-save-buffer-and-compile ()
+  (interactive)
+  (save-buffer)
+  (haskell-compile))
+
+(custom-set-variables
+ '(haskell-process-suggest-remove-import-lines t)
+ '(haskell-process-auto-import-loaded-modules t)
+ '(haskell-process-log t))
+
+(eval-after-load 'haskell-mode
+  '(progn
+     (define-key haskell-mode-map (kbd "C-c C-\\") 'haskell-indent-insert-guard)
+     (define-key haskell-mode-map (kbd "C-c C-,") 'ni-haskell-mode-save-buffer-and-load-file)
+     (define-key haskell-mode-map (kbd "C-c C-p") 'ni-haskell-mode-save-buffer-and-compile)
+     (define-key haskell-mode-map (kbd "C-c C-y") 'ni-haskell-mode-save-buffer-and-compile)
+   ))
