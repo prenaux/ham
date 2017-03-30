@@ -19,8 +19,8 @@ case $HAM_OS in
         ;;
     OSX*)
         # Add GHC 7.10.3 to the PATH, via https://ghcformacosx.github.io/
+        export GHC_BASE_DIR="${HAM_TOOLSET_DIR}/osx-x86/"
         export GHC_DOT_APP="${HAM_TOOLSET_DIR}/osx-x86/ghc.app"
-        export GHC_BASE_DIR="${GHC_DOT_APP}/Contents/"
         export GHC_BIN_DIR="${GHC_DOT_APP}/Contents/bin"
         if [ ! -e "${GHC_BIN_DIR}/ghc" ]; then
             toolset_dl haskell haskell_osx-x86
@@ -40,18 +40,18 @@ esac
 # Setup cabal
 export CABAL_DIR="${GHC_BASE_DIR}/cabal"
 export CABAL_CONFIG="${CABAL_DIR}/config"
-CABAL_DIR_NATIVE="`nativedir "${CABAL_DIR}"`"
-# Write cabal config
 mkdir -p "${CABAL_DIR}"
 mkdir -p "${CABAL_DIR}/packages"
 mkdir -p "${CABAL_DIR}/world"
 mkdir -p "${CABAL_DIR}/logs"
-echo "remote-repo-cache: ${CABAL_DIR_NATIVE}/packages" > ${CABAL_CONFIG}
-echo "world-file: ${CABAL_DIR_NATIVE}/world" >> ${CABAL_CONFIG}
-echo "build-summary: ${CABAL_DIR_NATIVE}/logs/build.log" >> ${CABAL_CONFIG}
-echo "symlink-bindir: ${CABAL_DIR_NATIVE}/bin" >> ${CABAL_CONFIG}
-echo "repository hackage.haskell.org" >> ${CABAL_CONFIG}
-echo "  url: http://hackage.haskell.org/" >> ${CABAL_CONFIG}
+CABAL_DIR_NATIVE="`nativedir "${CABAL_DIR}"`"
+# Write cabal config
+echo "remote-repo-cache: ${CABAL_DIR_NATIVE}/packages" > "${CABAL_CONFIG}"
+echo "world-file: ${CABAL_DIR_NATIVE}/world" >> "${CABAL_CONFIG}"
+echo "build-summary: ${CABAL_DIR_NATIVE}/logs/build.log" >> "${CABAL_CONFIG}"
+echo "symlink-bindir: ${CABAL_DIR_NATIVE}/bin" >> "${CABAL_CONFIG}"
+echo "repository hackage.haskell.org" >> "${CABAL_CONFIG}"
+echo "  url: http://hackage.haskell.org/" >> "${CABAL_CONFIG}"
 export PATH="${CABAL_DIR}/bin:${PATH}"
 
 # Version checks
