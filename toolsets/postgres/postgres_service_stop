@@ -7,5 +7,5 @@ case $HAM_OS in
         exit 1
         ;;
 esac
-postgres_stop
+postgres_close
 pg_ctl unregister -N postgres_talansoft
