@@ -201,6 +201,7 @@
  (define-key global-map [(insert)] nil)
  (define-key global-map [(control meta insert)] 'overwrite-mode)
  (define-key global-map [(control shift insert)] 'overwrite-mode)
+ (define-key global-map (key "C-o") 'overwrite-mode)
 
  ;; Map the Escape key to "actually stop whatever NOW" or "please don't screw
  ;; up my environment randomly...".
