@@ -1,20 +1,18 @@
 ;;; pabbrev.el --- Predictive abbreviation expansion
 
-;; $Revision: 727 $
-;; $Date: 2007-11-04 09:26:49 -0800 (Sun, 04 Nov 2007) $
+;; Copyright (C) 2003-2014 Free Software Foundation, Inc.
 
-;; This file is not part of Emacs
+;; Author: Phillip Lord <phillip.lord@newcastle.ac.uk>
+;; Maintainer: Phillip Lord <phillip.lord@newcastle.ac.uk>
+;; Version: 4.2.1
 
-;; Author: Phillip Lord <p.lord@russet.org.uk>
-;; Maintainer: Phillip Lord <p.lord@russet.org.uk>
-;; Maintainer (XEmacs): Martin Kuehl (martin.kuehl@gmail.com)
-;; Website: http://www.russet.org.uk
-
+;; The contents of this file are subject to the GPL License, Version 3.0.
+;;
 ;; COPYRIGHT NOTICE
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
+;; the Free Software Foundation; either version 3, or (at your option)
 ;; any later version.
 
 ;; This program is distributed in the hope that it will be useful,
@@ -38,7 +36,7 @@
 ;; during idle time, while Emacs is doing nothing else.  `pabbrev-mode'
 ;; tells you when this is happening.  If this irritates you unset
 ;; `pabbrev-idle-timer-verbose'.  The advantage of this is that its
-;; very quick to look up potential abbreviations, which means that the
+;; very quick to look up potential abbreviations, which means that they
 ;; can be constantly displayed, without interfering with the user as
 ;; they type.  Certainly it works for me, on an old laptop, typing as
 ;; fast as I can (which is fast, since I learnt to type with four
@@ -61,7 +59,7 @@
 ;; previously.  By hitting [tab] at any point the user can complete the
 ;; word.  The [tab] key is normally bound to `indent-line'.
 ;; `pabbrev-mode' preserves access to this command (or whatever else
-;; [tab] was bound to), if there is not current expansion.
+;; [tab] was bound to), if there is no current expansion.
 ;;
 ;; Sometimes you do not want to select the most commonly occurring
 ;; word, but a less frequently occurring word.  You can access this
@@ -166,32 +164,6 @@
 ;; consecutively. But sometimes they get called twice). Please let us
 ;; know if you see this problem.
 
-;;; Limitations:
-;;
-;; pabbrev mode has a number of common limitations.
-;;
-;; 1) I think it would be nice to save the dictionaries, or offer
-;; facilities for doing so, before Emacs is killed. This would clearly
-;; depend on point 3 also. I'm not sure whether this is possible in a
-;; reasonable length of time. `pabbrev-debug-print-hashes' is
-;; certainly pretty slow.
-;;
-;; 2) I think that the scavenge functions are more computationally
-;; intensive than they need to be. They generally run in the idle
-;; cycle so its not a disaster. However more efficiency would mean the
-;; buffer could be gathered more quickly. This has the disadvantage
-;; that I would have to start to think about...
-;;
-;; 3) There are current no facilities at all, for removing words from
-;; the dictionaries. The original data structures, and in particular
-;; the usage hash, were partly designed to support this. One way I
-;; would do this is, for example, by just decreasing the number of
-;; usages by a given amount, and then deleting (probably after the
-;; sort during the scavenge), any cons cells with less than one
-;; usage. I'm not sure this is a problem though. The number of words
-;; in the dictionaries only increases slowly, then don't seem to grow
-;; that quickly, and they don't take up that much memory.
-
 
 ;;; Bug Reporting
 ;;
@@ -260,11 +232,12 @@
 ;; Carsten Dominik suggested I add the package suppport rather than the
 ;; existing defcustom which was not as good I think.
 ;;
+;; Scott Vokes added a nice patch, adding the single/multiple expansion, the
+;; universal argument support and some bug fixes.
 
 ;;; Code:
-(eval-when-compile (require 'cl))
+(require 'cl-lib)
 (require 'thingatpt)
-
 
 (eval-and-compile
   (if (featurep 'xemacs)
@@ -277,10 +250,6 @@
         (unless (fboundp 'cancel-timer)
           (defalias 'cancel-timer 'delete-itimer))
         )))
-
-
-(defconst pabbrev-xemacs-p (string-match "XEmacs" (emacs-version))
-  "Non-nil if we are running in the XEmacs environment.")
 
 (defgroup pabbrev nil
   "Predicative abbreviation expansion."
@@ -351,11 +320,12 @@ this at a later date."
 (defcustom pabbrev-read-only-error t
   "If non NIL, signal an error when in a read only buffer.
 
-`pabbrev-mode' works by alterating the local buffer, so it's pointless
-within a read only buffer. So, normally, it signals an error when an
-attempt is made to use it in this way. But this is a pain if you toggle
-buffers read only a lot. Set this to NIL, and pabbrev-mode will disable
-it's functionality in read only buffers silently."
+The function `pabbrev-mode' works by altering the local buffer,
+so it's pointless within a read only buffer. So, normally, it
+prints a message when an attempt is made to use it in this way.
+But this is a pain if you toggle buffers read only a lot. Set
+this to NIL, and function `pabbrev-mode' will disable it's functionality in
+read only buffers silently."
   :type 'boolean
   :group 'pabbrev)
 
@@ -377,35 +347,72 @@ I'm not telling you which version, I prefer."
 )
 ;;(setq pabbrev-minimal-expansion-p t)
 
+(defvar pabbrev--msg)
+(defvar pabbrev--dstr)
+(defvar pabbrev--ref1)
+
+(defmacro pabbrev-working-status-forms (message donestr &rest forms)
+  "Contain a block of code during which a working status is shown."
+  `(let ((pabbrev--msg ,message) (pabbrev--dstr ,donestr)
+         (pabbrev--ref1 0))
+     ,@forms))
+
+(defun pabbrev-working-status (&optional percent &rest args)
+  "Called within the macro `pabbrev-working-status-forms', show the status."
+  (message "%s%s" (apply 'format pabbrev--msg args)
+           (if (eq percent t) (concat "... " pabbrev--dstr)
+             (format "... %3d%%"
+                     (or percent
+                         (floor (* 100.0 (/ (float (point))
+                                            (point-max)))))))))
+
 ;; stolen from font-lock!
-(if pabbrev-xemacs-p
+(if (featurep 'xemacs)
+    (progn
+      (defface pabbrev-suggestions-face
+        '((((class color) (background dark)) (:foreground "tan"))
+          (((class color) (background light)) (:foreground "green4"))
+          (((class grayscale) (background light)) (:foreground "DimGray" :italic t))
+          (((class grayscale) (background dark)) (:foreground "LightGray" :italic t))
+          (t (:bold t)))
+        "Face for displaying suggestions."
+        :group 'pabbrev)
+      (defface pabbrev-single-suggestion-face
+        '((((class color) (background dark)) (:foreground "tan"))
+          (((class color) (background light)) (:foreground "green4"))
+          (((class grayscale) (background light)) (:foreground "DimGray" :italic t))
+          (((class grayscale) (background dark)) (:foreground "LightGray" :italic t))
+          (t (:bold t)))
+        "Face for displaying one suggestion."
+        :group 'pabbrev)
+      (defface pabbrev-suggestions-label-face
+        nil "Font lock mode face used to highlight suggestions"
+        :group 'pabbrev))
+  (progn                                ; GNU Emacs
     (defface pabbrev-suggestions-face
-      '((((class color) (background dark)) (:foreground "tan"))
-	(((class color) (background light)) (:foreground "green4"))
-	(((class grayscale) (background light)) (:foreground "DimGray" :italic t))
-	(((class grayscale) (background dark)) (:foreground "LightGray" :italic t))
-	(t (:bold t)))
+      '((((type tty) (class color)) (:foreground "green"))
+        (((class grayscale) (background light)) (:foreground "Gray90" :bold t))
+        (((class grayscale) (background dark)) (:foreground "DimGray" :bold t))
+        (((class color) (background light)) (:foreground "ForestGreen"))
+        (((class color) (background dark)) (:foreground "Red"))
+        (t (:bold t :underline t)))
       "Face for displaying suggestions."
       :group 'pabbrev)
-  (defface pabbrev-suggestions-face
-    '((((type tty) (class color)) (:foreground "green"))
-      (((class grayscale) (background light)) (:foreground "Gray90" :bold t))
-      (((class grayscale) (background dark)) (:foreground "DimGray" :bold t))
-      (((class color) (background light)) (:foreground "ForestGreen"))
-      (((class color) (background dark)) (:foreground "PaleGreen"))
-      (t (:bold t :underline t)))
-    "Face for displaying suggestions."
-    :group 'pabbrev))
-
-(if pabbrev-xemacs-p
-    (defface pabbrev-suggestions-label-face
-      nil "Font lock mode face used to highlight suggestions"
+    (defface pabbrev-single-suggestion-face
+      '((((type tty) (class color)) (:foreground "green"))
+        (((class grayscale) (background light)) (:foreground "Gray70" :bold t))
+        (((class grayscale) (background dark)) (:foreground "DarkSlateGray" :bold t))
+        (((class color) (background light)) (:foreground "OliveDrab"))
+        (((class color) (background dark)) (:foreground "PaleGreen"))
+        (t (:bold t :underline t)))
+      "Face for displaying one suggestion."
       :group 'pabbrev)
-  (defface pabbrev-suggestions-label-face
-    '((t
-       :inverse-video t))
-    "Font Lock mode face used to highlight suggestions"
-    :group 'pabbrev))
+    (defface pabbrev-suggestions-label-face
+      '((t
+         :inverse-video t))
+      "Font Lock mode face used to highlight suggestions"
+      :group 'pabbrev)))
+
 
 ;;;; End user Customizable variables.
 
@@ -418,13 +425,26 @@ I'm not telling you which version, I prefer."
  (lambda(x)
    (put x 'pabbrev-expand-after-command t))
  '(self-insert-command mouse-set-point delete-char
-                       backward-delete-char-untabify pabbrev-expand-maybe))
+                       backward-delete-char-untabify pabbrev-expand-maybe
+                       pabbrev-expand-maybe-minimal pabbrev-expand-maybe-full
+                       universal-argument universal-argument-other-key))
 
 ;; mark modes in which to not activate pabbrev with global mode.
 (mapc
  (lambda(x)
    (put x 'pabbrev-global-mode-excluded-modes t))
- '(ham-shell-mode shell-mode custom-mode dired-mode telnet-mode))
+ `(
+   ;; I put this in at one point -- probably not needed now, but I have no
+   ;; where to test it.
+   telnet-mode
+   term-mode
+   ;; eshell uses it's own tab binding, so abbrevs get offered but not expanded
+   eshell-mode
+   ;; gnus article mode is read-only so should be missed anyway,
+   ;; but it does something wierd so that it's not
+   gnus-article-mode
+   ))
+
 
 ;;;; End Package Support
 
@@ -436,43 +456,41 @@ I'm not telling you which version, I prefer."
   "List of modes with associated prefix dictionaries.")
 
 (defmacro pabbrev-save-buffer-modified-p (&rest body)
-  "Eval BODY without affected buffer modification status"
-  `(let ((buffer-modified (buffer-modified-p))
-         (buffer-undo-list t))
-     ,@body
-     (set-buffer-modified-p buffer-modified)))
+  "Eval BODY without affected buffer modification status."
+  `(with-silent-modifications
+     ,@body))
 
 (defun pabbrev-get-usage-hash()
-  "Returns the usage hash for this buffer."
+  "Return the usage hash for this buffer."
   (let((hash (get major-mode 'pabbrev-usage-hash)))
     (unless hash
       (put major-mode 'pabbrev-usage-hash
-	   (setq hash
-		 (make-hash-table :test 'equal)))
+           (setq hash
+                 (make-hash-table :test 'equal)))
       (push major-mode pabbrev-usage-hash-modes))
     hash))
 
 (defun pabbrev-get-usage-dictionary-size()
-  "Returns the size of the usage hash."
+  "Return the size of the usage hash."
   (hash-table-count (pabbrev-get-usage-hash)))
 
 (defun pabbrev-get-total-usages-dictionary()
-  "Returns the total number of usages from the usage hash"
+  "Return the total number of usages from the usage hash."
   (interactive)
   (let ((size 0))
     (maphash
-     (lambda(key value)
+     (lambda(_key value)
        (setq size (+ size (cdr value))))
      (pabbrev-get-usage-hash))
     size))
 
 (defun pabbrev-get-prefix-hash()
-  "Returns the prefix hash for the current buffer."
+  "Return the prefix hash for the current buffer."
   (let((hash (get major-mode 'pabbrev-prefix-hash)))
     (unless hash
       (put major-mode 'pabbrev-prefix-hash
-	   (setq hash
-		 (make-hash-table :test 'equal)))
+           (setq hash
+                 (make-hash-table :test 'equal)))
       (push major-mode pabbrev-prefix-hash-modes))
     hash))
 
@@ -481,19 +499,19 @@ I'm not telling you which version, I prefer."
 This is a function internal to the data structures.  The
 `pabbrev-add-word' is the main entry point to this functionality."
   (let ((value
-	 (gethash
-	  ;; look for word usage cons we need a cons, but the last
-	  ;; value is irrelevant.
-	  word
-	  (pabbrev-get-usage-hash))))
+         (gethash
+          ;; look for word usage cons we need a cons, but the last
+          ;; value is irrelevant.
+          word
+          (pabbrev-get-usage-hash))))
     ;; so now we have cons, or nil
     (if value
-	;; increment occurences
-	(setcdr
-	 value (+ 1 (cdr value)))
+        ;; increment occurences
+        (setcdr
+         value (+ 1 (cdr value)))
       ;; we have no so make is
       (setq value
-	    (cons word 1)))
+            (cons word 1)))
     ;; so now we the cons cell for sure
     ;; possible we should do this above, as I think it only needs
     ;; doing for a new cons.
@@ -510,25 +528,25 @@ prefix of the from the cons cell."
   (let
       ;; this should be an alist or nil
       ((value (gethash prefix
-		       (pabbrev-get-prefix-hash))))
+                       (pabbrev-get-prefix-hash))))
     (if value
-	;; so we have an alist. Has our word been added to this alist
-	;; before? If not, do so. If it has been added, then it will
-	;; have been updated with the addition of the word
-	(if (not
-	     (member conscell value))
-	    (setq value (cons conscell value)))
+        ;; so we have an alist. Has our word been added to this alist
+        ;; before? If not, do so. If it has been added, then it will
+        ;; have been updated with the addition of the word
+        (if (not
+             (member conscell value))
+            (setq value (cons conscell value)))
       ;; nothing in there, so create an alist with
       ;; a single element
       (setq value (list conscell)))
     ;; so we now have the value alist...sort it and store it back in
     ;; the hash
     (puthash prefix
-	     (pabbrev-sort-alist value conscell)
-	     (pabbrev-get-prefix-hash))))
+             (pabbrev-sort-alist value)
+             (pabbrev-get-prefix-hash))))
 
 
-(defun pabbrev-sort-alist(alist cons)
+(defun pabbrev-sort-alist(alist)
   ;; this sort is bit poor. It should be possible to do this in less
   ;; than linear time, rather than n(log-n) as now. I think most of
   ;; the time is spent entering the lambda function. The irony is that
@@ -550,9 +568,9 @@ prefix of the from the cons cell."
   ;; on a user interface, its not so much of a problem, as plenty of
   ;; time is spent in placing on the "been here" overlays....
   (sort alist
-	;;'pabbrev-comparitor-function))
-	(lambda(a b)
-	  (> (cdr a) (cdr b)))))
+        ;;'pabbrev-comparitor-function))
+        (lambda(a b)
+          (> (cdr a) (cdr b)))))
 
 (defun pabbrev-comparitor-function(a b)
   (> (cdr a) (cdr b)))
@@ -561,14 +579,14 @@ prefix of the from the cons cell."
 (defun pabbrev-add-word (word)
   "Add the usage of a WORD to the current dictionary."
   (let ((conscell
-	 (pabbrev-add-word-usage word)))
+         (pabbrev-add-word-usage word)))
     (dotimes (i (- (length word) 1))
       (pabbrev-add-word-cons-with-prefix
        (substring word 0 (1+ i))
        conscell))))
 
 (defun pabbrev-fetch-all-suggestions-for-prefix(prefix)
-  "Returns the suggestions for a given PREFIX.
+  "Return the suggestions for a given PREFIX.
 Results are an alist, with cons with car of the word, and cdr of the
 number of usages seen so far. This alist should NOT be altered, its
 it's ordering is part of the core data structures"
@@ -579,20 +597,26 @@ it's ordering is part of the core data structures"
 
 ;; This code provides the minor mode which displays, and accepts
 ;; abbreviations.
-(defvar pabbrev-mode-map (make-keymap)
+(defvar pabbrev-mode-map
+  (let ((map (make-sparse-keymap)))
+
+    ;; It should be possible to reconfigure this now, although there is special
+    ;; handling in `pabbrev-get-previous-binding' for tab and return and this
+    ;; might be needed for other bindings also.
+
+    ;; \t works in tty but gets overridden by the [tab] binding elsewhere.
+    (define-key map "\t" 'pabbrev-expand-maybe)
+    ;; This is not needed since function-key-map remaps a `tab' into a \t.
+    ;;(define-key map [tab] 'pabbrev-expand-maybe)
+    map)
   "Keymap for pabbrev-minor-mode.")
 
-;; I don't understand this. I thought that this were equivalent. But
-;; modes which define [tab] get used in preference to \t. So I define
-;; both. Don't change these without also changing the definition of
-;; pabbrev-expand-maybe.
-(define-key pabbrev-mode-map "\t" 'pabbrev-expand-maybe)
-(define-key pabbrev-mode-map [tab] 'pabbrev-expand-maybe)
 
-
-(if (not pabbrev-xemacs-p)
-    (easy-mmode-define-minor-mode pabbrev-mode
-				  "Toggle pabbrev mode.
+;; XEmacs has synced to newest easy-mmode now.
+;;(if (not (featurep 'xemacs))
+;;;###autoload
+(define-minor-mode pabbrev-mode
+  "Toggle pabbrev mode.
 With arg, turn on Predicative Abbreviation mode if and only if arg is
 positive.
 
@@ -607,53 +631,61 @@ suggestions as you type, without causing an unacceptable slow down.
 There is an associated `global-pabbrev-mode' which turns on the mode
 on in all buffers.
 "
-				  nil
-				  " Pabbrev"
-				  pabbrev-mode-map
-				  (when (and pabbrev-mode-map
-					     buffer-read-only)
-				    (if pabbrev-read-only-error
-                                        (error "Can not use pabbrev-mode in read only buffer"))))
-  (easy-mmode-define-minor-mode pabbrev-mode
-				"Toggle pabbrev mode.
-This mode is an abbreviation expansion mode. It looks through the
-current buffer, and offers expansions based on the words already
-there.
+  nil
+  " Pabbrev"
+  pabbrev-mode-map
+  (when (and pabbrev-mode buffer-read-only pabbrev-read-only-error)
+    ;; FIXME: Signaling an error makes no sense.  Just make it a `message'
+    ;; and get rid of pabbrev-read-only-error.  After all, the user can
+    ;; enable/disable read-only-mode after pabbrev-mode.
+    (message "Can not use pabbrev-mode in read only buffer"))
+  (cond
+   (pabbrev-mode
+    (add-hook 'pre-command-hook 'pabbrev-pre-command-hook nil t)
+    (add-hook 'post-command-hook 'pabbrev-post-command-hook nil t)
+    ;; Switch on the idle timer if required when the mode is switched on.
+    (pabbrev-ensure-idle-timer)
+    ;; Also run the idle timer function, to put some works in the
+    ;; dictionary.
+    (pabbrev-scavenge-some))
+   (t
+    (remove-hook 'pre-command-hook 'pabbrev-pre-command-hook t)
+    (remove-hook 'post-command-hook 'pabbrev-post-command-hook t))))
 
-I have only just recently ported this to XEmacs, and I don't
-personally use XEmacs, so it has received little or no testing."
-				nil
-				" Pabbrev"
-				pabbrev-mode-map))
+;;   (easy-mmode-define-minor-mode pabbrev-mode
+;;                              "Toggle pabbrev mode.
+;; This mode is an abbreviation expansion mode. It looks through the
+;; current buffer, and offers expansions based on the words already
+;; there.
 
-(if (fboundp 'easy-mmode-define-global-mode)
-    (easy-mmode-define-global-mode global-pabbrev-mode
-				   pabbrev-mode pabbrev-global-mode))
+;; I have only just recently ported this to XEmacs, and I don't
+;; personally use XEmacs, so it has received little or no testing."
+;;                              nil
+;;                              " Pabbrev"
+;;                              pabbrev-mode-map))
+
+;;;###autoload
+(define-global-minor-mode global-pabbrev-mode
+  pabbrev-mode pabbrev-global-mode)
 
 (defun pabbrev-global-mode()
   "Switch on `pabbrev-mode' in current buffer if appropriate.
 Currently appropriate means, if the buffer is not read only, and is
 not a minibuffer."
   (unless (or buffer-read-only
-	      pabbrev-mode
-	      (get major-mode 'pabbrev-global-mode-excluded-modes)
-	      ;; don't turn on in non listable buffers
-	      (equal (substring (buffer-name) 0 1) " ")
-	      (when pabbrev-global-mode-buffer-size-limit
+              pabbrev-mode
+              (get major-mode 'pabbrev-global-mode-excluded-modes)
+              ;; don't turn on in non listable buffers
+              (equal (substring (buffer-name) 0 1) " ")
+              (when pabbrev-global-mode-buffer-size-limit
                 (> (buffer-size) pabbrev-global-mode-buffer-size-limit))
               (member (buffer-name) pabbrev-global-mode-not-buffer-names)
-	      (window-minibuffer-p (selected-window)))
+              (window-minibuffer-p (selected-window)))
     (let
-	;; set the chunk size low, or the global mode takes for ever
-	;; to switch on
-	((pabbrev-scavenge-some-chunk-size 0))
+        ;; set the chunk size low, or the global mode takes for ever
+        ;; to switch on
+        ((pabbrev-scavenge-some-chunk-size 0))
       (pabbrev-mode))))
-
-;; hooks for switching on and off.
-(add-hook 'pabbrev-mode-on-hook
-	  'pabbrev-mode-on)
-(add-hook 'pabbrev-mode-off-hook
-	  'pabbrev-mode-off)
 
 (defvar pabbrev-marker nil
   "Location of current insertion, or nil.
@@ -672,21 +704,6 @@ start and end positions")
 (defvar pabbrev-marker-last-expansion nil
   "Marks where the last possible expansion was.")
 (make-variable-buffer-local 'pabbrev-marker-last-expansion)
-
-(defun pabbrev-mode-on()
-  "Turn `pabbrev-mode' on."
-  ;; (make-local-hook 'pre-command-hook)
-  (add-hook 'pre-command-hook 'pabbrev-pre-command-hook nil t)
-  ;; (make-local-hook 'post-command-hook)
-  (add-hook 'post-command-hook 'pabbrev-post-command-hook nil t))
-
-(defun pabbrev-mode-off()
-  "Turn `pabbrev-mode' off."
-  ;; we have to remove the binding for tab. Other wise next time we
-  ;; switch the mode on, this binding will be found, and set for
-  ;; pabbrev-tab-previously-defined
-  (remove-hook 'pre-command-hook 'pabbrev-pre-command-hook t)
-  (remove-hook 'post-command-hook 'pabbrev-post-command-hook t))
 
 ;;(defun test()(interactive)(let ((last-command 'self-insert-command))(pabbrev-post-command-hook)))
 
@@ -709,7 +726,7 @@ This function is normally run off the `post-command-hook'."
       ;; buffer may have become read only between the time that it was
       ;; switched on, and now. So we need to check this anyway.
       (unless (or buffer-read-only
-                  ;; This seems to be an issue in xemacs, so check for
+                  ;; This seems to be an issue in XEmacs, so check for
                   ;; this as well.
                   (window-minibuffer-p (selected-window)))
         (save-excursion
@@ -718,12 +735,15 @@ This function is normally run off the `post-command-hook'."
             (pabbrev-delete-last-suggestion))
           (let ((word (pabbrev-thing-at-point))
                 (bounds (pabbrev-bounds-of-thing-at-point))
-                 (suggestions))
+                (suggestions))
             (if (and
                  ;; last command was a symbol
-                 (symbolp last-command)
+                 ;; PWL last-command to this-command
+                 (symbolp this-command)
                  ;; we have just had an appropriate command
-                 (get last-command 'pabbrev-expand-after-command)
+                 ;; PWL commented out and testing change suggestd by Ye Wenbin
+                 ;;(get last-command 'pabbrev-expand-after-command)
+                 (get this-command 'pabbrev-expand-after-command)
                  ;; is word at point
                  word
                  ;; we are at the end of it.
@@ -731,7 +751,7 @@ This function is normally run off the `post-command-hook'."
                  ;; and we have some suggestions.
                  (setq suggestions (pabbrev-fetch-all-suggestions-for-prefix word)))
                 (progn
-                  (pabbrev-insert-suggestion word (cdr bounds) suggestions)
+                  (pabbrev-insert-suggestion word suggestions)
                   (pabbrev-post-command-check-movement))))))
     (error
      (pabbrev-command-hook-fail err "post" ))))
@@ -739,15 +759,23 @@ This function is normally run off the `post-command-hook'."
 
 (defun pabbrev-delete-last-suggestion()
   "Remove previously inserted suggestions."
-  (pabbrev-save-buffer-modified-p
-   ;; I don't think we need to check for buffer-read-only
-   ;; here, because pabbrev-marker will always be nil in a
-   ;; read only buffer. I could be wrong about this of
-   ;; course.
-   (pabbrev-delete-overlay)
-   (delete-region (car pabbrev-marker) (cdr pabbrev-marker))
-   (setq pabbrev-marker nil)))
+  ;; I don't think we need to check for buffer-read-only
+  ;; here, because pabbrev-marker will always be nil in a
+  ;; read only buffer. I could be wrong about this of
+  ;; course.
+  (pabbrev-delete-overlay)
+  (when (featurep 'xemacs)
+    (pabbrev-save-buffer-modified-p
+     (delete-region (car pabbrev-marker) (cdr pabbrev-marker))))
+  (setq pabbrev-marker nil))
 
+
+(defvar pabbrev-expand-commands
+  '(pabbrev-expand-maybe pabbrev-expand
+    pabbrev-expand-maybe-minimal pabbrev-expand-maybe-full)
+  "List of commands which will be used expand.
+We need to know this, or the possible expansions are deleted
+before the command gets run.")
 
 (defun pabbrev-pre-command-hook()
   "Remove offering expansion from the buffer, if present.
@@ -770,7 +798,7 @@ This function should only run as the result of a bug.
 A message is sent, as we can do little else safely,
 on the `post-command-hook', or `pre-command-hook'."
   (message "pabbrev mode has failed on %s hook: %s "
-	   hook (error-message-string err))
+           hook (error-message-string err))
   (remove-hook 'pre-command-hook 'pabbrev-pre-command-hook t)
   (remove-hook 'post-command-hook 'pabbrev-post-command-hook t)
   (with-output-to-temp-buffer "*pabbrev-fail*"
@@ -789,41 +817,51 @@ anything. Toggling it off, and then on again will usually restore functionality.
 
 (defun pabbrev-marker-last-expansion()
   "Fetch marker for last offered expansion."
-  (unless
-      pabbrev-marker-last-expansion
-    (setq pabbrev-marker-last-expansion
-	  (set-marker (make-marker)
-		      (point) (current-buffer))))
-  pabbrev-marker-last-expansion)
+  (or pabbrev-marker-last-expansion
+      (setq pabbrev-marker-last-expansion
+            (set-marker (make-marker)
+                        (point) (current-buffer)))))
 
 (defun pabbrev-update-marker()
   (set-marker (pabbrev-marker-last-expansion)
-	      (point) (current-buffer)))
+              (point) (current-buffer)))
+
+(defvar pabbrev-debug-enabled nil)
+(defmacro pabbrev-debug-message(&rest body)
+  `(if pabbrev-debug-enabled
+       (let ((insert
+              (concat (format ,@body) "\n")))
+         (with-current-buffer
+             (pabbrev-debug-get-buffer)
+           (goto-char (point-max))
+           (insert insert)
+           (pabbrev-debug-frame-scroll)))))
 
 (defun pabbrev-post-command-check-movement()
   (let ((distance
-	 (abs (- (point) (marker-position
-			  (pabbrev-marker-last-expansion))))))
+         (abs (- (point) (marker-position
+                          (pabbrev-marker-last-expansion))))))
     (if (> distance pabbrev-marker-distance-before-scavenge)
-	;; we have moved a lot in the buffer
-	(progn
-	  (pabbrev-debug-message "Scavenge due to buffer marker")
-	  (pabbrev-scavenge-some)
-	  (pabbrev-update-marker)))))
+        ;; we have moved a lot in the buffer
+        (progn
+          (pabbrev-debug-message "Scavenge due to buffer marker")
+          (pabbrev-scavenge-some)
+          (pabbrev-update-marker)))))
 
 (defvar pabbrev-overlay nil
   "Overlay for offered completion.")
 (make-variable-buffer-local 'pabbrev-overlay)
 
-(defun pabbrev-set-overlay(start end)
+(defun pabbrev-set-overlay(start end count)
   "Move overlay to START END location."
   (unless pabbrev-overlay
     (setq pabbrev-overlay
-	  ;; set an overlay at 1 1. Originally this used to be a 0 0 but
-	  ;; it crashes xemacs...well I never....
-	  (make-overlay 1 1)))
-  (overlay-put pabbrev-overlay
-	       'face 'pabbrev-suggestions-face)
+          ;; set an overlay at 1 1. Originally this used to be a 0 0 but
+          ;; it crashes XEmacs...well I never....
+          (make-overlay 1 1)))
+  (overlay-put pabbrev-overlay 'face
+               (if (> count 1) 'pabbrev-suggestions-face
+                 'pabbrev-single-suggestion-face))
   (move-overlay pabbrev-overlay start end (current-buffer)))
 
 (defun pabbrev-delete-overlay()
@@ -832,62 +870,121 @@ anything. Toggling it off, and then on again will usually restore functionality.
       (delete-overlay pabbrev-overlay)))
 
 
-
-
-(defun pabbrev-insert-suggestion(prefix end suggestions)
+(defun pabbrev-insert-suggestion(prefix suggestions)
   "Insert a suggestion into the buffer.
-The suggestion should start with PREFIX, and be entered
-at buffer position END."
+The suggestion should start with PREFIX, and be entered at point."
   (interactive)
   (let* ((suggestion
           (if (not pabbrev-minimal-expansion-p)
               (car (car suggestions))
             (try-completion "" suggestions))))
     (let ((expansion
-	   (if suggestion
+           (if suggestion
                (substring suggestion
-			  (length prefix))
-	     "")))
-      (save-excursion
-	(if (< 0 (length expansion))
-            ;; add the abbreviation to the buffer
-            (pabbrev-save-buffer-modified-p
-             (insert
-              "[" expansion "]" )
-             ;; store everything. Most importantly the pabbrev-marker!
-             (setq
-              pabbrev-expansion expansion
-              pabbrev-expansion-suggestions suggestions
-              pabbrev-marker
-              (cons end (point)))
-             (let ((point-1 (- (point) 1)))
-               (pabbrev-set-overlay
-                (- point-1 (length expansion)) point-1))))))))
+                          (length prefix))
+             ""))
+          (end (point)))
+      (when (< 0 (length expansion))
+        ;; Add the abbreviation to the buffer.
+        (setq
+         pabbrev-expansion expansion
+         pabbrev-expansion-suggestions suggestions)
+        (if (featurep 'xemacs)
+            (save-excursion
+              (pabbrev-save-buffer-modified-p
+               (insert
+                "[" expansion "]" )
+               ;; store everything. Most importantly the pabbrev-marker!
+               (setq pabbrev-marker (cons end (point)))
+               (let ((point-1 (- (point) 1)))
+                 (pabbrev-set-overlay
+                  (- point-1 (length expansion)) point-1
+                  (length suggestions)))))
+          (pabbrev-set-overlay (point) (point)
+                               (length suggestions))
+          (setq pabbrev-marker (cons (point) (point)))
+          (overlay-put pabbrev-overlay
+                       'after-string
+                       (concat
+                        (propertize "[" 'cursor 1)
+                        (propertize expansion
+                                    'face (overlay-get pabbrev-overlay 'face))
+                        "]")))))))
+
+(defvar pabbrev-last-expansion-suggestions nil
+  "Cached alternative suggestions from the last expansion.")
+
+;; patch from Trey Jackson to fix problem with python (which uses tab to cycle
+;; through indentation levels
+(defun pabbrev-call-previous-tab-binding ()
+  "Call the function normally associated with [tab]."
+  (let ((prev-binding (pabbrev-get-previous-binding)))
+    (if (and (fboundp prev-binding)
+             (not (eq prev-binding 'pabbrev-expand-maybe)))
+        (let ((last-command (if (eq last-command this-command)
+                                prev-binding
+                              last-command))
+              (this-command prev-binding))
+          (if (eq 'self-insert-command prev-binding)
+              (self-insert-command 1)
+            (funcall prev-binding))))))
+
+;; (defun pabbrev-call-previous-tab-binding ()
+;;   "Call the function normally associated with [tab]."
+;;   (let ((prev-binding (pabbrev-get-previous-binding)))
+;;     (if (and (fboundp prev-binding)
+;;              (not (eq prev-binding 'pabbrev-expand-maybe)))
+;;         (funcall prev-binding))))
 
 
+(defun pabbrev-expand-maybe(uarg)
+  "Call appropriate expansion command based on whether minimal or
+full expansion is desired. If there is no expansion the command
+returned by `pabbrev-get-previous-binding' will be run instead.
+A prefix argument means offer a menu of expansions.
+UARG is the prefix argument."
+  (interactive "p")
+  (if pabbrev-minimal-expansion-p
+      (pabbrev-expand-maybe-minimal uarg)
+      (pabbrev-expand-maybe-full uarg)))
 
-
-(defun pabbrev-expand-maybe()
-  "Expand abbreviation, or run previous command.
-If there is no expansion the command returned by
-`pabbrev-get-previous-binding' will be run instead."
-  (interactive)
-  ;; call expand if we can
-  (if (and (eq last-command 'pabbrev-expand-maybe)
-	   (> (length pabbrev-expansion-suggestions) 1))
-      (pabbrev-suggestions-goto-buffer)
+(defun pabbrev-expand-maybe-minimal (uarg)
+  "Expand the minimal common prefix at point.
+With prefix argument, bring up the menu of all full expansions.
+UARG is the prefix argument."
+  (if (= uarg 4)
+      (if (> (length pabbrev-expansion-suggestions) 1)
+          (pabbrev-suggestions-goto-buffer pabbrev-expansion-suggestions)
+        (pabbrev-call-previous-tab-binding))
     (if pabbrev-expansion
-	(pabbrev-expand)
-      ;; hopefully this code will actually work as intended now. It's
-      ;; been around the house a few times already!
-      (let ((prev-binding
-             (pabbrev-get-previous-binding)))
-        (if (and (fboundp prev-binding)
-		 (not (eq prev-binding 'pabbrev-expand-maybe)))
-	    (funcall prev-binding))))))
+        (pabbrev-expand)
+      (pabbrev-call-previous-tab-binding))))
 
+(defun pabbrev-expand-maybe-full (uarg)
+  "Expand fully to the most common abbreviation at point.
+With prefix argument, bring up a menu of all full expansions.
+UARG is the prefix argument."
+  (cond
+   ((= uarg 4)
+    (if (> (length pabbrev-expansion-suggestions) 1)
+        (pabbrev-suggestions-goto-buffer pabbrev-expansion-suggestions)
+      (pabbrev-call-previous-tab-binding)))
+   ((eq last-command 'pabbrev-expand-maybe)
+    (if (and (> (length pabbrev-expansion-suggestions) 1)
+             (> (length pabbrev-last-expansion-suggestions) 1))
+        (pabbrev-suggestions-goto-buffer pabbrev-last-expansion-suggestions)
+      (pabbrev-call-previous-tab-binding)))
+   (pabbrev-expansion
+    (progn
+      (setq pabbrev-last-expansion-suggestions pabbrev-expansion-suggestions)
+      (pabbrev-expand)))
+   (t (pabbrev-call-previous-tab-binding))))
+
+;; (setq pabbrev-minimal-expansion-p nil)
 
 (defun pabbrev-show-previous-binding ()
+  "Print the previous binding.
+Debugging function."
   (interactive)
   (message "Previous binding is: %s"
            (pabbrev-get-previous-binding)))
@@ -896,15 +993,37 @@ If there is no expansion the command returned by
   "Show the binding of tab if pabbrev were not active.
 The command `pabbrev-show-previous-binding' prints this out."
   (let ((pabbrev-mode nil))
-    ;; This is the original and satisfying solution
-    ;;(key-binding (char-to-string last-command-event)))))
+    ;; tab is special, because we can bind both [tab]
+    ;; and \t. Normally, pabbrev binds to [tab] but for example
+    ;; so this-command-keys-vector returns [tab]. But, emacs-lisp-mode for
+    ;; instance, binds to \t. Now this has been overridden by the pabbrev
+    ;; binding for [tab]. But if we check for previous binding for [tab] it
+    ;; will be nil, because emacs-lisp-mode binds \t and not [tab]. So,
+    ;; we check for tab and return either the binding for tab or the binding
+    ;; for \t which should work regardless of what the mode binds.
+    ;; Likewise return it seems!
+    (let ((tckv
+           (if (featurep 'xemacs)
+               (this-command-keys)
+             (this-command-keys-vector))))
+      (cond
+       ((or (equal tckv [tab])
+            (equal tckv [9]))
+        (or (key-binding [tab]) (key-binding "\t")))
+       ((or (equal tckv [return])
+            (equal tckv [32]))
+        (or (key-binding [return]) (key-binding "\n")))
+       (t
+        (key-binding tckv))))))
 
+    ;; ;; This is the original and satisfying solution
+    ;; (key-binding (this-command-keys))))
     ;; This is the new and unsatisfying one. The
     ;; keybindings are hard coded here, because I defined
     ;; [tab] and \t earlier. Both are tab, but the former
     ;; gets used in preference to the later.
-    (or (key-binding [tab])
-        (key-binding "\t"))))
+;;    (or (key-binding [tab])
+;;        (key-binding "\t"))))
 
 ;;           ;; I think that I have this worked out now.
 ;;           (if (eq prev-binding 'pabbrev-expand-maybe)
@@ -927,12 +1046,8 @@ The command `pabbrev-show-previous-binding' prints this out."
     (message "No expansion"))
   (setq pabbrev-expansion nil))
 
-
-(defvar pabbrev-expand-commands
-  '(pabbrev-expand-maybe pabbrev-expand)
-  "List of commands which will be used expand.
-We need to know this, or the possible expansions are deleted
-before the command gets run.")
+(defvar pabbrev-window-configuration nil
+  "Stores the window configuration before presence of a window buffer.")
 
 ;; suggestions buffer
 ;; (defvar pabbrev-suggestions-buffer-enable nil)
@@ -961,7 +1076,7 @@ before the command gets run.")
   (interactive)
   (unless
       (or pabbrev-mode
-	  (eq (buffer-name) " *pabbrev suggestions*"))
+          (eq (buffer-name) " *pabbrev suggestions*"))
     (delete-window (get-buffer-window " *pabbrev suggestions*"))
     (set-window-configuration pabbrev-window-configuration)))
 
@@ -969,7 +1084,7 @@ before the command gets run.")
 ;;   (interactive)
 ;;   (if pabbrev-suggestions-buffer-enable
 ;;       (progn
-;; 	;; this isn't perfect. The window pops up in a fairly random place.
+;;      ;; this isn't perfect. The window pops up in a fairly random place.
 ;;         (with-output-to-temp-buffer " *pabbrev suggestions*")
 ;;        (shrink-window-if-larger-than-buffer (get-buffer-window " *pabbrev suggestions*")))))
 
@@ -978,16 +1093,12 @@ before the command gets run.")
 ;;       (pabbrev-suggestions-buffer suggestions prefix)))
 
 
-(defvar pabbrev-window-configuration nil
-  "Stores the window configuration before presence of a window buffer")
-
-
-(defun pabbrev-suggestions-goto-buffer()
+(defun pabbrev-suggestions-goto-buffer(suggestion-list)
   "Jump into the suggestions buffer."
   ;;  (if pabbrev-suggestions-buffer-enable
   ;;    (pabbrev-suggestions-delete-window))
   (setq pabbrev-window-configuration (current-window-configuration))
-  (pabbrev-suggestions-buffer pabbrev-expansion-suggestions "")
+  (pabbrev-suggestions-buffer suggestion-list "")
   (shrink-window-if-larger-than-buffer
    (select-window (get-buffer-window " *pabbrev suggestions*"))))
 
@@ -995,62 +1106,62 @@ before the command gets run.")
 (defvar pabbrev-suggestions-done-suggestions nil)
 (defvar pabbrev-suggestions-best-suggestion nil)
 
-(defun pabbrev-suggestions-buffer(suggestions prefix)
+(defun pabbrev-suggestions-buffer(suggestions _prefix)
   "Form the suggestions buffer."
   (with-output-to-temp-buffer " *pabbrev suggestions*"
     (setq pabbrev-suggestions-from-buffer (current-buffer))
     (setq pabbrev-suggestions-best-suggestion
-	  (car suggestions))
+          (car suggestions))
     (setq pabbrev-suggestions-done-suggestions
-	  (pabbrev-suggestions-limit-alpha-sort suggestions))
+          (pabbrev-suggestions-limit-alpha-sort suggestions))
     (setq suggestions pabbrev-suggestions-done-suggestions)
     (let
-	((window-width (- (window-width) 1)))
-      (save-excursion
-	(set-buffer (get-buffer " *pabbrev suggestions*"))
-	(pabbrev-suggestions-setup)`
-	(princ
-	 (concat;;"Current Word: " prefix " "
-	  "Max Substring: " (try-completion "" suggestions)
-	  "\n"))
-	(princ
-	 (concat
-	  "Best Match: " (car pabbrev-suggestions-best-suggestion)
-	  "\n"))
-	(if suggestions
-	    (loop for i from 0 to 9 do
-	      ;; are we less than the suggestions
-	      (if (< i (length suggestions))
-		  (progn
-		    (goto-char (point-max))
-		    ;; insert all the suggestions
-		    (let ((next-suggestion
-			   (concat
-			    (number-to-string i)
-			    ") "
-			    (car (nth i suggestions)) " " ))
-			  (line-length
-			   (- (line-end-position) (line-beginning-position))))
-		      ;; if well. are not on the first suggestion,
-		      (if (and (> i 0)
-			       ;; and the line will be too long
-			       (< window-width
-				  (+ line-length (length next-suggestion))))
-			  ;; add a new line.
-			  (princ "\n"))
-		      (princ next-suggestion)
-		      (let ((start (- (point) (length next-suggestion))))
-			(overlay-put
-			 (make-overlay start (+ 2 start))
-			 'face 'pabbrev-suggestions-label-face))))))))))
+        ((window-width (- (window-width) 1)))
+      (with-current-buffer
+          (get-buffer " *pabbrev suggestions*")
+        (pabbrev-suggestions-setup)`
+        (princ
+         (concat;;"Current Word: " prefix " "
+          "Max Substring: " (try-completion "" suggestions)
+          "\n"))
+        (princ
+         (concat
+          "Best Match: " (car pabbrev-suggestions-best-suggestion)
+          "\n"))
+        (if suggestions
+            (cl-loop for i from 0 to 9 do
+              ;; are we less than the suggestions
+              (if (< i (length suggestions))
+                  (progn
+                    (goto-char (point-max))
+                    ;; insert all the suggestions
+                    (let ((next-suggestion
+                           (concat
+                            (number-to-string i)
+                            ") "
+                            (car (nth i suggestions)) " " ))
+                          (line-length
+                           (- (line-end-position) (line-beginning-position))))
+                      ;; if well. are not on the first suggestion,
+                      (if (and (> i 0)
+                               ;; and the line will be too long
+                               (< window-width
+                                  (+ line-length (length next-suggestion))))
+                          ;; add a new line.
+                          (princ "\n"))
+                      (princ next-suggestion)
+                      (let ((start (- (point) (length next-suggestion))))
+                        (overlay-put
+                         (make-overlay start (+ 2 start))
+                         'face 'pabbrev-suggestions-label-face))))))))))
   (shrink-window-if-larger-than-buffer (get-buffer-window " *pabbrev suggestions*")))
 
 (defun pabbrev-suggestions-limit-alpha-sort(suggestions)
   "Limit suggestions and sort."
   (delq nil
-	(sort (pabbrev-suggestions-subseq suggestions 0 10)
-	      (lambda(a b)
-		(string< (car a) (car b))))))
+        (sort (pabbrev-suggestions-subseq suggestions 0 10)
+              (lambda(a b)
+                (string< (car a) (car b))))))
 
 (defun pabbrev-suggestions-subseq(sequence from to)
   "Return subsequence from seq.
@@ -1061,35 +1172,40 @@ and XEmacs. Irritating or what!
 The Emacs version copes with numbers past the end, and backs with nil
 values. XEmacs uses its own builtin rather than the one in the CL package.
 It crashes under the same circumstances. Yeech."
-  (if pabbrev-xemacs-p
+  (if (featurep 'xemacs)
       (subseq sequence from
-	      (min to
-		   (length sequence)))
-    (subseq sequence from to)))
+              (min to
+                   (length sequence)))
+    (cl-subseq sequence
+               (min 0 from)
+               (min (length sequence) to))))
 
-(defun pabbrev-suggestions-setup()
-  "Set up suggestions major mode."
-  (unless (fboundp 'pabbrev-select-mode)
-    ;; define pabbrev select mode
-    (define-derived-mode pabbrev-select-mode fundamental-mode
-      "Pabbrev Select"
-      "Major mode for selecting `pabbrev-mode' expansions.
+(defvar pabbrev-select-mode-map
+  (let ((map (make-sparse-keymap)))
+    (cl-loop for i from ?! to ?~ do
+          (define-key map (char-to-string i) 'pabbrev-noop))
+    (define-key map "\t" 'pabbrev-suggestions-select-default)
+    (define-key map [delete] 'pabbrev-suggestions-delete)
+    (define-key map "\C-?" 'pabbrev-suggestions-delete)
+    (define-key map "\C-m" 'pabbrev-suggestions-minimum)
+    (define-key map " " 'pabbrev-suggestions-delete-window)
+    (define-key map "q" 'pabbrev-suggestions-delete-window)
+    ;; Define all the standard insert commands.
+    (cl-loop for i from 0 to 9 do
+          (define-key map
+            (number-to-string i) 'pabbrev-suggestions-select))
+    map))
+
+(define-derived-mode pabbrev-select-mode fundamental-mode ;Use special-mode?
+  "Pabbrev Select"
+  "Major mode for selecting `pabbrev-mode' expansions.
 The number keys selects the various possible expansions. \\[pabbrev-suggestions-delete]
 removes the previously added expansion, \\[pabbrev-suggestions-minimum] selects the minimum
 matching substring, while \\[pabbrev-suggestions-delete-window] just deletes the window
 \\{pabbrev-select-mode-map}")
-    (setq pabbrev-select-mode-map (make-sparse-keymap))
-    (loop for i from 33 to 126 do
-      (define-key pabbrev-select-mode-map (char-to-string i) 'pabbrev-noop))
-    (define-key pabbrev-select-mode-map "\t" 'pabbrev-suggestions-select-default)
-    (define-key pabbrev-select-mode-map [delete] 'pabbrev-suggestions-delete)
-    (define-key pabbrev-select-mode-map [backspace] 'pabbrev-suggestions-delete)
-    (define-key pabbrev-select-mode-map "\C-m" 'pabbrev-suggestions-minimum)
-    (define-key pabbrev-select-mode-map " " 'pabbrev-suggestions-delete-window)
-    ;; define all the standard insert commands
-    (loop for i from 0 to 9 do
-      (define-key pabbrev-select-mode-map
-	(number-to-string i) 'pabbrev-suggestions-select)))
+
+(defun pabbrev-suggestions-setup()
+  "Set up suggestions major mode."
   (pabbrev-select-mode))
 
 (defun pabbrev-noop()
@@ -1121,29 +1237,29 @@ self inserting commands."
 (defun pabbrev-suggestions-insert(insertion)
   "Actually insert the suggestion."
   (let ((point))
-    (save-excursion
-      (set-buffer pabbrev-suggestions-from-buffer)
+    (with-current-buffer
+        pabbrev-suggestions-from-buffer
       (let ((bounds (pabbrev-bounds-of-thing-at-point)))
-	(progn
-	  (delete-region (car bounds) (cdr bounds))
-	  (insert insertion)
-	  (setq point (point)))))
+        (progn
+          (delete-region (car bounds) (cdr bounds))
+          (insert insertion)
+          (setq point (point)))))
     (pabbrev-suggestions-delete-window)
     (if point
-	(goto-char point))))
+        (goto-char point))))
 
 (defun pabbrev-suggestions-select(&optional index)
   "Select one of the numbered suggestions."
   (interactive)
   (let ((insert-index
-	 (or index
-	     (string-to-number
-	      (char-to-string last-command-event)))))
+         (or index
+             (string-to-number
+              (char-to-string last-command-event)))))
     (if (< insert-index
-	   (length pabbrev-suggestions-done-suggestions))
-	(pabbrev-suggestions-insert
-	 (car
-	  (nth insert-index pabbrev-suggestions-done-suggestions))))))
+           (length pabbrev-suggestions-done-suggestions))
+        (pabbrev-suggestions-insert
+         (car
+          (nth insert-index pabbrev-suggestions-done-suggestions))))))
 
 
 ;; These functions define movement around the buffer, which
@@ -1157,8 +1273,8 @@ self inserting commands."
   "Get thing at point."
   (let ((bounds (pabbrev-bounds-of-thing-at-point)))
     (if bounds
-	(buffer-substring-no-properties
-	 (car bounds) (cdr bounds)))))
+        (buffer-substring-no-properties
+         (car bounds) (cdr bounds)))))
 
 (defun pabbrev-bounds-of-thing-at-point()
   "Get the bounds of the thing at point"
@@ -1172,31 +1288,31 @@ self inserting commands."
   "Return t if anywhere between START and END is marked."
   (save-excursion
     (let ((retn))
-      (do ((i start (1+ i)))
-	  ((> i end))
-	(if
-	    (setq retn
-		  (get-text-property i 'pabbrev-added))
-	    (setq i end)))
+      (cl-do ((i start (1+ i)))
+          ((> i end))
+        (if
+            (setq retn
+                  (get-text-property i 'pabbrev-added))
+            (setq i end)))
       retn)))
 
 (defun pabbrev-mark-add-word (bounds)
   "Add word in BOUNDS as abbreviation, and mark the buffer."
   (if bounds
       (let ((start (car bounds))
-	    (end (cdr bounds)))
-	(unless
-	    ;; is this word or part of it already added?
-	    (pabbrev-bounds-marked-p start end)
-	  ;; mark the word visibly as well.
-	  (pabbrev-debug-display start end)
-	  ;; set a property so that we know what we have done.
-	  (pabbrev-save-buffer-modified-p
-	   (add-text-properties start end
-				'(pabbrev-added t)))
-	  ;; and add the word to the system.
-	  (pabbrev-add-word
-	   (buffer-substring-no-properties start end))))))
+            (end (cdr bounds)))
+        (unless
+            ;; is this word or part of it already added?
+            (pabbrev-bounds-marked-p start end)
+          ;; mark the word visibly as well.
+          (pabbrev-debug-display start end)
+          ;; set a property so that we know what we have done.
+          (pabbrev-save-buffer-modified-p
+           (add-text-properties start end
+                                '(pabbrev-added t)))
+          ;; and add the word to the system.
+          (pabbrev-add-word
+           (buffer-substring-no-properties start end))))))
 
 (defun pabbrev-scavenge-some()
   "Gather some words up from around point"
@@ -1206,7 +1322,7 @@ self inserting commands."
     ;; complete words.
     (pabbrev-forward-thing -2)
     (pabbrev-scavenge-words -1
-			    (* 2 pabbrev-scavenge-some-chunk-size))
+                            (* 2 pabbrev-scavenge-some-chunk-size))
     (save-excursion
       (pabbrev-forward-thing 2)
       (pabbrev-scavenge-words 1 pabbrev-scavenge-some-chunk-size))))
@@ -1215,7 +1331,6 @@ self inserting commands."
   (interactive)
   (narrow-to-region (region-beginning) (region-end))
   (pabbrev-scavenge-buffer))
-
 
 (defun pabbrev-scavenge-buffer-fast()
   (interactive)
@@ -1233,10 +1348,11 @@ self inserting commands."
            (buffer-substring-no-properties start stop)))))
 
     (pabbrev-debug-message "Dictionary size %s total usage %s"
-                           (pabbrev-get-usage-dictionary-size))
+                           (pabbrev-get-usage-dictionary-size)
+                           (pabbrev-get-total-usages-dictionary))
     (pabbrev-save-buffer-modified-p
      (add-text-properties (point-min) (point-max)
-				'(pabbrev-added t)))
+                                '(pabbrev-added t)))
     (message "pabbrev fast scavenging buffer...done.")))
 
 
@@ -1244,23 +1360,15 @@ self inserting commands."
   (interactive)
   (save-excursion
     (goto-char (point-min))
-
-    (working-status-forms "pabbrev scavenging buffer" "done"
+    (pabbrev-working-status-forms "pabbrev scavenging buffer" "done"
       (while (pabbrev-forward-thing)
-        (working-status (/ (* 100 (point)) (point-max)))
-        ;;(message "pabbrev scavenging (buffer %s words %s line %s done %s %%)..."
-        ;;        (current-buffer)
-        ;;       (pabbrev-get-usage-dictionary-size)
-        ;;      current-line
-        ;;     (/ (* 100 current-line) total-line))
-        ;;(message "pabbrev scavenging buffer...On line %s"
-        ;;       (count-lines (point-min) (point)))
+        (pabbrev-working-status (/ (* 100 (point)) (point-max)))
         (pabbrev-mark-add-word
          (pabbrev-bounds-of-thing-at-point)))
-      (working-status t))
-
+      (pabbrev-working-status t))
     (pabbrev-debug-message "Dictionary size %s total usage %s"
-                           (pabbrev-get-usage-dictionary-size))
+                           (pabbrev-get-usage-dictionary-size)
+                           (pabbrev-get-total-usages-dictionary))
     (message "pabbrev scavenging buffer...done.")))
 
 
@@ -1278,14 +1386,6 @@ NUMBER is how many words we should try to scavenge"
       (pabbrev-mark-add-word
        (pabbrev-bounds-of-thing-at-point)))
     (point)))
-
-;; switch on the idle timer if required when the mode is switched on.
-(add-hook 'pabbrev-mode-on-hook
-	  'pabbrev-ensure-idle-timer)
-;; also run the idle timer function, to put some works in the
-;; dictionary.
-(add-hook 'pabbrev-mode-on-hook
-	  'pabbrev-scavenge-some)
 
 (defvar pabbrev-long-idle-timer nil
   "Timer which adds whole buffer.
@@ -1307,8 +1407,8 @@ See `pabbrev-long-idle-timer'.")
 (defun pabbrev-ensure-idle-timer()
   (unless nil
     (if (not (and pabbrev-short-idle-timer
-		  pabbrev-long-idle-timer))
-	(pabbrev-start-idle-timer))))
+                  pabbrev-long-idle-timer))
+        (pabbrev-start-idle-timer))))
 
 (defun pabbrev-start-idle-timer()
   (setq pabbrev-long-idle-timer
@@ -1325,8 +1425,8 @@ See `pabbrev-long-idle-timer'.")
 
 (defun pabbrev-short-idle-timer(&optional buffer)
   "Add a few words to the dictionary."
-  (save-excursion
-    (set-buffer (or buffer (current-buffer)))
+  (with-current-buffer
+      (or buffer (current-buffer))
     ;; remember which buffer we have just looked at.
     (setq pabbrev-timer-buffer (current-buffer))
     (if (and pabbrev-mode (not pabbrev-disable-timers))
@@ -1341,8 +1441,8 @@ See `pabbrev-long-idle-timer'.")
 (defun pabbrev-idle-timer-function(&optional buffer)
   ;; so this only works on the current buffer. Might want to scavenge
   ;; over other buffers
-  (save-excursion
-    (set-buffer (or buffer pabbrev-timer-buffer (current-buffer)))
+  (with-current-buffer
+      (or buffer pabbrev-timer-buffer (current-buffer))
     (if (and pabbrev-mode (not pabbrev-disable-timers))
         (pabbrev-idle-timer-function-0)
       (pabbrev-debug-message "idle running in non pabbrev-mode"))))
@@ -1355,37 +1455,37 @@ See `pabbrev-long-idle-timer'.")
 `pabbrev-scavenge-buffer' does this more efficiently interactively.
 If this takes up too much processor power, see `pabbrev-scavenge-some-chunk-size'."
   (let ((forward-marker (point))
-	(backward-marker (point))
-	(forward-complete nil)
-	(backward-complete nil)
-	(repeat t))
+        (backward-marker (point))
+        (forward-complete nil)
+        (backward-complete nil)
+        (repeat t))
     (if pabbrev-idle-timer-verbose
         (message "pabbrev scavenging..."))
     (pabbrev-debug-message "running idle timer at %s" (point))
     (while
-	(and repeat
-	     (not (and forward-complete backward-complete)))
+        (and repeat
+             (not (and forward-complete backward-complete)))
       (save-excursion
-	(unless backward-complete
-	  (goto-char backward-marker)
-	  (setq backward-marker
-		(pabbrev-scavenge-words -1
-					(* 2 pabbrev-scavenge-some-chunk-size)))
-	  (setq backward-complete
-		(eq (point-min) backward-marker))
-	  (pabbrev-debug-message "searching backward to %s complete %s"
-				 backward-marker backward-complete))
-	(unless forward-complete
-	  (goto-char forward-marker)
-	  (setq forward-marker
-		(pabbrev-scavenge-words 1 pabbrev-scavenge-some-chunk-size))
-	  (setq forward-complete
-		(eq (point-max) forward-marker))
-	  (pabbrev-debug-message "searching forward to %s complete %s"
-				 forward-marker forward-complete)))
+        (unless backward-complete
+          (goto-char backward-marker)
+          (setq backward-marker
+                (pabbrev-scavenge-words -1
+                                        (* 2 pabbrev-scavenge-some-chunk-size)))
+          (setq backward-complete
+                (eq (point-min) backward-marker))
+          (pabbrev-debug-message "searching backward to %s complete %s"
+                                 backward-marker backward-complete))
+        (unless forward-complete
+          (goto-char forward-marker)
+          (setq forward-marker
+                (pabbrev-scavenge-words 1 pabbrev-scavenge-some-chunk-size))
+          (setq forward-complete
+                (eq (point-max) forward-marker))
+          (pabbrev-debug-message "searching forward to %s complete %s"
+                                 forward-marker forward-complete)))
       (pabbrev-debug-message "Dictionary size %s total usage %s"
-			     (pabbrev-get-usage-dictionary-size)
-			     (pabbrev-get-total-usages-dictionary))
+                             (pabbrev-get-usage-dictionary-size)
+                             (pabbrev-get-total-usages-dictionary))
 
       (if pabbrev-idle-timer-verbose
           (message "pabbrev scavenging (%s words %s buffer)..." (pabbrev-get-usage-dictionary-size)
@@ -1412,17 +1512,6 @@ If this takes up too much processor power, see `pabbrev-scavenge-some-chunk-size
 (defun pabbrev-debug-get-buffer()
   (get-buffer-create "*pabbrev-debug"))
 
-(defmacro pabbrev-debug-message(&rest body)
-  `(if pabbrev-debug-enabled
-       (let ((insert
-	      (concat (format ,@body) "\n")))
-	 (save-excursion
-	   (set-buffer
-	    (pabbrev-debug-get-buffer))
-	   (goto-char (point-max))
-	   (insert insert)
-	   (pabbrev-debug-frame-scroll)))))
-
 (defun pabbrev-debug()
   (interactive)
   (pabbrev-debug-frame)
@@ -1433,19 +1522,19 @@ If this takes up too much processor power, see `pabbrev-scavenge-some-chunk-size
   (interactive)
   (if (not pabbrev-debug-frame)
       (progn
-	(setq pabbrev-debug-frame
-	      (make-frame '((width . 30)
-			    (height . 30))))
-	(select-frame pabbrev-debug-frame)
-	(switch-to-buffer (pabbrev-debug-get-buffer)))))
+        (setq pabbrev-debug-frame
+              (make-frame '((width . 30)
+                            (height . 30))))
+        (select-frame pabbrev-debug-frame)
+        (switch-to-buffer (pabbrev-debug-get-buffer)))))
 
 (defun pabbrev-debug-frame-scroll()
   (save-excursion
     (if pabbrev-debug-frame
-	(progn
-	  (select-frame pabbrev-debug-frame)
-	  (switch-to-buffer (pabbrev-debug-get-buffer))
-	  (goto-char (point-max))))))
+        (progn
+          (select-frame pabbrev-debug-frame)
+          (switch-to-buffer (pabbrev-debug-get-buffer))
+          (goto-char (point-max))))))
 
 ;;(setq pabbrev-debug-display t)
 (defvar pabbrev-debug-display nil
@@ -1474,9 +1563,9 @@ This looks very ugly.  Note that this only shows newly added words.  Use
   (mapcar
    (lambda(overlay)
      (if
-	 (eq 'pabbrev-debug-display-label-face
-	     (overlay-get overlay 'face))
-	 (delete-overlay overlay)))
+         (eq 'pabbrev-debug-display-label-face
+             (overlay-get overlay 'face))
+         (delete-overlay overlay)))
    (overlays-in
     (point-min) (point-max))))
 
@@ -1486,23 +1575,23 @@ This can be rather slow."
   (interactive)
   (goto-char (point-min))
   (let ((on-mark-state nil)
-	(on-mark))
+        (on-mark))
     (while t
       (progn
-	(setq on-mark (get-text-property (point) 'pabbrev-added))
-	(message "On line %s"
-		 (count-lines (point-min) (point)))
-	(cond
-	 ;; just moved onto marked area
-	 ((and on-mark (not on-mark-state))
-	  (setq on-mark-state (point)))
-	 ;; just moved off a marked area
-	 ((and on-mark-state (not on-mark))
-	  (progn
-	    (overlay-put
-	     (make-overlay on-mark-state (point))
-	     'face 'underline)
-	    (setq on-mark-state nil)))))
+        (setq on-mark (get-text-property (point) 'pabbrev-added))
+        (message "On line %s"
+                 (count-lines (point-min) (point)))
+        (cond
+         ;; just moved onto marked area
+         ((and on-mark (not on-mark-state))
+          (setq on-mark-state (point)))
+         ;; just moved off a marked area
+         ((and on-mark-state (not on-mark))
+          (progn
+            (overlay-put
+             (make-overlay on-mark-state (point))
+             'face 'underline)
+            (setq on-mark-state nil)))))
       (forward-char))))
 
 (defun pabbrev-debug-restart-idle-timer()
@@ -1518,8 +1607,8 @@ will `pabbrev-debug-restart-idle-timer'."
   (interactive)
   (if pabbrev-short-idle-timer
       (progn
-	(cancel-timer pabbrev-short-idle-timer)
-	(setq pabbrev-short-idle-timer nil)))
+        (cancel-timer pabbrev-short-idle-timer)
+        (setq pabbrev-short-idle-timer nil)))
   (if pabbrev-long-idle-timer
       (progn
         (cancel-timer pabbrev-long-idle-timer)
@@ -1545,18 +1634,18 @@ to the dictionary."
   (if (not mode)
       (setq mode major-mode))
   (setq pabbrev-prefix-hash-modes
-	(delq mode pabbrev-prefix-hash-modes))
+        (delq mode pabbrev-prefix-hash-modes))
   (setq pabbrev-usage-hash-modes
-	(delq mode pabbrev-usage-hash-modes))
+        (delq mode pabbrev-usage-hash-modes))
   ;; help the GC a bit..
   (if (pabbrev-get-usage-hash)
       (progn
-	(clrhash (pabbrev-get-usage-hash))
-	(put mode 'pabbrev-usage-hash nil)))
+        (clrhash (pabbrev-get-usage-hash))
+        (put mode 'pabbrev-usage-hash nil)))
   (if (pabbrev-get-prefix-hash)
       (progn
-	(clrhash (pabbrev-get-prefix-hash))
-	(put mode 'pabbrev-get-prefix-hash nil))))
+        (clrhash (pabbrev-get-prefix-hash))
+        (put mode 'pabbrev-get-prefix-hash nil))))
 
 (defun pabbrev-debug-clear-all-hashes()
   "Clear all hashes for all modes."
@@ -1567,20 +1656,20 @@ to the dictionary."
   "Print the hashes for the current mode."
   (interactive)
   (let ((usage (pabbrev-get-usage-hash))
-	(prefix (pabbrev-get-prefix-hash)))
+        (prefix (pabbrev-get-prefix-hash)))
     (switch-to-buffer
      (get-buffer-create "*pabbrev hash*"))
     (erase-buffer)
     (if (not usage)
-	(insert "Usage hash nil"))
+        (insert "Usage hash nil"))
     (insert "Usage hash size "
-	    (number-to-string
-	     (hash-table-count usage)) "\n")
+            (number-to-string
+             (hash-table-count usage)) "\n")
     (if (not prefix)
-	(insert "Prefix hash nil")
+        (insert "Prefix hash nil")
       (insert "Prefix hash size "
-	      (number-to-string
-	       (hash-table-count prefix)) "\n"))
+              (number-to-string
+               (hash-table-count prefix)) "\n"))
     (insert "Usage hash:\n")
     (pabbrev-debug-print-hash usage)
     (insert "Prefix hash:\n")
@@ -1590,13 +1679,15 @@ to the dictionary."
   "Pretty print a hash."
   (if hash
       (progn
-	(pp hash (current-buffer))
-	(insert "\n")
-	(maphash
-	 (lambda(key value)
-	   (insert (concat "KEY: " key "\n"))
-	   (pp value (current-buffer)))
-	 hash))))
+        (pp hash (current-buffer))
+        (insert "\n")
+        (insert (hash-table-count hash))
+        (insert "\n")
+        (maphash
+         (lambda(key value)
+           (insert (concat "KEY: " key "\n"))
+           (pp value (current-buffer)))
+         hash))))
 
 
 ;; nobble pabbrev -- useful for profiling.
@@ -1606,41 +1697,6 @@ to the dictionary."
 ;;
 ;; nobble text properties...
 ;; (defun pabbrev-mark-add-word (bounds))
-
-
-
-;; Working.el hack. Use working.el if it's around, or don't if it's
-;; not.
-(eval-and-compile
-  (condition-case nil
-      (require 'working)
-    (error
-     (progn
-       (defmacro working-status-forms (message donestr &rest forms)
-         "Contain a block of code during which a working status is shown."
-         (list 'let (list (list 'msg message) (list 'dstr donestr)
-                          '(ref1 0))
-               (cons 'progn forms)))
-
-       (defun working-status (&optional percent &rest args)
-         "Called within the macro `working-status-forms', show the status."
-         (message "%s%s" (apply 'format msg args)
-                  (if (eq percent t) (concat "... " dstr)
-                    (format "... %3d%%"
-                            (or percent
-                                (floor (* 100.0 (/ (float (point))
-                                                   (point-max)))))))))
-
-       (defun working-dynamic-status (&optional number &rest args)
-         "Called within the macro `working-status-forms', show the status."
-         (message "%s%s" (apply 'format msg args)
-                  (format "... %c" (aref [ ?- ?/ ?| ?\\ ] (% ref1 4))))
-         (setq ref1 (1+ ref1)))
-
-       (put 'working-status-forms 'lisp-indent-function 2)))))
-
-
-
 
 (provide 'pabbrev)
 ;;; pabbrev.el ends here
