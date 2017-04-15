@@ -1689,6 +1689,20 @@ to the dictionary."
            (pp value (current-buffer)))
          hash))))
 
+(defun pabbrev-mode-on()
+  "Turn `pabbrev-mode' on."
+  ;; (make-local-hook 'pre-command-hook)
+  (add-hook 'pre-command-hook 'pabbrev-pre-command-hook nil t)
+  ;; (make-local-hook 'post-command-hook)
+  (add-hook 'post-command-hook 'pabbrev-post-command-hook nil t))
+
+(defun pabbrev-mode-off()
+  "Turn `pabbrev-mode' off."
+  ;; we have to remove the binding for tab. Other wise next time we
+  ;; switch the mode on, this binding will be found, and set for
+  ;; pabbrev-tab-previously-defined
+  (remove-hook 'pre-command-hook 'pabbrev-pre-command-hook t)
+  (remove-hook 'post-command-hook 'pabbrev-post-command-hook t))
 
 ;; nobble pabbrev -- useful for profiling.
 ;;
