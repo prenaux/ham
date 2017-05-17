@@ -185,12 +185,15 @@ the text to another HTML buffer."
 (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
 
 ;;*** JavaScript ********************************************************
+(require 'json-mode)
 (setq js-indent-level 2)
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
-(add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
 (add-to-list 'auto-mode-alist '("\\.jsw\\'" . js-mode))
 (add-to-list 'auto-mode-alist '("\\.jsr\\'" . js-mode))
 (add-to-list 'auto-mode-alist '("\\.jsx$" . js-mode))
+
+;;*** Json **************************************************************
+(add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
 
 ;;*** CoffeeScript ******************************************************
 (require 'coffee-mode)

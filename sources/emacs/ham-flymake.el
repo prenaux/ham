@@ -210,8 +210,11 @@
 ;;**********************************************************************
 (require 'flymake-json)
 
+;; If not already installed:
+;; > . hat nodejs
+;; > npm install -g jsonlint@1.6.x
 (Windows
- (setq flymake-json-executable (concat (getenv "WORK") "/ham/toolsets/nodejs/nt-x86/json")))
+ (setq flymake-json-executable (concat (getenv "WORK") "/ham/toolsets/nodejs/nt-x86/jsonlint")))
 (OSX
  (setq flymake-json-executable (concat (getenv "WORK") "/ham/toolsets/nodejs/osx-x86/bin/json")))
 
