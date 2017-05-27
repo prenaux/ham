@@ -1,8 +1,13 @@
-;;; google-c-style.el --- Google's C/C++ style for c-mode
+;;;
+;;; talansoft-c-style.el --- TalanSoft's C/C++ style for c-mode
+;;;
+;;; Based on Google's style but with proper handling of lambda expressions and
+;;; using always two spaces, never 4.
+;;;
 
 ;; Keywords: c, tools
 
-;; google-c-style.el is Copyright (C) 2008 Google Inc. All Rights Reserved.
+;; talansoft-c-style.el is Copyright (C) 2008 Google Inc. All Rights Reserved.
 ;;
 ;; It is free software; you can redistribute it and/or modify it under the
 ;; terms of either:
@@ -15,15 +20,11 @@
 ;;; Commentary:
 
 ;; Provides the google C/C++ coding style. You may wish to add
-;; `google-set-c-style' to your `c-mode-common-hook' after requiring this
+;; `talansoft-set-c-style' to your `c-mode-common-hook' after requiring this
 ;; file. For example:
 ;;
-;;    (add-hook 'c-mode-common-hook 'google-set-c-style)
+;;    (add-hook 'c-mode-common-hook 'talansoft-set-c-style)
 ;;
-;; If you want the RETURN key to go to the next line and space over
-;; to the right place, add this to your .emacs right after the load-file:
-;;
-;;    (add-hook 'c-mode-common-hook 'google-make-newline-indent)
 
 ;;; Code:
 
@@ -34,8 +35,8 @@
 ;; Wrapper function needed for Emacs 21 and XEmacs (Emacs 22 offers the more
 ;; elegant solution of composing a list of lineup functions or quantities with
 ;; operators such as "add")
-(defun google-c-lineup-expression-plus-4 (langelem)
-  "Indents to the beginning of the current C expression plus 4 spaces.
+(defun talansoft-c-lineup-expression-plus-2 (langelem)
+  "Indents to the beginning of the current C expression plus 2 spaces.
 
 This implements title \"Function Declarations and Definitions\"
 of the Google C++ Style Guide for the case where the previous
@@ -62,9 +63,9 @@ Suitable for inclusion in `c-offsets-alist'."
      ;; the token after the initial colon.
      ((looking-at ":\\s *")
       (goto-char (match-end 0))))
-    (vector (+ 4 (current-column)))))
+    (vector (+ 2 (current-column)))))
 
-(defconst google-c-style
+(defconst talansoft-c-style
   `((c-recognize-knr-p . nil)
     (c-enable-xemacs-performance-kludge-p . t) ; speed up indentation in XEmacs
     (c-basic-offset . 2)
@@ -104,7 +105,7 @@ Suitable for inclusion in `c-offsets-alist'."
                        defun-close-semi
                        list-close-comma
                        scope-operator))
-    (c-offsets-alist . ((arglist-intro google-c-lineup-expression-plus-4)
+    (c-offsets-alist . ((arglist-intro talansoft-c-lineup-expression-plus-2)
                         (func-decl-cont . ++)
                         (member-init-intro . ++)
                         (inher-intro . ++)
@@ -127,16 +128,30 @@ Suitable for inclusion in `c-offsets-alist'."
                         (statement-case-intro . +) ; case w/o {
                         (access-label . /)
                         (innamespace . 0))))
-  "Google C/C++ Programming Style.")
+  "TalanSoft C/C++ Programming Style.")
 
-(defun google-set-c-style ()
-  "Set the current buffer's c-style to Google C/C++ Programming
+(defun talansoft-set-c-style ()
+  "Set the current buffer's c-style to TalanSoft C/C++ Programming
   Style. Meant to be added to `c-mode-common-hook'."
   (interactive)
   (make-local-variable 'c-tab-always-indent)
   (setq c-tab-always-indent t)
-  (c-add-style "Google" google-c-style t))
+  (c-add-style "TalanSoft" talansoft-c-style t)
+)
 
-(provide 'google-c-style)
-;;; google-c-style.el ends here
+(defadvice c-lineup-arglist (around my activate)
+  "Improve indentation of continued C++11 lambda function opened as argument."
+  (setq ad-return-value
+        (if (and (equal major-mode 'c++-mode)
+                 (ignore-errors
+                   (save-excursion
+                     (goto-char (c-langelem-pos langelem))
+                     ;; Detect "[...](" or "[...]{". preceded by "," or "(",
+                     ;;   and with unclosed brace.
+                     ;; (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$"))))
+                     (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[(\\(->\\)?{][^}]*$"))))
+            0                           ; no additional indent
+          ad-do-it)))                   ; default behavior
 
+(provide 'talansoft-c-style)
+;;; talansoft-c-style.el ends here

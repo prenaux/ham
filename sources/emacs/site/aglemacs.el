@@ -24,9 +24,6 @@
          (setq truncate-lines t)
          (message "Buffer is set to fundamental mode because it is large.")
        )
-     (progn
-       (ni-word-wrap-on)
-     )
    ))
 
  (add-hook 'find-file-hook 'ni-find-file-hook-on-file-opened)
@@ -163,8 +160,8 @@ the text to another HTML buffer."
 
 ;;*** C/C++ Style *******************************************************
 (NotBatchMode
- (require 'google-c-style)
- (add-hook 'c-mode-common-hook 'google-set-c-style)
+ (require 'talansoft-c-style)
+ (add-hook 'c-mode-common-hook 'talansoft-set-c-style)
 )
 
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
@@ -762,7 +759,7 @@ BEG and END (region to sort)."
  (setq adaptive-wrap-extra-indent 2)
 
  (set-default 'truncate-partial-width-windows nil)
- (set-default 'truncate-lines nil)
+ (set-default 'truncate-lines t)
  (setq visual-line-fringe-indicators (quote (left-curly-arrow right-curly-arrow)))
 
  (defun ni-word-wrap-on ()
