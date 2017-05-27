@@ -1,17 +1,31 @@
 #!/bin/bash
-for branch in $(git branch --merged master | grep origin | grep -v develop | grep -v master | sed -E "s|^ *origin/||g")
+if [ $1 == "noprune" ]; then
+    echo "# SKIPPED: git fetch --prune origin"
+    shift
+else
+    echo "# git fetch --prune origin"
+    git fetch --prune origin
+fi
+
+echo "# local branches"
+for branch in $(git branch --merged master | grep -v develop | grep -v master | sed -E "s|^ *origin/||g")
 do
-    echo "I/Deleting local branch '$branch'."
     if [ "$1" = "doit_local" ]; then
+        echo "I/Deleting local branch '$branch'."
         git branch -d $branch
+    else
+        echo "I/Would delete local branch '$branch'."
     fi
 done
 
+echo "# remote branches"
 for branch in $(git branch -r --merged master | grep origin | grep -v develop | grep -v master | sed -E "s|^ *origin/||g")
 do
-    echo "I/Deleting remote branch '$branch'."
     if [ "$1" = "doit_remote" ]; then
+        echo "I/Deleting remote branch '$branch'."
         git push origin $branch --delete
+    else
+        echo "I/Would delete remote branch '$branch'."
     fi
 done
 
