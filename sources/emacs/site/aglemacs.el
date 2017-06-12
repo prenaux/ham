@@ -192,6 +192,9 @@ the text to another HTML buffer."
 ;;*** Json **************************************************************
 (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
 
+;;*** GraphQL ***********************************************************
+(require 'graphql-mode)
+
 ;;*** CoffeeScript ******************************************************
 (require 'coffee-mode)
 (defun coffee-custom ()
