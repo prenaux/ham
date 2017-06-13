@@ -212,7 +212,7 @@
 ;;     line is not blank, they use the text on the current line.
 ;;     Finally, the setext commands will prompt for heading text if
 ;;     there is no active region and the current line is blank.
-;;     
+;;
 ;;     `C-c C-t h` inserts a heading with automatically chosen type and
 ;;     level (both determined by the previous heading).  `C-c C-t H`
 ;;     behaves similarly, but uses setext (underlined) headings when
@@ -3195,10 +3195,9 @@ Assumes match data is available for `markdown-regex-italic'."
     (define-key map (kbd "C-c >") 'markdown-indent-region)
     (define-key map (kbd "C-c <") 'markdown-exdent-region)
     ;; Visibility cycling
-    (define-key map (kbd "<tab>") 'markdown-cycle)
+    (define-key map (kbd "<M-tab>") 'markdown-cycle)
     (define-key map (kbd "<S-iso-lefttab>") 'markdown-shifttab)
     (define-key map (kbd "<S-tab>")  'markdown-shifttab)
-    (define-key map (kbd "<backtab>") 'markdown-shifttab)
     ;; Header navigation
     (define-key map (kbd "C-c C-n") 'outline-next-visible-heading)
     (define-key map (kbd "C-c C-p") 'outline-previous-visible-heading)
