@@ -19,4 +19,4 @@ fi
 
 export ARCH="$1"
 export DIR="$2"
-7z a -mmt=on -mx=9 -ms=on -mhc=on -mtc=off -xr\!*/.git/* -xr\!*/.hg/* "./$ARCH" "$DIR"
+7z a -mmt=on -mx=9 -ms=on -mhc=on -mtc=off -xr\!*/.git/* -xr\!*/.hg/* "$ARCH" "$DIR"
