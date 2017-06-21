@@ -10,7 +10,7 @@ fi
 echo "# local branches"
 for branch in $(git branch --merged master | grep -v develop | grep -v master | sed -E "s|^ *origin/||g")
 do
-    if [ "$1" = "doit_local" ]; then
+    if [ "$1" == "doit_local" ]; then
         echo "I/Deleting local branch '$branch'."
         git branch -d $branch
     else
@@ -21,7 +21,7 @@ done
 echo "# remote branches"
 for branch in $(git branch -r --merged master | grep origin | grep -v develop | grep -v master | sed -E "s|^ *origin/||g")
 do
-    if [ "$1" = "doit_remote" ]; then
+    if [ "$1" == "doit_remote" ]; then
         echo "I/Deleting remote branch '$branch'."
         git push origin $branch --delete
     else
