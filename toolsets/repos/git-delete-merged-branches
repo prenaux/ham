@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ $1 == "noprune" ]; then
+if [ "$1" == "noprune" ]; then
     echo "# SKIPPED: git fetch --prune origin"
     shift
 else
