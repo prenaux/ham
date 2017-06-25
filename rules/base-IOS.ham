@@ -87,7 +87,10 @@ else {
     IPHONE_SDK_DIR = $(IPHONE_SDK_BASE_DIR) ;
   }
   else {
-    IPHONE_SDK_DIR = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/ ;
+    IPHONE_SDK_DIR = /Applications/Xcode-beta.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/ ;
+    if ! [ FExists $(IPHONE_SDK_DIR) ] {
+      IPHONE_SDK_DIR = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/ ;
+    }
   }
 
   CLANG_BASE_FLAGS =
@@ -99,8 +102,16 @@ else {
     -D__IPHONE_OS_VERSION_MIN_REQUIRED=$(IOS_MINVER)0000
   ;
 
+  # iOS Latest SDK
+  if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS.sdk ] {
+    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS.sdk ;
+    CLANG_BASE_FLAGS +=
+      -isysroot "\"$(IPHONE_SDK_DIR)\""
+      -fmessage-length=0
+    ;
+  }
   # iOS 10.2 SDK
-  if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS10.2.sdk ] {
+  else if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS10.2.sdk ] {
     IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS10.2.sdk ;
     CLANG_BASE_FLAGS +=
       -isysroot "\"$(IPHONE_SDK_DIR)\""
