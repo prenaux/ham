@@ -12,8 +12,8 @@ case $HAM_OS in
         ;;
     OSX*)
         . ham-toolset-import.sh clang_33
-        export OSPLAT=X86
-        export BUILD_BIN_LOA=osx-x86
+        export OSPLAT=X64
+        export BUILD_BIN_LOA=osx-x64
         ;;
     LINUX)
         . ham-toolset-import.sh gcc_470
