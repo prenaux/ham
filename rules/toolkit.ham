@@ -34,7 +34,7 @@ else if $(OS) = LINUX {
   }
 }
 else if $(NT) {
-  BUILD_BIN_LOA ?= nt-x86 ;
+  BUILD_BIN_LOA ?= $(BIN_LOA) ;
   BUILD_SUFEXE = .exe ;
 }
 else {

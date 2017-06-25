@@ -6,9 +6,7 @@ if [ $? != 0 ]; then return 1; fi
 # path setup
 case $HAM_OS in
     NT*)
-        . ham-toolset-import.sh msvc_15_x86
-        # echo "I/Default Toolset: Using VC10 legacy package"
-        # . ham-toolset-import.sh msvc_10_x86
+        . ham-toolset-import.sh msvc_15_x64
         ;;
     OSX*)
         . ham-toolset-import.sh clang_33
