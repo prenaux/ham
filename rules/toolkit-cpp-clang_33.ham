@@ -57,8 +57,8 @@ if $(OSX) {
   # strip removed is not removed.
   #
   if $(BUILD) = ra {
-    LINKFLAGS_EXE += -s -dead_strip ;
-    LINKFLAGS_DLL += -s -dead_strip ;
+    LINKFLAGS_EXE += -dead_strip ;
+    LINKFLAGS_DLL += -dead_strip ;
   }
   LINKLIBS += -framework Foundation -framework CoreServices -framework AudioUnit -framework CoreAudio -framework Cocoa -framework IOKit -framework OpenGL -framework AGL -lstdc++ -lpthread -ldl ;
 }
