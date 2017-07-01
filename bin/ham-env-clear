@@ -1,4 +1,5 @@
 #!/bin/bash
 TO_UNSET="`ham-env | grep -E -vw 'WORK|HAM_OS|HAM_HOME|HAM_CMD|HAM_BIN_LOA|HAM_NO_VER_CHECK' | cut -d= -f1`"
+# echo "TO_UNSET: $TO_UNSET"
 unset $TO_UNSET
 . "$HAM_HOME/bin/ham-bash-setenv.sh"

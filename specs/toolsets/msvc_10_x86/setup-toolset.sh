@@ -1,3 +1,8 @@
+#!/bin/bash
+
+toolset_import xslt_tools
+if [ $? != 0 ]; then return 1; fi
+
 TAG=msvc_10_x86
 echo I/Setting up $TAG
 
