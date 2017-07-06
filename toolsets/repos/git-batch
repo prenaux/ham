@@ -2,7 +2,6 @@
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 GIT_BATCH_DEFAULT_REMOTE=origin
-GIT_BATCH_DEFAULT_BRANCH=master
 
 # the help
 usage() {
@@ -20,24 +19,24 @@ usage() {
     echo "  -f             Fetch all branches (download) from all remotes"
     echo "  -l             Print the last 4 commit messages"
     echo "  -L count       Print the last 'count' commit messages"
-    echo "  -m             Fetch & merge (pull) from '$GIT_BATCH_DEFAULT_REMOTE' to '$GIT_BATCH_DEFAULT_BRANCH'"
-    echo "  -M remote      Fetch & merge (pull) from the specified remote to '$GIT_BATCH_DEFAULT_BRANCH'"
+    echo "  -m             Fetch & merge (pull) from '$GIT_BATCH_DEFAULT_REMOTE' to 'current branch'"
+    echo "  -M remote      Fetch & merge (pull) from the specified remote to 'current branch'"
     echo "  -u             Push all (upload) to '$GIT_BATCH_DEFAULT_REMOTE'"
     echo "  -U remote      Push all (upload) to the specified remote"
     echo "  -t             Push all tags (upload) to '$GIT_BATCH_DEFAULT_REMOTE'"
     echo "  -T remote      Push all tags (upload) to the specified remote"
     echo "  -s             Status of the repo"
-    echo "  -y             Fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into '$GIT_BATCH_DEFAULT_BRANCH',"
+    echo "  -y             Fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into 'current branch',"
     echo "                 then push all to '$GIT_BATCH_DEFAULT_REMOTE'. Alias for '-f -m -u -t'."
     echo ""
     echo "example:"
-    echo "  # fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into '$GIT_BATCH_DEFAULT_BRANCH',"
+    echo "  # fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into 'current branch',"
     echo "  # then push all to '$GIT_BATCH_DEFAULT_REMOTE'"
     echo "  git-batch -f -m -u"
-    echo "  # fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into '$GIT_BATCH_DEFAULT_BRANCH',"
+    echo "  # fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into 'current branch',"
     echo "  # then push all to '$GIT_BATCH_DEFAULT_REMOTE'"
     echo "  git-batch -y"
-    echo "  # fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into '$GIT_BATCH_DEFAULT_BRANCH',"
+    echo "  # fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into 'current branch',"
     echo "  # then push all to '$GIT_BATCH_DEFAULT_REMOTE' and to 'bonobo'"
     echo "  git-batch -f -m -u -U bonobo"
     echo ""
@@ -61,6 +60,7 @@ fi
 # process the arguments
 while getopts "dD:eE:fhlL:mM:uU:tT:sy" OPT
 do
+    export GIT_CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
     case "$OPT" in
         h)
             usage
@@ -105,10 +105,10 @@ do
             CMD="git push --tags $OPTARG"
             ;;
         m)
-            CMD="git pull $GIT_BATCH_DEFAULT_REMOTE $GIT_BATCH_DEFAULT_BRANCH"
+            CMD="git pull origin ${GIT_CURRENT_BRANCH}"
             ;;
         M)
-            CMD="git pull $OPTARG $GIT_BATCH_DEFAULT_BRANCH"
+            CMD="git pull $OPTARG ${GIT_CURRENT_BRANCH}"
             ;;
         y)
             CMD="git-batch -f -m -u -t"
