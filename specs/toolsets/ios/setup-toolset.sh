@@ -28,6 +28,24 @@ case $HAM_OS in
     OSX)
         # Default iOS arch
         export IOS_ARCH=arm64
+
+        if [ -d "/Applications/Xcode-beta.app" ]; then
+            echo "I/Xcode-beta detected checking that it is the selected Xcode..."
+            INSTALLED_DIR=`clang --version | grep "InstalledDir:"`
+            if [[ "$INSTALLED_DIR" == "InstalledDir: /Applications/Xcode-beta.app/"* ]]; then
+                echo "I/All set!"
+            else
+                echo -e "\033[1;31m"
+                echo "------------------------------------------------------------------"
+                echo "  Xcode-beta is installed, it must be set as the active Xcode."
+                echo "------------------------------------------------------------------"
+                echo "  To do so use the following in Terminal.app:"
+                echo "    sudo xcode-select -s /Applications/Xcode-beta.app/"
+                echo "------------------------------------------------------------------"
+                echo -e "\033[0m"
+                return 1
+            fi
+        fi
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
