@@ -60,7 +60,6 @@ fi
 # process the arguments
 while getopts "dD:eE:fhlL:mM:uU:tT:sy" OPT
 do
-    export GIT_CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
     case "$OPT" in
         h)
             usage
@@ -105,9 +104,11 @@ do
             CMD="git push --tags $OPTARG"
             ;;
         m)
+            export GIT_CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
             CMD="git pull origin ${GIT_CURRENT_BRANCH}"
             ;;
         M)
+            export GIT_CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
             CMD="git pull $OPTARG ${GIT_CURRENT_BRANCH}"
             ;;
         y)
