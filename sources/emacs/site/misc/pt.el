@@ -52,12 +52,6 @@
   :type 'string
   :group 'pt)
 
-(defcustom pt-work-executable
-  "pt"
-  "Name of the pt-work executable to use."
-  :type 'string
-  :group 'pt)
-
 (defcustom pt-arguments
   (list "--smart-case" "-e")
   "Default arguments passed to pt."
@@ -72,7 +66,7 @@
   (set (make-local-variable 'truncate-lines) t)
   (set (make-local-variable 'compilation-disable-input) t)
   (let ((symbol 'compilation-pt)
-        (pattern '("^\\([^:\n]+?\\):\\([0-9]+\\):[^0-9]" 1 2)))
+        (pattern '("^\\(\\([A-Za-z]:\\)?[^:\n]+?\\):\\([0-9]+\\):[^0-9]" 1 2)))
     (set (make-local-variable 'compilation-error-regexp-alist) (list symbol))
     (set (make-local-variable 'compilation-error-regexp-alist-alist) (list (cons symbol pattern))))
   (set (make-local-variable 'compilation-error-face) grep-hit-face))
@@ -101,6 +95,12 @@
 
      )))
 
+(defun pt-work-get-dirs (dir)
+  (list
+   (concat (getenv "WORK") "/" x "/sources")
+   (concat (getenv "WORK") "/" x "/scripts"))
+)
+
 (defvar pt-work-regexp-history-search nil
   "History for searches of pt-work-regexp.")
 
@@ -122,18 +122,19 @@
                )
   )
   (let (
-        (dir-args (-map (lambda (x) (concat "-D " x)) (s-split " " dirs)))
+        (dir-args (-flatten
+                   (-map (lambda (x) (pt-work-get-dirs x))
+                         (s-split " " dirs))))
         (pt-full-buffer-name (concat "*pt-work-" regexp "*"))
        )
     (compilation-start
      (mapconcat 'identity
-                (append (list pt-work-executable)
-                        dir-args
-                        '("--")
+                (append (list pt-executable)
                         pt-arguments
                         args
                         '("--nogroup" "--nocolor" "--")
-                        (list (shell-quote-argument regexp))) " ")
+                        (list (shell-quote-argument regexp))
+                        dir-args) " ")
      'pt-search-mode
 
      (when pt-use-search-in-buffer-name

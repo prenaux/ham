@@ -175,7 +175,6 @@ If the new path's directories does not exist, create them."
   (setq pt-executable (concat "\"" HAM_HOME "/bin/nt-x86/pt.exe" "\"")))
  (OSX
   (setq pt-executable (concat "\"" HAM_HOME "/bin/osx-x86/pt"  "\"")))
- (setq pt-work-executable (concat "\"" HAM_HOME "/bin/pt-work" "\""))
 )
 
 ;;;======================================================================
