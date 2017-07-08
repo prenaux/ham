@@ -44,10 +44,17 @@
 (require 'compile)
 (require 'grep)
 (require 'thingatpt)
+(require 'dash)
 
 (defcustom pt-executable
   "pt"
   "Name of the pt executable to use."
+  :type 'string
+  :group 'pt)
+
+(defcustom pt-work-executable
+  "pt"
+  "Name of the pt-work executable to use."
   :type 'string
   :group 'pt)
 
@@ -93,6 +100,49 @@
      (regexp-quote regexp)
 
      )))
+
+(defvar pt-work-regexp-history-search nil
+  "History for searches of pt-work-regexp.")
+
+(defvar pt-work-regexp-history-dirs nil
+  "History for dirs of pt-work-regexp.")
+
+(defun pt-work-regexp (regexp dirs &optional args)
+  "Run a pt-work search with REGEXP rooted at the specified WORK directories."
+  (interactive (list (read-from-minibuffer "Pt search for: "
+                                           (-first-item (-non-nil
+                                                         (list (thing-at-point 'symbol)
+                                                               (-last-item pt-work-regexp-history-search)))
+                                           )
+                                           nil nil 'pt-work-regexp-history-search
+                     )
+                     (read-from-minibuffer "Dirs: " (-last-item pt-work-regexp-history-dirs)
+                                           nil nil 'pt-work-regexp-history-dirs
+                     )
+               )
+  )
+  (let (
+        (dir-args (-map (lambda (x) (concat "-D " x)) (s-split " " dirs)))
+        (pt-full-buffer-name (concat "*pt-work-" regexp "*"))
+       )
+    (compilation-start
+     (mapconcat 'identity
+                (append (list pt-work-executable)
+                        dir-args
+                        '("--")
+                        pt-arguments
+                        args
+                        '("--nogroup" "--nocolor" "--")
+                        (list (shell-quote-argument regexp))) " ")
+     'pt-search-mode
+
+     (when pt-use-search-in-buffer-name
+       (function (lambda (ignore)
+                   pt-full-buffer-name)))
+
+     (regexp-quote regexp)
+
+    )))
 
 ;;;###autoload
 (defun pt-regexp-file-pattern (regexp directory pattern)
