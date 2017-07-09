@@ -45,6 +45,7 @@
 (require 'grep)
 (require 'thingatpt)
 (require 'dash)
+(require 's)
 
 (defcustom pt-executable
   "pt"
@@ -97,8 +98,8 @@
 
 (defun pt-work-get-dirs (dir)
   (list
-   (concat (getenv "WORK") "/" x "/sources")
-   (concat (getenv "WORK") "/" x "/scripts"))
+   (concat "\"" (getenv "WORK") "/" x "/sources" "\"")
+   (concat "\"" (getenv "WORK") "/" x "/scripts" "\""))
 )
 
 (defvar pt-work-regexp-history-search nil
