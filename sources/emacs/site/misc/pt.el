@@ -66,7 +66,7 @@
   (set (make-local-variable 'truncate-lines) t)
   (set (make-local-variable 'compilation-disable-input) t)
   (let ((symbol 'compilation-pt)
-        (pattern '("^\\(\\([A-Za-z]:\\)?[^:\n]+?\\):\\([0-9]+\\):[^0-9]" 1 2)))
+        (pattern '("^\\([A-Za-z]:\\)?\\([^:\n]+?\\):\\([0-9]+\\):[^0-9]" 2 3)))
     (set (make-local-variable 'compilation-error-regexp-alist) (list symbol))
     (set (make-local-variable 'compilation-error-regexp-alist-alist) (list (cons symbol pattern))))
   (set (make-local-variable 'compilation-error-face) grep-hit-face))
