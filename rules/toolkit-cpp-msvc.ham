@@ -155,11 +155,6 @@ rule tkCC++Build
   ObjectOptimFlags $(<) : -Gy- ;
   # Make sure link flags are set...
   LINKFLAGS on $(PKGTARGETF) ?= $(LINKFLAGS) ;
-  # Functions folding, reduces size of the DLLs quite a lot
-  if ! ( $(DEBUG) = 1 ) && ! ( $(OPT_NOOPT) = 1 ) {
-    LINKFLAGS on $(PKGTARGETF) += -OPT:REF,ICF=3 ;
-    LINKFLAGS on $(PKGTARGETF) += -INCREMENTAL:NO ;
-  }
   # No Win98
   # LINKFLAGS += -OPT:NOWIN98 ; # Deprecated in VC9
   # Large Address Aware...

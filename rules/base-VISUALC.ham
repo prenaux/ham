@@ -74,7 +74,7 @@ AR ?= lib ;
 
 CC          ?= $(HAM_CL) -nologo ;
 C++         ?= $(HAM_CL) -nologo ;
-LINK        ?= $(HAM_LINK) -nologo -INCREMENTAL:NO ;
+LINK        ?= $(HAM_LINK) -nologo ;
 LINKFLAGS   ?= "" ;
 LINKLIBS    ?= kernel32.lib ;
 OPTIM       ?= "" ;
