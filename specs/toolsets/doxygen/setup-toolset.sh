@@ -19,6 +19,20 @@ case $HAM_OS in
             fi
         fi
         ;;
+    OSX*)
+        export DOXYGEN_DIR="${HAM_TOOLSET_DIR}/osx-x86/Resources/"
+        export PATH="${DOXYGEN_DIR}":${PATH}
+        if [ ! -e "$DOXYGEN_DIR/doxygen" ]; then
+            toolset_dl doxygen doxygen_osx-x86
+            if [ ! -e "$DOXYGEN_DIR" ]; then
+                echo "E/osx-x86 folder doesn't exist in the toolset"
+                return 1
+            fi
+        fi
+        if [ ! -e "$DOXYGEN_DIR/doxygen_187" ]; then
+            ln -s "$DOXYGEN_DIR/doxygen" "$DOXYGEN_DIR/doxygen_187"
+        fi
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
