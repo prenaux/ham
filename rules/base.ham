@@ -2702,7 +2702,7 @@ rule Bin2HDataSubDir {
   local DATA = ;
   local EXTS = $(1) ;
   if ! $(EXTS) {
-    EXTS = abm bmp dds jpg jpeg png tga xml wav flac ogg opus mp3 hdr psd avi ogv ogw mp4 ipcam webcam ;
+    EXTS = abm bmp dds jpg jpeg png tga xml wav flac ogg opus mp3 hdr psd avi ogv ogw mp4 ipcam webcam metal cgc cgo ;
   }
   local DATA_SRC = [ DataGlob [ FDirName $(SUBDIR) data ] : : $(EXTS) ] ;
   # ECHO "DATA_SRC:" $(DATA_SRC) ;
