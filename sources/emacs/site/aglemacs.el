@@ -1052,6 +1052,8 @@ Version 2017-01-27"
  (define-key global-map [S-ns-drag-file] 'ns-insert-filename)
  (define-key global-map [C-ns-drag-file] 'ns-insert-filename-as-lines)
  (define-key global-map [ns-drag-file] 'ns-find-file-in-frame)
+ (define-key global-map [M-s-drag-n-drop] 'ns-find-file-in-frame)
+ (define-key global-map [C-M-s-drag-n-drop] 'ns-find-file-in-frame)
 
  (defun ns-insert-filename ()
    "Insert contents of first elWindow of `ns-input-file' at point."
