@@ -17,12 +17,7 @@ AssertVarDefined HAM_TOOLSET_VER ;
 
 if $(OS) = MACOSX {
   BUILD_BIN_LOA ?= $(BIN_LOA) ;
-  if $(BUILD_BIN_LOA) = osx-x86 {
-    BUILD_SUFEXE = .x86 ;
-  }
-  else {
-    BUILD_SUFEXE = .x64 ;
-  }
+  BUILD_SUFEXE = $(SUFEXE) ;
 }
 else if $(OS) = LINUX {
   BUILD_BIN_LOA ?= $(BIN_LOA) ;
@@ -194,7 +189,7 @@ MakeLocate tkdir : $(TK_DIR_LIBS) ;
 
 TK_DIR_JARS ?= [ FDirName $(TK_DIR) libs jars ] ;
 
-if $(NO_DLL) {
+if $(NO_DLL) = 1 {
   SUFDLL = $(SUFLIB) ;
   TK_DIR_DLL = $(TK_DIR_LIBS) ;
 }

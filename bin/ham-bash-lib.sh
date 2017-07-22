@@ -116,7 +116,13 @@ unxpath()
 
 abspath() {
     filename=$(basename "$1")
-    filename="${filename%.*}.${filename##*.}"
+    filenamenoext=${filename%.*}
+    ext=${filename##*.}
+    if [[ "$ext" == "$filenamenoext" ]]; then
+        filename="${filenamenoext}"
+    else
+        filename="${filenamenoext}.${ext}"
+    fi
     dirname=$(dirname "$1")
     dir=`nativedir "$dirname"`
     echo "$dir/$filename"

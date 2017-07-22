@@ -11,10 +11,11 @@ PREFIXDLL ?= lib ;
 CHMOD   ?= chmod ;
 
 if $(OS) = MACOSX {
-  SUFDLL  ?= .dylib ;
+  SUFEXE = "" ;
+  SUFDLL = .dylib ;
 }
 else {
-  SUFDLL  ?= .so ;
+  SUFDLL ?= .so ;
 }
 
 C++FLAGS    ?= ;
