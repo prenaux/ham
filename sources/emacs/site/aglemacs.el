@@ -656,30 +656,75 @@ BEG and END (region to sort)."
 (NotBatchMode
  (agl-begin-time-block "WindMove")
 
- (defconst agl-kMadeFrame 0)
+ (defun agl-find-visible-shell ()
+   "find the first visible shell"
+   ;; (save-some-buffers)
+   (let ((hasVisibleShell nil)
+         (currentFrame (selected-frame))
+         (currentWindow (selected-window))
+         (currentBufferName (buffer-name)))
+     (dolist (elFrame (frame-list))
+       ;; (message "... currentBufferName: %s" currentBufferName)
+       (select-frame elFrame)
+       ;; (message "... frame: %s" elFrame)
+       (dolist (elWindow (window-list))
+         (select-window elWindow)
+         ;; (message "... window: %s" elWindow)
+         ;; (message "... window-buffer-name: %s" (buffer-name))
+         ;; (message "... window-major-mode: %s" major-mode)
+         (if (not hasVisibleShell)
+             (if (string= "ham-shell-mode" major-mode)
+                 (progn
+                   ;; (message "... window-is-visible-shell: %s" major-mode)
+                   (set 'hasVisibleShell (list elFrame elWindow)))
+             )
+           ;; (message "... window-already-ran-command")
+         )
+       )
+     )
+     (select-window currentWindow)
+     hasVisibleShell
+   )
+ )
 
- (defun agl-make-frame () ""
+ (defun agl-select-visible-shell-window ()
+   "select the first visible shell and make it active"
    (interactive)
-   (defconst agl-kMadeFrame 1)
-   (make-frame-command)
-   (tool-bar-mode -1)
-   (other-frame 1)
-   (ham-shell-unique))
+   (let ((visibleShell (agl-find-visible-shell)))
+     (let ((visibleFrame (car visibleShell))
+           (visibleWindow (car (cdr visibleShell))))
+       (if visibleShell
+           (progn
+             (raise-frame visibleFrame)
+             (select-window visibleWindow)
+             (end-of-buffer)
+             visibleWindow
+           )
+         (progn
+           (message "No ham-shell-mode window visible!")
+           nil)
+       )))
+ )
 
- (defun agl-other-frame () ""
+ (defun agl-run-last-shell-command ()
+   "select the first visible shell and run the last command ran in it"
+   (interactive)
+   (save-some-buffers)
+   (let ((visibleShellWindow (agl-select-visible-shell-window)))
+     (if visibleShellWindow
+         (progn
+           (agl-previous-input)
+           (comint-send-input)
+         )
+     ))
+ )
+
+ (defun agl-other-frame ()
+   "switch to the other frame, or create a new one if there isn't one"
    (interactive)
    (if (< (length (visible-frame-list)) 2)
-       (agl-make-frame)
+       (make-frame-command)
      (other-frame 1)))
-
- ;; Save the current buffer, switch to the other frame, and run the latest command.
- ;; This works only if the other frame is a shell.
- (defun agl-other-frame-and-run-last-shell-command () ""
-   (interactive)
-   (save-buffer)
-   (agl-other-frame)
-   (agl-previous-input)
-   (comint-send-input))
 )
 
 ;;;======================================================================

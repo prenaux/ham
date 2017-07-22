@@ -117,10 +117,19 @@
    )
   )
 
-(defun ham-shell-unique ()
+(defun ham-shell-other-window ()
+  "Open a `ham-shell' in a new window."
   (interactive)
-  (ham-shell)
-  (rename-uniquely))
+  (let ((buf (ham-shell)))
+    (switch-to-buffer (other-buffer buf))
+    (switch-to-buffer-other-window buf)))
+
+(defun ham-shell-other-frame ()
+  "Open a `ham-shell' in a new frame."
+  (interactive)
+  (let ((buf (ham-shell)))
+    (switch-to-buffer (other-buffer buf))
+    (switch-to-buffer-other-frame buf)))
 
 ;;;======================================================================
 ;;; Hamfile mode

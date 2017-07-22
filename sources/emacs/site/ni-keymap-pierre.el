@@ -20,6 +20,11 @@
   (global-set-key (kbd "<C-j>") 'newline)
  )
 
+ (OSX
+  (global-set-key (kbd "<home>") 'move-beginning-of-line)
+  (global-set-key (kbd "<end>") 'move-end-of-line)
+ )
+
  ;; isearch - the defaults are _so_ annoying...
  (define-key isearch-mode-map (kbd "<backspace>") 'isearch-del-char) ; bs means bs
  (define-key isearch-mode-map (kbd "<delete>")    'isearch-delete-char)  ; delete means delete
@@ -29,17 +34,9 @@
  (global-set-key '[(meta up)] 'agl-search-word-backward)
  (global-set-key '[(meta down)] 'agl-search-word-forward)
 
- ;; Open the other frame and run the latest command
- ;; This works only if the other frame is a shell of course...
- (define-key global-map [(control return)] 'agl-other-frame-and-run-last-shell-command)
-
  ;; Move to the 'next' window (in clockwise order)
  (global-set-key (key "C-1") 'other-window)
  (global-set-key (key "C-2") 'other-window)
- ;; Move to the other frame (other OS window)
- (global-set-key (key "M-9") 'agl-make-frame)
- (global-set-key (key "M-`") 'agl-other-frame)
- (global-set-key (key "C-`") 'agl-other-frame)
 
  ;; Forward/Backward paragraph
  (global-set-key (key "M-p") 'backward-paragraph)
@@ -54,8 +51,13 @@
  (global-set-key [(meta delete)] 'kill-current-buffer)
 
  ;; Shell
- (global-set-key (kbd "C-0") 'ham-shell-unique)
  (global-set-key (kbd "M-0") 'erase-buffer)
+ (global-set-key (kbd "C-0") 'ham-shell)
+ (global-set-key (kbd "C-)") 'ham-shell-other-frame) ;; C-S-0
+ (global-set-key (key "M-`") 'agl-other-frame) ;;
+ (global-set-key (key "C-`") 'agl-other-frame)
+ (define-key global-map [(meta return)] 'agl-select-visible-shell-window)
+ (define-key global-map [(control return)] 'agl-run-last-shell-command)
 
  ;; PgUp/Dn
  (global-set-key (kbd "C-v") 'scroll-up-command)
@@ -108,13 +110,6 @@
  ;; Begin/end of buffer
  (define-key global-map (kbd "C-S-a") 'beginning-of-buffer)
  (define-key global-map (kbd "C-S-e") 'end-of-buffer)
-
- ;; Emacs on OSX, put back the keys to a sane (windows/linux-like) default
- (OSX
-  (global-set-key [ns-drag-file] 'ns-find-file)
-  (setq ns-pop-up-frames nil)
-  (global-set-key (kbd "<home>") 'move-beginning-of-line)
-  (global-set-key (kbd "<end>") 'move-end-of-line))
 
  (global-set-key (kbd "C-S-j") 'macro-join-line)
 
