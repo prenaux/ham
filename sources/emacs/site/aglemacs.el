@@ -651,10 +651,10 @@ BEG and END (region to sort)."
 )
 
 ;;;======================================================================
-;;; WindMove
+;;; Move to visible shell
 ;;;======================================================================
 (NotBatchMode
- (agl-begin-time-block "WindMove")
+ (agl-begin-time-block "MoveToVisibleShell")
 
  (defun agl-find-visible-shell ()
    "find the first visible shell"
@@ -718,13 +718,6 @@ BEG and END (region to sort)."
          )
      ))
  )
-
- (defun agl-other-frame ()
-   "switch to the other frame, or create a new one if there isn't one"
-   (interactive)
-   (if (< (length (visible-frame-list)) 2)
-       (make-frame-command)
-     (other-frame 1)))
 )
 
 ;;;======================================================================

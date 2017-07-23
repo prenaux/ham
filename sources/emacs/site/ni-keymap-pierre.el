@@ -54,8 +54,8 @@
  (global-set-key (kbd "M-0") 'erase-buffer)
  (global-set-key (kbd "C-0") 'ham-shell)
  (global-set-key (kbd "C-)") 'ham-shell-other-frame) ;; C-S-0
- (global-set-key (key "M-`") 'agl-other-frame) ;;
- (global-set-key (key "C-`") 'agl-other-frame)
+ (global-set-key (key "M-`") 'other-frame)
+ (global-set-key (key "C-`") 'other-frame)
  (define-key global-map [(meta return)] 'agl-select-visible-shell-window)
  (define-key global-map [(control return)] 'agl-run-last-shell-command)
 
