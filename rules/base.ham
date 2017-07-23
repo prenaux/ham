@@ -1953,6 +1953,9 @@ rule FGrist
 
 }
 
+rule FGristFilesForDepends {
+  return [ Subst [ FGristFiles $(<) ] : "%!" : "%/" ] ;
+}
 
 rule FGristFiles
 {

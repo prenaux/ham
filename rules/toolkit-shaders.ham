@@ -1,0 +1,169 @@
+SHADER_SUFOBJ = .air ;
+SHADER_SUFLIB = .metallib ;
+
+#----------------------------------------------------------------------
+#     COMMON
+#----------------------------------------------------------------------
+
+# /ShaderObject object : source ;
+#
+# Compile s a single _source_ file into _object_. The @Main and @Library
+# rules use it to compile sources.
+#
+# Causes _source_ to be scanned for #include directives and calls @HdrRule
+# to make all included files dependencies of _object_.
+#
+# Calls one of the following rules depending on the suffix to do the
+# actual compilation:
+#
+rule shaderObject
+{
+  Clean clean : $(<) ;
+  MakeLocate $(<) : $(LOCATE_TARGET) ;
+  SEARCH on $(>) = $(SEARCH_SOURCE) ;
+  HDRS on $(<) = $(SEARCH_SOURCE) $(SUBDIRHDRS) $(SHADER_HDRS) ;
+  HDRRULE on $(>) = HdrRule ;
+  HDRSCAN on $(>) = $(HDRPATTERN) ;
+  HDRSEARCH on $(>) =
+  $(SEARCH_SOURCE:E) $(SUBDIRHDRS) $(HDRS) ;
+
+  HDRGRIST on $(>) = $(HDRGRIST) ;
+
+  # propagate target specific-defines
+  SHADER_DEFINES on $(<) += $(SHADER_DEFINES) ;
+
+  local COMPILE_AS = $(>:S) ;
+  switch $(COMPILE_AS) {
+    case .metal : shaderMetal $(<) : $(>) ;
+    case * :      shaderUserObject $(<) : $(>) ;
+  }
+}
+
+# Return the suffix of the specified source file
+rule FShaderTargetSuffix
+{
+  switch $(<:S) {
+    case .metal : return $(SHADER_SUFOBJ) ;
+  }
+  return $(<:S) ;
+}
+
+# shaderObjectSuf SOURCE
+# call the Object rule with the appropriate suffix, returns the name
+# of the target
+rule shaderObjectSuf
+{
+  local suf = [ FShaderTargetSuffix $(<) ] ;
+  local d = $(<:S=$(suf)) ;
+  switch $(suf) {
+    case * :
+      shaderObject $(d) : $(_i) ;
+      Depends shader_obj : $(d) ;
+  }
+  return $(d) ;
+}
+
+# /shaderObjects sources ;
+rule shaderObjects
+{
+  local _i ;
+  local r ;
+
+  for _i in [ FGristFiles $(<) ] {
+    r += [ shaderObjectSuf $(_i) ] ;
+  }
+
+  return $(r) ;
+}
+
+#----------------------------------------------------------------------
+#     METAL
+#----------------------------------------------------------------------
+
+# metal compiler
+rule shaderMetal
+{
+  Depends $(<) : $(>) ;
+  SHADER_CCFLAGS on $(<) += $(SHADER_CCFLAGS) ;
+  SHADER_CCHDRS on $(<) = [ on $(<) FIncludes $(SHADER_HDRS) ] ;
+  SHADER_CCDEFS on $(<) = [ on $(<) FDefines $(SHADER_DEFINES) ] ;
+}
+
+# /shaderMetalLibraryFromObjects library : objects ;
+rule shaderMetalLibraryFromObjects
+{
+  local _i _l _s _h ;
+
+  # Add grist to file names
+  _s = [ FGristFiles $(>) ] ;
+  _l = $(<:S=$(SHADER_SUFLIB)) ;
+  _h = $(<:S=$(SHADER_SUFLIB).h) ;
+
+  # library depends on its member objects
+  Depends shader_obj : $(_s) ;
+
+  # Set LOCATE for the library and its contents.  The bound
+  # value shows up as $(NEEDLIBS) on the Link actions.
+  # For compatibility, we only do this if the library doesn't
+  # already have a path.
+  if ! $(_l:D) {
+    MakeLocate $(_l) $(_l)($(_s:BS)) : $(LOCATE_TARGET) ;
+  }
+
+  Depends $(_l) : $(_s) ;
+  Depends $(_h) : $(_l) ;
+  Depends $(_h) : $(_l) ;
+  Clean clean : $(_l) ;
+
+  shaderMetalArchive $(_l) : $(_s) ;
+}
+
+actions shaderMetal
+{
+  xcrun -sdk $(SHADER_METAL_SDK) metal $(SHADER_CCFLAGS) -serialize-diagnostics "$(<).dia" "$(>)" -o "$(<)"
+}
+
+actions shaderMetalArchive
+{
+  xcrun -sdk $(SHADER_METAL_SDK) metallib -o "$(<)" "$(>)" && \
+  bin2h "$(<)" "$(<).h" $(LIB_METAL_BIN2H_NAME)
+}
+
+# /shaderLibrary library : sources : objs ;
+rule shaderMetalLibrary
+{
+  if ! [ ListGetFirst $(>) ] {
+    EXIT "E/shaderMetalLibrary no sources specified!" ;
+  }
+
+  local target_sdk target_name target_ccflags ;
+  if $(OSPLAT) = IOS {
+    target_sdk = ios ;
+    target_name = ios ;
+    target_ccflags = -arch air64 -emit-llvm -c -ffast-math -std=ios-metal1.0 -miphoneos-version-min=9.0 ;
+  }
+  else if $(OSX) {
+    target_sdk = macosx ;
+    target_name = osx ;
+    target_ccflags = -arch air64 -emit-llvm -c -ffast-math -std=osx-metal1.1 -mmacosx-version-min=10.11 ;
+  }
+  else {
+    EXIT "E/Building metal libraries requires macOS." ;
+  }
+
+  local SRC_METAL = $(>) ;
+
+  local LIB_METAL = [ FGristFiles $(<).$(target_name).metallib ] ;
+  LIB_METAL_BIN2H_NAME on $(LIB_METAL) += $(<:B) ;
+
+  local OBJ_METAL = [ shaderObjects $(>) ] ;
+  SHADER_CCFLAGS on $(OBJ_METAL) += -Wall -Wextra $(target_ccflags) ;
+
+  SHADER_METAL_SDK on $(LIB_METAL) += $(target_sdk) ;
+  SHADER_METAL_SDK on $(OBJ_METAL) += $(target_sdk) ;
+
+  shaderMetalLibraryFromObjects $(LIB_METAL) : $(OBJ_METAL) ;
+  DEPENDS shaders : $(LIB_METAL).h ;
+
+  return $(LIB_METAL) ;
+}

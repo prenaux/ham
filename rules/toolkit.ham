@@ -12,6 +12,13 @@ Import log.ham ;
 Import assert.ham ;
 Import run.ham ;
 
+NOTFILE pass1 ;
+NOTFILE build_tools ;
+NOTFILE tools ;
+NOTFILE modlibs ;
+NOTFILE tests ;
+NOTFILE shaders ;
+
 AssertVarDefined HAM_TOOLSET_NAME ;
 AssertVarDefined HAM_TOOLSET_VER ;
 
@@ -417,6 +424,7 @@ rule tkIncludeCopy {
 #----------------------------------------------------------------------
 HDRS += $(TK_DIR_INCLUDE) ;
 Import toolkit-cpp.ham ;
+Import toolkit-shaders.ham ;
 
 #----------------------------------------------------------------------
 #     Packages
@@ -586,6 +594,8 @@ rule tkDefPackage
   BUILD_SRC = ;
   SRC_EXTRA = ;
   OBJS_EXTRA = ;
+  SRC_SHADERS = ;
+  LIB_SHADERS = ;
   # Setup package variables
   PACKAGE = $(1) ;
   PACKAGE_DIR = [ FSubDirAbsName ] ;
@@ -812,6 +822,7 @@ rule tkBuildPackage
   local _rtti = 0 ;
   local _unicode = 0 ;
   local _stamp = "" ;
+  local _shaders = 0 ;
 
   if $(BUILD_JNI) {
     _jni = 1 ;
@@ -881,6 +892,8 @@ rule tkBuildPackage
         if $(STAMP) {
           _stamp = -$(STAMP) ;
         }
+      case shaders :
+        _shaders = 1 ;
       case * :
         ECHO "Unknown Build Option :" $(_i) ;
     }
@@ -1018,6 +1031,23 @@ rule tkBuildPackage
   local _all = $(_src) $(_exsrc) $(_nopchsrc) ;
 
   ObjectHdrs $(_all) : [ FDirName $(TK_DIR_INCLUDE) ] ;
+
+  ### Shaders ###
+  if $(_shaders) = 1 {
+    if $(OSX) || $(IOS) {
+      SRC_SHADERS = [ tkPkgSrcSubDir shaders : metal ] ;
+      if ! [ ListGetFirst $(SRC_SHADERS) ] {
+        EXIT "E/No metal shader found in:" [ FDirName $(SUBDIR) shaders ] ;
+      }
+      local OBJ_METAL = [ shaderObjects $(SRC_SHADERS) ] ;
+      LIB_SHADERS = [ shaderMetalLibrary [ FDirName $(SUBDIR) shaders _allShaders ] : $(SRC_SHADERS) ] ;
+      DEPENDS $(PACKAGE) : $(LIB_SHADERS).h ;
+      # This solve the problem of having the generated header be correctly
+      # included in dependencies because the SUBDIR isnt taken into account in
+      # the automatic header resolve part.
+      DEPENDS [ FGristFilesForDepends [ FDirName shaders $(LIB_SHADERS:B:S).h ] ]  : $(LIB_SHADERS).h ;
+    }
+  }
 
   return $(_all) ;
 }
