@@ -1,4 +1,10 @@
 #!/bin/bash
+CURRENT_GIT_BRANCH=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+if [ "$CURRENT_GIT_BRANCH" != "master" ]; then
+    echo "E/Currently on '$CURRENT_GIT_BRANCH' branch, merged branches can only be deleted from the master branch."
+    echo "E/Do 'git checkout master' first."
+    exit 1
+fi
 if [ "$1" == "noprune" ]; then
     echo "# SKIPPED: git fetch --prune origin"
     shift
@@ -7,8 +13,13 @@ else
     git fetch --prune origin
 fi
 
-echo "# local branches"
-for branch in $(git branch --merged master | grep -v develop | grep -v master | sed -E "s|^ *origin/||g")
+if [[ "$1" == "doit_local" || "$1" == "doit_remote" ]]; then
+    DOIT_SPECIFIED=yes
+fi
+
+echo "# Local branches..."
+LOCAL_BRANCHES=$(git branch --merged master | grep -v develop | grep -v master | sed -E "s|^ *origin/||g" | sed -E "s|\*||g")
+for branch in $LOCAL_BRANCHES
 do
     if [ "$1" == "doit_local" ]; then
         echo "I/Deleting local branch '$branch'."
@@ -17,9 +28,13 @@ do
         echo "I/Would delete local branch '$branch'."
     fi
 done
+if [ "$1" == "doit_local" ]; then
+    shift
+fi
 
-echo "# remote branches"
-for branch in $(git branch -r --merged master | grep origin | grep -v develop | grep -v master | sed -E "s|^ *origin/||g")
+echo "# Remote branches..."
+REMOTE_BRANCHES=$(git branch -r --merged master | grep origin | grep -v develop | grep -v master | sed -E "s|^ *origin/||g" | sed -E "s|\*||g")
+for branch in $REMOTE_BRANCHES
 do
     if [ "$1" == "doit_remote" ]; then
         echo "I/Deleting remote branch '$branch'."
@@ -29,6 +44,6 @@ do
     fi
 done
 
-if [[ "$1" != "doit_local" && "$1" != "doit_remote" ]]; then
+if [[ "$DOIT_SPECIFIED" != "yes" ]]; then
     echo "# Type 'git-delete-merged-branches doit_local/remote' to remove the branches listed above."
 fi
