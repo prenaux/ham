@@ -1,0 +1,20 @@
+#!/bin/bash
+help() {
+    echo "usage: git-branch branch_name"
+    echo ""
+    echo "  Creates a new branch, makes it active, make sure there's a remote"
+    echo "  tracking branch on origin for it and push the initial version."
+    exit 1
+}
+if [ -z "$1" ]; then
+   help
+fi
+
+BRANCH_NAME="$1"
+REMOTE_NAME="$2"
+if [ -z "$REMOTE_NAME" ]; then
+   REMOTE_NAME=origin
+fi
+
+git checkout -b $BRANCH_NAME && \
+    git push -u $REMOTE_NAME $BRANCH_NAME
