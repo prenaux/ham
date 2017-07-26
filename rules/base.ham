@@ -2705,19 +2705,28 @@ actions Bin2H {
   bin2h $(>) $(<) $(VARNAME)
 }
 
-rule Bin2HDataSubDir {
+# DataSubDirBin2H TARGET : DIR : OBJDIR : EXTS
+rule DataSubDirBin2H {
   local DATA = ;
-  local EXTS = $(1) ;
+  local EXTS = $(4) ;
   if ! $(EXTS) {
     EXTS = abm bmp dds jpg jpeg png tga xml wav flac ogg opus mp3 hdr psd avi ogv ogw mp4 ipcam webcam metal cgc cgo ;
   }
-  local DATA_SRC = [ DataGlob [ FDirName $(SUBDIR) data ] : : $(EXTS) ] ;
+  local DATA_SRC = [ SrcSubDirGlobNoHdrs $(1) : $(2) : $(3) : $(EXTS) ] ;
   # ECHO "DATA_SRC:" $(DATA_SRC) ;
-  for _d in $(DATA_SRC) {
-    # ECHO "_d:" $(_d) "->" $(_d).hxx ;
-    DATA += [ Bin2H $(_d).hxx : $(_d) ] ;
+  for _s in $(DATA_SRC) {
+    local d = [ FGristFiles [ FDirName $(SUBDIR) $(_s).hxx ] ] ;
+    local dep = [ FGristFilesForDepends [ FDirName $(_s).hxx ] ] ;
+    local s = [ FDirName $(SUBDIR) $(_s) ] ;
+    # ECHO "s:" $(s) "->" $(d) "--->" $(dep) ;
+    local r = [ Bin2H $(d) : $(s) ] ;
+    # ECHO "r:" $(r) ;
+    DEPENDS $(d) : $(s) ;
+    DEPENDS $(dep) : $(d) ;
+    DATA += $(d) ;
   }
   # ECHO "DATA:" $(DATA) ;
+  DEPENDS $(<) : $(DATA) ;
   return $(DATA) ;
 }
 

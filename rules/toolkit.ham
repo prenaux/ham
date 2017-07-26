@@ -471,6 +471,11 @@ rule tkPkgSrcSubDirNoHdrs {
   return [ SrcSubDirGlobNoHdrs $(PACKAGE) : $(<) : $(OBJDIR) : $(ext) ] ;
 }
 
+# tkPkgDataSubDirBin2H d1..dn : exts ;
+rule tkPkgDataSubDirBin2H {
+  local dir = $(1) ;
+  return [ DataSubDirBin2H $(PACKAGE) : $(dir) : [ FDirName $(SUBDIR) $(dir) ] : $(2) ] ;
+}
 
 # tkPkgSrcRecSubDir d1..dn : exts ;
 # Recursive version tkPkgSrcSubDir
@@ -823,6 +828,7 @@ rule tkBuildPackage
   local _unicode = 0 ;
   local _stamp = "" ;
   local _shaders = 0 ;
+  local _data = 0 ;
 
   if $(BUILD_JNI) {
     _jni = 1 ;
@@ -894,6 +900,8 @@ rule tkBuildPackage
         }
       case shaders :
         _shaders = 1 ;
+      case data :
+        _data = 1 ;
       case * :
         ECHO "Unknown Build Option :" $(_i) ;
     }
@@ -1039,7 +1047,6 @@ rule tkBuildPackage
       if ! [ ListGetFirst $(SRC_SHADERS) ] {
         EXIT "E/No metal shader found in:" [ FDirName $(SUBDIR) shaders ] ;
       }
-      local OBJ_METAL = [ shaderObjects $(SRC_SHADERS) ] ;
       LIB_SHADERS = [ shaderMetalLibrary [ FDirName $(SUBDIR) shaders _allShaders ] : $(SRC_SHADERS) ] ;
       DEPENDS $(PACKAGE) : $(LIB_SHADERS).h ;
       # This solve the problem of having the generated header be correctly
@@ -1047,6 +1054,11 @@ rule tkBuildPackage
       # the automatic header resolve part.
       DEPENDS [ FGristFilesForDepends [ FDirName shaders $(LIB_SHADERS:B:S).h ] ]  : $(LIB_SHADERS).h ;
     }
+  }
+
+  ### Data ###
+  if $(_data) = 1 {
+    tkPkgDataSubDirBin2H data ;
   }
 
   return $(_all) ;
