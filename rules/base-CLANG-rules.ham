@@ -5,6 +5,28 @@ actions together piecemeal Archive
 
 if $(OS) = MACOSX
 {
+  if ! $(MACOSX_ARCH) {
+    if $(OSPLAT) = X64 {
+      MACOSX_ARCH = x86_64 ;
+    }
+    else if $(OSPLAT) = X86 {
+      MACOSX_ARCH = x86 ;
+    }
+    else {
+      EXIT "E/Unknown OSPlat for MacOS:" $(OSPLAT) ;
+    }
+  }
+  MACOSX_MINVER ?= 10.11 ;
+
+  CLANG_BASE_FLAGS =
+    -arch x86_64
+    -mmacosx-version-min=$(MACOSX_MINVER)
+  ;
+
+  CCFLAGS += $(CLANG_BASE_FLAGS) ;
+  C++FLAGS += $(CLANG_BASE_FLAGS) ;
+  LINKFLAGS += $(CLANG_BASE_FLAGS) ;
+
   LINKFLAGS_DLL = -rpath "@loader_path/." ;
   LINKFLAGS_EXE = -rpath "@loader_path/." ;
   actions DllLink

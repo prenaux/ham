@@ -4,7 +4,6 @@ if ! $(OSPLAT) {
 }
 
 SLASH   ?= / ;
-SUFEXE  ?= .$(OSPLAT:L) ;
 SUFOBJ  ?= .o ;
 SUFLIB  ?= .a ;
 PREFIXDLL ?= lib ;
@@ -15,6 +14,7 @@ if $(OS) = MACOSX {
   SUFDLL = .dylib ;
 }
 else {
+  SUFEXE  ?= .$(OSPLAT:L) ;
   SUFDLL ?= .so ;
 }
 

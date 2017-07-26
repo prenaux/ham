@@ -87,7 +87,7 @@ else {
   ### "Debug" (da) build flags ###
   CLANG_DBG_ARGS = -ggdb -O0 $(STRICT_ALIASING_FLAGS) ;
   ### Optimized (ra) build flags ###
-  CLANG_OPT_ARGS = -Os $(STRICT_ALIASING_FLAGS) ;
+  CLANG_OPT_ARGS = -ggdb -O2 $(STRICT_ALIASING_FLAGS) ;
 }
 
 ### Link flags ###

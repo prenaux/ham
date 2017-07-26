@@ -393,6 +393,15 @@
 #
 
 #----------------------------------------------------------------------
+#     OS Specific
+#----------------------------------------------------------------------
+
+# the OS envvar is declared by Xcode in OSX, so we override it here
+if $(OS) = MACOS {
+  OS = MACOSX ;
+}
+
+#----------------------------------------------------------------------
 #     Basic variables
 #----------------------------------------------------------------------
 # Logging level
@@ -586,11 +595,6 @@ SUFJAVAC    ?= .class ;
 
 HDRPATTERN =
 "^[ 	]*#[ 	]*include[ 	]*[<\"]([^\">]*)[\">].*$" ;
-
-# the OS envvar is declared by Xcode in OSX, so we override it here
-if $(OS) = MACOS {
-  OS = MACOSX ;
-}
 
 OSFULL = $(OS)$(OSVER)$(OSPLAT) $(OS)$(OSPLAT) $(OS)$(OSVER) $(OS) ;
 
