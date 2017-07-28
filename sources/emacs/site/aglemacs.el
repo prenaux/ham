@@ -709,7 +709,8 @@ BEG and END (region to sort)."
  (defun agl-run-last-shell-command ()
    "select the first visible shell and run the last command ran in it"
    (interactive)
-   (save-buffer)
+   (if (not (string= "ham-shell-mode" major-mode))
+       (save-buffer))
    (save-some-buffers)
    (let ((visibleShellWindow (agl-select-visible-shell-window)))
      (if visibleShellWindow
