@@ -71,6 +71,7 @@ if $(OSX) {
   -framework OpenGL
   -framework AGL
   -framework Metal
+  -framework MetalKit
   -framework QuartzCore
   -lstdc++ -lpthread -ldl ;
 }
