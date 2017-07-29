@@ -120,7 +120,7 @@ rule shaderMetalLibraryFromObjects
 
 actions shaderMetal
 {
-  xcrun -sdk $(SHADER_METAL_SDK) metal $(SHADER_CCFLAGS) -serialize-diagnostics "$(<).dia" "$(>)" -o "$(<)"
+  xcrun -sdk $(SHADER_METAL_SDK) metal $(SHADER_CCFLAGS) -I"$(SHADER_HDRS)" -serialize-diagnostics "$(<).dia" "$(>)" -o "$(<)"
 }
 
 actions shaderMetalArchive

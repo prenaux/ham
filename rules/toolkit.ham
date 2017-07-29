@@ -423,6 +423,7 @@ rule tkIncludeCopy {
 #     Compilation setup
 #----------------------------------------------------------------------
 HDRS += $(TK_DIR_INCLUDE) ;
+SHADER_HDRS += $(TK_DIR_INCLUDE) ;
 Import toolkit-cpp.ham ;
 Import toolkit-shaders.ham ;
 
