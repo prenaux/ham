@@ -138,9 +138,9 @@ rule shaderMetalLibrary
 
   local target_sdk target_name target_ccflags ;
   if $(OSPLAT) = IOS {
-    target_sdk = ios ;
+    target_sdk = iphoneos ;
     target_name = ios ;
-    target_ccflags = -arch air64 -emit-llvm -c -ffast-math -std=ios-metal1.0 -miphoneos-version-min=9.0 ;
+    target_ccflags = -arch air64 -emit-llvm -c -ffast-math -std=ios-metal1.0 -mios-version-min=9.0 ;
   }
   else if $(OSX) {
     target_sdk = macosx ;
