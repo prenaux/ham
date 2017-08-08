@@ -177,6 +177,13 @@ the text to another HTML buffer."
  (add-hook 'java-mode-hook (lambda () (eclipse-set-java-style)))
 )
 
+;;*** Groovy ************************************************************
+(NotBatchMode
+ (autoload 'groovy-mode "groovy-mode" "Major mode for editing Groovy code." t)
+ (add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode))
+ (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
+)
+
 ;;*** LUA ***************************************************************
 (setq auto-mode-alist (cons '("\\.lua$" . lua-mode) auto-mode-alist))
 (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
