@@ -998,23 +998,33 @@ With zero ARG, skip the last one and mark next."
           (quote ([5 67108896 down 134217837 32] 0 "%d")) arg)))
 
  (defun goto-match-paren2 (arg)
-   "Go to the matching parenthesis if on parenthesis. Else go to the
-   opening parenthesis one level up."
+   "Go to the matching parenthesis according to the syntax table. Works if on the parenthesis or one character in front of it."
    (interactive "p")
-   (cond ((looking-at "\\s\(") (forward-list 1))
-         (t
-          (backward-char 1)
-          (cond ((looking-at "\\s\)")
-                 (forward-char 1) (backward-list 1))
-                (t
-                 (while (not (looking-at "\\s("))
-                   (backward-char 1)
-                   (cond ((looking-at "\\s\)")
-                          (message "->> )")
-                          (forward-char 1)
-                          (backward-list 1)
-                          (backward-char 1)))
-                   ))))))
+   (let
+       ((syntax (char-syntax (following-char))))
+     (cond
+      ((= syntax ?\()
+       (forward-sexp 1) (backward-char))
+      ((= syntax ?\))
+       (forward-char) (backward-sexp 1))
+      ;; go back one char and try again, that's so that we can match if the
+      ;; cursor is just after the closing paren/bracket
+      (t
+       (backward-char)
+       (let ((syntax (char-syntax (following-char))))
+         (cond
+          ((= syntax ?\()
+           (forward-sexp 1) (backward-char))
+          ((= syntax ?\))
+           (forward-char) (backward-sexp 1))
+          (t
+           (forward-char)
+           (message "No match"))
+         )
+       )
+      )
+     )
+   ))
 
  (defun ni-copy-file-path (&optional *dir-path-only-p)
    "Copy the current buffer's file path or dired path to `kill-ring'.
