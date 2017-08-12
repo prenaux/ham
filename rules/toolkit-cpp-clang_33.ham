@@ -23,6 +23,7 @@ LINKFLAGS +=
 
 ### OSX ###
 if $(OSX) {
+  CLANG_CC_ARGS += -fobjc-arc ;
   CLANG_CC_ARGS += -Wno-deprecated-declarations ;
   # TODO: Remove this, this is actually a very useful warning.
   CLANG_CC_ARGS += -Wno-inconsistent-missing-override ;
