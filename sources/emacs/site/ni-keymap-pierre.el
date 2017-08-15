@@ -24,6 +24,12 @@
   (global-set-key (kbd "<home>") 'move-beginning-of-line)
   (global-set-key (kbd "<end>") 'move-end-of-line)
  )
+ (Aquamacs
+  (define-key osx-key-mode-map [home] 'beginning-of-line)
+  (define-key osx-key-mode-map [end] 'end-of-line)
+  (global-set-key [(control right)] 'forward-word)
+  (global-set-key [(control left)] 'backward-word)
+ )
 
  ;; isearch - the defaults are _so_ annoying...
  (define-key isearch-mode-map (kbd "<backspace>") 'isearch-del-char) ; bs means bs

@@ -776,8 +776,9 @@ BEG and END (region to sort)."
 (if (boundp 'tabbar-mode)
     (tabbar-mode -1))
 
-;; no blinkies...
+;; Cursor
 (blink-cursor-mode -1)
+(setq-default cursor-type 'box)
 
 (transient-mark-mode 1)         ; make the current 'selection' visible
 (delete-selection-mode 1)       ; delete the selection area with a keypress
