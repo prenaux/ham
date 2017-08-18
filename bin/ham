@@ -29,7 +29,8 @@ usage() {
     echo ""
     echo "ham launch script:"
     echo "-h             This help message"
-    echo "-B target      Run ham once before with the specified target"
+    echo "-v             Print ham's version"
+    echo "-q             Sets HAM_NO_VER_CHECK=1"
     echo "-T toolset     Add a toolset to import"
     echo "               (can be specified multiple times)"
     echo "-D directory   Add a toolkit to build - the toolkit should be in $WORK"
@@ -66,7 +67,7 @@ fi
 
 # process the arguments
 _ARG_DIRECTORIES=()
-while getopts :T:D:B:v OPT
+while getopts :T:D:B:vq OPT
 do
     case "$OPT" in
         h)
@@ -74,6 +75,9 @@ do
             ;;
         \?)
             usage
+            ;;
+        q)
+            export HAM_NO_VER_CHECK=1
             ;;
         v)
             "$HAM_CMD" -v
@@ -113,9 +117,6 @@ do
             fi
             _ARG_DIRECTORIES+=("$_ARG_DIRECTORY")
             ;;
-        B)
-            _ARG_BUILD_BEFORE="$OPTARG"
-            ;;
     esac
 done
 shift $((OPTIND-1))
@@ -137,9 +138,6 @@ hamIn() {
     shift
     if [[ "$CWD" != "$DIR" ]]; then
         pushd "$DIR"
-    fi
-    if [[ "$_ARG_BUILD_BEFORE" != "" ]]; then
-        "$HAM_CMD" $_ARG_BUILD_BEFORE
     fi
     echo "I/Ham Command: $HAM_CMD" $*
     "$HAM_CMD" $*
