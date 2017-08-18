@@ -69,7 +69,7 @@ fi
 
 # process the arguments
 _ARG_DIRECTORIES=()
-while getopts :T:D:B:vq OPT
+while getopts :T:D:vq OPT
 do
     case "$OPT" in
         h)
