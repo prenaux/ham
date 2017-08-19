@@ -2710,7 +2710,7 @@ rule DataSubDirBin2H {
   local DATA = ;
   local EXTS = $(4) ;
   if ! $(EXTS) {
-    EXTS = abm bmp dds jpg jpeg png tga xml wav flac ogg opus mp3 hdr psd avi ogv ogw mp4 ipcam webcam metal cgc cgo ;
+    EXTS = abm bmp dds jpg jpeg png tga xml wav flac ogg opus mp3 hdr psd avi ogv ogw mp4 ipcam webcam metal cgc cgo xib nib ttf txt ;
   }
   local DATA_SRC = [ SrcSubDirGlobNoHdrs $(1) : $(2) : $(3) : $(EXTS) ] ;
   # ECHO "DATA_SRC:" $(DATA_SRC) ;
