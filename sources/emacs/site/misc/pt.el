@@ -113,11 +113,11 @@
   (interactive (list (read-from-minibuffer "Pt search for: "
                                            (-first-item (-non-nil
                                                          (list (thing-at-point 'symbol)
-                                                               (-last-item pt-work-regexp-history-search)))
+                                                               (-first-item pt-work-regexp-history-search)))
                                            )
                                            nil nil 'pt-work-regexp-history-search
                      )
-                     (read-from-minibuffer "Dirs: " (-last-item pt-work-regexp-history-dirs)
+                     (read-from-minibuffer "Dirs: " (-first-item pt-work-regexp-history-dirs)
                                            nil nil 'pt-work-regexp-history-dirs
                      )
                )
