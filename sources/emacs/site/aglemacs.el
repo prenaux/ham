@@ -24,6 +24,9 @@
          (setq truncate-lines t)
          (message "Buffer is set to fundamental mode because it is large.")
        )
+     (progn
+       (ni-word-wrap-on)
+     )
    ))
 
  (add-hook 'find-file-hook 'ni-find-file-hook-on-file-opened)
