@@ -2,9 +2,10 @@ var cwd = process.cwd();
 var PATH = require('path');
 var FS = require('fs');
 
+var appConfig = {};
 var pathAppConfig = PATH.join(cwd,'/sources/app_config.js');
 if (FS.existsSync(pathAppConfig)) {
-  require(pathAppConfig); // load config
+  appConfig = require(pathAppConfig); // load config
 }
 
 var NI, niFS;
@@ -217,6 +218,9 @@ var webpackServer = undefined;
 function frontendWatch(aParams) {
   lazyLoadWebPack();
   var useSourceMap = NI.selectn("useSourceMap",aParams);
+  var serverType = NI.selectn("serverType", aParams) || 'web';
+  var bundlePort = NI.isEmpty(serverType) ?
+    global.bundlePort : (appConfig.serverPorts[serverType]+1);
 
   var myConfig = configFrontEnd(true,useSourceMap);
 
@@ -224,7 +228,7 @@ function frontendWatch(aParams) {
   myConfig.devtool = useSourceMap ? 'source-map' : 'eval';
 
   // For hot module reloading
-  myConfig.entry.common.push('webpack-dev-server/client?http://localhost:'+global.bundlePort);
+  myConfig.entry.common.push('webpack-dev-server/client?http://localhost:'+bundlePort);
 
   if (hotReload) {
     // NOTE: Hot reloading fully seems to work well enought, if you change a
@@ -243,7 +247,7 @@ function frontendWatch(aParams) {
   myConfig.plugins.push(new WEBPACK.NoErrorsPlugin());
 
   // Setup the public output path
-  myConfig.output.publicPath = 'http://localhost:'+global.bundlePort+'/build/';
+  myConfig.output.publicPath = 'http://localhost:'+bundlePort+'/build/';
 
   webpackServer = new WebpackDevServer(WEBPACK(myConfig), {
     publicPath: '/build/',
@@ -258,12 +262,12 @@ function frontendWatch(aParams) {
     headers: { 'Access-Control-Allow-Origin': '*' }
   });
 
-  webpackServer.listen(global.bundlePort, 'localhost', function (err /*, result*/) {
+  webpackServer.listen(bundlePort, 'localhost', function (err /*, result*/) {
     if(err) {
       console.log(err);
     }
     else {
-      console.log('Webpack dev server listening at localhost:'+global.bundlePort);
+      console.log('Webpack dev server listening at localhost:'+bundlePort);
     }
   });
 }
@@ -271,6 +275,7 @@ exports.frontendWatch = frontendWatch;
 
 // $ nodemon -e js,jsx,ts --ignore "sources/*-test.js" --ignore "sources/client.js" --ignore "sources/client/*" --watch sources sources/server.js
 function backendWatch(aParams) {
+  var serverType = NI.selectn("serverType", aParams) || 'web';
   var nodeEnv = NI.selectn("nodeEnv",aParams) || 'development';
   var NODEMON = require('nodemon');
   NODEMON({
@@ -281,6 +286,7 @@ function backendWatch(aParams) {
     ignore: ["*flymake*.*", "*-test.js", "*-test.ts", "sources/client.js", "sources/client/*", "sources/components/*", "node_modules/*"],
     env: {
       'NODE_ENV': nodeEnv,
+      'SERVER_TYPE': serverType,
       // this is to make sure that NODE_PATH is 'empty', the same as on the
       // production server
       'NODE_PATH': '~/a_non_existing_path/'
@@ -302,28 +308,28 @@ exports.build = function(aParams) {
   });
 }
 
-exports.dev = function() {
-  frontendWatch();
-  backendWatch();
+exports.dev = function(aParams) {
+  frontendWatch(aParams);
+  backendWatch(aParams);
 }
 
-exports.devSourceMap = function() {
-  frontendWatch({ useSourceMap: true });
-  backendWatch();
+exports.devSourceMap = function(aParams) {
+  frontendWatch(NI.shallowClone(aParams, { useSourceMap: true }));
+  backendWatch(aParams);
 }
 
-exports.testServer = function() {
+exports.testServer = function(aParams) {
   frontendBuild(undefined, function() {
-    backendWatch({ nodeEnv: 'test' });
+    backendWatch(NI.shallowClone(aParams, { nodeEnv: 'test' }));
   });
 }
 
-exports.testBackend = function() {
-  backendWatch({ nodeEnv: 'test' });
+exports.testBackend = function(aParams) {
+  backendWatch(NI.shallowClone(aParams, { nodeEnv: 'test' }));
 }
 
-exports.prodServer = function() {
-  backendWatch({ nodeEnv: 'production' });
+exports.prodServer = function(aParams) {
+  backendWatch(NI.shallowClone(aParams, { nodeEnv: 'production' }));
 }
 
 var shellProcess;
@@ -342,9 +348,9 @@ function shellRun() {
 }
 exports.shellRun = shellRun;
 
-exports.shellDev = function() {
-  frontendWatch();
-  backendWatch();
+exports.shellDev = function(aParams) {
+  frontendWatch(aParams);
+  backendWatch(aParams);
   shellRun();
 }
 
