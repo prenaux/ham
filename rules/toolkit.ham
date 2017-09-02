@@ -545,6 +545,16 @@ rule tkLinkLibs {
   }
 }
 
+rule tkLinkImpLibs {
+  if $(PKGTYPE) != library {
+    local l = [ tkFindImportedLib $(>) : $(3) : $(4) ] ;
+    if ( $(FORCE_DLL_DEPS) = 1 ) || ( ! [ FExists $(l) ] ) {
+      DEPENDS $(<) : $(l) ;
+    }
+    VarOnAddToFront LINKLIBS : $(<) : [ FQuote $(l) ] ;
+  }
+}
+
 # tkPkgLinkLibs LIB : DIR ;
 rule tkPkgLinkLibs {
   tkLinkLibs $(PKGTARGET) : $(<) : $(>) ;
@@ -554,9 +564,11 @@ rule tkPkgLinkLibs {
 rule tkDepDll {
   local dir = $(3) ;
   dir ?= $(TK_DIR_DLL) ;
-  local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFDLL) ] ;
   if ! ( $(NO_DEPS) = 1 ) {
-    DEPENDS $(<) : $(l) ;
+    local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFDLL) ] ;
+    if ( $(FORCE_DLL_DEPS) = 1 ) || ( ! [ FExists $(l) ] ) {
+      DEPENDS $(<) : $(l) ;
+    }
   }
 }
 
@@ -567,7 +579,7 @@ rule tkLinkDll {
   }
   else {
     if $(DLLIMPLIB) = 1 {
-      tkLinkLibs $(<) : $(>)_$(BUILDEXT) : : .dll.lib ;
+      tkLinkImpLibs $(<) : $(>)_$(BUILDEXT) : : .dll.lib ;
     }
     else {
       local dir = $(3) ;
