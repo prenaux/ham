@@ -22,6 +22,12 @@ case $HAM_OS in
         ;;
     OSX*)
         ln -s /usr/bin/python2.7 "${HAM_HOME}/bin/osx-x86/python2"
+        if [ ! -e "/usr/local/bin/pip2.7" ]; then
+            echo "I/pip not found, installing..."
+            sudo easy_install pip
+        fi
+        export PYTHON_BINDIR=$HOME/Library/Python/2.7/bin
+        export PATH=$PYTHON_BINDIR:$PATH
         ;;
     LINUX*)
         true # Assume its already available and default on Linux

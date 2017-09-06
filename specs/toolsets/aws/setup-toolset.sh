@@ -1,4 +1,6 @@
 #!/bin/bash
+. ham-toolset-import.sh python_27
+
 # toolset
 export HAM_TOOLSET=AWS
 export HAM_TOOLSET_VER=1
@@ -20,7 +22,13 @@ case $HAM_OS in
         fi
         export PATH=${AWS_PYTHON_DIR}:${AWS_PYTHON_DIR}/DLLs:${PATH}
         ;;
-    LINUX|OSX)
+    OSX)
+        if [ ! -e "$PYTHON_BINDIR/eb" ]; then
+            echo "I/eb not found, installing..."
+            pip install awsebcli --upgrade --user
+        fi
+        ;;
+    LINUX)
         ## Assume eb is already on the path somehow...
         ;;
     *)
