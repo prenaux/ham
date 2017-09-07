@@ -219,9 +219,8 @@ function frontendWatch(aParams) {
   lazyLoadWebPack();
   var useSourceMap = NI.selectn("useSourceMap",aParams);
   var serverType = NI.selectn("serverType", aParams) || 'web';
-  var bundlePort = NI.isEmpty(serverType) ?
-    global.bundlePort : (appConfig.serverPorts[serverType]+1);
-
+  var serverPort = NI.selectn("serverPort", aParams);
+  var bundlePort = parseInt(serverPort) || global.bundlePort;
   var myConfig = configFrontEnd(true,useSourceMap);
 
   // Use 'eval', its *much* faster than source-map
@@ -276,6 +275,7 @@ exports.frontendWatch = frontendWatch;
 // $ nodemon -e js,jsx,ts --ignore "sources/*-test.js" --ignore "sources/client.js" --ignore "sources/client/*" --watch sources sources/server.js
 function backendWatch(aParams) {
   var serverType = NI.selectn("serverType", aParams) || 'web';
+  var serverPort = NI.selectn("serverPort", aParams);
   var nodeEnv = NI.selectn("nodeEnv",aParams) || 'development';
   var NODEMON = require('nodemon');
   NODEMON({
@@ -287,6 +287,7 @@ function backendWatch(aParams) {
     env: {
       'NODE_ENV': nodeEnv,
       'SERVER_TYPE': serverType,
+      'SERVER_PORT': serverPort,
       // this is to make sure that NODE_PATH is 'empty', the same as on the
       // production server
       'NODE_PATH': '~/a_non_existing_path/'
@@ -308,13 +309,23 @@ exports.build = function(aParams) {
   });
 }
 
+function extractFrontendPort(aParams) {
+  var backendPort = parseInt(NI.selectn('serverPort', aParams));
+  return backendPort ? (backendPort + 1) : undefined;
+}
+
 exports.dev = function(aParams) {
-  frontendWatch(aParams);
+  frontendWatch(NI.shallowClone(aParams, {
+    serverPort: extractFrontendPort(aParams)
+  }));
   backendWatch(aParams);
 }
 
 exports.devSourceMap = function(aParams) {
-  frontendWatch(NI.shallowClone(aParams, { useSourceMap: true }));
+  frontendWatch(NI.shallowClone(aParams, {
+    serverPort: extractFrontendPort(aParams),
+    useSourceMap: true,
+  }));
   backendWatch(aParams);
 }
 
@@ -349,7 +360,9 @@ function shellRun() {
 exports.shellRun = shellRun;
 
 exports.shellDev = function(aParams) {
-  frontendWatch(aParams);
+  frontendWatch(NI.shallowClone(aParams, {
+    serverPort: extractFrontendPort(aParams),
+  }));
   backendWatch(aParams);
   shellRun();
 }
