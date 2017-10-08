@@ -1,3 +1,3 @@
 #!/bin/bash
 . ham-bash-lib.sh
-ffmpeg -i "$1" -c:v libx264 -preset slow -crf 19 -c:a libvo_aacenc -b:a 128k "$2"
+ffmpeg -i "$1" -c:v libx264 -preset slow -crf 19 -c:a mp3 -b:a 128k "$2"
