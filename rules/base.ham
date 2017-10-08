@@ -789,13 +789,13 @@ if $(OS) = MACOSX {
   {
     # unlock the destination if its locked, this can happen if using other file system than HFS on OSX
     chflags -f nouchg "$(<)"
-    $(CP_PRESERVE) "$(>)" "$(<)"
+    ham-exec-retry $(CP_PRESERVE) "$(>)" "$(<)"
   }
 }
 else {
   actions FilePreserveRO
   {
-    $(CP_PRESERVE) "$(>)" "$(<)"
+    ham-exec-retry $(CP_PRESERVE) "$(>)" "$(<)"
   }
 }
 
@@ -809,7 +809,7 @@ rule FilePreserveEXE
 }
 actions FilePreserveEXE
 {
-  $(CP_PRESERVE) "$(>)" "$(<)"
+  ham-exec-retry $(CP_PRESERVE) "$(>)" "$(<)"
 }
 
 # Straight copy
@@ -2237,43 +2237,43 @@ actions LintH
 
 actions Chgrp
 {
-  $(CHGRP) $(GROUP) "$(<)"
+  ham-exec-retry $(CHGRP) $(GROUP) "$(<)"
 }
 
 actions Chmod1
 {
-  $(CHMOD) $(MODE) "$(<)"
+  ham-exec-retry $(CHMOD) $(MODE) "$(<)"
 }
 
 actions Chown
 {
-  $(CHOWN) $(OWNER) "$(<)"
+  ham-exec-retry $(CHOWN) $(OWNER) "$(<)"
 }
 
 actions piecemeal together existing Clean
 {
-  $(RM) "$(>)"
+  ham-exec-retry $(RM) "$(>)"
 }
 
 actions Cp
 {
-  $(CP) "$(>)" "$(<)"
+  ham-exec-retry $(CP) "$(>)" "$(<)"
 }
 
 rule Touch {
 }
 actions Touch {
-  touch "$(<)"
+  ham-exec-retry touch "$(<)"
 }
 
 actions File
 {
-  $(CP) "$(>)" "$(<)"
+  ham-exec-retry $(CP) "$(>)" "$(<)"
 }
 
 actions FilePreserve
 {
-  $(CP_PRESERVE) "$(>)" "$(<)"
+  ham-exec-retry $(CP_PRESERVE) "$(>)" "$(<)"
 }
 
 if $(UNIX) {
@@ -2290,7 +2290,7 @@ else {
 
 actions HardLink
 {
-  $(RM) "$(<)" && $(LN) "$(>)" "$(<)"
+  ham-exec-retry $(RM) "$(<)" && $(LN) "$(>)" "$(<)"
 }
 
 actions Link bind NEEDLIBS
@@ -2310,7 +2310,7 @@ actions together Ranlib
 
 actions quietly updated piecemeal together RmTemps
 {
-  $(RM) "$(>)"
+  ham-exec-retry $(RM) "$(>)"
 }
 
 actions Shell
@@ -2325,7 +2325,7 @@ actions Shell
 
 actions SoftLink
 {
-  $(RM) "$(<)" && $(LN) -s "$(>)" "$(<)"
+  ham-exec-retry $(RM) "$(<)" && $(LN) -s "$(>)" "$(<)"
 }
 
 #

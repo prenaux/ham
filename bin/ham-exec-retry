@@ -1,0 +1,21 @@
+#!/bin/bash
+ham_exec_fail() {
+  echo $1 >&2
+  exit 1
+}
+
+n=1
+max=5
+# Delay in seconds
+delay=1
+while true; do
+    "$@" && break || {
+        if [[ $n -lt $max ]]; then
+            ((n++))
+            echo "W/Command failed. Attempt $n/$max:"
+            sleep $delay;
+        else
+            ham_exec_fail "E/The command has failed after $n attempts."
+        fi
+    }
+done
