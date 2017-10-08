@@ -9,7 +9,7 @@
 (defconst eclipse-java-style
   '((c-basic-offset . 4)
     (tab-width . 4)
-    (indent-tabs-mode . t)
+    (indent-tabs-mode . nil)
     (c-comment-only-line-offset . (0 . 0))
     ;; the following preserves Javadoc starter lines
     (c-offsets-alist . ((inline-open . 0)

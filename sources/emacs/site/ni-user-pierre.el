@@ -85,6 +85,8 @@
 
  ;; Set compile mode to scroll to the first error
  (setq compilation-scroll-output 'first-error)
+ ;; Set compile mode to scroll with the output
+ (setq compilation-scroll-output t)
 
  ;; Yes... close everything... but not the buffers
  (defadvice keyboard-escape-quit (around my-keyboard-escape-quit activate)
