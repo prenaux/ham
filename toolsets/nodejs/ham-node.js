@@ -62,7 +62,7 @@ var configFrontEnd = function(aIsDev,aUseSourceMap) {
 
   return {
     resolve: {
-      extensions: [ '', '.js', '.jsx', '.ts' ],
+      extensions: [ '', '.js', '.jsx' ],
       modulesDirectories: [
         "web_modules", "node_modules",
         globalNodeModulesDir,
@@ -88,12 +88,6 @@ var configFrontEnd = function(aIsDev,aUseSourceMap) {
         { test: /\.jsx$/,
           loader: (aIsDev ? 'react-hot!' : '') + 'jsx-loader',
           exclude: /(node_modules|bower_components)/,
-          include: PATH.join(baseDir, 'sources')
-        },
-        {
-          test: /\.ts$/,
-          exclude: /(node_modules|bower_components)/,
-          loader: (aIsDev ? 'react-hot!' : '') + 'awesome-typescript-loader?emitRequireType=false&forkChecker=true',
           include: PATH.join(baseDir, 'sources')
         },
         { test: /\.css$/, // Only .css files
@@ -272,7 +266,7 @@ function frontendWatch(aParams) {
 }
 exports.frontendWatch = frontendWatch;
 
-// $ nodemon -e js,jsx,ts --ignore "sources/*-test.js" --ignore "sources/client.js" --ignore "sources/client/*" --watch sources sources/server.js
+// $ nodemon -e js,jsx --ignore "sources/*-test.js" --ignore "sources/client.js" --ignore "sources/client/*" --watch sources sources/server.js
 function backendWatch(aParams) {
   var serverType = NI.selectn("serverType", aParams) || 'web';
   var serverPort = NI.selectn("serverPort", aParams);
@@ -281,9 +275,9 @@ function backendWatch(aParams) {
   NODEMON({
     verbose: true,
     script: 'sources/server.js',
-    ext: 'js jsx ts',
+    ext: 'js jsx',
     watch: ['sources'],
-    ignore: ["*flymake*.*", "*-test.js", "*-test.ts", "sources/client.js", "sources/client/*", "sources/components/*", "node_modules/*"],
+    ignore: ["*flymake*.*", "*-test.js", "sources/client.js", "sources/client/*", "sources/components/*", "node_modules/*"],
     env: {
       'NODE_ENV': nodeEnv,
       'SERVER_TYPE': serverType,
