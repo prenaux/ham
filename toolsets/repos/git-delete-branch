@@ -1,0 +1,27 @@
+#!/bin/bash
+help() {
+    echo "usage: git-delete-branch (force) branch_name (remote - origin by default)"
+    echo ""
+    echo "  Deletes the specified branch locally and remotely."
+    exit 1
+}
+
+if [ "$1" == "force" ]; then
+    DELETE_FLAG=-D
+    shift
+else
+    DELETE_FLAG=-d
+fi
+
+if [ -z "$1" ]; then
+    help
+fi
+
+BRANCH_NAME="$1"
+REMOTE_NAME="$2"
+if [ -z "$REMOTE_NAME" ]; then
+    REMOTE_NAME=origin
+fi
+
+git branch $DELETE_FLAG $BRANCH_NAME && \
+    git push -d $REMOTE_NAME $BRANCH_NAME

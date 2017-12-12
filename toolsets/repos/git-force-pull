@@ -1,0 +1,24 @@
+#!/bin/bash
+# the help
+usage() {
+    echo "usage: git-force-pull REMOTE BRANCH"
+    echo ""
+    echo "  Fetch and checkout a clean branch from the specified remote."
+    echo ""
+
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        # sourced...
+        return 1
+    else
+        # regular call
+        exit 1
+    fi
+}
+if [ $# != 2 ]; then
+    echo "E/Invalid number of arguments specified"
+    echo ""
+    usage
+fi
+
+git fetch $1 +$2:$2 &&\
+git checkout $2
