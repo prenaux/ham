@@ -311,6 +311,13 @@ the text to another HTML buffer."
                       (setq indent-tabs-mode nil
                             tab-width 2))))
 
+;;*** Cypher (Neo4J) **************************************************************
+(NotBatchMode
+ (autoload 'cypher-mode "cypher-mode" "Major mode for editing Neo4J Cypher code." t)
+ (add-to-list 'auto-mode-alist '("\\.cypher\\'" . cypher-mode))
+ (add-to-list 'auto-mode-alist '("\\.cyp\\'" . cypher-mode))
+)
+
 ;;;======================================================================
 ;;; IDO completion
 ;;;======================================================================
