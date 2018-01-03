@@ -82,6 +82,9 @@
   (add-to-list 'org-speed-commands-user '("J" my-org-up-forward-and-preview))
   (local-set-key [remap mark-paragraph] 'my-org-mark-paragraph)
   (local-set-key [remap forward-paragraph] 'my-org-forward-paragraph)
-  (local-set-key [remap backward-paragraph] 'my-org-backward-paragraph))
+  (local-set-key [remap backward-paragraph] 'my-org-backward-paragraph)
+  (local-set-key "\t" 'pabbrev-expand-maybe)
+  (local-set-key [tab] 'pabbrev-expand-maybe)
+)
 
 (add-hook 'org-mode-hook 'my-org-mode-overrides)
