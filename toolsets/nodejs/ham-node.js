@@ -271,8 +271,9 @@ function backendWatch(aParams) {
   var serverType = NI.selectn("serverType", aParams) || 'web';
   var serverPort = NI.selectn("serverPort", aParams);
   var nodeEnv = NI.selectn("nodeEnv",aParams) || 'development';
+  var debug = NI.selectn("debug", aParams) || false;
   var NODEMON = require('nodemon');
-  NODEMON({
+  NODEMON(NI.shallowClone({
     verbose: true,
     script: 'sources/server.js',
     ext: 'js jsx',
@@ -286,7 +287,7 @@ function backendWatch(aParams) {
       // production server
       'NODE_PATH': '~/a_non_existing_path/'
     }
-  });
+  }, debug ? { exec: 'node --inspect' } : {}));
   NODEMON.on('start', function () {
     console.log('... Nodemon server.js has started');
   }).on('quit', function () {
