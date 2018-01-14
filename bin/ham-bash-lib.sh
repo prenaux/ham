@@ -162,6 +162,11 @@ $ '
   # export PS1="${AGL_TOOLSET_NAME}\$ "
 }
 
+update_project_work() {
+    export WORK="`unxpath $1`"
+    echo "I/Updated WORK: '$WORK'"
+}
+
 upsearch() {
     test / == "$PWD" && return || test -e "$1" && echo "$PWD" && return || cd .. && upsearch "$1"
 }
