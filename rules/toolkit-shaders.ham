@@ -79,92 +79,113 @@ rule shaderObjects
 #----------------------------------------------------------------------
 #     METAL
 #----------------------------------------------------------------------
+if $(OSX) = 1 {
 
-# metal compiler
-rule shaderMetal
-{
-  Depends $(<) : $(>) ;
-  SHADER_CCFLAGS on $(<) += $(SHADER_CCFLAGS) ;
-  SHADER_CCHDRS on $(<) = [ on $(<) FIncludes $(SHADER_HDRS) ] ;
-  SHADER_CCDEFS on $(<) = [ on $(<) FDefines $(SHADER_DEFINES) ] ;
-}
-
-# /shaderMetalLibraryFromObjects library : objects ;
-rule shaderMetalLibraryFromObjects
-{
-  local _i _l _s _h ;
-
-  # Add grist to file names
-  _s = [ FGristFiles $(>) ] ;
-  _l = $(<:S=$(SHADER_SUFLIB)) ;
-  _h = $(<:S=$(SHADER_SUFLIB).h) ;
-
-  # library depends on its member objects
-  Depends shader_obj : $(_s) ;
-
-  # Set LOCATE for the library and its contents.  The bound
-  # value shows up as $(NEEDLIBS) on the Link actions.
-  # For compatibility, we only do this if the library doesn't
-  # already have a path.
-  if ! $(_l:D) {
-    MakeLocate $(_l) $(_l)($(_s:BS)) : $(LOCATE_TARGET) ;
+  XCODE_PLATFORMS_DIR ?= /Applications/Xcode.app/Contents/Developer/Platforms/ ;
+  if ! [ FExists $(XCODE_PLATFORMS_DIR) ] {
+    ECHO "E/Can't find XCODE_PLATFORMS_DIR, if its not in the standard location you can set the XCODE_PLATFORMS_DIR environment variable to specify its location." ;
+    EXIT "E/XCODE_PLATFORMS_DIR =" $(XCODE_PLATFORMS_DIR) ;
   }
 
-  Depends $(_l) : $(_s) ;
-  Depends $(_h) : $(_l) ;
-  Depends $(_h) : $(_l) ;
-  Clean clean : $(_l) ;
-
-  shaderMetalArchive $(_l) : $(_s) ;
-}
-
-actions shaderMetal
-{
-  xcrun -sdk $(SHADER_METAL_SDK) metal $(SHADER_CCFLAGS) -I"$(SHADER_HDRS)" -serialize-diagnostics "$(<).dia" "$(>)" -o "$(<)"
-}
-
-actions shaderMetalArchive
-{
-  xcrun -sdk $(SHADER_METAL_SDK) metallib -o "$(<)" "$(>)" && \
-  bin2h "$(<)" "$(<).h" $(LIB_METAL_BIN2H_NAME)
-}
-
-# /shaderLibrary library : sources : objs ;
-rule shaderMetalLibrary
-{
-  if ! [ ListGetFirst $(>) ] {
-    EXIT "E/shaderMetalLibrary no sources specified!" ;
+  XCODE_IOS_PLATFORM_USR_BIN_DIR ?= [ FDirName $(XCODE_PLATFORMS_DIR) iPhoneOS.platform usr bin ] ;
+  if ! [ FExists $(XCODE_IOS_PLATFORM_USR_BIN_DIR) ] {
+    ECHO "E/Can't find XCODE_IOS_PLATFORM_USR_BIN_DIR, if its not in the standard location you can set the XCODE_IOS_PLATFORM_USR_BIN_DIR environment variable to specify its location." ;
+    EXIT "E/XCODE_IOS_PLATFORM_USR_BIN_DIR =" $(XCODE_IOS_PLATFORM_USR_BIN_DIR) ;
   }
 
-  local target_sdk target_name target_ccflags ;
-  if $(OSPLAT) = IOS {
-    target_sdk = iphoneos ;
-    target_name = ios ;
-    target_ccflags = -arch air64 -emit-llvm -c -ffast-math -std=ios-metal1.0 -mios-version-min=9.0 ;
-  }
-  else if $(OSX) {
-    target_sdk = macosx ;
-    target_name = osx ;
-    target_ccflags = -arch air64 -emit-llvm -c -ffast-math -std=osx-metal1.1 -mmacosx-version-min=10.11 ;
-  }
-  else {
-    EXIT "E/Building metal libraries requires macOS." ;
+  XCODE_MACOS_PLATFORM_USR_BIN_DIR ?= [ FDirName $(XCODE_PLATFORMS_DIR) MacOSX.platform usr bin ] ;
+  if ! [ FExists $(XCODE_MACOS_PLATFORM_USR_BIN_DIR) ] {
+    ECHO "E/Can't find XCODE_MACOS_PLATFORM_USR_BIN_DIR, if its not in the standard location you can set the XCODE_MACOS_PLATFORM_USR_BIN_DIR environment variable to specify its location." ;
+    EXIT "E/XCODE_MACOS_PLATFORM_USR_BIN_DIR =" $(XCODE_MACOS_PLATFORM_USR_BIN_DIR) ;
   }
 
-  local SRC_METAL = $(>) ;
+  # metal compiler
+  rule shaderMetal
+  {
+    Depends $(<) : $(>) ;
+    SHADER_CCFLAGS on $(<) += $(SHADER_CCFLAGS) ;
+    SHADER_CCHDRS on $(<) = [ on $(<) FIncludes $(SHADER_HDRS) ] ;
+    SHADER_CCDEFS on $(<) = [ on $(<) FDefines $(SHADER_DEFINES) ] ;
+  }
 
-  local LIB_METAL = [ FGristFiles $(<).$(target_name).metallib ] ;
-  LIB_METAL_BIN2H_NAME on $(LIB_METAL) += $(<:B) ;
+  # /shaderMetalLibraryFromObjects library : objects ;
+  rule shaderMetalLibraryFromObjects
+  {
+    local _i _l _s _h ;
 
-  local OBJ_METAL = [ shaderObjects $(>) ] ;
-  SHADER_CCFLAGS on $(OBJ_METAL) += -Wall -Wextra $(target_ccflags) ;
+    # Add grist to file names
+    _s = [ FGristFiles $(>) ] ;
+    _l = $(<:S=$(SHADER_SUFLIB)) ;
+    _h = $(<:S=$(SHADER_SUFLIB).h) ;
 
-  SHADER_METAL_SDK on $(LIB_METAL) += $(target_sdk) ;
-  SHADER_METAL_SDK on $(OBJ_METAL) += $(target_sdk) ;
+    # library depends on its member objects
+    Depends shader_obj : $(_s) ;
 
-  shaderMetalLibraryFromObjects $(LIB_METAL) : $(OBJ_METAL) ;
-  DEPENDS shaders : $(LIB_METAL).h ;
-  DEPENDS pass1 : shaders ;
+    # Set LOCATE for the library and its contents.  The bound
+    # value shows up as $(NEEDLIBS) on the Link actions.
+    # For compatibility, we only do this if the library doesn't
+    # already have a path.
+    if ! $(_l:D) {
+      MakeLocate $(_l) $(_l)($(_s:BS)) : $(LOCATE_TARGET) ;
+    }
 
-  return $(LIB_METAL) ;
+    Depends $(_l) : $(_s) ;
+    Depends $(_h) : $(_l) ;
+    Depends $(_h) : $(_l) ;
+    Clean clean : $(_l) ;
+
+    shaderMetalArchive $(_l) : $(_s) ;
+  }
+
+  actions shaderMetal
+  {
+    $(SHADER_METAL_SDK)/metal $(SHADER_CCFLAGS) -I"$(SHADER_HDRS)" -serialize-diagnostics "$(<).dia" "$(>)" -o "$(<)"
+  }
+
+  actions shaderMetalArchive
+  {
+    $(SHADER_METAL_SDK)/metallib -o "$(<)" "$(>)" && \
+    bin2h "$(<)" "$(<).h" $(LIB_METAL_BIN2H_NAME)
+  }
+
+  # /shaderLibrary library : sources : objs ;
+  rule shaderMetalLibrary
+  {
+    if ! [ ListGetFirst $(>) ] {
+      EXIT "E/shaderMetalLibrary no sources specified!" ;
+    }
+
+    local target_sdk target_name target_ccflags ;
+    if $(OSPLAT) = IOS {
+      target_sdk = $(XCODE_IOS_PLATFORM_USR_BIN_DIR) ;
+      target_name = ios ;
+      target_ccflags = -arch air64 -emit-llvm -c -ffast-math -std=ios-metal1.0 -mios-version-min=9.0 ;
+    }
+    else if $(OSX) {
+      target_sdk = $(XCODE_MACOS_PLATFORM_USR_BIN_DIR) ;
+      target_name = osx ;
+      target_ccflags = -arch air64 -emit-llvm -c -ffast-math -std=osx-metal1.1 -mmacosx-version-min=10.11 ;
+    }
+    else {
+      EXIT "E/Building metal libraries requires macOS." ;
+    }
+
+    local SRC_METAL = $(>) ;
+
+    local LIB_METAL = [ FGristFiles $(<).$(target_name).metallib ] ;
+    LIB_METAL_BIN2H_NAME on $(LIB_METAL) += $(<:B) ;
+
+    local OBJ_METAL = [ shaderObjects $(>) ] ;
+    SHADER_CCFLAGS on $(OBJ_METAL) += -Wall -Wextra $(target_ccflags) ;
+
+    SHADER_METAL_SDK on $(LIB_METAL) += $(target_sdk) ;
+    SHADER_METAL_SDK on $(OBJ_METAL) += $(target_sdk) ;
+
+    shaderMetalLibraryFromObjects $(LIB_METAL) : $(OBJ_METAL) ;
+    DEPENDS shaders : $(LIB_METAL).h ;
+    DEPENDS pass1 : shaders ;
+
+    return $(LIB_METAL) ;
+  }
+
 }
