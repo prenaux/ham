@@ -548,7 +548,7 @@ rule tkLinkLibs {
 rule tkLinkImpLibs {
   if $(PKGTYPE) != library {
     local l = [ tkFindImportedLib $(>) : $(3) : $(4) ] ;
-    if ( $(FORCE_DLL_DEPS) = 1 ) || ( ! [ FExists $(l) ] ) {
+    if ( ! ( $(NO_DLL_DEPS) = 1 ) ) || ( ! [ FExists $(l) ] ) {
       DEPENDS $(<) : $(l) ;
     }
     VarOnAddToFront LINKLIBS : $(<) : [ FQuote $(l) ] ;
@@ -566,7 +566,7 @@ rule tkDepDll {
   dir ?= $(TK_DIR_DLL) ;
   if ! ( $(NO_DEPS) = 1 ) {
     local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFDLL) ] ;
-    if ( $(FORCE_DLL_DEPS) = 1 ) || ( ! [ FExists $(l) ] ) {
+    if ( ! ( $(NO_DLL_DEPS) = 1 ) ) || ( ! [ FExists $(l) ] ) {
       DEPENDS $(<) : $(l) ;
     }
   }
