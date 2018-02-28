@@ -318,6 +318,10 @@ the text to another HTML buffer."
  (add-to-list 'auto-mode-alist '("\\.cyp\\'" . cypher-mode))
 )
 
+;;*** SableCC *********************************************************************
+(autoload 'sablecc-mode "sablecc-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.polyglot\\'" . sablecc-mode))
+
 ;;;======================================================================
 ;;; IDO completion
 ;;;======================================================================
