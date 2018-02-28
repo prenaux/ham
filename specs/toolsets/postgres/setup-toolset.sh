@@ -20,6 +20,15 @@ case $HAM_OS in
         fi
         ;;
     OSX*)
+        export POSTGRES_DIR="${HAM_TOOLSET_DIR}/osx-x64/"
+        export PATH="${POSTGRES_DIR}/bin":${PATH}
+        if [ ! -e "$POSTGRES_DIR" ]; then
+            toolset_dl postgres postgres_osx-x64
+            if [ ! -e "$POSTGRES_DIR" ]; then
+                echo "E/nt-x86 folder doesn't exist in the toolset"
+                return 1
+            fi
+        fi
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
