@@ -1,0 +1,2 @@
+#!/bin/bash
+java -jar $PRESTO_HOME/bin/presto-cli-0.196-executable.jar $*

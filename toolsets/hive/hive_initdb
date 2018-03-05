@@ -1,0 +1,2 @@
+#!/bin/bash
+$HIVE_HOME/bin/schematool -dbType derby -initSchema
