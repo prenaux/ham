@@ -8,22 +8,6 @@
 (NotBatchMode
  (agl-begin-time-block "File Cache")
 
- ;;
- ;; C-c p or C-M-r -> Open file in the file cache
- ;; C-S-M-r -> Update Cache and Save to disk
- ;;
- ;; You can add this in your .emacs to add custom folders to be
- ;; indexed when update-cache is called, which you should do
- ;; after updating the list... it is not called automatically.
- ;;
- ;; ------ begin
- ;; (add-to-list 'my-file-cache-dirs (concat ENV_WORK "/../Users/pierre"))
- ;; (add-to-list 'my-file-cache-dirs (concat ENV_WORK "/../Documents/www.talansoft.com"))
- ;; (add-to-list 'my-file-cache-dirs (concat ENV_WORK "/GayaLauncher"))
- ;; (my-file-cache-dirs)
- ;; ------ end
- ;;
- (defvar my-file-cache-dirs nil)
  (defvar my-file-cache-name "~/.emacs-file-cache")
 
  ;; --- from Denis Bueno's .emacs - http://obfuscatedcode.wordpress.com/my-dot-emacs/ ---
@@ -35,36 +19,12 @@
  ;; cache to disk, since it's big, and doesn't change *that* often.
  (eval-after-load "filecache"
    '(progn
-      (defun my-file-cache-dirs ()
-        "Directories that I cache."
-        ;; Return a list of the elements that match pred. Order not guaranteed.
-        (flet ((filter (pred list &optional result)
-                       (if (null list) result
-                         (filter pred (cdr list)
-                                 (if (funcall pred (car list))
-                                     (cons (car list) result)
-                                   result)))))
-          (filter
-           #'file-accessible-directory-p
-           my-file-cache-dirs))) ;(my-file-cache-dirs)
-
       (defun file-cache-save-my-cache-to-file ()
         "Save the current file-cache to `my-file-cache-name'."
         (interactive)
         (file-cache-save-cache-to-file my-file-cache-name))
 
-      (defun file-cache-update-my-cache ()
-        "Reindex everything returned by (my-file-cache-dirs)."
-        (interactive)
-        (message "=== File Cache updating...")
-        (map nil #'file-cache-add-directory-recursively (my-file-cache-dirs))
-        (message "=== File Cache cleaning...")
-        (file-cache-clean)
-        (message "=== File Cache saving...")
-        (file-cache-save-my-cache-to-file)
-        (message "=== File Cache update done !"))
-
-      (defun file-cache-add-this-directory ()
+      (defun file-cache-only-add-this-directory ()
         (interactive)
         (let ((dir-name (file-name-directory (buffer-file-name))))
           (message (concat "=== File Cache adding directory: " dir-name))
@@ -73,7 +33,20 @@
           (message "=== File Cache saving...")
           (file-cache-save-my-cache-to-file)
           (message "=== File Cache done !")
-          ))
+       ))
+
+      (defun file-cache-add-this-directory ()
+        (interactive)
+        (let ((dir-name (file-name-directory (buffer-file-name))))
+          (message (concat "=== File Cache adding directory: " dir-name))
+          (file-cache-add-directory-recursively
+           (file-name-directory (buffer-file-name)))
+          (message "=== File Cache cleaning...")
+          (file-cache-clean)
+          (message "=== File Cache saving...")
+          (file-cache-save-my-cache-to-file)
+          (message "=== File Cache done !")
+        ))
 
       ;; Remove all non-existing files from the list
       (defun file-cache-clean ()
