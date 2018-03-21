@@ -1,0 +1,24 @@
+#!/bin/bash
+# the help
+usage() {
+    echo "usage: git-tmp-branch REMOTE BRANCH"
+    echo ""
+    echo "  Creates a 'tmp-BRANCH' from the REMOTE/BRANCH."
+    echo ""
+
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        # sourced...
+        return 1
+    else
+        # regular call
+        exit 1
+    fi
+}
+if [ $# != 2 ]; then
+    echo "E/Invalid number of arguments specified"
+    echo ""
+    usage
+fi
+
+git --fetch all &&\
+git checkout -b tmp-$2 $1/$2
