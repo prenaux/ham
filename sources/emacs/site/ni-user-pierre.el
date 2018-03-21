@@ -370,6 +370,7 @@ If the new path's directories does not exist, create them."
 
  ;; web-mode please close all the tags...
  (setq web-mode-void-elements '())
+ (setq web-mode-enable-auto-indentation nil)
 
  ;; for flow errors in compile buffer (F5 & C-F5)
  (add-to-list 'compilation-error-regexp-alist '("^\\(.*?\\):\\([0-9]+\\):.*$" 1 2))
