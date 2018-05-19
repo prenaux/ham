@@ -1,0 +1,17 @@
+#!/bin/bash
+help() {
+    echo "usage: git-rebase branch_name"
+    echo ""
+    echo "  Rebase on the specified branch."
+    exit 1
+}
+if [ -z "$1" ]; then
+   help
+fi
+
+BRANCH_NAME="$1"
+shift
+
+git stash push &&
+    git rebase $BRANCH_NAME $* && \
+    git stash pop
