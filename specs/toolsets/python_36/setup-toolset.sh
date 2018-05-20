@@ -2,9 +2,9 @@
 
 # toolset
 export HAM_TOOLSET=PYTHON
-export HAM_TOOLSET_VER=27
-export HAM_TOOLSET_NAME=python_27
-export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/python_27"
+export HAM_TOOLSET_VER=36
+export HAM_TOOLSET_NAME=python_36
+export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/python_36"
 
 # path setup
 case $HAM_OS in
@@ -12,7 +12,7 @@ case $HAM_OS in
         export PYTHON_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
         export PATH=${PYTHON_DIR}:${PYTHON_DIR}/DLLs:${PYTHON_DIR}/Scripts:${PATH}
         if [ ! -e "$PYTHON_DIR" ]; then
-            toolset_dl python_27 python_27_nt-x86
+            toolset_dl python_36 python_36_nt-x86
             if [ ! -e "$PYTHON_DIR" ]; then
                 echo "E/nt-x86 folder doesn't exist in the toolset"
                 return 1
@@ -21,13 +21,12 @@ case $HAM_OS in
         export PYTHON="${PYTHON_DIR}/python.exe"
         ;;
     OSX*)
-        ln -s /usr/bin/python2.7 "${HAM_HOME}/bin/osx-x86/python2"
-        if [ ! -e "/usr/local/bin/pip2.7" ]; then
+        if [ ! -e "/usr/local/bin/pip3.6" ]; then
             echo "I/pip not found, installing..."
             sudo easy_install pip
         fi
-        alias python=python2
-        export PYTHON_BINDIR=$HOME/Library/Python/2.7/bin
+        alias python=python3
+        export PYTHON_BINDIR=$HOME/Library/Python/3.6/bin
         export PATH=$PYTHON_BINDIR:$PATH
         ;;
     LINUX*)
@@ -39,7 +38,7 @@ case $HAM_OS in
         ;;
 esac
 
-VER="--- python_27 ------------------------
+VER="--- python_36 ------------------------
 `python --version 2>&1`"
 if [ $? != 0 ]; then
     echo "E/Can't get version."
