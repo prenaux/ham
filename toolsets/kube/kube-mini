@@ -1,0 +1,3 @@
+#!/bin/bash -e
+cd "$MINIKUBE_HOME"
+"${KUBE_HOME}bin/minikube" $@
