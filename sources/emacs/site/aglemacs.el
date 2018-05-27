@@ -322,6 +322,13 @@ the text to another HTML buffer."
 (autoload 'sablecc-mode "sablecc-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.polyglot\\'" . sablecc-mode))
 
+;;*** PowerShell Script ***********************************************************
+(autoload 'powershell-mode "powershell-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.ps1\\'" . powershell-mode))
+
+;;*** Nginx config ****************************************************************
+(autoload 'nginx-mode "nginx-mode" nil t)
+
 ;;;======================================================================
 ;;; IDO completion
 ;;;======================================================================
