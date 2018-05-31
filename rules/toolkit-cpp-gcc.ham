@@ -1,3 +1,74 @@
+STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
+
+GCC_CC_ARGS +=
+  -ffunction-sections
+  -fdata-sections
+  -fvisibility=hidden
+  -Wno-switch
+  -Wno-unused-value
+;
+GCC_CPP_ARGS +=
+  -std=c++11
+  -Wno-narrowing
+;
+
+LINKFLAGS +=
+  -fvisibility=hidden
+  -ffunction-sections
+  -fdata-sections
+;
+
+### OSX ###
+if $(LINUX) {
+  GCC_CC_ARGS +=
+    -fPIC
+    -Wno-deprecated-declarations
+  ;
+  GCC_CPP_ARGS +=
+    -Wno-conversion-null
+  ;
+
+  if $(OSPLAT) = X64 {
+    GCC_CC_ARGS += -m64 ;
+    LINKFLAGS += -m64 ;
+  }
+  else if $(OSPLAT) = X86 {
+    GCC_CC_ARGS += -m32 ;
+    LINKFLAGS += -m32 ;
+  }
+
+  if $(BUILD) = ra {
+    LINKFLAGS_EXE += -dead_strip ;
+    LINKFLAGS_DLL += -dead_strip ;
+  }
+  LINKLIBS +=
+   -lstdc++ -lpthread -ldl -lm ;
+}
+
+CCFLAGS   += $(GCC_CC_ARGS) ;
+C++FLAGS  += $(GCC_CC_ARGS) $(GCC_CPP_ARGS) ;
+
+### Link flags ###
+LINKLIBS += ;
+
+rule tkCC++Build
+{
+  local t = $(<) ;
+  local strOpt = "" ;
+  # Set the debug infos generation
+  # Set the optimization flags
+  if $(DEBUG) = 1 {
+    PKGOPTIM += $(CLANG_DBG_ARGS) ;
+    strOpt += "(DebugOnly) " ;
+  }
+  # Set debug-only flags
+  else {
+    PKGOPTIM += $(CLANG_OPT_ARGS) ;
+    strOpt += "(Optimized) " ;
+  }
+  logVerbose "- CC++Build: " $(strOpt) ;
+}
+
 rule tkC++Exceptions {
   ObjectC++Flags $(<) : -fexceptions ;
 }

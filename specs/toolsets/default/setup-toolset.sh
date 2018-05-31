@@ -7,7 +7,7 @@ case $HAM_OS in
         . ham-toolset-import.sh macos_x64
         ;;
     LINUX)
-        . ham-toolset-import.sh gcc_470
+        . ham-toolset-import.sh linux_x64
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

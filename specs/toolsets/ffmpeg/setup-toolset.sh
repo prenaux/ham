@@ -18,6 +18,9 @@ case $HAM_OS in
         export FFMPEG_DIR="${HAM_TOOLSET_DIR}/osx-x64/"
         export PATH="${FFMPEG_DIR}":${PATH}
         ;;
+    LINUX)
+        # ffmpeg is setup by ham-install-os-packages
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
