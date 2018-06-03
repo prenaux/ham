@@ -69,6 +69,10 @@
  (global-set-key (kbd "C-v") 'scroll-up-command)
  (global-set-key (kbd "C-S-v") 'scroll-down-command)
 
+ ;; Scroll one line at a time
+ (global-set-key (quote [C-M-down]) (quote scroll-up-line))
+ (global-set-key (quote [C-M-up]) (quote scroll-down-line))
+
  ;; Toggle word wrap
  (global-set-key (kbd "M-6") 'whitespace-mode)
  ;; Ctrl-=/- increase/decrease font size
