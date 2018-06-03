@@ -213,10 +213,6 @@ If the new path's directories does not exist, create them."
    "fontset-default" 'unicode
    "-outline-Arial Unicode MS-normal-normal-normal-sans-*-*-*-*-p-*-gb2312.1980-0")
  )
-
- (Linux
-  (setq default-frame-alist
-        '((font . "-*-Consolas-*-r-*-*-11-108-120-120-c-*-*-*"))))
 )
 
 ;;;======================================================================
