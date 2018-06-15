@@ -321,6 +321,7 @@ the text to another HTML buffer."
 ;;*** SableCC *********************************************************************
 (autoload 'sablecc-mode "sablecc-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.polyglot\\'" . sablecc-mode))
+(add-to-list 'auto-mode-alist '("\\.productions\\'" . sablecc-mode))
 
 ;;*** PowerShell Script ***********************************************************
 (autoload 'powershell-mode "powershell-mode" nil t)
