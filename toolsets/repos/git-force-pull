@@ -20,6 +20,9 @@ if [ $# != 2 ]; then
     usage
 fi
 
+set -ex
+
+git branch -D tmp-git-force-pull
 git checkout -b tmp-git-force-pull
 git fetch $1 +$2:$2 &&\
 git checkout $2
