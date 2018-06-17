@@ -9,14 +9,28 @@ case $HAM_OS in
         ;;
 esac
 
-if [ ! -e "$MYSQL_DB_DIR/data/mysql/db.MYD" ]; then
+if [ ! -f "$MYSQL_DB_DIR/data/mysql/db.MYD" ]; then
     mkdir -p "$MYSQL_DB_DIR/data"
+
     errcheck $? git_repos "Can't create mysql db data folder '${MYSQL_DB_DIR}'."
+    if [ -z "$MYSQL_DB_INIT_PWD" ]; then
+        echo "E/mysql_initdb: MYSQL_DB_INIT_PWD not set."
+        exit 1
+    fi
+
+    if [ ! -e "$MYSQL_DB_DIR/my.cnf" ]; then
+        echo [mysqld] > "$MYSQL_DB_DIR/my.cnf"
+        echo basedir=`nativedir "$MYSQL_DB_DIR"` >> "$MYSQL_DB_DIR/my.cnf"
+        echo datadir=`nativedir "$MYSQL_DB_DIR/data"` >> "$MYSQL_DB_DIR/my.cnf"
+        echo character_set_server = utf8 >> "$MYSQL_DB_DIR/my.cnf"
+        echo collation_server = utf8_general_ci >> "$MYSQL_DB_DIR/my.cnf"
+        echo "# bind-address = 0.0.0.0" >> "$MYSQL_DB_DIR/my.cnf"
+        echo port = 3306 >> "$MYSQL_DB_DIR/my.cnf"
+    fi
 
     echo "# Initializing mysql DB at '${MYSQL_DB_DIR}/data'..."
-    echo "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('abc123');" > "$MYSQL_DB_DIR/my-initdb-file.sql"
+    echo "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$MYSQL_DB_INIT_PWD');" > "$MYSQL_DB_DIR/my-initdb-file.sql"
     mysql_run --initialize --init-file="$MYSQL_DB_DIR/my-initdb-file.sql"
-    # mysql_run --initialize-insecure
     echo "# Done."
 else
     echo "# The Mysql DB is already initialized at '${MYSQL_DB_DIR}'."

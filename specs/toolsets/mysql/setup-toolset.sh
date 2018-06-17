@@ -33,13 +33,6 @@ export MYSQL_DB_DIR="$WORK/Server/mysql"
 
 mkdir -p "$MYSQL_DB_DIR"
 mkdir -p "$MYSQL_DB_DIR/data"
-if [ ! -e "$MYSQL_DB_DIR/my.cnf" ]; then
-    echo [mysqld] > "$MYSQL_DB_DIR/my.cnf"
-    echo basedir=`nativedir "$MYSQL_DB_DIR"` >> "$MYSQL_DB_DIR/my.cnf"
-    echo datadir=`nativedir "$MYSQL_DB_DIR/data"` >> "$MYSQL_DB_DIR/my.cnf"
-    echo character_set_server = utf8 >> "$MYSQL_DB_DIR/my.cnf"
-    echo collation_server = utf8_general_ci >> "$MYSQL_DB_DIR/my.cnf"
-fi
 
 VER="--- mysql ---------------------
 `mysql --version`"
