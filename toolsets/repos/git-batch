@@ -126,11 +126,11 @@ do
         k)
             HAS_CHANGES=`git status --porcelain`
             if [ ! -z "$HAS_CHANGES" ]; then
-                CMD="$GITK_CMD"
+                CMD="\"$GITK_CMD\""
             fi
             ;;
         K)
-            CMD="$GITK_CMD"
+            CMD="\"$GITK_CMD\""
             ;;
     esac
 
