@@ -19,6 +19,8 @@ usage() {
     echo "  -L count       Print the last 'count' commit messages"
     echo "  -m             Fetch & merge (pull) from '$GIT_BATCH_DEFAULT_REMOTE' to 'current branch'"
     echo "  -M remote      Fetch & merge (pull) from the specified remote to 'current branch'"
+    echo "  -p             Push to '$GIT_BATCH_DEFAULT_REMOTE'"
+    echo "  -P remote      Push to the specified remote"
     echo "  -u             Push all (upload) to '$GIT_BATCH_DEFAULT_REMOTE'"
     echo "  -U remote      Push all (upload) to the specified remote"
     echo "  -t             Push all tags (upload) to '$GIT_BATCH_DEFAULT_REMOTE'"
@@ -60,7 +62,7 @@ if [ -z "$GITK_CMD" ]; then
 fi
 
 # process the arguments
-while getopts "dD:eE:fhlL:mM:uU:tT:sSyk" OPT
+while getopts "dD:eE:fhlL:mM:pP:uU:tT:sSyk" OPT
 do
 
     CMD=
@@ -91,6 +93,12 @@ do
             ;;
         L)
             CMD="git log -${OPTARG} --pretty=oneline --abbrev-commit"
+            ;;
+        p)
+            CMD="git push $GIT_BATCH_DEFAULT_REMOTE"
+            ;;
+        P)
+            CMD="git push $OPTARG"
             ;;
         u)
             CMD="git push --all $GIT_BATCH_DEFAULT_REMOTE"
