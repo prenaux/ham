@@ -45,8 +45,8 @@ case $HAM_OS in
             fi
         fi
         export NODE_PATH=$NODEJS_DIR/lib/node_modules
-	chmod +x "$NODEJS_DIR/bin/"*
-	chmod +x "$NODEJS_DIR/lib/"*
+	      chmod +x "$NODEJS_DIR/bin/"*
+	      chmod +x "$NODEJS_DIR/lib/"*
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

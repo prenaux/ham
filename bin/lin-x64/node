@@ -1,7 +1,7 @@
 #!/bin/bash
 export HAM_NO_VER_CHECK=1
 if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
-if [[ ! -e "$HAM_HOME/toolsets/nodejs/$HAM_BIN_LOA/bin/node" ]]; then
+if [[ ! -x "$HAM_HOME/toolsets/nodejs/$HAM_BIN_LOA/bin/node" ]]; then
     . ham-toolset nodejs
 fi
 "$HAM_HOME/toolsets/nodejs/$HAM_BIN_LOA/bin/node" "$@"
