@@ -2,13 +2,14 @@
 . ham-bash-lib.sh
 
 usage() {
-    echo "usage: repos-git-batch [ commands ]"
+    echo "usage: repos-git-batch (-x) [ commands ]"
     echo ""
     echo "  Wrapper for git-batch that will run git-batch concurrently on all"
     echo "  git repos in the current directory."
     echo ""
-    echo "  The arguments are passed verbatim to git-batch. See below for its"
-    echo "  documentation."
+    echo "  -x specify that the commands should be run concurrently"
+    echo ""
+    echo "  The arguments are passed verbatim to git-batch."
     echo ""
     git-batch -h
 
@@ -22,24 +23,58 @@ usage() {
 }
 
 # Check that there is at least one argument...
-if [ $# = 0 ]; then
-    echo "E/No argument specified"
-    echo ""
+if [ $# = 0 -o "$1" == "-h" -o "$2" == "-h" ]; then
+    if [ $# = 0 ]; then
+        echo "E/No argument specified"
+        echo ""
+    fi
     usage
 fi
 
-if [[ -e "$WORK/$1" ]]; then
-    REPOS_CWD=`cat "$WORK/$1"`
-    shift
-elif [[ -e "$WORK/_repos_$1" ]]; then
-    REPOS_CWD=`cat "$WORK/_repos_$1"`
-    shift
-else
-    WORK=`pwd`
+# Fetch the list of repos
+if [[ "$1" == "." ]]; then
     REPOS_CWD=`repos-list-cwd`
+else
+    REPOS_CWD=`cat "$1"`
+    REPOS_CWD=$(eval echo \"$REPOS_CWD\")
 fi
+shift
+
+# Check that they are all git directories
 for ARG in $REPOS_CWD; do
-  git-batch -E "$WORK/$ARG" $* &
+    if [ ! -d $ARG/.git ]; then
+        echo "E/Not a git directory: '$ARG'"
+        ERR_NOTGITDIR=1
+    fi
 done
+if [ ! -d $ARG ]; then
+    exit 1
+fi
+
+# Check if we're running in concurrent mode
+if [ "$1" == "-x" ]; then
+    CONCURRENT=1
+    shift
+fi
+if [ -z $CONCURRENT ]; then
+    echo "I/Running sequentially"
+else
+    echo "I/Running concurrently"
+fi
+
+# Run the commands
+for ARG in $REPOS_CWD; do
+    echo "== Repo '$ARG'"
+    cd "$ARG"
+    if [ ! -z "$1" ]; then
+        if [ -z $CONCURRENT ]; then
+            git-batch $*
+            echo ""
+        else
+            git-batch $* &
+        fi
+    fi
+done
+
 wait
 echo "== Done."

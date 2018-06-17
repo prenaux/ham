@@ -14,8 +14,6 @@ usage() {
     echo "  -h             This help message"
     echo "  -d             Fetch all branches (download) from '$GIT_BATCH_DEFAULT_REMOTE' remote"
     echo "  -D remote      Fetch all branches (download) from the specified remote"
-    echo "  -e             popd"
-    echo "  -E dir         pushd into the specified directory"
     echo "  -f             Fetch all branches (download) from all remotes"
     echo "  -l             Print the last 4 commit messages"
     echo "  -L count       Print the last 'count' commit messages"
@@ -57,9 +55,15 @@ if [ $# = 0 ]; then
     usage
 fi
 
+if [ -z "$GITK_CMD" ]; then
+    GITK_CMD=gitk
+fi
+
 # process the arguments
-while getopts "dD:eE:fhlL:mM:uU:tT:sy" OPT
+while getopts "dD:eE:fhlL:mM:uU:tT:sSyk" OPT
 do
+
+    CMD=
     case "$OPT" in
         h)
             usage
@@ -67,13 +71,10 @@ do
         \?)
             usage
             ;;
-        e)
-            CMD="popd"
-            ;;
-        E)
-            CMD="pushd \"`nativedir "$OPTARG"`\""
-            ;;
         s)
+            CMD="git status --porcelain"
+            ;;
+        S)
             CMD="git status"
             ;;
         d)
@@ -86,10 +87,10 @@ do
             CMD="git fetch --prune --all"
             ;;
         l)
-            CMD="git log -4"
+            CMD="git log -4 --pretty=oneline --abbrev-commit"
             ;;
         L)
-            CMD="git log -${OPTARG}"
+            CMD="git log -${OPTARG} --pretty=oneline --abbrev-commit"
             ;;
         u)
             CMD="git push --all $GIT_BATCH_DEFAULT_REMOTE"
@@ -114,9 +115,23 @@ do
         y)
             CMD="git-batch -f -m -u -t"
             ;;
+        k)
+            HAS_CHANGES=`git status --porcelain`
+            if [ ! -z "$HAS_CHANGES" ]; then
+                CMD="$GITK_CMD"
+            fi
+            ;;
+        K)
+            CMD="$GITK_CMD"
+            ;;
     esac
 
-    echo "I/$CMD (in `pwd`)"
-    eval $CMD
-    errcheck $? git_batch "git-batch error: $CMD (in `pwd`)"
+    if [ -z "$CMD" ]; then
+        echo "I/Skipped `pwd`"
+    else
+        echo "I/$CMD (in `pwd`)"
+        eval $CMD
+        errcheck $? git_batch "git-batch error: $CMD (in `pwd`)"
+    fi
+
 done
