@@ -114,11 +114,11 @@ do
             ;;
         m)
             export GIT_CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
-            CMD="git pull origin ${GIT_CURRENT_BRANCH}"
+            CMD="git pull --ff-only origin ${GIT_CURRENT_BRANCH}"
             ;;
         M)
             export GIT_CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
-            CMD="git pull $OPTARG ${GIT_CURRENT_BRANCH}"
+            CMD="git pull --ff-only $OPTARG ${GIT_CURRENT_BRANCH}"
             ;;
         y)
             CMD="git-batch -f -m -u -t"
