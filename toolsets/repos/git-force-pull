@@ -22,7 +22,7 @@ fi
 
 set -ex
 
-if [ `git branch --list tmp-git-force-pull` ]; then
+if [ "`git branch --list tmp-git-force-pull`" ]; then
     git branch -D tmp-git-force-pull
 fi
 git checkout -b tmp-git-force-pull
