@@ -94,6 +94,16 @@
    'if
    (string-match "GNU Emacs 24" (prin1-to-string (version)))
    (cons 'progn x)))
+(defmacro GNUEmacs25 (&rest x)
+  (list
+   'if
+   (string-match "GNU Emacs 25" (prin1-to-string (version)))
+   (cons 'progn x)))
+(defmacro GNUEmacs26 (&rest x)
+  (list
+   'if
+   (string-match "GNU Emacs 26" (prin1-to-string (version)))
+   (cons 'progn x)))
 (defmacro XEmacs (&rest x)
   (list
    'if
