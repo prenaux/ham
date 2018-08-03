@@ -1,7 +1,6 @@
-#!/bin/bash
-if [ -z "$1" -o -z "$2" ] ; then
-    echo "Usage: `basename $0` dbname dump_file" ;
+#!/bin/bash -ex
+if [ -z "$1" -o -z "$2" -o -z "$3" ] ; then
+    echo "Usage: `basename $0` dbport dbname dump_file" ;
     exit 1 ;
 fi
-createdb -Upostgres "$1" 2> /dev/null
-pg_restore -Upostgres --clean --dbname="$1" "$2"
+pg_restore -Upostgres -p $1 --clean --dbname="$2" "$3"

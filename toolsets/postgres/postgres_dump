@@ -1,6 +1,6 @@
 #!/bin/bash
-if [ -z "$1" -o -z "$2" ] ; then
-    echo "Usage: `basename $0` dbname dump_file" ;
+if [ -z "$1" -o -z "$2" -o -z "$3" ] ; then
+    echo "Usage: `basename $0` dbport dbname dump_file" ;
     exit 1 ;
 fi
-pg_dump -Upostgres --format=c "${1}" > "${2}"
+pg_dump -Upostgres --format=c -p $1 "${2}" > "${3}"
