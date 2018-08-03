@@ -1,5 +1,7 @@
 #!/bin/bash
 
+toolset_import python_27
+if [ $? != 0 ]; then return 1; fi
 toolset_import repos
 if [ $? != 0 ]; then return 1; fi
 toolset_import nginx
@@ -15,7 +17,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/kube"
 case $HAM_OS in
     NT*)
         export KUBE_HOME="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH="${KUBE_HOME}/bin":${PATH}
+        export PATH="${KUBE_HOME}/bin":"${KUBE_HOME}/google-cloud-sdk/bin/":${PATH}
         if [ ! -e "$KUBE_HOME" ]; then
             toolset_dl kube kube_nt-x86
             if [ ! -e "$KUBE_HOME" ]; then
@@ -36,6 +38,7 @@ export MINIKUBE_HOME="$WORK/Server/minikube"
 export PATH="${HAM_TOOLSET_DIR}":${PATH}
 
 VER="--- kubernetes ---------------
+`gcloud --version | grep 'Google Cloud SDK'`
 `kubectl version | grep 'Client Version:'`
 `minikube version`"
 if [ $? != 0 ]; then
