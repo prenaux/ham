@@ -132,7 +132,10 @@
 ;;;======================================================================
 ;;; aglemacs.el: mark-multiple, expand-region
 ;;;======================================================================
- (global-set-key (kbd "C-x r t") 'inline-string-rectangle)
+ (GNUEmacs24
+  ;; Emacs 25+ already do inline rectangle replace
+  (require 'inline-string-rectangle)
+  (global-set-key (kbd "C-x r t") 'inline-string-rectangle))
  (global-set-key (kbd "C-<") 'mark-previous-like-this)
  (global-set-key (kbd "C->") 'mark-next-like-this)
  (global-set-key (kbd "C-*") 'mark-all-like-this)

@@ -906,7 +906,6 @@ or \\[markdown-toggle-inline-images]."
 (NotBatchMode
  (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/mark-multiple.el"))
 
- (require 'inline-string-rectangle)
  (require 'mark-more-like-this)
 
  (defun mark-next-like-this (arg)
