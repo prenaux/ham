@@ -3097,3 +3097,10 @@ __git_complete gitk __gitk_main
 if [ Cygwin = "$(uname -o 2>/dev/null)" ]; then
 __git_complete git.exe __git_main
 fi
+
+##
+## Our custom completions
+##
+__git_complete "git rebase-chain" _git_branch
+__git_complete "git-rebase" _git_branch
+__git_complete "git-delete-branch" _git_branch
