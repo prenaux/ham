@@ -27,8 +27,8 @@ case $HAM_OS in
             sudo easy_install pip
         fi
         alias python=python2
-        export PYTHON_BINDIR=$HOME/Library/Python/2.7/bin
-        export PATH=$PYTHON_BINDIR:$PATH
+        export PYTHON2_BINDIR=$HOME/Library/Python/2.7/bin
+        export PATH=$PYTHON2_BINDIR:$PATH
         ;;
     LINUX*)
         true # Assume its already available and default on Linux

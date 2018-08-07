@@ -26,8 +26,8 @@ case $HAM_OS in
             sudo easy_install pip
         fi
         alias python=python3
-        export PYTHON_BINDIR=$HOME/Library/Python/3.6/bin
-        export PATH=$PYTHON_BINDIR:$PATH
+        export PYTHON3_BINDIR=$HOME/Library/Python/3.6/bin
+        export PATH=$PYTHON3_BINDIR:$PATH
         ;;
     LINUX*)
         true # Assume its already available and default on Linux
