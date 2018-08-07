@@ -831,6 +831,7 @@ BEG and END (region to sort)."
 ;; Override Markdown Mode's image overlays so the image markdown code and the image are both visible!
 (eval-after-load "markdown-mode"
   '(progn
+     (setq markdown-gfm-use-electric-backquote nil)
      (setq markdown-max-image-size '(800 . 600))
      (defun markdown-display-inline-images ()
        "Add inline image overlays to image links in the buffer.
