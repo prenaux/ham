@@ -1,8 +1,5 @@
 #!/bin/bash
 case $HAM_OS in
-    NT)
-        python "${HAM_HOME}/toolsets/aws/aws-eb.py" $@
-      ;;
     *)
         eb $@
       ;;

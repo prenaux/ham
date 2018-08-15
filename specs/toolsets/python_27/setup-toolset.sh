@@ -19,6 +19,7 @@ case $HAM_OS in
             fi
         fi
         export PYTHON="${PYTHON_DIR}/python.exe"
+        export PYTHON2_BINDIR="${PYTHON_DIR}/Scripts"
         ;;
     OSX*)
         ln -s /usr/bin/python2.7 "${HAM_HOME}/bin/osx-x86/python2"

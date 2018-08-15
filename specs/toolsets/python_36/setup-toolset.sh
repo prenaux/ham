@@ -9,16 +9,19 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/python_36"
 # path setup
 case $HAM_OS in
     NT*)
-        export PYTHON_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
+        # Assumes the python 3.6 installer has run first and installed in the
+        # default folder
+        export PYTHON_DIR="$HOME/AppData/Local/Programs/Python/Python36"
         export PATH=${PYTHON_DIR}:${PYTHON_DIR}/DLLs:${PYTHON_DIR}/Scripts:${PATH}
         if [ ! -e "$PYTHON_DIR" ]; then
-            toolset_dl python_36 python_36_nt-x86
-            if [ ! -e "$PYTHON_DIR" ]; then
-                echo "E/nt-x86 folder doesn't exist in the toolset"
-                return 1
-            fi
+            echo "E/Python3.6 must be installed with the standard installer in the default folder"
+            return 1
         fi
-        export PYTHON="${PYTHON_DIR}/python.exe"
+        alias python3=${PYTHON_DIR}/python.exe
+        # I have no word for how insane the python 'path handling' works on
+        # Windows... but we have to deal with it anyway...
+        export PYTHON3_BINDIR="$HOME/AppData/Roaming/Python/Python36/Scripts/"
+        export PATH=$PYTHON3_BINDIR:$PATH
         ;;
     OSX*)
         if [ ! -e "/usr/local/bin/pip3.6" ]; then
@@ -39,7 +42,7 @@ case $HAM_OS in
 esac
 
 VER="--- python_36 ------------------------
-`python --version 2>&1`"
+`python3 --version 2>&1`"
 if [ $? != 0 ]; then
     echo "E/Can't get version."
     return 1
