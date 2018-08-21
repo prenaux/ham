@@ -1,5 +1,4 @@
 #!/bin/bash
-# the help
 usage() {
     echo "usage: git-force-pull (REMOTE) BRANCH"
     echo ""
@@ -22,7 +21,7 @@ else
     BRANCH=$2
 fi
 
-if [ -z "$BRANCH"]; then
+if [ -z "$BRANCH" ]; then
     usage
 fi
 
@@ -31,7 +30,8 @@ set -ex
 if [ "`git branch --list tmp-git-force-pull`" ]; then
     git branch -D tmp-git-force-pull
 fi
+
 git checkout -b tmp-git-force-pull
-git fetch $ORIGIN +$BRANCH:$BRANCH &&\
+git fetch $ORIGIN +$BRANCH:$BRANCH
 git checkout $BRANCH
-git branch -d tmp-git-force-pull
+git branch -D tmp-git-force-pull
