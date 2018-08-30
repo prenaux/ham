@@ -97,9 +97,18 @@
      )))
 
 (defun pt-work-get-dirs (dir)
-  (list
-   (concat "\"" (getenv "WORK") "/" x "/sources" "\"")
-   (concat "\"" (getenv "WORK") "/" x "/scripts" "\""))
+  (cond
+   ((string-prefix-p "/" dir)
+    (list
+     (concat "\"" dir "/sources" "\"")
+     (concat "\"" dir "/scripts" "\""))
+   )
+   (t
+    (list
+     (concat "\"" (getenv "WORK") "/" dir "/sources" "\"")
+     (concat "\"" (getenv "WORK") "/" dir "/scripts" "\""))
+   )
+  )
 )
 
 (defvar pt-work-regexp-history-search nil
