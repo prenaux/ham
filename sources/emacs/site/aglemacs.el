@@ -333,6 +333,10 @@ the text to another HTML buffer."
 ;;*** Nginx config ****************************************************************
 (autoload 'nginx-mode "nginx-mode" nil t)
 
+;;*** Swift ***********************************************************************
+(autoload 'swift-mode "swift-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.swift\\'" . swift-mode))
+
 ;;;======================================================================
 ;;; IDO completion
 ;;;======================================================================
