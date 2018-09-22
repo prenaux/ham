@@ -95,8 +95,11 @@ if $(OSX) = 1 {
 
   XCODE_MACOS_PLATFORM_USR_BIN_DIR ?= [ FDirName $(XCODE_PLATFORMS_DIR) MacOSX.platform usr bin ] ;
   if ! [ FExists $(XCODE_MACOS_PLATFORM_USR_BIN_DIR) ] {
-    ECHO "E/Can't find XCODE_MACOS_PLATFORM_USR_BIN_DIR, if its not in the standard location you can set the XCODE_MACOS_PLATFORM_USR_BIN_DIR environment variable to specify its location." ;
-    EXIT "E/XCODE_MACOS_PLATFORM_USR_BIN_DIR =" $(XCODE_MACOS_PLATFORM_USR_BIN_DIR) ;
+    XCODE_MACOS_PLATFORM_USR_BIN_DIR = [ FDirName $(XCODE_PLATFORMS_DIR) .. Toolchains XcodeDefault.xctoolchain usr bin ] ;
+    if ! [ FExists $(XCODE_MACOS_PLATFORM_USR_BIN_DIR) ] {
+      ECHO "E/Can't find XCODE_MACOS_PLATFORM_USR_BIN_DIR, if its not in the standard location you can set the XCODE_MACOS_PLATFORM_USR_BIN_DIR environment variable to specify its location." ;
+      EXIT "E/XCODE_MACOS_PLATFORM_USR_BIN_DIR =" $(XCODE_MACOS_PLATFORM_USR_BIN_DIR) ;
+    }
   }
 
   # metal compiler
