@@ -20,14 +20,13 @@ case $HAM_OS in
         fi
         ;;
     OSX*)
-        export NGINX_DIR="${HAM_TOOLSET_DIR}/osx-x86/"
-        export PATH="${NGINX_DIR}":"${HAM_TOOLSET_DIR}":${PATH}
-        if [ ! -e "$NGINX_DIR/nginx" ]; then
-            toolset_dl nginx nginx_osx-x86
-            if [ ! -e "$NGINX_DIR/nginx" ]; then
-                echo "E/osx-x86 folder doesn't exist in the toolset"
-                return 1
-            fi
+        if [ ! -x "$(command -v nginx)" ]; then
+            echo "I/nginx not found, using brew to install it..."
+            brew install nginx
+        fi
+        if [ ! -x "$(command -v certbot)" ]; then
+            echo "I/certbox not found, using brew to install it..."
+            brew install certbot
         fi
         ;;
     *)

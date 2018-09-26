@@ -9,8 +9,6 @@ case $HAM_OS in
         echo "### Installing packages required by ham on OSX (brew) ###"
         # Install brew
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-        # Install aws beanstalk command line
-        brew install awsebcli
         ;;
     LINUX)
         if [ $(type apt-get 2>/dev/null | wc -l) = 1 ]; then
