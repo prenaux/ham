@@ -1,6 +1,6 @@
 #!/bin/bash
 
-toolset_import java_jdk16
+toolset_import java_jdk18
 if [ $? != 0 ]; then return 1; fi
 
 # toolset
