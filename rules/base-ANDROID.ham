@@ -1,9 +1,9 @@
 ANDROID = 1 ;
 
-if $(HAM_TOOLSET_NAME) = adr_42_arm {
+if $(HAM_TOOLSET_NAME) = adr_50_arm {
   OSPLAT = ARM ;
 }
-else if $(HAM_TOOLSET_NAME) = adr_42_x86 {
+else if $(HAM_TOOLSET_NAME) = adr_50_x86 {
   OSPLAT = X86 ;
 }
 else if $(HAM_TOOLSET_NAME) = adr_50_arm64 {

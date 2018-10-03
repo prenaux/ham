@@ -156,6 +156,11 @@ switch $(ADR_CPU_PROFILE)
       -mthumb-interwork
       ;
     }
+    else {
+      ANDROID_CC_ARGS +=
+      -Wno-unknown-attributes
+      ;
+    }
     ## ARM64v8A
   case ARM64v8A :
     ANDROID_SO_DIR = arm64-v8a ;
