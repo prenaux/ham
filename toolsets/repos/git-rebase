@@ -12,6 +12,4 @@ fi
 BRANCH_NAME="$1"
 shift
 
-git stash push &&
-    git rebase $BRANCH_NAME $* && \
-    git stash pop
+git rebase --autostash $BRANCH_NAME $*

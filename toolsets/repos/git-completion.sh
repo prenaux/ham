@@ -3105,3 +3105,4 @@ __git_complete "git rebase-chain" _git_branch
 __git_complete "git-rebase" _git_branch
 __git_complete "git-delete-branch" _git_branch
 __git_complete "git-force-pull" _git_branch
+__git_complete "git-merge-rebase" _git_branch

@@ -27,6 +27,8 @@ fi
 
 set -ex
 
+git checkout $BRANCH
+
 if [ "`git branch --list tmp-git-force-pull`" ]; then
     git branch -D tmp-git-force-pull
 fi
