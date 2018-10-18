@@ -23,11 +23,17 @@ rule tkImport {
   if ! [ FExists $(dirBase) ] {
     dirBase = [ FDirName $(TOP) .. node_modules $(1) ] ;
     if ! [ FExists $(dirBase) ] {
-      dirBase = [ FDirName $(WORK) $(1) ] ;
+      dirBase = [ FDirName $(TOP) .. $(1) ] ;
       if ! [ FExists $(dirBase) ] {
-        EXIT "F/Could not find toolkit $(1) to import." ;
+        dirBase = [ FDirName $(TOP) .. .. $(1) ] ;
+        if ! [ FExists $(dirBase) ] {
+          dirBase = [ FDirName $(WORK) $(1) ] ;
+          if ! [ FExists $(dirBase) ] {
+            EXIT "F/Could not find toolkit $(1) to import." ;
+          }
+          doCopy = 1 ;
+        }
       }
-      doCopy = 1 ;
     }
   }
 
