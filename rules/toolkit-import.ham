@@ -31,8 +31,16 @@ rule tkImport {
           if ! [ FExists $(dirBase) ] {
             EXIT "F/Could not find toolkit $(1) to import." ;
           }
+          else {
+            doCopy = 1 ;
+          }
+        }
+        else {
           doCopy = 1 ;
         }
+      }
+      else {
+        doCopy = 1 ;
       }
     }
   }
