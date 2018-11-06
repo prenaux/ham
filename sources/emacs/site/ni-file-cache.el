@@ -41,8 +41,6 @@
           (message (concat "=== File Cache adding directory: " dir-name))
           (file-cache-add-directory-recursively
            (file-name-directory (buffer-file-name)))
-          (message "=== File Cache cleaning...")
-          (file-cache-clean)
           (message "=== File Cache saving...")
           (file-cache-save-my-cache-to-file)
           (message "=== File Cache done !")
@@ -51,7 +49,12 @@
       ;; Remove all non-existing files from the list
       (defun file-cache-clean ()
         (interactive)
-        (setq file-cache-alist (-file-cache-build-clean-list file-cache-alist)))
+        (message "=== File Cache cleaning...")
+        (setq file-cache-alist (-file-cache-build-clean-list file-cache-alist))
+        (message "=== File Cache saving...")
+        (file-cache-save-my-cache-to-file)
+        (message "=== File Cache cleaning done !")
+      )
 
       (defun -file-cache-build-clean-list (aItems)
         (remove-if
