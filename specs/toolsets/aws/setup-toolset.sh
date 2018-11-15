@@ -34,6 +34,14 @@ case $HAM_OS in
         ;;
     LINUX)
         ## Assume eb & aws are already on the path somehow...
+        if [ ! -x "$(command -v eb)" ]; then
+            echo "I/eb not found, installing..."
+            pip3 install awsebcli --upgrade --user
+        fi
+        if [ ! -x "$(command -v aws)" ]; then
+            echo "I/aws not found, installing..."
+            pip3 install awscli --upgrade --user
+        fi
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

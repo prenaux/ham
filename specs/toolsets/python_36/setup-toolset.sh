@@ -33,7 +33,7 @@ case $HAM_OS in
         export PATH=$PYTHON3_BINDIR:$PATH
         ;;
     LINUX*)
-        true # Assume its already available and default on Linux
+        export PATH=~/.local/bin:${PATH}
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
