@@ -35,39 +35,41 @@
  (define-key isearch-mode-map (kbd "<backspace>") 'isearch-del-char) ; bs means bs
  (define-key isearch-mode-map (kbd "<delete>")    'isearch-delete-char)  ; delete means delete
 
- (global-set-key '[(control meta up)] 'agl-search-word-backward)
- (global-set-key '[(control meta down)] 'agl-search-word-forward)
- (global-set-key '[(meta up)] 'agl-search-word-backward)
- (global-set-key '[(meta down)] 'agl-search-word-forward)
+ ;; There's as many variations of 'Meta' as they are stars in the sky...
+ (global-set-key [(meta right)] 'forward-word)
+ (global-set-key [(meta left)] 'backward-word)
+ (global-set-key [(control right)] 'forward-word)
+ (global-set-key [(control left)] 'backward-word)
+ (global-set-key '[(meta up)] 'backward-paragraph)
+ (global-set-key '[(meta down)] 'forward-paragraph)
+ (global-set-key '[(control up)] 'backward-paragraph)
+ (global-set-key '[(control down)] 'forward-paragraph)
+ (global-set-key (key "ESC <up>") 'backward-paragraph)
+ (global-set-key (key "ESC <down>") 'forward-paragraph)
 
  ;; Move to the 'next' window (in clockwise order)
+ (global-set-key (key "M-1") 'other-window) ;; remote ssh
  (global-set-key (key "C-1") 'other-window)
- (global-set-key (key "C-2") 'other-window)
 
- ;; Forward/Backward paragraph
- (global-set-key (key "M-p") 'backward-paragraph)
- (global-set-key (key "C-{") 'backward-paragraph)
- (global-set-key (key "M-n") 'forward-paragraph)
- (global-set-key (key "C-}") 'forward-paragraph)
+ ;; Forward/Backward word under point
+ (global-set-key (key "M-p") 'agl-search-word-backward)
+ (global-set-key (key "M-n") 'agl-search-word-forward)
 
- (global-set-key (key "C-x C-r") 'revert-buffer)
+ (global-set-key (key "C-h C-r") 'revert-buffer)
 
- (global-set-key (kbd "C-6") 'ni-word-wrap-toggle)
-
- (global-set-key [(meta delete)] 'kill-current-buffer)
+ (global-set-key "\C-h\C-w" 'ni-word-wrap-toggle)
 
  ;; Shell
- (global-set-key (kbd "M-0") 'erase-buffer)
- (global-set-key (kbd "C-0") 'ham-shell)
- (global-set-key (kbd "C-)") 'ham-shell-other-frame) ;; C-S-0
- (global-set-key (key "M-`") 'other-frame)
- (global-set-key (key "C-`") 'other-frame)
- (define-key global-map [(meta return)] 'agl-select-visible-shell-window)
- (define-key global-map [(control return)] 'agl-run-last-shell-command)
+ (global-set-key "\C-h\C-s" 'ham-shell)
+ (global-set-key "\C-h\C-t" 'agl-select-visible-shell-window)
+ (global-set-key "\C-h\C-p" 'agl-run-last-shell-command)
+ (IsNotTerminal
+  (global-set-key (key "M-`") 'other-frame)
+  (global-set-key (key "C-`") 'other-frame))
 
  ;; PgUp/Dn
  (global-set-key (kbd "C-v") 'scroll-up-command)
- (global-set-key (kbd "C-S-v") 'scroll-down-command)
+ (global-set-key (kbd "M-v") 'scroll-down-command)
 
  ;; Scroll one line at a time
  (global-set-key (quote [C-M-down]) (quote scroll-up-line))
@@ -76,29 +78,22 @@
  ;; Toggle word wrap
  (global-set-key (kbd "M-6") 'whitespace-mode)
  ;; Ctrl-=/- increase/decrease font size
- (global-set-key (kbd "C-=") 'agl-increase-font-size)
- (global-set-key (kbd "C--") 'agl-decrease-font-size)
+ (IsNotTerminal
+  (global-set-key (kbd "C-=") 'agl-increase-font-size)
+  (global-set-key (kbd "C--") 'agl-decrease-font-size))
 
  ;; Make the sequence "C-c g" execute the `goto-line' command,
  ;; which prompts for a line number to jump to.
- (global-set-key "\C-c\C-g" 'goto-line)
-
- ;; undo on C-z, move the suspend/iconify to C-/
- (global-set-key "\C-z" 'undo)
+ (global-set-key "\C-h\C-l" 'goto-line)
 
  ;; remap regex search to Atl-s/r
  (global-set-key "\M-s" 'isearch-forward-regexp)
- (global-set-key (kbd "C-M-s") 'isearch-forward-regexp)
  (global-set-key "\M-r" 'isearch-backward-regexp)
- (global-set-key (kbd "C-M-r") 'isearch-forward-regexp)
 
  (global-set-key "\C-h\C-h" 'qrr)
 
  ;; extended expand
  (global-set-key [(meta /)] (make-agl-expand))
-
- ;; Matching parenthesis
- (global-set-key "\M-5" 'goto-match-paren)
 
  ;; Previous/Next errors
  (define-key global-map "\M-3" 'previous-error)
@@ -118,28 +113,27 @@
  (global-set-key (kbd "M-G")     'agl-uuid3-to-buffer)
 
  ;; Begin/end of buffer
- (define-key global-map (kbd "C-S-a") 'beginning-of-buffer)
- (define-key global-map (kbd "C-S-e") 'end-of-buffer)
+ (define-key global-map "\C-h\C-a" 'beginning-of-buffer)
+ (define-key global-map "\C-h\C-e" 'end-of-buffer)
 
- (global-set-key (kbd "C-S-j") 'macro-join-line)
+ (global-set-key (kbd "M-j") 'macro-join-line)
 
  (global-set-key (kbd "C-.") 'goto-match-paren2)
-
- (global-set-key (kbd "C-S-y") '(lambda ()
-                                  (interactive)
-                                  (popup-menu 'yank-menu)))
 
 ;;;======================================================================
 ;;; aglemacs.el: mark-multiple, expand-region
 ;;;======================================================================
  (GNUEmacs24
-  ;; Emacs 25+ already do inline rectangle replace
+  ;; Emacs 25+ already does inline rectangle replace
   (require 'inline-string-rectangle)
   (global-set-key (kbd "C-x r t") 'inline-string-rectangle))
+
  (global-set-key (kbd "C-<") 'mark-previous-like-this)
+ (global-set-key (kbd "M-9") 'mark-previous-like-this) ;; M-(
  (global-set-key (kbd "C->") 'mark-next-like-this)
+ (global-set-key (kbd "M-0") 'mark-next-like-this) ;; M-(
  (global-set-key (kbd "C-*") 'mark-all-like-this)
- (global-set-key (kbd "C-@") 'er/expand-region)
+ (global-set-key (kbd "M-8") 'mark-all-like-this) ;; M-8
 
 ;;;======================================================================
 ;;; ni-autocomplete-company.el
@@ -207,8 +201,6 @@
 
  ;; Disabled the insert key, remap it to control + insert.
  (define-key global-map [(insert)] nil)
- (define-key global-map [(control meta insert)] 'overwrite-mode)
- (define-key global-map [(control shift insert)] 'overwrite-mode)
  (define-key global-map (key "C-o") 'overwrite-mode)
 
  ;; Map the Escape key to "actually stop whatever NOW" or "please don't screw
@@ -223,9 +215,6 @@
 
  (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
 
- (global-set-key (key "C-1") 'my-other-window)
- (global-set-key (key "C-2") 'my-other-window)
-
  (global-set-key "\C-h\C-j" 'pt-regexp)
  (global-set-key "\C-h\C-y" 'pt-work-regexp)
  (global-set-key "\C-h\C-g" 'occur)
@@ -235,13 +224,10 @@
  (global-set-key (key "C-l") 'goto-line) ;; Ctrl-l goto line, more convenient than C-c C-g...
  (global-set-key (key "C-S-l") 'recenter-top-bottom)  ;; Remap recenter-top-bottom (which is mapped to Ctrl-l by default) to Ctrl-Shift-L
 
- ;; Flowtype
- ;; (global-set-key (key "C-t") 'tpl-js-flow-type)
-
  ;; Git
  (global-set-key (key "C-x g") 'git-status)
 
- (define-key global-map (kbd "C-S-i") 'my-indent-buffer)
+ (define-key global-map "\C-h\C-i" 'my-indent-buffer)
 
  (define-key global-map "\C-x\C-d" 'direx:jump-to-directory)
 
