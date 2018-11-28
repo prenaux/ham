@@ -9,6 +9,9 @@ fi
 if [[ -z $USER ]]; then
     export USER=$USERNAME
 fi
+if [[ -z $TERM_NCOLORS ]]; then
+    export TERM_NCOLORS=$(tput colors)
+fi
 
 # Serious BS from Cygwin...
 export CYGWIN=nodosfilewarning
@@ -155,11 +158,21 @@ update_prompt() {
         PROJECT_NAME=`basename "$HAM_PROJECT_DIR"`
     fi
 
-    export PS1='
-\[\033[35m$PROJECT_NAME$TOOLSET_EXTRA\033[0m\] \[\033[32m$(current_git_branch)\033[0m\]\w (\[\033[32m$USERNAME\033[0m\]) \[\033[0;36m$HAM_IMPORTED_TOOLSETS\033[0m\]
+    if [ -z "$STY" ]; then
+        USERTAG=$USERNAME
+    else
+        USERTAG="$USERNAME in $STY"
+    fi
+
+    if test $TERM_NCOLORS -ge 8; then
+        export PS1='
+\[\033[35m$PROJECT_NAME$TOOLSET_EXTRA\033[0m\] \[\033[32m$(current_git_branch)\033[0m\]\w (\[\033[32m$USERTAG\033[0m\]) \[\033[0;36m$HAM_IMPORTED_TOOLSETS\033[0m\]
 $ '
-	# echo -e "\033]0;`pwd`\007"
-  # export PS1="${AGL_TOOLSET_NAME}\$ "
+    else
+        export PS1='
+# $PROJECT_NAME$TOOLSET_EXTRA \[$(current_git_branch)\]\w ($USERTAG) $HAM_IMPORTED_TOOLSETS
+$ '
+    fi
 }
 
 update_project_work() {
