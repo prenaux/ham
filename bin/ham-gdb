@@ -1,0 +1,36 @@
+#!/bin/bash
+export HAM_NO_VER_CHECK=1
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+case $HAM_OS in
+    NT*)
+        export MSVC_IDE_DIR="`unxpath "$PROGRAMFILES\\Microsoft Visual Studio 12.0\\Common7\\IDE"`"
+        export RUN_DEBUGGER="${MSVC_IDE_DIR}/devenv.exe"
+        if [ ! -f "$RUN_DEBUGGER" ]; then
+            export MSVC_IDE_DIR="`unxpath "$PROGRAMFILES\\Microsoft Visual Studio 11.0\\Common7\\IDE"`"
+            export RUN_DEBUGGER="${MSVC_IDE_DIR}/devenv.exe"
+            if [ ! -f "$RUN_DEBUGGER" ]; then
+                export MSVC_IDE_DIR="`unxpath "$PROGRAMFILES\\Microsoft Visual Studio 10.0\\Common7\\IDE"`"
+                export RUN_DEBUGGER="${MSVC_IDE_DIR}/devenv.exe"
+                if [ ! -f "$RUN_DEBUGGER" ]; then
+	            echo "E/Can't find debugger 'devenv.exe' in $RUN_DEBUGGER"
+                fi
+            fi
+        fi
+        if [ -f "$RUN_DEBUGGER" ]; then
+            echo "I/Found VC++ debugger in '$RUN_DEBUGGER'"
+        fi
+        "$RUN_DEBUGGER" -debugexe $@
+        ;;
+    OSX*)
+        PATH="/usr/bin:$PATH" lldb -- $@
+        ;;
+    LINUX*)
+        gdb -- $@
+        ;;
+    *)
+        echo "E/Toolset: Unsupported host OS"
+        return 1
+        ;;
+esac

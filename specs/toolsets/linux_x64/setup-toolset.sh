@@ -14,7 +14,5 @@ case $HAM_OS in
         ;;
 esac
 
-export RUN_DEBUGGER=gdb
-export RUN_DEBUGGER_PARAMS=--
 export OSPLAT=X64
 export BUILD_BIN_LOA=lin-x64

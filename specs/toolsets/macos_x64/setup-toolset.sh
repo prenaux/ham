@@ -20,8 +20,6 @@ export HAM_TOOLSET_VER=33
 export HAM_TOOLSET_NAME=clang_33
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}"
 
-export RUN_DEBUGGER=lldb
-export RUN_DEBUGGER_PARAMS=--
 export OSPLAT=X64
 export BUILD_BIN_LOA=osx-x64
 
