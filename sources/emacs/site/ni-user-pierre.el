@@ -33,7 +33,11 @@
  (Windows
   ;;
   ;; On Windows:
-  ;;  1) gnuserv & e.exe don't work anymore with Emacs 24.x - as in it'll kind of work but a lot of things will be broken (such as magit, etc... great ^^)
+  ;;
+  ;;  1) gnuserv & e.exe don't work anymore with Emacs 24.x - as in it'll kind
+  ;;     of work but a lot of things will be broken (such as magit, etc... great
+  ;;     ^^)
+  ;;
   ;;  2) Use emacsclientw.exe to open files
   ;;
   (require 'server)
@@ -462,11 +466,16 @@ If the new path's directories does not exist, create them."
 ;;;======================================================================
 (NotBatchMode
  (agl-begin-time-block "Git")
+
  (Windows
-  (add-to-list 'exec-path (concat (getenv "HAM_HOME") "/toolsets/repos/nt-x86/git/bin/"))
- )
+  (add-to-list 'exec-path (concat (getenv "HAM_HOME") "/toolsets/repos/nt-x86/git/bin/")))
+
  (require 'git)
  (require 'git-blame)
+
+ (GNUEmacs26
+  (add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site/magit"))
+  (require 'magit))
 )
 
 ;;;======================================================================
