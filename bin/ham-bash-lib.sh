@@ -204,6 +204,18 @@ rawurlencode() {
 ########################################################################
 ##  Toolsets
 ########################################################################
+dl_file() {
+    case $HAM_OS in
+        OSX*)
+            if [ ! -x "$(command -v wget)" ]; then
+                echo "I/wget not found, using brew to install it..."
+                brew install wget
+            fi
+            ;;
+    esac
+    wget $@
+}
+
 toolset_import() {
     export PATH=$PATH
     . ham-toolset-import.sh $1
@@ -245,7 +257,7 @@ toolset_dl_and_extract() {
         popd
     elif [ ! -e "$DLFILENAME" ]; then
         echo "I/Trying download from ${ARCH_URL}"
-        wget -c --no-check-certificate $ARCH_URL -O"$DLFILENAME.wget"
+        dl_file $ARCH_URL -O"$DLFILENAME.wget"
         if [ $? != 0 ]; then
             echo "E/Download failed !"
             popd
@@ -383,7 +395,7 @@ pod_dl_and_extract() {
             return 1;
         fi
         echo "I/Downloading from '${ARCH_URL}' to '${DLDIR}/${DLFILENAME}'."
-        wget -c --no-check-certificate "${ARCH_URL}" -O"${DLFILENAME}.wget"
+        dl_file "${ARCH_URL}" -O"${DLFILENAME}.wget"
         if [ $? != 0 ]; then
             echo "E/Download failed !"
             popd
