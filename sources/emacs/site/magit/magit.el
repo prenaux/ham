@@ -397,7 +397,7 @@ is run in the top-level directory of the current working tree."
 
 ;;; Version
 
-(defvar magit-version 'undefined
+(defvar magit-version "20180609.1934 (Ham)"
   "The version of Magit that you're using.
 Use the function by the same name instead of this variable.")
 
