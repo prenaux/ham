@@ -77,10 +77,9 @@
 
  ;; Toggle word wrap
  (global-set-key (kbd "M-6") 'whitespace-mode)
- ;; Ctrl-=/- increase/decrease font size
- (IsNotTerminal
+ ;; Ctrl +/- increase/decrease font size
   (global-set-key (kbd "C-=") 'agl-increase-font-size)
-  (global-set-key (kbd "C--") 'agl-decrease-font-size))
+ (global-set-key (kbd "C--") 'agl-decrease-font-size)
 
  ;; Make the sequence "C-c g" execute the `goto-line' command,
  ;; which prompts for a line number to jump to.
