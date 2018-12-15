@@ -20,6 +20,8 @@ fi
 
 if [[ -e "$HOME/.ham_bash" ]]; then
     . "$HOME/.ham_bash"
+elif [[ -e "$HOME/.profile" ]]; then
+    . "$HOME/.profile"
 fi
 
 update_prompt
