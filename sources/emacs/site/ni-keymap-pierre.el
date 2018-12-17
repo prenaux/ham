@@ -78,11 +78,10 @@
  ;; Toggle word wrap
  (global-set-key (kbd "M-6") 'whitespace-mode)
  ;; Ctrl +/- increase/decrease font size
-  (global-set-key (kbd "C-=") 'agl-increase-font-size)
+ (global-set-key (kbd "C-=") 'agl-increase-font-size)
  (global-set-key (kbd "C--") 'agl-decrease-font-size)
 
- ;; Make the sequence "C-c g" execute the `goto-line' command,
- ;; which prompts for a line number to jump to.
+ ;; Goto line
  (global-set-key "\C-h\C-l" 'goto-line)
 
  ;; remap regex search to Atl-s/r
@@ -214,20 +213,20 @@
 
  (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
 
- (global-set-key "\C-h\C-j" 'pt-regexp)
+ (global-set-key "\C-h\C-j" 'pt-regexp-search-dir)
+ (global-set-key "\C-h\C-k" 'pt-regexp-current-dir)
+ (global-set-key "\C-h\C-u" 'ni-git-grep-search-dir)
+ (global-set-key "\C-h\C-i" 'ni-git-grep-current-dir)
  (global-set-key "\C-h\C-y" 'pt-work-regexp)
  (global-set-key "\C-h\C-g" 'occur)
 
- ;; (global-set-key [remap goto-line] 'goto-line-with-feedback)
-
- (global-set-key (key "C-l") 'goto-line) ;; Ctrl-l goto line, more convenient than C-c C-g...
- (global-set-key (key "C-S-l") 'recenter-top-bottom)  ;; Remap recenter-top-bottom (which is mapped to Ctrl-l by default) to Ctrl-Shift-L
-
- ;; Git
- (global-set-key (key "C-x g") 'git-status)
+ ;; Ctrl-l goto line, more convenient than C-c C-g...
+ (global-set-key (key "C-l") 'goto-line)
+ ;; Remap recenter-top-bottom (which is mapped to Ctrl-l by default) to Ctrl-Shift-L
+ (global-set-key (key "C-S-l") 'recenter-top-bottom)
 
  (define-key global-map "\C-h\C-i" 'my-indent-buffer)
 
- (define-key global-map "\C-x\C-d" 'direx:jump-to-directory)
+ (define-key global-map "\C-h\C-d" 'direx:jump-to-directory)
 
 )

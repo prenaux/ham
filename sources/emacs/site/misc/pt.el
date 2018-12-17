@@ -72,11 +72,7 @@
     (set (make-local-variable 'compilation-error-regexp-alist-alist) (list (cons symbol pattern))))
   (set (make-local-variable 'compilation-error-face) grep-hit-face))
 
-;;;###autoload
-(defun pt-regexp (regexp directory &optional args)
-  "Run a pt search with REGEXP rooted at DIRECTORY."
-  (interactive (list (read-from-minibuffer "Pt search for: " (thing-at-point 'symbol))
-                     (read-directory-name "Directory: ")))
+(defun pt-regexp--run (regexp directory &optional args)
   (let ((default-directory directory)
         (pt-full-buffer-name (concat "*pt-" regexp "*")))
     (compilation-start
@@ -92,9 +88,21 @@
        (function (lambda (ignore)
                    pt-full-buffer-name)))
 
-     (regexp-quote regexp)
+     (regexp-quote regexp))))
 
-     )))
+;;;###autoload
+(defun pt-regexp-search-dir (regexp directory &optional args)
+  "Run a pt search with REGEXP rooted at DIRECTORY."
+  (interactive (list (ni-find-read-regexp "Pt search for: ")
+                     (read-directory-name "Directory: " (ni-find-search-directory))))
+  (pt-regexp--run regexp directory args))
+
+;;;###autoload
+(defun pt-regexp-current-dir (regexp directory &optional args)
+  "Run a pt search with REGEXP rooted at DIRECTORY."
+  (interactive (list (ni-find-read-regexp "Pt search for: ")
+                     (read-directory-name "Directory: " default-directory)))
+  (pt-regexp--run regexp directory args))
 
 (defun pt-work-get-dirs (dir)
   (cond
@@ -111,32 +119,19 @@
   )
 )
 
-(defvar pt-work-regexp-history-search nil
-  "History for searches of pt-work-regexp.")
-
 (defvar pt-work-regexp-history-dirs nil
   "History for dirs of pt-work-regexp.")
 
+;;;###autoload
 (defun pt-work-regexp (regexp dirs &optional args)
   "Run a pt-work search with REGEXP rooted at the specified WORK directories."
-  (interactive (list (read-from-minibuffer "Pt search for: "
-                                           (-first-item (-non-nil
-                                                         (list (thing-at-point 'symbol)
-                                                               (-first-item pt-work-regexp-history-search)))
-                                           )
-                                           nil nil 'pt-work-regexp-history-search
-                     )
+  (interactive (list (ni-find-read-regexp "Pt search for: ")
                      (read-from-minibuffer "Dirs: " (-first-item pt-work-regexp-history-dirs)
-                                           nil nil 'pt-work-regexp-history-dirs
-                     )
-               )
-  )
-  (let (
-        (dir-args (-flatten
+                                           nil nil 'pt-work-regexp-history-dirs)))
+  (let ((dir-args (-flatten
                    (-map (lambda (x) (pt-work-get-dirs x))
                          (s-split " " dirs))))
-        (pt-full-buffer-name (concat "*pt-work-" regexp "*"))
-       )
+        (pt-full-buffer-name (concat "*pt-work-" regexp "*")))
     (compilation-start
      (mapconcat 'identity
                 (append (list pt-executable)
@@ -146,14 +141,10 @@
                         (list (shell-quote-argument regexp))
                         dir-args) " ")
      'pt-search-mode
-
      (when pt-use-search-in-buffer-name
        (function (lambda (ignore)
                    pt-full-buffer-name)))
-
-     (regexp-quote regexp)
-
-    )))
+     (regexp-quote regexp))))
 
 ;;;###autoload
 (defun pt-regexp-file-pattern (regexp directory pattern)

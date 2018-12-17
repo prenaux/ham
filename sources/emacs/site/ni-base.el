@@ -250,3 +250,87 @@ and their terminal equivalents.")
 
 ;; Dont output .# lock-files...
 (setq create-lockfiles nil)
+
+;;;======================================================================
+;;; Search utilities
+;;;======================================================================
+(defvar ni-regexp-history-search nil
+  "History of regexp searches.")
+
+(defun ni-find-search-directory ()
+  "Return GIT_ROOT if this file is a part of a git repo,
+else return default-directory"
+  (let ((curdir default-directory)
+        (max 20)
+        (found nil))
+    (while (and (not found) (> max 0))
+      (progn
+        (if (file-directory-p (concat curdir ".git"))
+            (progn
+              (setq found t))
+          (progn
+            (setq curdir (concat curdir "../"))
+            (setq max (- max 1))))))
+    (if found (expand-file-name curdir) default-directory)))
+
+(defun ni-find-read-regexp (msg)
+  (read-from-minibuffer msg
+                        (-first-item (-non-nil
+                                      (list (thing-at-point 'symbol)
+                                            (-first-item ni-regexp-history-search))))
+                        nil nil 'ni-regexp-history-search))
+
+(defun ni-git-grep--run (regexp dir)
+  (require 'grep)
+  (when (and (stringp regexp) (> (length regexp) 0))
+    (let ((command regexp))
+      (if (string= command "git grep")
+          (setq command nil))
+      (setq dir (file-name-as-directory (expand-file-name dir)))
+      (setq command
+            (grep-expand-template "git grep -n -e <R>"
+                                  regexp))
+      (when command
+        (if (equal current-prefix-arg '(4))
+            (setq command
+                  (read-from-minibuffer "Confirm: "
+                                        command nil nil 'grep-history))
+          (add-to-history 'grep-history command)))
+      (when command
+	(let ((default-directory dir)
+	      (compilation-environment (cons "PAGER=" compilation-environment)))
+	  ;; Setting process-setup-function makes exit-message-function work
+	  ;; even when async processes aren't supported.
+	  (compilation-start command 'grep-mode))
+	(if (eq next-error-last-buffer (current-buffer))
+	    (setq default-directory dir))))))
+
+(defun ni-git-grep-search-dir (regexp &optional dir)
+  ""
+  (interactive
+   (progn
+     (grep-compute-defaults)
+     (cond
+      ((equal current-prefix-arg '(16))
+       (list (read-from-minibuffer "Run: " "git grep"
+  			           nil nil 'grep-history)
+	     nil))
+      (t (let* ((regexp (ni-find-read-regexp "Git grep for: "))
+		(dir (read-directory-name "In directory: " (ni-find-search-directory))))
+	   (list regexp dir))))))
+  (ni-git-grep--run regexp dir))
+
+(defun ni-git-grep-current-dir (regexp &optional dir)
+  ""
+  (interactive
+   (progn
+     (grep-compute-defaults)
+     (cond
+      ((equal current-prefix-arg '(16))
+       (list (read-from-minibuffer "Run: " "git grep"
+  			           nil nil 'grep-history)
+	     nil))
+      (t (let* ((regexp (ni-find-read-regexp "Git grep for: ")
+		        (dir (read-directory-name "In directory: " default-directory)))
+	        (list regexp dir))))))
+   (ni-git-grep--run regexp dir)))
