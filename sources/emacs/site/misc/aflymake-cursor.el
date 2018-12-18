@@ -1,4 +1,4 @@
-;;; flymake-cursor.el --- displays flymake error msg in minibuffer after delay
+;;; aflymake-cursor.el --- displays flymake error msg in minibuffer after delay
 ;;
 ;; Author     : ??
 ;; origin     : http://paste.lisp.org/display/60617,1/raw
@@ -8,7 +8,7 @@
 ;; Modified   : December 2012
 ;; Version    : 0.1.5
 ;; Keywords   : languages mode flymake
-;; X-URL      : http://www.emacswiki.org/emacs/flymake-cursor.el
+;; X-URL      : http://www.emacswiki.org/emacs/aflymake-cursor.el
 ;; Last-saved : <2012-Dec-20 09:49:28>
 ;;
 ;; -------------------------------------------------------
@@ -22,7 +22,7 @@
 ;; keyboard user's annoyance.
 ;; -------------------------------------------------------
 ;;
-;; This flymake-cursor module displays the flymake error in the
+;; This aflymake-cursor module displays the flymake error in the
 ;; minibuffer, after a short delay.  It is based on code I found roaming
 ;; around on the net, unsigned and unattributed. I suppose it's public
 ;; domain, because, while there is a "License" listed in it, there
@@ -46,7 +46,7 @@
 ;; To use this, include this line in your .emacs:
 ;;
 ;;    ;; enhancements for displaying flymake errors
-;;    (require 'flymake-cursor)
+;;    (require 'aflymake-cursor)
 ;;
 ;; You can, of course, put that in an eval-after-load clause.
 ;;
@@ -76,11 +76,11 @@
   "pyflake is flakey if it has compile problems, this adjusts the
 message to display, so there is one ;)"
   (cond ((not (or (eq major-mode 'Python) (eq major-mode 'python-mode) t)))
-        ((null (flymake-ler-file errore))
+        ((null (aflymake-ler-file errore))
          ;; normal message do your thing
-         (flymake-ler-text errore))
+         (aflymake-ler-text errore))
         (t ;; could not compile error
-         (format "compile error, problem on line %s" (flymake-ler-line errore)))))
+         (format "compile error, problem on line %s" (aflymake-ler-line errore)))))
 
 (defun flyc/show-stored-error-now ()
   "Displays the stored error in the minibuffer."
@@ -96,7 +96,7 @@ message to display, so there is one ;)"
   "Gets the first flymake error on the line at point."
   (let ((line-no (line-number-at-pos))
         flyc-e)
-    (dolist (elem flymake-err-info)
+    (dolist (elem aflymake-err-info)
       (if (eq (car elem) line-no)
           (setq flyc-e (car (second elem)))))
     flyc-e))
@@ -146,15 +146,15 @@ second, does the flymake error message (if any) get displayed.
 (eval-after-load "flymake"
   '(progn
 
-     (defadvice flymake-goto-next-error (after flyc/display-message-1 activate compile)
+     (defadvice aflymake-goto-next-error (after flyc/display-message-1 activate compile)
        "Display the error in the mini-buffer rather than having to mouse over it"
        (flyc/show-fly-error-at-point-now))
 
-     (defadvice flymake-goto-prev-error (after flyc/display-message-2 activate compile)
+     (defadvice aflymake-goto-prev-error (after flyc/display-message-2 activate compile)
        "Display the error in the mini-buffer rather than having to mouse over it"
        (flyc/show-fly-error-at-point-now))
 
-     (defadvice flymake-mode (before flyc/post-command-fn activate compile)
+     (defadvice aflymake-mode (before flyc/post-command-fn activate compile)
        "Add functionality to the post command hook so that if the
 cursor is sitting on a flymake error the error information is
 displayed in the minibuffer (rather than having to mouse over
@@ -162,6 +162,6 @@ it)"
        (add-hook 'post-command-hook 'flyc/show-fly-error-at-point-pretty-soon t t))))
 
 
-(provide 'flymake-cursor)
+(provide 'aflymake-cursor)
 
-;;; flymake-cursor.el ends here
+;;; aflymake-cursor.el ends here

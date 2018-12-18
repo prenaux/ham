@@ -1,12 +1,12 @@
 (provide 'ni-flymake)
 
 (require 'ni-base)
-(require 'flymake)
-(require 'flymake-cursor)
+(require 'aflymake)
+(require 'aflymake-cursor)
 
 ; Set flymake to start only when saving the buffer
-(setq flymake-no-changes-timeout 999999
-      flymake-start-syntax-check-on-newline nil)
+(setq aflymake-no-changes-timeout 999999
+      aflymake-start-syntax-check-on-newline nil)
 
 ; Error pattern matching :
 ;   regexp file-idx line-idx col-idx (optional) text-idx(optional), match-end to end of string is error text
@@ -14,31 +14,37 @@
 ;;**********************************************************************
 ;; Flymake - niScript
 ;;**********************************************************************
-(defconst flymake-allowed-ni-file-name-masks '(
-      ("\\.ni$" flymake-ni-init)
-      ("\\.niw$" flymake-ni-init)
-      ("\\.nip$" flymake-ni-init))
-      "Filename extensions that switch on flymake-aq mode syntax checks")
+(defconst aflymake-allowed-ni-file-name-masks '(
+      ("\\.ni$" aflymake-ni-init)
+      ("\\.niw$" aflymake-ni-init)
+      ("\\.nip$" aflymake-ni-init))
+      "Filename extensions that switch on aflymake-aq mode syntax checks")
 
-(defconst flymake-ni-err-line-pattern-re
+(defconst aflymake-ni-err-line-pattern-re
       '("^E/[[:space:]]*\\(.*\\)(\\([0-9]+\\)) : (col \\([0-9]+\\)) \\(.*\\)$" 1 2 3 4)
       "Regexp matching aglScript error messages")
 
-(defun flymake-ni-init ()
-  (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                     'flymake-create-temp-inplace))
+(defun aflymake-ni-init ()
+  (let* ((temp-file (aflymake-init-create-temp-buffer-copy
+                     'aflymake-create-temp-inplace))
          (local-file  (file-relative-name
                        temp-file
                        (file-name-directory buffer-file-name))))
     (list (concat (getenv "WORK") "/niSDK/bin/ni-flymake") (list "-e" local-file))))
 
-(defun flymake-ni-load ()
+(defun aflymake-ni-load ()
   (interactive)
   (if (buffer-file-name)
       (progn
-        (setq flymake-allowed-file-name-masks (append flymake-allowed-file-name-masks flymake-allowed-ni-file-name-masks))
-        (setq flymake-err-line-patterns (cons flymake-ni-err-line-pattern-re flymake-err-line-patterns))
-        (flymake-mode t)))
+        (setq aflymake-allowed-file-name-masks (append aflymake-allowed-file-name-masks aflymake-allowed-ni-file-name-masks))
+        (setq aflymake-err-line-patterns (cons aflymake-ni-err-line-pattern-re aflymake-err-line-patterns))
+        (aflymake-mode t)))
 )
 
-;; (add-hook 'niscript-mode-hook 'flymake-ni-load)
+(defun aflymake-mode-or-syntax-check ()
+  (interactive)
+  (if (bound-and-true-p aflymake-mode)
+    (aflymake-start-syntax-check)
+  (aflymake-mode)))
+
+;; (add-hook 'niscript-mode-hook 'aflymake-ni-load)

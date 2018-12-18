@@ -94,8 +94,8 @@
  (global-set-key [(meta /)] (make-agl-expand))
 
  ;; Previous/Next errors
- (define-key global-map "\M-3" 'previous-error)
  (define-key global-map "\M-4" 'next-error)
+ (define-key global-map "\M-5" 'previous-error)
 
  ;; shift-down comments the current line and goes down
  (define-key global-map [(shift down)] 'agl-comment-and-go-down)
@@ -145,10 +145,9 @@
 ;;;======================================================================
 ;;; ni-flymake.el
 ;;;======================================================================
- (global-set-key [f3] 'flymake-goto-prev-error)
- (global-set-key [f4] 'flymake-goto-next-error)
- (global-set-key [(control f3)] 'flymake-start-syntax-check)
- (global-set-key [(control f4)] 'flymake-mode)
+ (global-set-key (kbd "M-2") 'aflymake-goto-next-error)
+ (global-set-key (kbd "M-3") 'aflymake-goto-prev-error)
+ (global-set-key (kbd "C-h C-c") 'aflymake-mode-or-syntax-check)
 
 ;;;======================================================================
 ;;; ni-muse.el
@@ -173,11 +172,6 @@
        (global-set-key "\C-cl" 'org-store-link)
        (global-set-key "\C-ca" 'org-agenda)
      ))
-
-;;;======================================================================
-;;; ni-sql.el
-;;;======================================================================
- (global-set-key (kbd "C-x C-c") 'ni-sql-connect-server)
 
 ;;;======================================================================
 ;;; ni-file-cache.el

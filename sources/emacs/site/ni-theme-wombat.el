@@ -101,6 +101,8 @@
   ;; Flymake
   '(flymake-errline ((((class color)) (:underline "red"))))
   '(flymake-warnline ((((class color)) (:underline "yellow"))))
+  '(aflymake-errline ((((class color)) (:underline "red"))))
+  '(aflymake-warnline ((((class color)) (:underline "yellow"))))
 
   ;; Shell
   '(comint-highlight-input ((t (:bold t))))

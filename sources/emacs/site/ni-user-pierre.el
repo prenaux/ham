@@ -481,8 +481,8 @@ If the new path's directories does not exist, create them."
 ;;;======================================================================
 ;;; Flymake hooks
 ;;;======================================================================
-(add-hook 'js-mode-hook 'flymake-mode)
-(add-hook 'typescript-mode-hook 'flymake-mode)
+(add-hook 'js-mode-hook 'aflymake-mode)
+(add-hook 'typescript-mode-hook 'aflymake-mode)
 
 ;;;======================================================================
 ;;; Keymap

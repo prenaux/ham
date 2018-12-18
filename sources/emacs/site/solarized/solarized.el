@@ -378,6 +378,8 @@ customize the resulting theme."
      `(enh-ruby-op-face ((,class (:foreground ,base0))))
      `(erm-syn-errline ((,class (:inherit flymake-errline))))
      `(erm-syn-warnline ((,class (:inherit flymake-warnline))))
+     `(erm-syn-errline ((,class (:inherit aflymake-errline))))
+     `(erm-syn-warnline ((,class (:inherit aflymake-warnline))))
 ;;;;; completions
      `(completions-annotations ((t (:foreground ,base01))))
 ;;;;; grep
@@ -788,6 +790,24 @@ customize the resulting theme."
          (:underline (:style wave :color ,yellow) :inherit unspecified
                      :foreground unspecified :background unspecified))
         (,class (:foreground ,yellow-hc :background ,yellow-lc :weight bold :underline t))))
+
+;;;;; aflymake
+     `(aflymake-errline
+       ((,(append '((supports :underline (:style wave))) class)
+         (:underline (:style wave :color ,red) :inherit unspecified
+                     :foreground unspecified :background unspecified))
+        (,class (:foreground ,red-hc :background ,red-lc :weight bold :underline t))))
+     `(aflymake-infoline
+       ((,(append '((supports :underline (:style wave))) class)
+         (:underline (:style wave :color ,green) :inherit unspecified
+                     :foreground unspecified :background unspecified))
+        (,class (:foreground ,green-hc :background ,green-lc))))
+     `(aflymake-warnline
+       ((,(append '((supports :underline (:style wave))) class)
+         (:underline (:style wave :color ,yellow) :inherit unspecified
+                     :foreground unspecified :background unspecified))
+        (,class (:foreground ,yellow-hc :background ,yellow-lc :weight bold :underline t))))
+
 ;;;;; flycheck
      `(flycheck-error
        ((,(append '((supports :underline (:style wave))) class)
