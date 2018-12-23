@@ -5,6 +5,9 @@ case $HAM_OS in
     NT*)
         "${DIR}/nt-x86/TSEdit.exe" "$@"
         ;;
+    OSX*)
+        open -e "$@"
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
