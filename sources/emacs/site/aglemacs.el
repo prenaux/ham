@@ -15,7 +15,7 @@
  ;; that case.
  (defun ni-find-file-hook-on-file-opened ()
    "If a file is over a given size, make the buffer read only."
-   (if (> (buffer-size) (* 512 1024))
+   (if (> (buffer-size) (* 1024 1024))
        (progn
          ;; (setq buffer-read-only t)
          ;; (buffer-disable-undo)
@@ -467,13 +467,6 @@ BEG and END (region to sort)."
   (interactive "p")
   "Decrement the number under point by `amount'"
   (agl-increment-number-at-point (- (abs amount))))
-
-(defun goto-match-paren (arg)
-  "Go to the matching parenthesis if on parenthesis, otherwise insert the character typed."
-  (interactive "p")
-  (cond ((looking-at "\\s\(") (forward-list 1) (backward-char 1))
-    ((looking-at "\\s\)") (forward-char 1) (backward-list 1))
-    (t                    (self-insert-command (or arg 1))) ))
 
 (defun agl-increase-font-size ()
   (interactive)
@@ -970,35 +963,6 @@ With zero ARG, skip the last one and mark next."
          (interactive "p")
          (kmacro-exec-ring-item
           (quote ([5 67108896 down 134217837 32] 0 "%d")) arg)))
-
- (defun goto-match-paren2 (arg)
-   "Go to the matching parenthesis according to the syntax table. Works if on the parenthesis or one character in front of it."
-   (interactive "p")
-   (let
-       ((syntax (char-syntax (following-char))))
-     (cond
-      ((= syntax ?\()
-       (forward-sexp 1) (backward-char))
-      ((= syntax ?\))
-       (forward-char) (backward-sexp 1))
-      ;; go back one char and try again, that's so that we can match if the
-      ;; cursor is just after the closing paren/bracket
-      (t
-       (backward-char)
-       (let ((syntax (char-syntax (following-char))))
-         (cond
-          ((= syntax ?\()
-           (forward-sexp 1) (backward-char))
-          ((= syntax ?\))
-           (forward-char) (backward-sexp 1))
-          (t
-           (forward-char)
-           (message "No match"))
-         )
-       )
-      )
-     )
-   ))
 
  (defun ni-copy-file-path (&optional *dir-path-only-p)
    "Copy the current buffer's file path or dired path to `kill-ring'.

@@ -334,3 +334,42 @@ else return default-directory"
 		        (dir (read-directory-name "In directory: " default-directory)))
 	        (list regexp dir))))))
    (ni-git-grep--run regexp dir)))
+
+;;;======================================================================
+;;; Navigation utilities
+;;;======================================================================
+;; Inspired by http://ergoemacs.org/emacs/emacs_navigating_keys_for_brackets.html
+
+(defvar ni-left-brackets '("(" "{" "[" "<" "\"" "'" "`")
+  "List of left bracket chars.")
+
+(defvar ni-right-brackets '(")" "]" "}" ">" "\"" "'" "`")
+  "list of right bracket chars.")
+
+(defun ni-backward-left-bracket ()
+  "Move cursor to the previous occurrence of left bracket.
+The list of brackets to jump to is defined by `ni-left-brackets'."
+  (interactive)
+  (re-search-backward (regexp-opt ni-left-brackets) nil t))
+
+(defun ni-forward-right-bracket ()
+  "Move cursor to the next occurrence of right bracket.
+The list of brackets to jump to is defined by `ni-right-brackets'."
+  (interactive)
+  (re-search-forward (regexp-opt ni-right-brackets) nil t))
+
+(defun ni-goto-matching-bracket ()
+  "Move cursor to the matching bracket.
+If cursor is not on a bracket, call `backward-up-list'.
+The list of brackets to jump to is defined by `ni-left-brackets' and `ni-right-brackets'."
+  (interactive)
+  (if (nth 3 (syntax-ppss))
+      (backward-up-list 1 'ESCAPE-STRINGS 'NO-SYNTAX-CROSSING)
+    (cond
+     ((eq (char-after) ?\") (forward-sexp))
+     ((eq (char-before) ?\") (backward-sexp ))
+     ((looking-at (regexp-opt ni-left-brackets))
+      (forward-sexp))
+     ((looking-back (regexp-opt ni-right-brackets) (max (- (point) 1) 1))
+      (backward-sexp))
+     (t (backward-up-list 1 'ESCAPE-STRINGS 'NO-SYNTAX-CROSSING)))))

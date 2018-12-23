@@ -48,8 +48,7 @@
  (global-set-key (key "ESC <down>") 'forward-paragraph)
 
  ;; Move to the 'next' window (in clockwise order)
- (global-set-key (key "M-1") 'other-window) ;; remote ssh
- (global-set-key (key "C-1") 'other-window)
+ (global-set-key (key "M-1") 'other-window)
 
  ;; Forward/Backward word under point
  (global-set-key (key "M-p") 'agl-search-word-backward)
@@ -63,9 +62,6 @@
  (global-set-key "\C-h\C-s" 'ham-shell)
  (global-set-key "\C-h\C-t" 'agl-select-visible-shell-window)
  (global-set-key "\C-h\C-p" 'agl-run-last-shell-command)
- (IsNotTerminal
-  (global-set-key (key "M-`") 'other-frame)
-  (global-set-key (key "C-`") 'other-frame))
 
  ;; PgUp/Dn
  (global-set-key (kbd "C-v") 'scroll-up-command)
@@ -75,8 +71,6 @@
  (global-set-key (quote [C-M-down]) (quote scroll-up-line))
  (global-set-key (quote [C-M-up]) (quote scroll-down-line))
 
- ;; Toggle word wrap
- (global-set-key (kbd "M-6") 'whitespace-mode)
  ;; Ctrl +/- increase/decrease font size
  (global-set-key (kbd "C-=") 'agl-increase-font-size)
  (global-set-key (kbd "C--") 'agl-decrease-font-size)
@@ -94,8 +88,8 @@
  (global-set-key [(meta /)] (make-agl-expand))
 
  ;; Previous/Next errors
- (define-key global-map "\M-4" 'next-error)
- (define-key global-map "\M-5" 'previous-error)
+ (define-key global-map "\M-2" 'previous-error)
+ (define-key global-map "\M-3" 'next-error)
 
  ;; shift-down comments the current line and goes down
  (define-key global-map [(shift down)] 'agl-comment-and-go-down)
@@ -116,7 +110,12 @@
 
  (global-set-key (kbd "M-j") 'macro-join-line)
 
- (global-set-key (kbd "C-.") 'goto-match-paren2)
+ (require 'golden-ratio-scroll-screen)
+ (global-set-key (key "M-;") 'golden-ratio-scroll-screen-up)
+ (global-set-key (key "M-'") 'golden-ratio-scroll-screen-down)
+ (global-set-key (key "M-.") 'ni-goto-matching-bracket)
+ (global-set-key (kbd "M->") 'ni-backward-left-bracket)
+ (global-set-key (kbd "M-<") 'ni-forward-right-bracket)
 
 ;;;======================================================================
 ;;; aglemacs.el: mark-multiple, expand-region
@@ -145,8 +144,8 @@
 ;;;======================================================================
 ;;; ni-flymake.el
 ;;;======================================================================
- (global-set-key (kbd "M-2") 'aflymake-goto-next-error)
- (global-set-key (kbd "M-3") 'aflymake-goto-prev-error)
+ (global-set-key (kbd "M-4") 'aflymake-goto-prev-error)
+ (global-set-key (kbd "M-5") 'aflymake-goto-next-error)
  (global-set-key (kbd "C-h C-c") 'aflymake-mode-or-syntax-check)
 
 ;;;======================================================================
