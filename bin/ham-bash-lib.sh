@@ -9,12 +9,17 @@ fi
 if [[ -z $USER ]]; then
     export USER=$USERNAME
 fi
-if [[ -z $TERM_NCOLORS ]]; then
-    export TERM_NCOLORS=$(tput colors)
-fi
 
-# Serious BS from Cygwin...
-export CYGWIN=nodosfilewarning
+if [[ $OS == Windows* ]]; then
+    # Serious BS from Cygwin...
+    export CYGWIN=nodosfilewarning
+    # On Windows both Emacs & the regular terminal seem to work fine with 8 colors...
+    export TERM_NCOLORS=8
+else
+    if [[ -z $TERM_NCOLORS ]]; then
+        export TERM_NCOLORS=$(tput colors)
+    fi
+fi
 
 ########################################################################
 ##  Tables
