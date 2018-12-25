@@ -265,7 +265,9 @@ else return default-directory"
         (found nil))
     (while (and (not found) (> max 0))
       (progn
-        (if (file-directory-p (concat curdir ".git"))
+        (if (or (file-directory-p (concat curdir ".git"))
+                (file-directory-p (concat curdir ".hg"))
+                (file-regular-p (concat curdir "_ham_project")))
             (progn
               (setq found t))
           (progn
@@ -280,15 +282,15 @@ else return default-directory"
                                             (-first-item ni-regexp-history-search))))
                         nil nil 'ni-regexp-history-search))
 
-(defun ni-git-grep--run (regexp dir)
+(defun ni-vcs-grep--run (regexp dir)
   (require 'grep)
   (when (and (stringp regexp) (> (length regexp) 0))
     (let ((command regexp))
-      (if (string= command "git grep")
+      (if (string= command "vcs-grep")
           (setq command nil))
       (setq dir (file-name-as-directory (expand-file-name dir)))
       (setq command
-            (grep-expand-template "git grep -n -e <R>"
+            (grep-expand-template "vcs-grep -n <R>"
                                   regexp))
       (when command
         (if (equal current-prefix-arg '(4))
@@ -305,35 +307,35 @@ else return default-directory"
 	(if (eq next-error-last-buffer (current-buffer))
 	    (setq default-directory dir))))))
 
-(defun ni-git-grep-search-dir (regexp &optional dir)
+(defun ni-vcs-grep-search-dir (regexp &optional dir)
   ""
   (interactive
    (progn
      (grep-compute-defaults)
      (cond
       ((equal current-prefix-arg '(16))
-       (list (read-from-minibuffer "Run: " "git grep"
+       (list (read-from-minibuffer "Run: " "vcs-grep"
   			           nil nil 'grep-history)
 	     nil))
       (t (let* ((regexp (ni-find-read-regexp "Git grep for: "))
 		(dir (read-directory-name "In directory: " (ni-find-search-directory))))
 	   (list regexp dir))))))
-  (ni-git-grep--run regexp dir))
+  (ni-vcs-grep--run regexp dir))
 
-(defun ni-git-grep-current-dir (regexp &optional dir)
+(defun ni-vcs-grep-current-dir (regexp &optional dir)
   ""
   (interactive
    (progn
      (grep-compute-defaults)
      (cond
       ((equal current-prefix-arg '(16))
-       (list (read-from-minibuffer "Run: " "git grep"
+       (list (read-from-minibuffer "Run: " "vcs-grep"
   			           nil nil 'grep-history)
 	     nil))
       (t (let* ((regexp (ni-find-read-regexp "Git grep for: ")
 		        (dir (read-directory-name "In directory: " default-directory)))
 	        (list regexp dir))))))
-   (ni-git-grep--run regexp dir)))
+   (ni-vcs-grep--run regexp dir)))
 
 ;;;======================================================================
 ;;; Navigation utilities

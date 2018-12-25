@@ -111,8 +111,8 @@
  (global-set-key (kbd "M-j") 'macro-join-line)
 
  (require 'golden-ratio-scroll-screen)
- (global-set-key (key "M-;") 'golden-ratio-scroll-screen-up)
- (global-set-key (key "M-'") 'golden-ratio-scroll-screen-down)
+ (global-set-key (key "M-'") 'golden-ratio-scroll-screen-up)
+ (global-set-key (key "M-;") 'golden-ratio-scroll-screen-down)
  (global-set-key (key "M-.") 'ni-goto-matching-bracket)
  (global-set-key (kbd "M->") 'ni-backward-left-bracket)
  (global-set-key (kbd "M-<") 'ni-forward-right-bracket)
@@ -208,8 +208,8 @@
 
  (global-set-key "\C-h\C-j" 'pt-regexp-search-dir)
  (global-set-key "\C-h\C-k" 'pt-regexp-current-dir)
- (global-set-key "\C-h\C-u" 'ni-git-grep-search-dir)
- (global-set-key "\C-h\C-i" 'ni-git-grep-current-dir)
+ (global-set-key "\C-h\C-u" 'ni-vcs-grep-search-dir)
+ (global-set-key "\C-h\C-i" 'ni-vcs-grep-current-dir)
  (global-set-key "\C-h\C-y" 'pt-work-regexp)
  (global-set-key "\C-h\C-g" 'occur)
 
