@@ -185,6 +185,11 @@ the text to another HTML buffer."
 ;;*** Groovy ************************************************************
 (NotBatchMode
  (autoload 'groovy-mode "groovy-mode" "Major mode for editing Groovy code." t)
+ (defun groovy-custom ()
+   "groovy-mode-hook"
+   (set (make-local-variable 'tab-width) 4))
+ (add-hook 'groovy-mode-hook
+           '(lambda() (groovy-custom)))
  (add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode))
  (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
 )
