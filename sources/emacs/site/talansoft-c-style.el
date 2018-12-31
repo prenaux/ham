@@ -123,10 +123,12 @@ Suitable for inclusion in `c-offsets-alist'."
                              'c-lineup-assignments)
                           ++))
                         (label . /)
-                        (case-label . +)
+                        (case-label . 0)
                         (statement-case-open . +)
                         (statement-case-intro . +) ; case w/o {
                         (access-label . /)
+                        (inlambda . 0) ; no extra indent for lambda
+                        (knr-argdecl-intro . -)
                         (innamespace . 0))))
   "TalanSoft C/C++ Programming Style.")
 
