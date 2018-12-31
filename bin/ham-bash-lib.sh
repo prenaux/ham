@@ -529,6 +529,9 @@ fi
 if [[ -z $BUILD_BIN_LOA ]]; then
     export BUILD_BIN_LOA=$HAM_BIN_LOA
 fi
+if [[ -z $TEMPDIR ]]; then
+    export TEMPDIR=$HOME/_ham
+fi
 
 if [[ -z "$WORK" ]]; then
     export WORK=`nativedir "$HAM_HOME/.."`
