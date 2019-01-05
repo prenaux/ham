@@ -183,6 +183,15 @@ If the new path's directories does not exist, create them."
   (setq pt-executable (concat "\"" HAM_HOME "/bin/osx-x86/pt"  "\"")))
  (Linux
   (setq pt-executable (concat "\"" HAM_HOME "/bin/lin-x64/pt"  "\"")))
+
+ (setq pt-arguments
+      (list
+       "--smart-case" "-e"
+       "--ignore" "_*_ModuleDef.*"
+       "--ignore" "_*_JNI.*"
+       "--ignore" "**/_idl/*.idl.inl"
+       "--ignore" "**/_idl/*.idl.xml"
+       ))
 )
 
 ;;;======================================================================
