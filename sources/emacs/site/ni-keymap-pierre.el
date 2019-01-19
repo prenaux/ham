@@ -222,4 +222,9 @@
 
  (define-key global-map "\C-h\C-d" 'direx:jump-to-directory)
 
+;;;======================================================================
+;;; java-imports
+;;;======================================================================
+ (define-key java-mode-map (kbd "M-i") 'java-imports-add-import-dwim)
+
 )

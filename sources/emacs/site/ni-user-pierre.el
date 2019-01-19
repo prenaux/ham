@@ -494,6 +494,12 @@ If the new path's directories does not exist, create them."
 (add-hook 'typescript-mode-hook 'aflymake-mode)
 
 ;;;======================================================================
+;;; Java imports
+;;;======================================================================
+(require 'java-imports)
+(setq java-imports-find-block-function 'java-imports-find-place-sorted-block)
+
+;;;======================================================================
 ;;; Keymap
 ;;;======================================================================
 (NotBatchMode
