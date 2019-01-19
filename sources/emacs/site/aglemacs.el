@@ -137,19 +137,6 @@
 ;; Makes sure the CSS isnt inlined so we can customize the html's source code color
 (require 'htmlize)
 
-;; Used by muse, don't remove
-(defun htmlize-region-for-paste (beg end)
-  "Htmlize the region and return just the HTML as a string.
-This forces the `inline-css' style and only returns the HTML body,
-but without the BODY tag.  This should make it useful for inserting
-the text to another HTML buffer."
-  (let ((htmlbuf (htmlize-region beg end)))
-    (unwind-protect
-        (with-current-buffer htmlbuf
-          (buffer-substring (plist-get htmlize-buffer-places 'content-start)
-                            (plist-get htmlize-buffer-places 'content-end)))
-      (kill-buffer htmlbuf))))
-
 ;;;======================================================================
 ;;; Modes
 ;;;======================================================================

@@ -19,7 +19,7 @@ Currently supported languages/framework/targets:
 * **Perl 5.6** on Windows, Linux and OSX
 * **Git**, **SVN** and **Mercurial** on Windows, Linux and OSX
 * **XSLT 1&2** on Windows, Linux, OSX
-* **Emacs** & **Emacs Muse** on Windows, Linux, OSX
+* **Emacs** on Windows, Linux, OSX
 * **TeX** on Windows, Linux, OSX
 * **Doxygen** on Windows and OSX
 * **ffmpeg** on Windows

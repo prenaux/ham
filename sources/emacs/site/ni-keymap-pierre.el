@@ -149,13 +149,6 @@
  (global-set-key (kbd "C-h C-c") 'aflymake-mode-or-syntax-check)
 
 ;;;======================================================================
-;;; ni-muse.el
-;;;======================================================================
- (global-set-key "\C-xp" 'agl-muse-publish-to-html)
- (global-set-key "\C-xP" 'agl-muse-publish-to-html)
- ;; (global-set-key "\C-x\C-p" 'agl-muse-publish-to-pdf)
-
-;;;======================================================================
 ;;; ni-autocomplete-pabbrev.el
 ;;;======================================================================
  (if (boundp 'make-agl-expand)

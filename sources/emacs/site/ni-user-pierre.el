@@ -14,7 +14,6 @@
 
 (require 'aglemacs)
 (require 'ni-org)
-(require 'ni-muse)
 (require 'ni-templates)
 (require 'ni-file-cache)
 (require 'ni-ham)
