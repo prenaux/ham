@@ -11,23 +11,17 @@ usage() {
     echo "  Stops at the first failure."
     echo ""
     echo "commands:"
-    echo "  -h             This help message"
-    echo "  -d             Fetch all branches (download) from '$GIT_BATCH_DEFAULT_REMOTE' remote"
-    echo "  -D remote      Fetch all branches (download) from the specified remote"
-    echo "  -f             Fetch all branches (download) from all remotes"
-    echo "  -l             Print the last 4 commit messages"
-    echo "  -L count       Print the last 'count' commit messages"
-    echo "  -m             Fetch & merge (pull) from '$GIT_BATCH_DEFAULT_REMOTE' to 'current branch'"
-    echo "  -M remote      Fetch & merge (pull) from the specified remote to 'current branch'"
-    echo "  -p             Push to '$GIT_BATCH_DEFAULT_REMOTE'"
-    echo "  -P remote      Push to the specified remote"
-    echo "  -u             Push all (upload) to '$GIT_BATCH_DEFAULT_REMOTE'"
-    echo "  -U remote      Push all (upload) to the specified remote"
-    echo "  -t             Push all tags (upload) to '$GIT_BATCH_DEFAULT_REMOTE'"
-    echo "  -T remote      Push all tags (upload) to the specified remote"
-    echo "  -s             Status of the repo"
-    echo "  -y             Fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into 'current branch',"
-    echo "                 then push all to '$GIT_BATCH_DEFAULT_REMOTE'. Alias for '-f -m -u -t'."
+    echo "  -h    This help message"
+    echo "  -f    Fetch all branches from all remotes"
+    echo "  -F    Prune and Fetch all branches from all remotes"
+    echo "  -l    Print the last 4 commit messages"
+    echo "  -m    Fetch & merge (pull) from '$GIT_BATCH_DEFAULT_REMOTE' to 'current branch'"
+    echo "  -u    Push all (upload) to '$GIT_BATCH_DEFAULT_REMOTE'"
+    echo "  -t    Push all tags (upload) to '$GIT_BATCH_DEFAULT_REMOTE'"
+    echo "  -s    Porcelain status of the repo"
+    echo "  -S    Full status of the repo"
+    echo "  -y    Fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into 'current branch',"
+    echo "        then push all to '$GIT_BATCH_DEFAULT_REMOTE'. Alias for '-f -m -u -t'."
     echo ""
     echo "example:"
     echo "  # fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into 'current branch',"
@@ -36,9 +30,6 @@ usage() {
     echo "  # fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into 'current branch',"
     echo "  # then push all to '$GIT_BATCH_DEFAULT_REMOTE'"
     echo "  git-batch -y"
-    echo "  # fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into 'current branch',"
-    echo "  # then push all to '$GIT_BATCH_DEFAULT_REMOTE' and to 'bonobo'"
-    echo "  git-batch -f -m -u -U bonobo"
     echo ""
 
     if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
@@ -64,7 +55,6 @@ fi
 # process the arguments
 while getopts "dD:eE:fhlL:mM:pP:uU:tT:sSyk" OPT
 do
-
     CMD=
     case "$OPT" in
         h)
@@ -79,58 +69,27 @@ do
         S)
             CMD="git status"
             ;;
-        d)
-            CMD="git fetch --prune $GIT_BATCH_DEFAULT_REMOTE"
-            ;;
-        D)
-            CMD="git fetch --prune $OPTARG"
-            ;;
         f)
+            CMD="git fetch --all"
+            ;;
+        F)
             CMD="git fetch --prune --all"
             ;;
         l)
             CMD="git log -4 --pretty=oneline --abbrev-commit"
             ;;
-        L)
-            CMD="git log -${OPTARG} --pretty=oneline --abbrev-commit"
-            ;;
-        p)
-            CMD="git push $GIT_BATCH_DEFAULT_REMOTE"
-            ;;
-        P)
-            CMD="git push $OPTARG"
-            ;;
         u)
-            CMD="git push --all $GIT_BATCH_DEFAULT_REMOTE"
-            ;;
-        U)
-            CMD="git push --all $OPTARG"
+            CMD="git push -u --all $GIT_BATCH_DEFAULT_REMOTE"
             ;;
         t)
-            CMD="git push --tags $GIT_BATCH_DEFAULT_REMOTE"
-            ;;
-        T)
-            CMD="git push --tags $OPTARG"
+            CMD="git push -u --tags $GIT_BATCH_DEFAULT_REMOTE"
             ;;
         m)
             export GIT_CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
             CMD="git pull --ff-only origin ${GIT_CURRENT_BRANCH}"
             ;;
-        M)
-            export GIT_CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
-            CMD="git pull --ff-only $OPTARG ${GIT_CURRENT_BRANCH}"
-            ;;
         y)
             CMD="git-batch -f -m -u -t"
-            ;;
-        k)
-            HAS_CHANGES=`git status --porcelain`
-            if [ ! -z "$HAS_CHANGES" ]; then
-                CMD="\"$GITK_CMD\""
-            fi
-            ;;
-        K)
-            CMD="\"$GITK_CMD\""
             ;;
     esac
 
