@@ -1,0 +1,15 @@
+#!/bin/bash
+CURRENT_GIT_BRANCH=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+if [ "$CURRENT_GIT_BRANCH" != "master" ]; then
+    echo "E/Currently on '$CURRENT_GIT_BRANCH' branch, all branches can only be deleted from the master branch."
+    echo "E/Do 'git checkout master' first."
+    exit 1
+fi
+
+if [ "$1" == "doit" ]; then
+    git branch | grep -v "master" | xargs git branch -D
+    echo "I/All local branches deleted."
+else
+    git branch | grep -v "master"
+    echo "# Type 'git-delete-all-local-branches doit' to remove the branches listed above."
+fi
