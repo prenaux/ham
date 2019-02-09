@@ -208,13 +208,6 @@
 (add-hook 'coffee-mode-hook
           '(lambda() (coffee-custom)))
 
-;;*** PHP ***************************************************************
-(autoload 'php-mode "php-mode-improved" nil t)
-(add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
-(add-to-list 'auto-mode-alist '("\\.php3\\'" . php-mode))
-(add-to-list 'auto-mode-alist '("\\.php4\\'" . php-mode))
-(add-to-list 'auto-mode-alist '("\\.php5\\'" . php-mode))
-
 ;;*** niScript **********************************************************
 (autoload 'niscript-mode "niscript" nil t)
 (add-to-list 'auto-mode-alist '("\\.ni\\'" . niscript-mode))

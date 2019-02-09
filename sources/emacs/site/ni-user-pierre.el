@@ -368,6 +368,7 @@ If the new path's directories does not exist, create them."
 
  (require 'yaml-mode)
  (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+ (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
 
  (require 'haml-mode)
  (add-to-list 'auto-mode-alist '("\\.haml$" . haml-mode))
@@ -376,7 +377,7 @@ If the new path's directories does not exist, create them."
  (add-to-list 'auto-mode-alist '("\\.scss$" . scss-mode))
 
  (require 'less-css-mode)
- (add-to-list 'auto-mode-alist '("\\.scss$" . less-css-mode))
+ (add-to-list 'auto-mode-alist '("\\.less$" . less-css-mode))
 
  ;; web-mode please close all the tags...
  (setq web-mode-void-elements '())
