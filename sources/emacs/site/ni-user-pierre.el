@@ -186,10 +186,13 @@ If the new path's directories does not exist, create them."
  (setq pt-arguments
       (list
        "--smart-case" "-e"
-       "--ignore" "_*_ModuleDef.*"
-       "--ignore" "_*_JNI.*"
-       "--ignore" "**/_idl/*.idl.inl"
-       "--ignore" "**/_idl/*.idl.xml"
+       "--ignore" "\"*.min.js\""
+       "--ignore" "\"*.min.css\""
+       "--ignore" "\"_*_ModuleDef.*\""
+       "--ignore" "\"_*_JNI.*\""
+       "--ignore" "\"**/_idl/*.idl.inl\""
+       "--ignore" "\"**/_idl/*.idl.xml\""
+       "--ignore" "\"static/build/*\""
        ))
 )
 
