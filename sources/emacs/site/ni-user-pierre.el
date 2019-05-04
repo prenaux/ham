@@ -359,6 +359,7 @@ If the new path's directories does not exist, create them."
  (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
  (add-to-list 'auto-mode-alist '("\\.cshtml\\'" . web-mode))
  (add-to-list 'auto-mode-alist '("\\.ftl\\'" . web-mode))
+ (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
 
  (setq web-mode-enable-current-element-highlight t)
  (setq web-mode-enable-auto-quoting nil)
@@ -369,6 +370,7 @@ If the new path's directories does not exist, create them."
  (require 'yaml-mode)
  (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
  (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
+ (add-to-list 'auto-mode-alist '("\\.yaml[a-z]*$" . yaml-mode))
 
  (require 'haml-mode)
  (add-to-list 'auto-mode-alist '("\\.haml$" . haml-mode))
