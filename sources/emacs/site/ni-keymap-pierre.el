@@ -48,7 +48,7 @@
  (global-set-key (key "ESC <down>") 'forward-paragraph)
 
  ;; Move to the 'next' window (in clockwise order)
- (global-set-key (key "M-1") 'other-window)
+ (global-set-key (key "M-`") 'other-window)
 
  ;; Forward/Backward word under point
  (global-set-key (key "M-p") 'agl-search-word-backward)
@@ -88,8 +88,8 @@
  (global-set-key [(meta /)] (make-agl-expand))
 
  ;; Previous/Next errors
+ (define-key global-map "\M-1" 'next-error)
  (define-key global-map "\M-2" 'previous-error)
- (define-key global-map "\M-3" 'next-error)
 
  ;; shift-down comments the current line and goes down
  (define-key global-map [(shift down)] 'agl-comment-and-go-down)
@@ -144,8 +144,8 @@
 ;;;======================================================================
 ;;; ni-flymake.el
 ;;;======================================================================
+ (global-set-key (kbd "M-3") 'aflymake-goto-next-error)
  (global-set-key (kbd "M-4") 'aflymake-goto-prev-error)
- (global-set-key (kbd "M-5") 'aflymake-goto-next-error)
  (global-set-key (kbd "C-h C-c") 'aflymake-mode-or-syntax-check)
 
 ;;;======================================================================
@@ -199,10 +199,10 @@
 
  (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
 
- (global-set-key "\C-h\C-j" 'pt-regexp-search-dir)
- (global-set-key "\C-h\C-k" 'pt-regexp-current-dir)
- (global-set-key "\C-h\C-u" 'ni-vcs-grep-search-dir)
- (global-set-key "\C-h\C-i" 'ni-vcs-grep-current-dir)
+ (global-set-key "\C-h\C-k" 'pt-regexp-search-dir)
+ (global-set-key "\C-h\C-j" 'pt-regexp-current-dir)
+ (global-set-key "\C-h\C-i" 'ni-vcs-grep-search-dir)
+ (global-set-key "\C-h\C-u" 'ni-vcs-grep-current-dir)
  (global-set-key "\C-h\C-y" 'pt-work-regexp)
  (global-set-key "\C-h\C-g" 'occur)
 
