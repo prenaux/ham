@@ -689,6 +689,24 @@ rule Cc
 
   CCHDRS on $(<) = [ on $(<) FIncludes $(HDRS) ] ;
   CCDEFS on $(<) = [ on $(<) FDefines $(DEFINES) ] ;
+
+  if $(GENERATE_CMD_JSON) {
+    if ! [ FExists $(GENERATE_CMD_JSON) ] {
+      FEcho $(GENERATE_CMD_JSON) : "" : create nl ;
+    }
+    local HEADERS = [ FIncludesDash $(HDRS) ] ;
+    local DEFINES = [ FDefinesDash $(DEFINES) ] ;
+    local INPUT = [ FGetAbsolutePath [ FDirName $(SUBDIR) $(>:G=) ] ] ;
+    local OUTPUT = [ FGetAbsolutePath [ FDirName $(SUBDIR) $(<:G=) ] ] ;
+    local COMMAND = "$(C++)" -c -o "$(OUTPUT)" "$(C++FLAGS)" "$(OPTIM)" $(DEFINES) $(HEADERS) "$(INPUT)" ;
+    local COMMAND = $(COMMAND:J=" ") ;
+    # ECHO "COMMAND:" $(COMMAND) ;
+    FEcho $(GENERATE_CMD_JSON) : "{" : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"file\": \"$(INPUT)\"," ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"output\": \"$(OUTPUT)\"," : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"command\": \"$(COMMAND)\"" : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "}," : nl ;
+  }
 }
 
 # /C99 object : source ;
@@ -711,6 +729,24 @@ rule C99
 
   CCHDRS on $(<) = [ on $(<) FIncludes $(HDRS) ] ;
   CCDEFS on $(<) = [ on $(<) FDefines $(DEFINES) ] ;
+
+  if $(GENERATE_CMD_JSON) {
+    if ! [ FExists $(GENERATE_CMD_JSON) ] {
+      FEcho $(GENERATE_CMD_JSON) : "" : create nl ;
+    }
+    local HEADERS = [ FIncludesDash $(HDRS) ] ;
+    local DEFINES = [ FDefinesDash $(DEFINES) ] ;
+    local INPUT = [ FGetAbsolutePath [ FDirName $(SUBDIR) $(>:G=) ] ] ;
+    local OUTPUT = [ FGetAbsolutePath [ FDirName $(SUBDIR) $(<:G=) ] ] ;
+    local COMMAND = "$(C++)" -c -o "$(OUTPUT)" "$(C++FLAGS)" "$(OPTIM)" $(DEFINES) $(HEADERS) "$(INPUT)" ;
+    local COMMAND = $(COMMAND:J=" ") ;
+    # ECHO "COMMAND:" $(COMMAND) ;
+    FEcho $(GENERATE_CMD_JSON) : "{" : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"file\": \"$(INPUT)\"," ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"output\": \"$(OUTPUT)\"," : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"command\": \"$(COMMAND)\"" : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "}," : nl ;
+  }
 }
 
 # /C++ object : source ;
@@ -733,6 +769,24 @@ rule C++
 
   CCHDRS on $(<) = [ on $(<) FIncludes $(HDRS) ] ;
   CCDEFS on $(<) = [ on $(<) FDefines $(DEFINES) ] ;
+
+  if $(GENERATE_CMD_JSON) {
+    if ! [ FExists $(GENERATE_CMD_JSON) ] {
+      FEcho $(GENERATE_CMD_JSON) : "" : create nl ;
+    }
+    local HEADERS = [ FIncludesDash $(HDRS) ] ;
+    local DEFINES = [ FDefinesDash $(DEFINES) ] ;
+    local INPUT = [ FGetAbsolutePath [ FDirName $(SUBDIR) $(>:G=) ] ] ;
+    local OUTPUT = [ FGetAbsolutePath [ FDirName $(SUBDIR) $(<:G=) ] ] ;
+    local COMMAND = "$(C++)" -c -o "$(OUTPUT)" "$(C++FLAGS)" "$(OPTIM)" $(DEFINES) $(HEADERS) "$(INPUT)" ;
+    local COMMAND = $(COMMAND:J=" ") ;
+    # ECHO "COMMAND:" $(COMMAND) ;
+    FEcho $(GENERATE_CMD_JSON) : "{" : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"file\": \"$(INPUT)\"," ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"output\": \"$(OUTPUT)\"," : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"command\": \"$(COMMAND)\"" : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "}," : nl ;
+  }
 }
 
 # /Chmod target ;
