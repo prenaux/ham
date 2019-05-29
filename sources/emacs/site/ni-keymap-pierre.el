@@ -62,6 +62,7 @@
  (global-set-key "\C-h\C-s" 'ham-shell)
  (global-set-key "\C-h\C-t" 'agl-select-visible-shell-window)
  (global-set-key "\C-h\C-p" 'agl-run-last-shell-command)
+ (global-set-key (key "C-h C-0") 'erase-buffer)
 
  ;; PgUp/Dn
  (global-set-key (kbd "C-v") 'scroll-up-command)
