@@ -64,7 +64,7 @@ fi
 # Run the commands
 for ARG in $REPOS_CWD; do
     echo "== Repo '$ARG'"
-    cd "$ARG"
+    pushd "$ARG"
     if [ ! -z "$1" ]; then
         if [ -z $CONCURRENT ]; then
             git $*
@@ -73,6 +73,7 @@ for ARG in $REPOS_CWD; do
             git $* &
         fi
     fi
+    popd > /dev/null
 done
 
 wait
