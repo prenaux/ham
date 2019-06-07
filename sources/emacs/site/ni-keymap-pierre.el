@@ -212,7 +212,7 @@
  ;; Remap recenter-top-bottom (which is mapped to Ctrl-l by default) to Ctrl-Shift-L
  (global-set-key (key "C-S-l") 'recenter-top-bottom)
 
- (define-key global-map "\C-h\C-i" 'my-indent-buffer)
+ (define-key global-map "\C-h\C-\\" 'indent-region)
 
  (define-key global-map "\C-h\C-d" 'direx:jump-to-directory)
 
