@@ -548,8 +548,10 @@ rule tkLinkLibs {
 rule tkLinkImpLibs {
   if $(PKGTYPE) != library {
     local l = [ tkFindImportedLib $(>) : $(3) : $(4) ] ;
-    if ( ! ( $(NO_DLL_DEPS) = 1 ) ) || ( ! [ FExists $(l) ] ) {
-      DEPENDS $(<) : $(l) ;
+    if ! ( $(NO_DEPS) = 1 ) {
+      if ( ! ( $(NO_DLL_DEPS) = 1 ) ) || ( ! [ FExists $(l) ] ) {
+        DEPENDS $(<) : $(l) ;
+      }
     }
     VarOnAddToFront LINKLIBS : $(<) : [ FQuote $(l) ] ;
   }
