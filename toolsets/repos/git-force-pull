@@ -1,6 +1,6 @@
 #!/bin/bash
 usage() {
-    echo "usage: git-force-pull (REMOTE) BRANCH"
+    echo "usage: git-force-pull (stash) (REMOTE) BRANCH"
     echo ""
     echo "  Fetch and checkout a clean branch from the specified remote."
     echo ""
@@ -13,6 +13,13 @@ usage() {
         exit 1
     fi
 }
+
+STASH=0
+if [ "$1" == "stash" ]; then
+    STASH=1
+    shift
+fi
+
 if [ $# = 1 ]; then
     ORIGIN=origin
     BRANCH=$1
@@ -27,7 +34,11 @@ fi
 
 set -ex
 
-git checkout $BRANCH
+if [ $STASH == 1 ]; then
+    git stash && git checkout $BRANCH && git stash pop
+else
+    git checkout $BRANCH
+fi
 
 if [ "`git branch --list tmp-git-force-pull`" ]; then
     git branch -D tmp-git-force-pull
@@ -35,5 +46,9 @@ fi
 
 git checkout -b tmp-git-force-pull
 git fetch $ORIGIN +$BRANCH:$BRANCH
-git checkout $BRANCH
+if [ $STASH == 1 ]; then
+    git stash && git checkout $BRANCH && git stash pop
+else
+    git checkout $BRANCH
+fi
 git branch -D tmp-git-force-pull
