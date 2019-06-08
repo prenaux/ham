@@ -110,6 +110,7 @@
  (define-key global-map "\C-h\C-e" 'end-of-buffer)
 
  (global-set-key (kbd "M-j") 'macro-join-line)
+ (global-set-key (kbd "C-j") 'macro-join-line)
 
  (require 'golden-ratio-scroll-screen)
  (global-set-key (key "M-'") 'golden-ratio-scroll-screen-up)
