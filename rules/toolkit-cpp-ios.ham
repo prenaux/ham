@@ -26,7 +26,8 @@ CLANG_CC_ARGS +=
 -Wconstant-conversion
 -Wint-conversion
 -Wenum-conversion
--Wdeprecated-declarations
+# -Wdeprecated-declarations
+-Wno-deprecated-declarations
 -Winvalid-offsetof
 ;
 

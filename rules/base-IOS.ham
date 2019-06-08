@@ -25,36 +25,17 @@ switch $(IOS_ARCH:L) {
     IOS_ARCH = $(IOS_ARCH:U) ;
   case arm64 :
     IOS_ARCH = $(IOS_ARCH:U) ;
+  case x86_64 :
+    IOS_ARCH = $(IOS_ARCH:U) ;
   case * :
     EXIT "E/Unknown IOS_ARCH: '$(IOS_ARCH)'. Should be armv6, armv7, armv7f, armv7s or arm64." ;
 }
 
 # Define here the minimal iOS version's MAJOR number (iOS3, iOS4 or iOS5)
-IOS_MINVER ?= 8 ;
+IOS_MINVER ?= 11 ;
 
 switch $(IOS_MINVER) {
-  case 3 :
-    IOS_FRAMEWORKS = -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreLocation -framework ExternalAccessory -framework Foundation -framework GameKit -framework IOKit -framework MapKit -framework MediaPlayer -framework MessageUI -framework MobileCoreServices -framework OpenGLES -framework QuartzCore -framework Security -framework StoreKit -framework SystemConfiguration -framework UIKit ;
-
-  case 4 :
-    IOS_FRAMEWORKS = -framework Accelerate  -framework AssetsLibrary  -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreLocation -framework CoreMedia -framework CoreMIDI -framework CoreMotion -framework CoreTelephony -framework CoreText -framework CoreVideo -framework EventKit -framework EventKitUI -framework ExternalAccessory -framework Foundation -framework GameKit -framework iAd -framework ImageIO -framework IOKit -framework MapKit -framework MediaPlayer -framework MessageUI -framework MobileCoreServices -framework OpenGLES -framework QuartzCore -framework QuickLook -framework Security -framework StoreKit -framework SystemConfiguration -framework UIKit ;
-
-  case 5 :
-    IOS_FRAMEWORKS = -framework Accelerate -framework Accounts  -framework AssetsLibrary  -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreBluetooth -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreImage -framework CoreLocation -framework CoreMedia -framework CoreMIDI -framework CoreMotion -framework CoreTelephony -framework CoreText -framework CoreVideo -framework EventKit -framework EventKitUI -framework ExternalAccessory -framework Foundation -framework GameKit -framework GLKit -framework GSS -framework iAd -framework ImageIO -framework IOKit -framework MapKit -framework MediaPlayer -framework MessageUI -framework MobileCoreServices -framework NewsstandKit -framework OpenGLES -framework QuartzCore -framework QuickLook -framework Security -framework StoreKit -framework SystemConfiguration -framework Twitter -framework UIKit ;
-
-  case 6 :
-    IOS_FRAMEWORKS = -framework Accelerate -framework Accounts  -framework AdSupport -framework AssetsLibrary  -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreBluetooth -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreImage -framework CoreLocation -framework CoreMedia -framework CoreMIDI -framework CoreMotion -framework CoreTelephony -framework CoreText -framework CoreVideo -framework EventKit -framework EventKitUI -framework ExternalAccessory -framework Foundation -framework GameKit -framework GLKit -framework GSS -framework iAd -framework ImageIO -framework IOKit -framework MapKit -framework MediaPlayer -framework MediaToolbox -framework MessageUI -framework MobileCoreServices -framework NewsstandKit -framework OpenGLES -framework PassKit -framework QuartzCore -framework QuickLook -framework Security -framework Social -framework StoreKit -framework SystemConfiguration -framework Twitter -framework UIKit -framework VideoToolbox ;
-
-  case 7 :
-    IOS_FRAMEWORKS = -framework Accelerate -framework Accounts  -framework AdSupport -framework AssetsLibrary  -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreBluetooth -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreImage -framework CoreLocation -framework CoreMedia -framework CoreMIDI -framework CoreMotion -framework CoreTelephony -framework CoreText -framework CoreVideo -framework EventKit -framework EventKitUI -framework ExternalAccessory -framework Foundation -framework GameKit -framework GLKit -framework GSS -framework iAd -framework ImageIO -framework IOKit -framework MapKit -framework MediaPlayer -framework MediaToolbox -framework MessageUI -framework MobileCoreServices -framework NewsstandKit -framework OpenGLES -framework PassKit -framework QuartzCore -framework QuickLook -framework Security -framework Social -framework StoreKit -framework SystemConfiguration -framework Twitter -framework UIKit -framework VideoToolbox ;
-
-  case 8 :
-    IOS_FRAMEWORKS = -framework Accelerate -framework Accounts  -framework AdSupport -framework AssetsLibrary  -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreBluetooth -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreImage -framework CoreLocation -framework CoreMedia -framework CoreMIDI -framework CoreMotion -framework CoreTelephony -framework CoreText -framework CoreVideo -framework EventKit -framework EventKitUI -framework ExternalAccessory -framework Foundation -framework GameKit -framework GLKit -framework GSS -framework iAd -framework ImageIO -framework IOKit -framework MapKit -framework MediaPlayer -framework MediaToolbox -framework MessageUI -framework MobileCoreServices -framework NewsstandKit -framework OpenGLES -framework PassKit -framework QuartzCore -framework QuickLook -framework Security -framework Social -framework StoreKit -framework SystemConfiguration -framework Twitter -framework UIKit -framework VideoToolbox ;
-
-  case 9 :
-    IOS_FRAMEWORKS = -framework Accelerate -framework Accounts  -framework AdSupport -framework AssetsLibrary  -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreBluetooth -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreImage -framework CoreLocation -framework CoreMedia -framework CoreMIDI -framework CoreMotion -framework CoreTelephony -framework CoreText -framework CoreVideo -framework EventKit -framework EventKitUI -framework ExternalAccessory -framework Foundation -framework GameKit -framework GLKit -framework GSS -framework iAd -framework ImageIO -framework IOKit -framework MapKit -framework MediaPlayer -framework MediaToolbox -framework MessageUI -framework MobileCoreServices -framework NewsstandKit -framework OpenGLES -framework PassKit -framework QuartzCore -framework QuickLook -framework Security -framework Social -framework StoreKit -framework SystemConfiguration -framework Twitter -framework UIKit -framework VideoToolbox ;
-
-  case 10 :
+  case 11 :
     IOS_FRAMEWORKS = -framework Accelerate -framework Accounts  -framework AdSupport -framework AssetsLibrary  -framework AVFoundation -framework CFNetwork -framework CoreAudio -framework CoreBluetooth -framework CoreData -framework CoreFoundation -framework CoreGraphics -framework CoreImage -framework CoreLocation -framework CoreMedia -framework CoreMIDI -framework CoreMotion -framework CoreTelephony -framework CoreText -framework CoreVideo -framework EventKit -framework EventKitUI -framework ExternalAccessory -framework Foundation -framework GameKit -framework GLKit -framework GSS -framework iAd -framework ImageIO -framework IOKit -framework MapKit -framework MediaPlayer -framework MediaToolbox -framework MessageUI -framework MobileCoreServices -framework NewsstandKit -framework OpenGLES -framework PassKit -framework QuartzCore -framework QuickLook -framework Security -framework Social -framework StoreKit -framework SystemConfiguration -framework Twitter -framework UIKit -framework VideoToolbox ;
 
   case * :
@@ -83,114 +64,53 @@ if $(NT) {
   }
 }
 else {
-  if $(IPHONE_SDK_BASE_DIR) {
-    IPHONE_SDK_DIR = $(IPHONE_SDK_BASE_DIR) ;
+  if $(IOS_ARCH) = X86_64 {
+    if $(IOSMAC_SDK_DIR) {
+      IPHONE_SDK_DIR = $(IOSMAC_SDK_DIR) ;
+    }
+    else {
+      IPHONE_SDK_DIR = /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/ ;
+    }
+    IOSMAC = 1 ;
+
+    CLANG_BASE_FLAGS =
+    -target x86_64-apple-ios13.0-macabi
+    --sysroot "\"$(IPHONE_SDK_DIR)\""
+    -fdiagnostics-format=msvc
+    -iframework /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/System/iOSSupport/System/Library/Frameworks
+    -stdlib=libc++
+    -I"\"$(IPHONE_SDK_DIR)/lib/c++/v1\""
+    -fconstant-cfstrings
+    -DIPHONE
+    -DIOSMAC
+    -D__CPU_$(IOS_ARCH)__
+    -D__IPHONE_OS_VERSION_MIN_REQUIRED=$(IOS_MINVER)0000
+    -Wno-deprecated-declarations
+    ;
   }
   else {
-    IPHONE_SDK_DIR = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/ ;
-  }
+    if $(IPHONE_SDK_BASE_DIR) {
+      IPHONE_SDK_DIR = $(IPHONE_SDK_BASE_DIR)/iPhoneOS.sdk ;
+    }
+    else {
+      IPHONE_SDK_DIR = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk ;
+    }
+    if ! [ FExists $(IPHONE_SDK_DIR) ] {
+      ECHO "E/Can't find IPHONE_SDK_DIR, if its not in the standard location you can set the IPHONE_SDK_BASE_DIR environment variable to specify its location." ;
+      EXIT "E/IPHONE_SDK_DIR =" $(IPHONE_SDK_DIR) ;
+    }
 
-  CLANG_BASE_FLAGS =
+    CLANG_BASE_FLAGS =
     -arch $(IOS_ARCH:L)
     -fconstant-cfstrings
     -miphoneos-version-min=$(IOS_MINVER).0.0
     -DIPHONE
     -D__CPU_$(IOS_ARCH)__
     -D__IPHONE_OS_VERSION_MIN_REQUIRED=$(IOS_MINVER)0000
-  ;
+    -isysroot "\"$(IPHONE_SDK_DIR)\""
+    -fmessage-length=0
+    ;
 
-  # iOS Latest SDK
-  if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS.sdk ] {
-    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS.sdk ;
-    CLANG_BASE_FLAGS +=
-      -isysroot "\"$(IPHONE_SDK_DIR)\""
-      -fmessage-length=0
-    ;
-  }
-  # iOS 10.2 SDK
-  else if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS10.2.sdk ] {
-    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS10.2.sdk ;
-    CLANG_BASE_FLAGS +=
-      -isysroot "\"$(IPHONE_SDK_DIR)\""
-      -fmessage-length=0
-    ;
-  }
-  # iOS 10.0 SDK
-  else if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS10.0.sdk ] {
-    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS10.0.sdk ;
-    CLANG_BASE_FLAGS +=
-      -isysroot "\"$(IPHONE_SDK_DIR)\""
-      -fmessage-length=0
-    ;
-  }
-  # iOS 9.3 SDK
-  else if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS9.3.sdk ] {
-    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS9.3.sdk ;
-    CLANG_BASE_FLAGS +=
-      -isysroot "\"$(IPHONE_SDK_DIR)\""
-      -fmessage-length=0
-    ;
-  }
-  # iOS 9.2 SDK
-  else if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS9.2.sdk ] {
-    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS9.2.sdk ;
-    CLANG_BASE_FLAGS +=
-      -isysroot "\"$(IPHONE_SDK_DIR)\""
-      -fmessage-length=0
-    ;
-  }
-  # iOS 9.1 SDK
-  else if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS9.1.sdk ] {
-    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS9.1.sdk ;
-    CLANG_BASE_FLAGS +=
-      -isysroot "\"$(IPHONE_SDK_DIR)\""
-      -fmessage-length=0
-    ;
-  }
-  # iOS 8.4 SDK
-  else if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS8.4.sdk ] {
-    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS8.4.sdk ;
-    CLANG_BASE_FLAGS +=
-      -isysroot "\"$(IPHONE_SDK_DIR)\""
-      -fmessage-length=0
-    ;
-  }
-  # iOS 8.3 SDK
-  else if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS8.3.sdk ] {
-    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS8.3.sdk ;
-    CLANG_BASE_FLAGS +=
-      -isysroot "\"$(IPHONE_SDK_DIR)\""
-      -fmessage-length=0
-    ;
-  }
-  # iOS 8.1 SDK
-  else if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS8.1.sdk ] {
-    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS8.1.sdk ;
-    CLANG_BASE_FLAGS +=
-      -isysroot "\"$(IPHONE_SDK_DIR)\""
-      -fmessage-length=0
-    ;
-  }
-  # iOS 7 SDK
-  else if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS7.0.sdk ] {
-    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS7.0.sdk ;
-    CLANG_BASE_FLAGS +=
-      -isysroot "\"$(IPHONE_SDK_DIR)\""
-      -fmessage-length=0
-    ;
-  }
-  # iOS 6.1 SDK
-  else if [ FExists $(IPHONE_SDK_DIR)/iPhoneOS6.1.sdk ] {
-    IPHONE_SDK_DIR = $(IPHONE_SDK_DIR)/iPhoneOS6.1.sdk ;
-    CLANG_BASE_FLAGS +=
-      --sysroot "\"$(IPHONE_SDK_DIR)\""
-      -ccc-host-triple $(IOS_ARCH:L)-apple-ios$(IOS_MINVER).0.0
-      -integrated-as
-    ;
-  }
-  else {
-    ECHO "E/Can't find IPHONE_SDK_DIR, if its not in the standard location you can set the IPHONE_SDK_BASE_DIR environment variable to specify its location." ;
-    EXIT "E/IPHONE_SDK_DIR =" $(IPHONE_SDK_DIR) ;
   }
 }
 
