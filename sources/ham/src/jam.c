@@ -1,6 +1,6 @@
 /*
  * /+\
- * +\	Copyright 1993-2002 Christopher Seiwald and Perforce Software, Inc.
+ * +\   Copyright 1993-2002 Christopher Seiwald and Perforce Software, Inc.
  * \+/
  *
  * This file is part of jam.
@@ -63,31 +63,31 @@
  *
  * Roughly, the modules are:
  *
- *	builtins.c - jam's built-in rules
- *	command.c - maintain lists of commands
- *	compile.c - compile parsed jam statements
- *	execunix.c - execute a shell script on UNIX
- *	execvms.c - execute a shell script, ala VMS
- *	expand.c - expand a buffer, given variable values
- *	file*.c - scan directories and archives on *
- *	hash.c - simple in-memory hashing routines
- *	headers.c - handle #includes in source files
- *	jambase.c - compilable copy of Jambase
- *	jamgram.y - jam grammar
- *	lists.c - maintain lists of strings
- *	make.c - bring a target up to date, once rules are in place
- *	make1.c - execute command to bring targets up to date
- *	newstr.c - string manipulation routines
- *	option.c - command line option processing
- *	parse.c - make and destroy parse trees as driven by the parser
- *	path*.c - manipulate file names on *
- *	hash.c - simple in-memory hashing routines
- *	regexp.c - Henry Spencer's regexp
- *	rules.c - access to RULEs, TARGETs, and ACTIONs
- *	scan.c - the jam yacc scanner
- *	search.c - find a target along $(SEARCH) or $(LOCATE)
- *	timestamp.c - get the timestamp of a file or archive member
- *	variable.c - handle jam multi-element variables
+ *      builtins.c - jam's built-in rules
+ *      command.c - maintain lists of commands
+ *      compile.c - compile parsed jam statements
+ *      execunix.c - execute a shell script on UNIX
+ *      execvms.c - execute a shell script, ala VMS
+ *      expand.c - expand a buffer, given variable values
+ *      file*.c - scan directories and archives on *
+ *      hash.c - simple in-memory hashing routines
+ *      headers.c - handle #includes in source files
+ *      jambase.c - compilable copy of Jambase
+ *      jamgram.y - jam grammar
+ *      lists.c - maintain lists of strings
+ *      make.c - bring a target up to date, once rules are in place
+ *      make1.c - execute command to bring targets up to date
+ *      newstr.c - string manipulation routines
+ *      option.c - command line option processing
+ *      parse.c - make and destroy parse trees as driven by the parser
+ *      path*.c - manipulate file names on *
+ *      hash.c - simple in-memory hashing routines
+ *      regexp.c - Henry Spencer's regexp
+ *      rules.c - access to RULEs, TARGETs, and ACTIONs
+ *      scan.c - the jam yacc scanner
+ *      search.c - find a target along $(SEARCH) or $(LOCATE)
+ *      timestamp.c - get the timestamp of a file or archive member
+ *      variable.c - handle jam multi-element variables
  *
  * 05/04/94 (seiwald) - async multiprocess (-j) support
  * 02/08/95 (seiwald) - -n implies -d2.
@@ -144,16 +144,16 @@
 #endif
 
 struct globs globs = {
-	0,			/* noexec */
-	1,			/* jobs */
-	0,			/* quitquick */
-	0,			/* newestfirst */
+  0,                      /* noexec */
+  1,                      /* jobs */
+  0,                      /* quitquick */
+  0,                      /* newestfirst */
 # ifdef OS_MAC
-	{ 0 },			/* display - suppress actions output */
+  { 0 },                  /* display - suppress actions output */
 # else
-	{ 0, 1 }, 		/* display actions  */
+  { 0, 1 },               /* display actions  */
 # endif
-	0			/* output commands, not run them */
+  0                       /* output commands, not run them */
 } ;
 
 /* Symbols to be defined as true for use in Jambase */
@@ -161,8 +161,8 @@ struct globs globs = {
 static const char *othersyms[] = { OSMAJOR, OSMINOR, OSPLAT, JAMVERSYM, 0 } ;
 
 /* Known for sure:
- *	mac needs arg_enviro
- *	OS2 needs extern environ
+ *      mac needs arg_enviro
+ *      OS2 needs extern environ
  */
 
 # ifdef OS_MAC
@@ -182,337 +182,337 @@ extern char **environ;
 char g_bash_path[2048] = "bash";
 
 #define PRINTF_VER()                            \
-    printf( "Ham %s. %s. %d CPU%s.\n",          \
-            VERSION, OSMINOR,                   \
-            numProcessors,                      \
-            numProcessors > 1 ? "s":"");
+  printf( "Ham %s. %s. %d CPU%s.\n",            \
+          VERSION, OSMINOR,                     \
+          numProcessors,                        \
+          numProcessors > 1 ? "s":"");
 
 int
 main( int argc, char **argv, char **arg_environ )
 {
-	int		n, num_targets;
-	const char	*s;
-	struct option	optv[N_OPTS];
-	char*       targets[N_TARGETS];
-	const char	*all = "all";
-	int		anyhow = 0;
-	int		status;
+  int             n, num_targets;
+  const char      *s;
+  struct option   optv[N_OPTS];
+  char*       targets[N_TARGETS];
+  const char      *all = "all";
+  int             anyhow = 0;
+  int             status;
 
-    unsigned int numProcessors = 1;
+  unsigned int numProcessors = 1;
 #ifdef OS_NT
-    {
-        SYSTEM_INFO SysInfo;
-        ZeroMemory(&SysInfo, sizeof (SYSTEM_INFO));
-        GetSystemInfo(&SysInfo);
-        numProcessors = SysInfo.dwNumberOfProcessors;
-    }
+  {
+    SYSTEM_INFO SysInfo;
+    ZeroMemory(&SysInfo, sizeof (SYSTEM_INFO));
+    GetSystemInfo(&SysInfo);
+    numProcessors = SysInfo.dwNumberOfProcessors;
+  }
 #endif
 #ifdef OS_LINUX
-    {
-        numProcessors = sysconf(_SC_NPROCESSORS_ONLN);
-    }
+  {
+    numProcessors = sysconf(_SC_NPROCESSORS_ONLN);
+  }
 #endif
 #ifdef OS_MACOSX
-    {
-        int mib[4];
-        size_t len = sizeof(numProcessors);
-        /* set the mib for hw.ncpu */
-        mib[0] = CTL_HW;
-        mib[1] = HW_AVAILCPU;  // alternatively, try HW_NCPU;
-        /* get the number of CPUs from the system */
-        sysctl(mib, 2, &numProcessors, &len, NULL, 0);
-        if (numProcessors < 1) {
-            mib[1] = HW_NCPU;
-            sysctl(mib, 2, &numProcessors, &len, NULL, 0);
-            if (numProcessors < 1) {
-                numProcessors = 1;
-            }
-        }
+  {
+    int mib[4];
+    size_t len = sizeof(numProcessors);
+    /* set the mib for hw.ncpu */
+    mib[0] = CTL_HW;
+    mib[1] = HW_AVAILCPU;  // alternatively, try HW_NCPU;
+    /* get the number of CPUs from the system */
+    sysctl(mib, 2, &numProcessors, &len, NULL, 0);
+    if (numProcessors < 1) {
+      mib[1] = HW_NCPU;
+      sysctl(mib, 2, &numProcessors, &len, NULL, 0);
+      if (numProcessors < 1) {
+        numProcessors = 1;
+      }
     }
+  }
 #endif
 # ifdef OS_MAC
-	InitGraf(&qd.thePort);
+  InitGraf(&qd.thePort);
 # endif
 
-	argc--, argv++;
+  argc--, argv++;
 
-	if( ( num_targets = getoptions( argc, argv, "d:j:f:gs:t:ano:qve", optv, targets ) ) < 0 )
-	{
-	    printf( "\nusage: ham [ options ] targets...\n\n" );
+  if( ( num_targets = getoptions( argc, argv, "d:j:f:gs:t:ano:qve", optv, targets ) ) < 0 )
+  {
+    printf( "\nusage: ham [ options ] targets...\n\n" );
 
-		printf( "-a      Build all targets, even if they are current.\n" );
-		printf( "-dx     Display (a)actions (c)causes (d)dependencies\n" );
-	    printf( "        (m)make tree (x)commands (0-9) debug levels.\n" );
-		printf( "-fx     Read x instead of Hambase.\n" );
-	    printf( "-g      Build from newest sources first.\n" );
-        printf( "-jx     Run up to x shell commands concurrently.\n" );
-        printf( "-n      Don't actually execute the updating actions.\n" );
-        printf( "-ox     Write the updating actions to file x.\n" );
-        printf( "-q      Try to continue building even if a target fails.\n" );
-	    printf( "-sx=y   Set variable x=y, overriding environment.\n" );
-        printf( "-tx     Rebuild x, even if it is up-to-date.\n" );
-        printf( "-v      Print the version of ham and exit.\n" );
-        printf( "-e      Print the value of the relevant environment variables.\n\n" );
+    printf( "-a      Build all targets, even if they are current.\n" );
+    printf( "-dx     Display (a)actions (c)causes (d)dependencies\n" );
+    printf( "        (m)make tree (x)commands (0-9) debug levels.\n" );
+    printf( "-fx     Read x instead of Hambase.\n" );
+    printf( "-g      Build from newest sources first.\n" );
+    printf( "-jx     Run up to x shell commands concurrently.\n" );
+    printf( "-n      Don't actually execute the updating actions.\n" );
+    printf( "-ox     Write the updating actions to file x.\n" );
+    printf( "-q      Try to continue building even if a target fails.\n" );
+    printf( "-sx=y   Set variable x=y, overriding environment.\n" );
+    printf( "-tx     Rebuild x, even if it is up-to-date.\n" );
+    printf( "-v      Print the version of ham and exit.\n" );
+    printf( "-e      Print the value of the relevant environment variables.\n\n" );
 
-	    exit( EXITBAD );
-	}
+    exit( EXITBAD );
+  }
 
-    /* Check that bash is available */
-    {
-        char* hamShell = getenv("HAMSHELL");
-        if (hamShell && *hamShell) {
-            strcpy(g_bash_path,hamShell);
-        }
+  /* Check that bash is available */
+  {
+    char* hamShell = getenv("HAMSHELL");
+    if (hamShell && *hamShell) {
+      strcpy(g_bash_path,hamShell);
+    }
 #ifdef OS_NT
-        else {
-            char* devEnvDir = getenv("AGLDEVENV");
-            if (devEnvDir) {
-                // look for bash_ham
-                strcpy(g_bash_path,devEnvDir);
-                strcat(g_bash_path,"\\bin\\ham_bash.exe");
-                {
-                    int fp = _open(g_bash_path,_O_RDONLY);
-                    if (fp == -1) {
-                        g_bash_path[0] = 0;
-                    }
-                    else {
-                        _close(fp);
-                    }
-                }
-
-                // look for bash
-                if (!g_bash_path[0]) {
-                    strcpy(g_bash_path,devEnvDir);
-                    strcat(g_bash_path,"\\msys\\bin\\bash.exe");
-                    {
-                        int fp = _open(g_bash_path,_O_RDONLY);
-                        if (fp == -1) {
-                            g_bash_path[0] = 0;
-                        }
-                        else {
-                            _close(fp);
-                        }
-                    }
-                }
-            }
-        }
-        // convert '/' to '\\'
-        {
-            char* p = g_bash_path;
-            while (*p) {
-                if (*p == '/') *p = '\\';
-                ++p;
-            }
-        }
-#endif
-        if (g_bash_path[0] == 0) {
-            PRINTF_VER();
-            printf( "-- Can't find the bash executable --\n");
-            printf( "make sure that the environment variable HAMSHELL or AGLDEVENV is setup\n" );
-            exit( EXITBAD );
-        }
-    }
-
-	/* Version info. */
-
-	if( ( s = getoptval( optv, 'v', 0 ) ) )
-	{
-        PRINTF_VER();
-	    return EXITOK;
-	}
-
-	/* Other infos */
-	if( ( s = getoptval( optv, 'e', 0 ) ) )
-	{
-	    printf("--- Environment ----\n");
-	    printf("NUM_PROCESSORS: %d\n", numProcessors);
-	    printf("HAMSHELL: %s\n", g_bash_path);
-	    printf("PATH: %s\n", getenv("PATH"));
-	    printf("--- Environment ----\n");
-
-	    return EXITOK;
-	}
-
-	/* Pick up interesting options */
-
-	if( ( s = getoptval( optv, 'n', 0 ) ) )
-	    globs.noexec++, DEBUG_MAKE = DEBUG_MAKEQ = DEBUG_EXEC = 1;
-
-	if( ( s = getoptval( optv, 'q', 0 ) ) )
-	    globs.quitquick = 0;
-    else
-	    globs.quitquick = 1;
-
-	if( ( s = getoptval( optv, 'a', 0 ) ) )
-	    anyhow++;
-
-	if( ( s = getoptval( optv, 'j', 0 ) ) ) {
-	    globs.jobs = atoi( s );
-        if (globs.jobs < 1)
-            globs.jobs = numProcessors;
-    }
     else {
-        globs.jobs = numProcessors;
+      char* devEnvDir = getenv("AGLDEVENV");
+      if (devEnvDir) {
+        // look for bash_ham
+        strcpy(g_bash_path,devEnvDir);
+        strcat(g_bash_path,"\\bin\\ham_bash.exe");
+        {
+          int fp = _open(g_bash_path,_O_RDONLY);
+          if (fp == -1) {
+            g_bash_path[0] = 0;
+          }
+          else {
+            _close(fp);
+          }
+        }
+
+        // look for bash
+        if (!g_bash_path[0]) {
+          strcpy(g_bash_path,devEnvDir);
+          strcat(g_bash_path,"\\msys\\bin\\bash.exe");
+          {
+            int fp = _open(g_bash_path,_O_RDONLY);
+            if (fp == -1) {
+              g_bash_path[0] = 0;
+            }
+            else {
+              _close(fp);
+            }
+          }
+        }
+      }
     }
-    // make sure the number of jobs are in reasonable limits...
-    if (globs.jobs < 1 || globs.jobs > (numProcessors*8))
-        globs.jobs = numProcessors;
+    // convert '/' to '\\'
+    {
+      char* p = g_bash_path;
+      while (*p) {
+        if (*p == '/') *p = '\\';
+        ++p;
+      }
+    }
+#endif
+    if (g_bash_path[0] == 0) {
+      PRINTF_VER();
+      printf( "-- Can't find the bash executable --\n");
+      printf( "make sure that the environment variable HAMSHELL or AGLDEVENV is setup\n" );
+      exit( EXITBAD );
+    }
+  }
 
-	if( ( s = getoptval( optv, 'g', 0 ) ) )
-	    globs.newestfirst = 1;
+  /* Version info. */
 
-	/* Turn on/off debugging */
+  if( ( s = getoptval( optv, 'v', 0 ) ) )
+  {
+    PRINTF_VER();
+    return EXITOK;
+  }
 
-	for( n = 0; (s = getoptval( optv, 'd', n )) != 0; n++ )
-	{
-	    int i = atoi( s );
+  /* Other infos */
+  if( ( s = getoptval( optv, 'e', 0 ) ) )
+  {
+    printf("--- Environment ----\n");
+    printf("NUM_PROCESSORS: %d\n", numProcessors);
+    printf("HAMSHELL: %s\n", g_bash_path);
+    printf("PATH: %s\n", getenv("PATH"));
+    printf("--- Environment ----\n");
 
-	    /* First -d, turn off defaults. */
+    return EXITOK;
+  }
 
-	    if( !n )
-            DEBUG_MAKE = DEBUG_MAKEQ = DEBUG_EXEC = 0;
+  /* Pick up interesting options */
 
-	    /* n turns on levels 1-n */
-	    /* +n turns on level n */
-	    /* c turns on named display c */
+  if( ( s = getoptval( optv, 'n', 0 ) ) )
+    globs.noexec++, DEBUG_MAKE = DEBUG_MAKEQ = DEBUG_EXEC = 1;
 
-	    if( i < 0 || i >= DEBUG_MAX ) {
-            printf( "Invalid debug level '%s'.\n", s );
-	    }
-	    else if( *s == '+' )
-	    {
-            globs.debug[i] = 1;
-	    }
-	    else if( i ) while( i )
+  if( ( s = getoptval( optv, 'q', 0 ) ) )
+    globs.quitquick = 0;
+  else
+    globs.quitquick = 1;
+
+  if( ( s = getoptval( optv, 'a', 0 ) ) )
+    anyhow++;
+
+  if( ( s = getoptval( optv, 'j', 0 ) ) ) {
+    globs.jobs = atoi( s );
+    if (globs.jobs < 1)
+      globs.jobs = numProcessors;
+  }
+  else {
+    globs.jobs = numProcessors;
+  }
+  // make sure the number of jobs are in reasonable limits...
+  if (globs.jobs < 1 || globs.jobs > (numProcessors*8))
+    globs.jobs = numProcessors;
+
+  if( ( s = getoptval( optv, 'g', 0 ) ) )
+    globs.newestfirst = 1;
+
+  /* Turn on/off debugging */
+
+  for( n = 0; (s = getoptval( optv, 'd', n )) != 0; n++ )
+  {
+    int i = atoi( s );
+
+    /* First -d, turn off defaults. */
+
+    if( !n )
+      DEBUG_MAKE = DEBUG_MAKEQ = DEBUG_EXEC = 0;
+
+    /* n turns on levels 1-n */
+    /* +n turns on level n */
+    /* c turns on named display c */
+
+    if( i < 0 || i >= DEBUG_MAX ) {
+      printf( "Invalid debug level '%s'.\n", s );
+    }
+    else if( *s == '+' )
+    {
+      globs.debug[i] = 1;
+    }
+    else if( i ) while( i )
+                 {
+                   globs.debug[i--] = 1;
+                 }
+    else while( *s ) switch( *s++ )
                      {
-                         globs.debug[i--] = 1;
+                     case 'a': DEBUG_MAKE = DEBUG_MAKEQ = 1; break;
+                     case 'c': DEBUG_CAUSES = 1; break;
+                     case 'd': DEBUG_DEPENDS = 1; break;
+                     case 'm': DEBUG_MAKEPROG = 1; break;
+                     case 'x': DEBUG_EXEC = 1; break;
+                     case '0': break;
+                     default: printf( "Invalid debug flag '%c'.\n", s[-1] );
                      }
-	    else while( *s ) switch( *s++ )
-                         {
-                         case 'a': DEBUG_MAKE = DEBUG_MAKEQ = 1; break;
-                         case 'c': DEBUG_CAUSES = 1; break;
-                         case 'd': DEBUG_DEPENDS = 1; break;
-                         case 'm': DEBUG_MAKEPROG = 1; break;
-                         case 'x': DEBUG_EXEC = 1; break;
-                         case '0': break;
-                         default: printf( "Invalid debug flag '%c'.\n", s[-1] );
-                         }
-	}
+  }
 
-	/* Set HAMDATE first */
+  /* Set HAMDATE first */
 
-	{
-	    char buf[ 128 ];
-	    time_t clock;
-	    time( &clock );
-	    strcpy( buf, ctime( &clock ) );
+  {
+    char buf[ 128 ];
+    time_t clock;
+    time( &clock );
+    strcpy( buf, ctime( &clock ) );
 
-	    /* Trim newline from date */
+    /* Trim newline from date */
 
-	    if( strlen( buf ) == 25 )
-            buf[ 24 ] = 0;
+    if( strlen( buf ) == 25 )
+      buf[ 24 ] = 0;
 
-	    var_set( "HAMDATE", list_new( L0, buf, 0 ), VAR_SET );
-	}
+    var_set( "HAMDATE", list_new( L0, buf, 0 ), VAR_SET );
+  }
 
-	/* And HAMUNAME */
+  /* And HAMUNAME */
 # ifdef unix
-	{
-	    struct utsname u;
+  {
+    struct utsname u;
 
-	    if( uname( &u ) >= 0 )
-	    {
-            LIST *l = L0;
-            l = list_new( l, u.machine, 0 );
-            l = list_new( l, u.version, 0 );
-            l = list_new( l, u.release, 0 );
-            l = list_new( l, u.nodename, 0 );
-            l = list_new( l, u.sysname, 0 );
-            var_set( "HAMUNAME", l, VAR_SET );
-	    }
-	}
+    if( uname( &u ) >= 0 )
+    {
+      LIST *l = L0;
+      l = list_new( l, u.machine, 0 );
+      l = list_new( l, u.version, 0 );
+      l = list_new( l, u.release, 0 );
+      l = list_new( l, u.nodename, 0 );
+      l = list_new( l, u.sysname, 0 );
+      var_set( "HAMUNAME", l, VAR_SET );
+    }
+  }
 # endif /* unix */
 
-	/*
-	 * Ham defined variables OS, OSPLAT
-	 */
+  /*
+   * Ham defined variables OS, OSPLAT
+   */
 
-	var_defines( othersyms );
+  var_defines( othersyms );
 
-	/* load up environment variables */
+  /* load up environment variables */
 
-	var_defines( (const char **)use_environ );
+  var_defines( (const char **)use_environ );
 
-	/* Load up variables set on command line. */
+  /* Load up variables set on command line. */
 
-	for( n = 0; (s = getoptval( optv, 's', n )) != 0; n++ )
-	{
-	    const char *symv[2];
-	    symv[0] = s;
-	    symv[1] = 0;
-	    var_defines( symv );
-	}
+  for( n = 0; (s = getoptval( optv, 's', n )) != 0; n++ )
+  {
+    const char *symv[2];
+    symv[0] = s;
+    symv[1] = 0;
+    var_defines( symv );
+  }
 
-	/* Initialize built-in rules */
+  /* Initialize built-in rules */
 
-	load_builtins();
+  load_builtins();
 
-	/* Parse ruleset */
+  /* Parse ruleset */
 
-	for( n = 0; (s = getoptval( optv, 'f', n )) != 0; n++ )
-	    parse_file( s );
+  for( n = 0; (s = getoptval( optv, 'f', n )) != 0; n++ )
+    parse_file( s );
 
-	if( !n )
-	    parse_file( "+" );
+  if( !n )
+    parse_file( "+" );
 
-	status = yyanyerrors();
+  status = yyanyerrors();
 
-	/* Manually touch -t targets */
+  /* Manually touch -t targets */
 
-	for( n = 0; (s = getoptval( optv, 't', n )) != 0; n++ )
-	    touchtarget( s );
+  for( n = 0; (s = getoptval( optv, 't', n )) != 0; n++ )
+    touchtarget( s );
 
-	/* If an output file is specified, set globs.cmdout to that */
+  /* If an output file is specified, set globs.cmdout to that */
 
-	if( (s = getoptval( optv, 'o', 0 )) != 0 )
-	{
-	    if( !( globs.cmdout = fopen( s, "w" ) ) )
-	    {
-            printf( "Failed to write to '%s'\n", s );
-            exit( EXITBAD );
-	    }
-	    globs.noexec++;
-	}
-
-    /* Add HAMCMDARGS
-     */
+  if( (s = getoptval( optv, 'o', 0 )) != 0 )
+  {
+    if( !( globs.cmdout = fopen( s, "w" ) ) )
     {
-        LIST*  l = L0;
-
-        for ( n = 0; n < num_targets; n++ )
-            l = list_new( l, targets[n], 0 );
-
-        var_set( "HAMCMDARGS", l, VAR_SET );
+      printf( "Failed to write to '%s'\n", s );
+      exit( EXITBAD );
     }
+    globs.noexec++;
+  }
 
-	/* Now make target */
+  /* Add HAMCMDARGS
+   */
+  {
+    LIST*  l = L0;
 
-	if( !num_targets )
-	    status |= make( 1, &all, anyhow );
-	else
-	    status |= make( num_targets, (const char**)targets, anyhow );
+    for ( n = 0; n < num_targets; n++ )
+      l = list_new( l, targets[n], 0 );
 
-	/* Widely scattered cleanup */
+    var_set( "HAMCMDARGS", l, VAR_SET );
+  }
 
-	var_done();
-	donerules();
-	donestamps();
-	donestr();
+  /* Now make target */
 
-	/* close cmdout */
+  if( !num_targets )
+    status |= make( 1, &all, anyhow );
+  else
+    status |= make( num_targets, (const char**)targets, anyhow );
 
-	if( globs.cmdout )
-	    fclose( globs.cmdout );
+  /* Widely scattered cleanup */
+
+  var_done();
+  donerules();
+  donestamps();
+  donestr();
+
+  /* close cmdout */
+
+  if( globs.cmdout )
+    fclose( globs.cmdout );
 
   {
     {
@@ -532,5 +532,5 @@ main( int argc, char **argv, char **arg_environ )
     fflush(stdout);
   }
 
-	return status ? EXITBAD : EXITOK;
+  return status ? EXITBAD : EXITOK;
 }

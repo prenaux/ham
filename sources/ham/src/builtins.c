@@ -78,6 +78,8 @@ LIST *builtin_split( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_absolutepath( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_strafter( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_strafteri( PARSE *parse, LOL *args, int *jmp );
+LIST *builtin_sort( PARSE *parse, LOL *args, int *jmp );
+LIST *builtin_sorti( PARSE *parse, LOL *args, int *jmp );
 
 int glob( const char *s, const char *c );
 
@@ -163,11 +165,14 @@ load_builtins()
       parse_make( builtin_execcmd, P0, P0, P0, C0, C0, 0 );
 
   bindrule( "Subst" )->procedure =
+      bindrule( "SUBST" )->procedure =
       parse_make( builtin_subst, P0, P0, P0, C0, C0, 0 );
   bindrule( "SubstLiteralize" )->procedure =
+      bindrule( "SUBSTLITERALIZE" )->procedure =
       parse_make( builtin_subst_literalize, P0, P0, P0, C0, C0, 0 );
 
   bindrule( "Math" )->procedure =
+      bindrule( "MATH" )->procedure =
       parse_make( builtin_math, P0, P0, P0, C0, C0, 0 );
 
   bindrule( "Match" )->procedure =
@@ -175,6 +180,7 @@ load_builtins()
       parse_make( builtin_match, P0, P0, P0, C0, C0, 0 );
 
   bindrule( "Split" )->procedure =
+      bindrule( "SPLIT" )->procedure =
       parse_make( builtin_split, P0, P0, P0, C0, C0, 0 );
 
   bindrule( "GetAbsolutePath" )->procedure =
@@ -182,9 +188,18 @@ load_builtins()
       parse_make( builtin_absolutepath, P0, P0, P0, C0, C0, 0 );
 
   bindrule( "StrAfter" )->procedure =
+      bindrule( "STRAFTER" )->procedure =
       parse_make( builtin_strafter, P0, P0, P0, C0, C0, 0 );
   bindrule( "StrAfterI" )->procedure =
+      bindrule( "STRAFTERI" )->procedure =
       parse_make( builtin_strafteri, P0, P0, P0, C0, C0, 0 );
+
+  bindrule( "Sort" )->procedure =
+      bindrule( "SORT" )->procedure =
+      parse_make( builtin_sort, P0, P0, P0, C0, C0, 0 );
+  bindrule( "SortI" )->procedure =
+      bindrule( "SORTI" )->procedure =
+      parse_make( builtin_sorti, P0, P0, P0, C0, C0, 0 );
 }
 
 /*
@@ -536,7 +551,6 @@ static void bash_done( void *closure, int status, const char* outputname )
   free(buffer);
   fclose(file);
 }
-
 
 LIST *
 builtin_bash(
@@ -946,4 +960,56 @@ builtin_strafteri(
   }
 
   return result;
+}
+
+// compare list items
+static int builtin_sort_casesensitive(const void* a, const void* b) {
+    const LIST* aa = *(const LIST**)a;
+    const LIST* bb = *(const LIST**)b;
+    return strcmp(aa->string, bb->string);
+}
+static int builtin_sort_caseinsensitive(const void* a, const void* b) {
+    const LIST* aa = *(const LIST**)a;
+    const LIST* bb = *(const LIST**)b;
+#ifdef OS_NT
+    return stricmp(aa->string, bb->string);
+#else
+    return strcasecmp(aa->string, bb->string);
+#endif
+}
+
+static LIST*
+builtin_sort_ex(
+    PARSE *parse,
+    LOL *args,
+    int *jmp,
+    int (*item_compare)(const void *, const void *))
+{
+  LIST *l = lol_get(args, 0);
+
+  // gather all the elements in an array
+  int i;
+  int llen = list_length(l);
+  LIST** listItems = (LIST**)malloc(sizeof(LIST*)*llen);
+  for (i = 0; l; l = list_next(l), ++i) {
+    listItems[i] = l;
+  }
+
+  // sort the strings
+  qsort(listItems,llen,sizeof(LIST*),item_compare);
+
+  // output the ordered items
+  LIST *output = L0;
+  for (i = 0; i < llen; ++i) {
+    output = list_new(output, listItems[i]->string, 0);
+  }
+  return output;
+}
+
+LIST *builtin_sort( PARSE *parse, LOL *args, int *jmp ) {
+  return builtin_sort_ex(parse, args, jmp, builtin_sort_casesensitive);
+}
+
+LIST *builtin_sorti( PARSE *parse, LOL *args, int *jmp ) {
+  return builtin_sort_ex(parse, args, jmp, builtin_sort_caseinsensitive);
 }
