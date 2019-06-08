@@ -986,6 +986,7 @@ builtin_sort_ex(
     int (*item_compare)(const void *, const void *))
 {
   LIST *l = lol_get(args, 0);
+  LIST *output = L0;
 
   // gather all the elements in an array
   int i;
@@ -999,7 +1000,6 @@ builtin_sort_ex(
   qsort(listItems,llen,sizeof(LIST*),item_compare);
 
   // output the ordered items
-  LIST *output = L0;
   for (i = 0; i < llen; ++i) {
     output = list_new(output, listItems[i]->string, 0);
   }
