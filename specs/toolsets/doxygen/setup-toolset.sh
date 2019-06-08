@@ -20,7 +20,7 @@ case $HAM_OS in
         fi
         ;;
     OSX*)
-        export DOXYGEN_DIR="${HAM_TOOLSET_DIR}/osx-x86/Resources/"
+        export DOXYGEN_DIR="${HAM_TOOLSET_DIR}/osx-x86/Resources"
         export PATH="${DOXYGEN_DIR}":${PATH}
         if [ ! -e "$DOXYGEN_DIR/doxygen" ]; then
             toolset_dl doxygen doxygen_osx-x86
@@ -28,6 +28,10 @@ case $HAM_OS in
                 echo "E/osx-x86 folder doesn't exist in the toolset"
                 return 1
             fi
+        fi
+        VER="`doxygen_187 --version`"
+        if [ $? != 0 ]; then
+            rm -f "$DOXYGEN_DIR/doxygen_187"
         fi
         if [ ! -e "$DOXYGEN_DIR/doxygen_187" ]; then
             ln -s "$DOXYGEN_DIR/doxygen" "$DOXYGEN_DIR/doxygen_187"
