@@ -79,7 +79,7 @@ rule shaderObjects
 #----------------------------------------------------------------------
 #     METAL
 #----------------------------------------------------------------------
-if $(OSX) = 1 {
+if $(OSX) = 1 || $(IOSMAC) = 1 {
 
   XCODE_PLATFORMS_DIR ?= /Applications/Xcode.app/Contents/Developer/Platforms/ ;
   if ! [ FExists $(XCODE_PLATFORMS_DIR) ] {
@@ -159,15 +159,15 @@ if $(OSX) = 1 {
     }
 
     local target_sdk target_name target_ccflags ;
-    if $(OSPLAT) = IOS {
-      target_sdk = $(XCODE_IOS_PLATFORM_USR_BIN_DIR) ;
-      target_name = ios ;
-      target_ccflags = -arch air64 -emit-llvm -c -ffast-math -std=ios-metal1.0 -mios-version-min=9.0 ;
-    }
-    else if $(OSX) {
+    if $(OSX) || $(IOSMAC) {
       target_sdk = $(XCODE_MACOS_PLATFORM_USR_BIN_DIR) ;
       target_name = osx ;
       target_ccflags = -arch air64 -emit-llvm -c -ffast-math -std=osx-metal1.1 -mmacosx-version-min=10.11 ;
+    }
+    else if $(OSPLAT) = IOS {
+      target_sdk = $(XCODE_IOS_PLATFORM_USR_BIN_DIR) ;
+      target_name = ios ;
+      target_ccflags = -arch air64 -emit-llvm -c -ffast-math -std=ios-metal1.0 -mios-version-min=9.0 ;
     }
     else {
       EXIT "E/Building metal libraries requires macOS." ;
