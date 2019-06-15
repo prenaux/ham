@@ -241,6 +241,7 @@
                                   '("xml" "xsd" "rng"
                                     "xslt" "xsl" "gml"
                                     "vlk" "level" "plist"
+                                    "nish"
                                    ) t) "\\'")
                    'nxml-mode))
 (setq nxml-slash-auto-complete-flag t)
@@ -701,6 +702,8 @@ BEG and END (region to sort)."
 
 ;; tab size
 (setq default-tab-width 2)
+(setq-default tab-width 2)
+
 ;; use this to change the indentation offset
 (setq c-basic-offset 2)
 ;; use tabs for indentation (t)
