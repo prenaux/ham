@@ -11,7 +11,7 @@ case $HAM_OS in
     NT*)
         toolset_check_and_dl_ver repos nt-x86 v3 || return 1
         export REPOS_DIR="${HAM_TOOLSET_DIR}/nt-x86"
-        export PATH=${HAM_TOOLSET_DIR}:${PATH}:${REPOS_DIR}/bin/:${REPOS_DIR}/git/bin/:${REPOS_DIR}/git/usr/bin/:${REPOS_DIR}/svn/bin/:${REPOS_DIR}/hg
+        export PATH=${HAM_TOOLSET_DIR}:${PATH}:${REPOS_DIR}/bin/:${REPOS_DIR}/git/bin/:${REPOS_DIR}/git/usr/bin/:${REPOS_DIR}/hg
         export OPENSSL_CONF="${REPOS_DIR}/git/ssl/openssl.cnf"
         ;;
     OSX*)
@@ -55,17 +55,5 @@ fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
 
-SVN_PATH=`where_inpath svn`
-if [ -e "$SVN_PATH" ]; then
-    VER="--- svn ---
-`svn --version | grep 'svn,'`"
-    if [ $? != 0 ]; then
-        echo "E/Can't get SVN version."
-        return 1
-    fi
-else
-    VER="--- svn ---
-W/SVN is not installed or not accessible from the PATH !"
-fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
