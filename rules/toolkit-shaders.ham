@@ -1,11 +1,8 @@
-SHADER_SUFOBJ = .air ;
-SHADER_SUFLIB = .metallib ;
-
 #----------------------------------------------------------------------
 #     COMMON
 #----------------------------------------------------------------------
 
-# /ShaderObject object : source ;
+# /ShaderObject object : source : defs ;
 #
 # Compile s a single _source_ file into _object_. The @Main and @Library
 # rules use it to compile sources.
@@ -14,43 +11,52 @@ SHADER_SUFLIB = .metallib ;
 # to make all included files dependencies of _object_.
 #
 # Calls one of the following rules depending on the suffix to do the
-# actual compilation:
+# actual compilation.
 #
 rule shaderObject
 {
+  local COMPILE_AS = $(>:S) ;
   Clean clean : $(<) ;
-  MakeLocate $(<) : $(LOCATE_TARGET) ;
   SEARCH on $(>) = $(SEARCH_SOURCE) ;
-  HDRS on $(<) = $(SEARCH_SOURCE) $(SUBDIRHDRS) $(SHADER_HDRS) ;
+  switch $(COMPILE_AS) {
+    case .metal : HDRS on $(<) = $(SHADER_HDRS) $(SHADER_METAL_HDRS) ;
+    case .cgc : HDRS on $(<) = $(SHADER_HDRS) $(SHADER_CGC1_HDRS) ;
+    case * : HDRS on $(<) = $(SHADER_HDRS) ;
+  }
   HDRRULE on $(>) = HdrRule ;
   HDRSCAN on $(>) = $(HDRPATTERN) ;
-  HDRSEARCH on $(>) =
-  $(SEARCH_SOURCE:E) $(SUBDIRHDRS) $(HDRS) ;
-
   HDRGRIST on $(>) = $(HDRGRIST) ;
+  HDRSEARCH on $(>) = $(SEARCH_SOURCE:E) $(SUBDIRHDRS) [ VarOnGet HDRS : $(<) ]  ;
 
   # propagate target specific-defines
   SHADER_DEFINES on $(<) += $(SHADER_DEFINES) ;
+  SHADER_DEFINES on $(<) += $(3) ;
 
-  local COMPILE_AS = $(>:S) ;
   switch $(COMPILE_AS) {
     case .metal : shaderMetal $(<) : $(>) ;
-    case * :      shaderUserObject $(<) : $(>) ;
+    case .cgc : shaderCgc1 $(<) : $(>) ;
+    case * : shaderUserObject $(<) : $(>) ;
   }
+
+  MakeDirForTarget $(<) : $(<:D) ;
+  DEPENDS shader_obj : $(<) ;
+  return $(<) ;
 }
 
 # Return the suffix of the specified source file
 rule FShaderTargetSuffix
 {
   switch $(<:S) {
-    case .metal : return $(SHADER_SUFOBJ) ;
+    case .metal : return .air ;
+    case .cgc : return .cgo ;
   }
   return $(<:S) ;
 }
 
-# shaderObjectSuf SOURCE
-# call the Object rule with the appropriate suffix, returns the name
-# of the target
+# /shaderObjectSuf SOURCE
+#
+# Call the Object rule with the appropriate suffix, returns the name of the
+# target.
 rule shaderObjectSuf
 {
   local suf = [ FShaderTargetSuffix $(<) ] ;
@@ -58,7 +64,6 @@ rule shaderObjectSuf
   switch $(suf) {
     case * :
       shaderObject $(d) : $(_i) ;
-      Depends shader_obj : $(d) ;
   }
   return $(d) ;
 }
@@ -74,6 +79,43 @@ rule shaderObjects
   }
 
   return $(r) ;
+}
+
+#----------------------------------------------------------------------
+#     CGC
+#----------------------------------------------------------------------
+rule shaderCgc1
+{
+  Depends $(<) : $(>) ;
+  local OUTNAME = $(<:B) ;
+  local PROFILE ;
+  if [ Match "(.*_vs)|(vs_.*)|(.*_vs_.*)" : $(OUTNAME) ] {
+    PROFILE = "hlsl_vs_3_0" ;
+  }
+  else if [ Match "(.*_ps)|(ps_.*)|(.*_ps_.*)" : $(OUTNAME) ] {
+    PROFILE = "hlsl_ps_3_0" ;
+  }
+  else {
+    EXIT "E/Can't determin the shader profile of:" $(<) ;
+  }
+
+  SHADER_PROFILE on $(<) += $(PROFILE) ;
+  SHADER_NAME on $(<) += $(OUTNAME) ;
+  SHADER_CGC1_FLAGS on $(<) += $(SHADER_CCFLAGS) $(SHADER_CGC1_FLAGS) ;
+  SHADER_CGC1_HDRS on $(<) += [ on $(<) FIncludes $(HDRS) ] ;
+  SHADER_CGC1_DEFS on $(<) += [ on $(<) FDefines $(SHADER_DEFINES) $(SHADER_CGC1_DEFINES) ] ;
+  # ECHO "... shaderCgc1:" $(>) "->" $(<) ":" $(OUTNAME) ":" $(PROFILE) ;
+}
+
+if ! $(WINDOWS) = 1 {
+  SHADER_CGC1_REMOTE_COMPILER_URL ?= "https://tools.talansoft.com" ;
+  SHADER_CGC1_FLAGS += -S $(SHADER_CGC1_REMOTE_COMPILER_URL) ;
+}
+
+actions shaderCgc1
+{
+  SRC_ABSPATH="`pwd`/$(>)"
+  $(NICGC_EXE) $(SHADER_CGC1_FLAGS) $(SHADER_CGC1_DEFS) $(SHADER_CGC1_HDRS) $(SHADER_PROFILE) $(SHADER_NAME) "${SRC_ABSPATH}" "$(<)"
 }
 
 #----------------------------------------------------------------------
@@ -106,9 +148,9 @@ if $(OSX) = 1 || $(IOSMAC) = 1 {
   rule shaderMetal
   {
     Depends $(<) : $(>) ;
-    SHADER_CCFLAGS on $(<) += $(SHADER_CCFLAGS) ;
-    SHADER_CCHDRS on $(<) = [ on $(<) FIncludes $(SHADER_HDRS) ] ;
-    SHADER_CCDEFS on $(<) = [ on $(<) FDefines $(SHADER_DEFINES) ] ;
+    SHADER_METAL_FLAGS on $(<) += $(SHADER_CCFLAGS) $(SHADER_METAL_FLAGS) ;
+    SHADER_METAL_HDRS on $(<) = [ on $(<) FIncludes $(SHADER_HDRS) $(SHADER_METAL_HDRS) ] ;
+    SHADER_METAL_DEFS on $(<) = [ on $(<) FDefines $(SHADER_DEFINES) $(SHADER_METAL_DEFINES) ] ;
   }
 
   # /shaderMetalLibraryFromObjects library : objects ;
@@ -118,11 +160,8 @@ if $(OSX) = 1 || $(IOSMAC) = 1 {
 
     # Add grist to file names
     _s = [ FGristFiles $(>) ] ;
-    _l = $(<:S=$(SHADER_SUFLIB)) ;
-    _h = $(<:S=$(SHADER_SUFLIB).h) ;
-
-    # library depends on its member objects
-    Depends shader_obj : $(_s) ;
+    _l = $(<:S=.metallib) ;
+    _h = $(<:S=.metallib.h) ;
 
     # Set LOCATE for the library and its contents.  The bound
     # value shows up as $(NEEDLIBS) on the Link actions.
@@ -134,7 +173,6 @@ if $(OSX) = 1 || $(IOSMAC) = 1 {
 
     Depends $(_l) : $(_s) ;
     Depends $(_h) : $(_l) ;
-    Depends $(_h) : $(_l) ;
     Clean clean : $(_l) ;
 
     shaderMetalArchive $(_l) : $(_s) ;
@@ -142,7 +180,7 @@ if $(OSX) = 1 || $(IOSMAC) = 1 {
 
   actions shaderMetal
   {
-    $(SHADER_METAL_SDK)/metal $(SHADER_CCFLAGS) -I"$(SHADER_HDRS)" -serialize-diagnostics "$(<).dia" "$(>)" -o "$(<)"
+    $(SHADER_METAL_SDK)/metal $(SHADER_METAL_FLAGS) $(SHADER_METAL_DEFS) $(SHADER_METAL_HDRS) -serialize-diagnostics "$(<).dia" "$(>)" -o "$(<)"
   }
 
   actions shaderMetalArchive

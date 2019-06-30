@@ -674,7 +674,6 @@ rule Cc
   Depends $(<) : $(>) ;
 
   # If the compiler's -o flag doesn't work, relocate the .o
-
   if $(RELOCATE)
   {
     CcMv $(<) : $(>) ;
