@@ -21,6 +21,7 @@ rule shaderObject
   switch $(COMPILE_AS) {
     case .metal : HDRS on $(<) = $(SHADER_HDRS) $(SHADER_METAL_HDRS) ;
     case .cgc : HDRS on $(<) = $(SHADER_HDRS) $(SHADER_CGC1_HDRS) ;
+    case .glsl : HDRS on $(<) = $(SHADER_HDRS) $(SHADER_GLSL_HDRS) ;
     case * : HDRS on $(<) = $(SHADER_HDRS) ;
   }
   HDRRULE on $(>) = HdrRule ;
@@ -35,6 +36,7 @@ rule shaderObject
   switch $(COMPILE_AS) {
     case .metal : shaderMetal $(<) : $(>) ;
     case .cgc : shaderCgc1 $(<) : $(>) ;
+    case .glsl : shaderGlsl $(<) : $(>) ;
     case * : shaderUserObject $(<) : $(>) ;
   }
 
@@ -49,6 +51,8 @@ rule FShaderTargetSuffix
   switch $(<:S) {
     case .metal : return .air ;
     case .cgc : return .cgo ;
+    case .glsl : return .nish ;
+    case * : EXIT "E/Unknown suffix for:" $(<) ;
   }
   return $(<:S) ;
 }
@@ -116,6 +120,42 @@ actions shaderCgc1
 {
   SRC_ABSPATH="`pwd`/$(>)"
   $(NICGC_EXE) $(SHADER_CGC1_FLAGS) $(SHADER_CGC1_DEFS) $(SHADER_CGC1_HDRS) $(SHADER_PROFILE) $(SHADER_NAME) "${SRC_ABSPATH}" "$(<)"
+}
+
+#----------------------------------------------------------------------
+#     GLSL
+#----------------------------------------------------------------------
+rule shaderGlsl
+{
+  Depends $(<) : $(>) ;
+  local OUTNAME = $(<:B) ;
+  local PROFILE = "default" ;
+  local TARGETS = "hlsl3,metal1,es2,gl2" ;
+  local STAGE ;
+  if [ Match "(.*_vs)|(vs_.*)|(.*_vs_.*)" : $(OUTNAME) ] {
+    STAGE = "vertex" ;
+  }
+  else if [ Match "(.*_ps)|(ps_.*)|(.*_ps_.*)" : $(OUTNAME) ] {
+    STAGE = "pixel" ;
+  }
+  else {
+    EXIT "E/Can't determin the shader profile of:" $(<) ;
+  }
+
+  SHADER_STAGE on $(<) += $(STAGE) ;
+  SHADER_PROFILE on $(<) += $(PROFILE) ;
+  SHADER_TARGETS on $(<) += $(TARGETS) ;
+  SHADER_NAME on $(<) += $(OUTNAME) ;
+  SHADER_GLSL_FLAGS on $(<) += $(SHADER_CCFLAGS) $(SHADER_GLSL_FLAGS) ;
+  SHADER_GLSL_HDRS on $(<) += [ on $(<) FIncludes $(HDRS) ] ;
+  SHADER_GLSL_DEFS on $(<) += [ on $(<) FDefines $(SHADER_DEFINES) $(SHADER_GLSL_DEFINES) ] ;
+  # ECHO "... shaderGlsl:" $(>) "->" $(<) ":" $(OUTNAME) ":" $(STAGE) ;
+}
+
+actions shaderGlsl
+{
+  SRC_ABSPATH="`pwd`/$(>)"
+  $(NICGC_EXE) @nish $(SHADER_GLSL_FLAGS) $(SHADER_GLSL_DEFS) $(SHADER_GLSL_HDRS) -x $(SHADER_STAGE) -p $(SHADER_PROFILE) -t $(SHADER_TARGETS) -n $(SHADER_NAME) "${SRC_ABSPATH}" "$(<)"
 }
 
 #----------------------------------------------------------------------

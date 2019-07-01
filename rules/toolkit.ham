@@ -198,6 +198,10 @@ TK_DIR_SHADER_CGC1_INCLUDE ?= [ FDirName $(TK_DIR) scripts ] [ FDirName $(TK_DIR
 logVar TK_DIR_SHADER_CGC1_INCLUDE ;
 MakeLocate tkdir : $(TK_DIR_SHADER_CGC1_INCLUDE) ;
 
+TK_DIR_SHADER_GLSL_INCLUDE ?= [ FDirName $(TK_DIR) scripts glsl ] ;
+logVar TK_DIR_SHADER_GLSL_INCLUDE ;
+MakeLocate tkdir : $(TK_DIR_SHADER_GLSL_INCLUDE) ;
+
 TK_DIR_LIBS ?= [ FDirName $(TK_DIR) libs $(LIBS_LOA) ] ;
 logVar TK_DIR_LIBS ;
 MakeLocate tkdir : $(TK_DIR_LIBS) ;
@@ -433,6 +437,7 @@ rule tkIncludeCopy {
 HDRS += $(TK_DIR_INCLUDE) ;
 SHADER_HDRS += $(TK_DIR_INCLUDE) ;
 SHADER_CGC1_HDRS += $(TK_DIR_SHADER_CGC1_INCLUDE) ;
+SHADER_GLSL_HDRS += $(TK_DIR_SHADER_GLSL_INCLUDE) ;
 
 Import toolkit-cpp.ham ;
 Import toolkit-shaders.ham ;
