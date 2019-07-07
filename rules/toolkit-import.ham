@@ -67,6 +67,9 @@ rule tkImport {
   # add the include folders
   HDRS += $(dirInclude) ;
   NI_HDRS += $(dirScripts) ;
+  SHADER_HDRS += $(dirInclude) ;
+  SHADER_CGC1_HDRS += [ FDirName $(dirScripts) cgc ] ;
+  SHADER_GLSL_HDRS += [ FDirName $(dirScripts) glsl ] ;
 
   if ! ( $(NO_DLL) = 1 ) {
     # import/copy the dlls
