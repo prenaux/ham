@@ -1,6 +1,13 @@
 #----------------------------------------------------------------------
 #     COMMON
 #----------------------------------------------------------------------
+SHADER_HDRS_DEPS ?= 1 ;
+if $(WINDOWS) = 1 {
+  SHADER_COMPILE ?= 1 ;
+}
+else {
+  SHADER_COMPILE ?= 0 ;
+}
 
 # /ShaderObject object : source : defs ;
 #
@@ -16,6 +23,13 @@
 rule shaderObject
 {
   local COMPILE_AS = $(>:S) ;
+  if $(SHADER_COMPILE) = 0 {
+    if ! [ FExists $(<) ] {
+      EXIT "F/Shader '$(<)' can't be found & no shader compiler." ;
+    }
+    return $(<) ;
+  }
+
   Clean clean : $(<) ;
   SEARCH on $(>) = $(SEARCH_SOURCE) ;
   switch $(COMPILE_AS) {
@@ -24,10 +38,12 @@ rule shaderObject
     case .glsl : HDRS on $(<) = $(SHADER_HDRS) $(SHADER_GLSL_HDRS) ;
     case * : HDRS on $(<) = $(SHADER_HDRS) ;
   }
-  HDRRULE on $(>) = HdrRule ;
-  HDRSCAN on $(>) = $(HDRPATTERN) ;
-  HDRGRIST on $(>) = $(HDRGRIST) ;
-  HDRSEARCH on $(>) = $(SEARCH_SOURCE:E) $(SUBDIRHDRS) [ VarOnGet HDRS : $(<) ]  ;
+  if $(SHADER_HDRS_DEPS) = 1 {
+    HDRRULE on $(>) = HdrRule ;
+    HDRSCAN on $(>) = $(HDRPATTERN) ;
+    HDRGRIST on $(>) = $(HDRGRIST) ;
+    HDRSEARCH on $(>) = $(SEARCH_SOURCE:E) $(SUBDIRHDRS) [ VarOnGet HDRS : $(<) ]  ;
+  }
 
   # propagate target specific-defines
   SHADER_DEFINES on $(<) += $(SHADER_DEFINES) ;
@@ -109,11 +125,6 @@ rule shaderCgc1
   SHADER_CGC1_HDRS on $(<) += [ on $(<) FIncludes $(HDRS) ] ;
   SHADER_CGC1_DEFS on $(<) += [ on $(<) FDefines $(SHADER_DEFINES) $(SHADER_CGC1_DEFINES) ] ;
   # ECHO "... shaderCgc1:" $(>) "->" $(<) ":" $(OUTNAME) ":" $(PROFILE) ;
-}
-
-if ! $(WINDOWS) = 1 {
-  SHADER_CGC1_REMOTE_COMPILER_URL ?= "https://tools.talansoft.com" ;
-  SHADER_CGC1_FLAGS += -S $(SHADER_CGC1_REMOTE_COMPILER_URL) ;
 }
 
 actions shaderCgc1
