@@ -190,8 +190,8 @@ If the new path's directories does not exist, create them."
        "--ignore" "\"*.min.css\""
        "--ignore" "\"_*_ModuleDef.*\""
        "--ignore" "\"_*_JNI.*\""
-       "--ignore" "\"**/_idl/*.idl.inl\""
-       "--ignore" "\"**/_idl/*.idl.xml\""
+       "--ignore" "\"*.idl.inl\""
+       "--ignore" "\"*.idl.xml\""
        "--ignore" "\"static/build/*\""
        ))
 )
