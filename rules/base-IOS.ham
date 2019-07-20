@@ -117,6 +117,9 @@ else {
 if ! [ FExists $(IPHONE_SDK_DIR) ] {
   EXIT "Can't find iPhoneSDK dir:" $(IPHONE_SDK_DIR) ;
 }
+else {
+  ECHO "I/IPHONE_SDK_DIR:" $(IPHONE_SDK_DIR) ;
+}
 
 CCFLAGS = $(CLANG_BASE_FLAGS) ;
 C++FLAGS = $(CLANG_BASE_FLAGS) ;
