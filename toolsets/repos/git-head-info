@@ -1,8 +1,7 @@
 #!/bin/bash
 HEAD_HASH=`git show --quiet HEAD --pretty=format:"%h"`
-HEAD_TIMESTAMP=`git show --quiet HEAD --pretty=format:"%ct"`
-HEAD_DATE_UTC_FILE=`date -u -r $HEAD_TIMESTAMP +"%Y%m%d_%H%M%SZ"`
-HEAD_DATE_UTC_ISO=`date -u -r $HEAD_TIMESTAMP +"%Y-%m-%dT%H:%M:%SZ"`
+HEAD_DATE_UTC_FILE=`date -u +"%Y%m%d_%H%M%SZ"`
+HEAD_DATE_UTC_ISO=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
 CURRENT_BRANCH=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
 TAG=`echo ${HEAD_DATE_UTC_FILE}_${CURRENT_BRANCH}_${HEAD_HASH}`
 
