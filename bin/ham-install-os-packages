@@ -14,7 +14,7 @@ case $HAM_OS in
         if [ $(type apt-get 2>/dev/null | wc -l) = 1 ]; then
             echo "### Installing packages required by ham on Linux (apt-get) ###"
             echo "I/Installing apt-get packages"
-            sudo apt-get -y install xsltproc p7zip-full git curl gcc g++ clang ffmpeg libcurl4-openssl-dev mesa-common-dev mesa-utils freeglut3-dev libsdl2-dev python3-pip
+            sudo apt-get -y install xsltproc p7zip-full git curl python3-pip gcc g++ clang ffmpeg libcurl4-openssl-dev mesa-common-dev mesa-utils freeglut3-dev libsdl2-dev ntpdate
         elif [ $(type pacman 2>/dev/null | wc -l) = 1 ]; then
             echo "### Installing packages required by ham on Linux (pacman) ###"
             echo "I/Installing pacman packages"
