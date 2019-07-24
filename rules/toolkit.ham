@@ -563,7 +563,7 @@ rule tkLinkImpLibs {
   if $(PKGTYPE) != library {
     local l = [ tkFindImportedLib $(>) : $(3) : $(4) ] ;
     if ! ( $(NO_DEPS) = 1 ) {
-      if ( ! ( $(NO_DLL_DEPS) = 1 ) ) || ( ! [ FExists $(l) ] ) {
+      if ( ! ( $(NO_DEPS_DLL) = 1 ) ) || ( ! [ FExists $(l) ] ) {
         DEPENDS $(<) : $(l) ;
       }
     }
@@ -582,7 +582,7 @@ rule tkDepDll {
   dir ?= $(TK_DIR_DLL) ;
   if ! ( $(NO_DEPS) = 1 ) {
     local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFDLL) ] ;
-    if ( ! ( $(NO_DLL_DEPS) = 1 ) ) || ( ! [ FExists $(l) ] ) {
+    if ( ! ( $(NO_DEPS_DLL) = 1 ) ) || ( ! [ FExists $(l) ] ) {
       DEPENDS $(<) : $(l) ;
     }
   }
