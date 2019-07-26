@@ -54,6 +54,3 @@ W/Mercurial is not installed or not accessible from the PATH !"
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
-
-export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
-$VER"

@@ -24,12 +24,23 @@ case $HAM_OS in
         export PATH=$PYTHON3_BINDIR:$PATH
         ;;
     OSX*)
-        if [ ! -e "/usr/local/bin/pip3.6" ]; then
+        if [ ! -e "/usr/local/bin/pip3" ]; then
             echo "I/pip not found, installing..."
-            sudo easy_install pip
+            brew install python3
+            errcheck $? aws "E/Can't install python 3"
+            if [ ! -e "/usr/local/bin/pip3" ]; then
+                errcheck $? aws "E/Can't install pip 3"
+            fi
         fi
         alias python=python3
-        export PYTHON3_BINDIR=$HOME/Library/Python/3.6/bin
+        if [ -e "$HOME/Library/Python/3.7/bin" ]; then
+            export PYTHON3_BINDIR=$HOME/Library/Python/3.7/bin
+        elif [ -e "$HOME/Library/Python/3.6/bin" ]; then
+            export PYTHON3_BINDIR=$HOME/Library/Python/3.6/bin
+        else
+            echo "E/Can't find a python library folder in $HOME/Library/Python/"
+            return 1
+        fi
         export PATH=$PYTHON3_BINDIR:$PATH
         ;;
     LINUX*)
@@ -41,10 +52,19 @@ case $HAM_OS in
         ;;
 esac
 
-VER="--- python_36 ------------------------
+VER="--- python3 --------------------------
 `python3 --version 2>&1`"
 if [ $? != 0 ]; then
-    echo "E/Can't get version."
+    echo "E/Can't get python3 version."
+    return 1
+fi
+export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
+$VER"
+
+VER="--- pip3 -----------------------------
+`pip3 --version 2>&1`"
+if [ $? != 0 ]; then
+    echo "E/Can't get pip3 version."
     return 1
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
