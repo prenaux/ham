@@ -241,8 +241,8 @@ toolset_import_once() {
 toolset_dl_and_extract() {
     export CWD=`pwd`
     export DIR="${HAM_HOME}/toolsets/$1"
+    export ARCH_URL="http://cdn2.talansoft.com/ftp/toolsets/$2.7z"
     # export ARCH_URL="http://localhost:8123/data/toolsets/$2.7z"
-    export ARCH_URL="http://cdn2.talansoft.com/toolsets/$2.7z"
     export DLFILENAME="_$2.7z"
     echo "=== Importing toolset '$1' from $DIR"
     mkdir -p "${DIR}"
@@ -389,8 +389,8 @@ pod_dl_and_extract() {
     export CWD=`pwd`
     export DLDIR="`nativedir "${HAM_HOME}"`/pods/_dl"
     export DLFILENAME="${POD_VER_NAME}.7z"
-    # export ARCH_URL="http://cdn2.talansoft.com/pods/${DLFILENAME}"
-    export ARCH_URL="https://tsdata2.blob.core.windows.net/pods/${DLFILENAME}"
+    export ARCH_URL="http://cdn2.talansoft.com/ftp/pods/${DLFILENAME}"
+    # export ARCH_URL="https://tsdata2.blob.core.windows.net/ftp/pods/${DLFILENAME}"
 
     if [ ! -e "${DLDIR}/${DLFILENAME}" ]; then
         mkdir -p "${DLDIR}"
