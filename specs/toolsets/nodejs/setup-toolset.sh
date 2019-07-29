@@ -21,16 +21,10 @@ case $HAM_OS in
         fi
         ;;
     OSX*)
+        toolset_check_and_dl_ver nodejs osx-x86 v10_16 || return 1
         export NODEJS_DIR="${HAM_TOOLSET_DIR}/osx-x86/"
         export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}lib/node_modules"
         export PATH=${HAM_TOOLSET_DIR}:"${NODEJS_DIR}/bin":${PATH}
-        if [ ! -e "$NODEJS_DIR" ]; then
-            toolset_dl nodejs nodejs_osx-x86
-            if [ ! -e "$NODEJS_DIR" ]; then
-                echo "E/osx-x86 folder doesn't exist in the toolset"
-                return 1
-            fi
-        fi
         export NODE_PATH=$NODEJS_DIR/lib/node_modules
         ;;
     LINUX*)
