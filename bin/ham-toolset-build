@@ -1,0 +1,40 @@
+#!/bin/bash
+. "$HAM_HOME/bin/ham-bash-lib.sh"
+TS_DL_DIR="${HAM_HOME}/toolsets/_dl"
+mkdir -p "${TS_DL_DIR}"
+help() {
+    echo ""
+    echo "ham-toolset-build NAME LOA VER"
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        # sourced...
+        return 1
+    else
+        # regular call
+        exit 1
+    fi
+}
+if [ -z "$1" ]; then
+    echo "E/Toolset NAME not specified."
+    help
+fi
+if [ -z "$2" ]; then
+    echo "E/Toolset LOA not specified."
+    help
+fi
+if [ -z "$3" ]; then
+    echo "E/Toolset VER not specified."
+    help
+fi
+TS_NAME=$1
+TS_LOA=$2
+TS_VER=$3
+TS_DIR="${HAM_HOME}/toolsets/${TS_NAME}/${TS_LOA}"
+TS_VER_NAME=${TS_NAME}_${TS_LOA}_${TS_VER}
+TS_VER_FILE_NAME=toolset_${TS_VER_NAME}
+set -ex
+cd "$TS_DIR"
+rm -f toolset_${TS_NAME}_*
+echo "${TS_VER_FILE_NAME}" > "${TS_VER_FILE_NAME}"
+# 'cd ..' because we need the LOA to be the root of the archive
+cd ..
+7z-pack-dir "${TS_DL_DIR}/${TS_VER_NAME}.7z" "${TS_LOA}"

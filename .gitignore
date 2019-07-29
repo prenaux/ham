@@ -55,6 +55,7 @@ publish
 .idea
 
 # Don't put the binary toolsets in the repo...
+toolsets/_dl/
 toolsets/*/nt-x86/
 toolsets/*/_*nt-x86*.7z
 toolsets/*/nt-x64/
