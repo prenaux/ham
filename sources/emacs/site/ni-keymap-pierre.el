@@ -134,6 +134,9 @@
  (global-set-key (kbd "C-*") 'mark-all-like-this)
  (global-set-key (kbd "M-8") 'mark-all-like-this) ;; M-8
 
+ (require 'expand-region)
+ (global-set-key (kbd "C-@") 'er/expand-region)
+
 ;;;======================================================================
 ;;; ni-autocomplete-company.el
 ;;;======================================================================
