@@ -1,0 +1,5 @@
+#!/bin/bash -ex
+set -ex
+export IDENTITY="$1"
+export APP_PATH="$2"
+codesign --deep -s "$IDENTITY" "$APP_PATH" -f

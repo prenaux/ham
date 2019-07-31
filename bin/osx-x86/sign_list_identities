@@ -1,0 +1,3 @@
+#!/bin/bash -ex
+set -ex
+security find-identity -v -p codesigning

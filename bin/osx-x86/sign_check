@@ -1,0 +1,4 @@
+#!/bin/bash -ex
+set -ex
+codesign -dv --verbose=4 "$1"
+spctl -a -t exec -vv "$1"
