@@ -498,6 +498,10 @@ tag_datez() {
 }
 
 arch_date() {
+    date +"%Y%m%d_%H%M%S"
+}
+
+arch_datez() {
     date -u +"%Y%m%d_%H%M%SZ"
 }
 
