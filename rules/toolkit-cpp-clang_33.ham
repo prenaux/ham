@@ -74,6 +74,7 @@ if $(OSX) {
   -framework Metal
   -framework MetalKit
   -framework QuartzCore
+  -framework Security
   -lstdc++ -lpthread -ldl ;
 }
 
