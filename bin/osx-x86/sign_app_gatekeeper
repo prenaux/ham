@@ -1,6 +1,0 @@
-#!/bin/bash -ex
-set -ex
-export IDENTITY="$1"
-export APP_PATH="$2"
-xattr -rc "$APP_PATH"
-time codesign --deep --force --options runtime --timestamp --sign "$IDENTITY" "$APP_PATH"

@@ -1,7 +1,0 @@
-#!/bin/bash -ex
-set -ex
-export IDENTITY="$1"
-export APP_PATH="$2"
-export PARENT_PLIST=${APP_PATH}/Contents/parent.plist
-export CHILD_PLIST=${APP_PATH}/Contents/child.plist
-codesign --deep -s "$IDENTITY" --entitlements "$PARENT_PLIST" "$APP_PATH" -f
