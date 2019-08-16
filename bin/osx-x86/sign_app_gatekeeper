@@ -2,4 +2,5 @@
 set -ex
 export IDENTITY="$1"
 export APP_PATH="$2"
-codesign --deep -s "$IDENTITY" "$APP_PATH" -f
+xattr -rc "$APP_PATH"
+time codesign --deep --force --options runtime --timestamp --sign "$IDENTITY" "$APP_PATH"
