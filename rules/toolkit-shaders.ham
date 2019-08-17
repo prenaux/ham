@@ -256,7 +256,7 @@ if $(OSX) = 1 || $(IOSMAC) = 1 {
     else if $(OSPLAT) = IOS {
       target_sdk = $(XCODE_IOS_PLATFORM_USR_BIN_DIR) ;
       target_name = ios ;
-      target_ccflags = -arch air64 -emit-llvm -c -ffast-math -std=ios-metal1.0 -mios-version-min=9.0 ;
+      target_ccflags = -arch air64 -emit-llvm -c -ffast-math -std=ios-metal1.0 -mios-version-min=10.0 ;
     }
     else {
       EXIT "E/Building metal libraries requires macOS." ;
