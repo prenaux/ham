@@ -82,7 +82,7 @@ static void (*istat)( int );
 
 static struct
 {
-	int	pid; /* on win32, a real process handle */
+	intptr_t	pid; /* on win32, a real process handle */
 	void	(*func)( void *closure, int status, const char* output );
 	void*   closure;
   int     outputFileUsed;
@@ -126,14 +126,14 @@ void exec_init()
 
 void exec_done()
 {
-  /* int i; */
-  /* for (i = 0; i < globs.jobs; ++i) { */
-  /* #ifdef USE_EXECNT */
-  /* unlink(cmdtab[i].tempFile); */
-  /* #endif */
-  /* if (cmdtab[i].outputFileUsed) */
-  /* unlink(cmdtab[i].outputFile); */
-  /* } */
+  int i;
+  for (i = 0; i < globs.jobs; ++i) {
+#ifdef USE_EXECNT
+    unlink(cmdtab[i].tempFile);
+#endif
+    if (cmdtab[i].outputFileUsed)
+      unlink(cmdtab[i].outputFile);
+  }
 }
 
 /*
