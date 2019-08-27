@@ -186,6 +186,7 @@ If the new path's directories does not exist, create them."
  (setq pt-arguments
       (list
        "--smart-case" "-e"
+       "--ignore" "\"node_modules\""
        "--ignore" "\"*.min.js\""
        "--ignore" "\"*.min.css\""
        "--ignore" "\"_*_ModuleDef.*\""
