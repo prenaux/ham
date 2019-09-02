@@ -53,7 +53,7 @@ if [ -z "$GITK_CMD" ]; then
 fi
 
 # process the arguments
-while getopts "dD:eE:fhlL:mM:pP:uU:tT:sSyk" OPT
+while getopts "hsSfFlutmy" OPT
 do
     CMD=
     case "$OPT" in
