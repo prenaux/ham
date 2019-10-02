@@ -2,23 +2,18 @@
 
 # toolset
 export HAM_TOOLSET=NODEJS
-export HAM_TOOLSET_VER=0_12
+export HAM_TOOLSET_VER=10_16
 export HAM_TOOLSET_NAME=nodejs
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/nodejs"
 
 # path setup
 case $HAM_OS in
     NT*)
+        toolset_check_and_dl_ver nodejs nt-x86 v10_16 || return 1
         export NODEJS_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}node_modules"
-        export PATH=${HAM_TOOLSET_DIR}:"${NODEJS_DIR}":${PATH}
-        if [ ! -e "$NODEJS_DIR" ]; then
-            toolset_dl nodejs nodejs_nt-x86
-            if [ ! -e "$NODEJS_DIR" ]; then
-                echo "E/nt-x86 folder doesn't exist in the toolset"
-                return 1
-            fi
-        fi
+        export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}/node_modules"
+        export PATH=${HAM_TOOLSET_DIR}:"${NODEJS_DIR}":"${NODEJS_DIR}/bin":${PATH}
+        export NODE_PATH=$NODEJS_DIR/lib/node_modules
         ;;
     OSX*)
         toolset_check_and_dl_ver nodejs osx-x86 v10_16 || return 1
