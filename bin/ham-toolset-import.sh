@@ -17,7 +17,7 @@ if [[ $ALREADY_IMPORTED = "1" ]]; then
     echo "I/Already imported '$1'."
 else
     export PATH=$PATH
-    . "$SETUP_SCRIPT"
+    HAM_DIE_SHOULD_RETURN=yes source "$SETUP_SCRIPT"
     if [ $? != 0 ]; then
         echo "E/Toolset '$1' import failed !"
         return 1

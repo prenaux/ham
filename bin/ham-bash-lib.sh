@@ -72,7 +72,11 @@ die()
 # any fatal condition.
 {
   complain "$@"
-  exit 1
+  if [ -z $HAM_DIE_SHOULD_RETURN ]; then
+    exit 1
+  else
+    return 1
+  fi
 }
 
 errcheck()

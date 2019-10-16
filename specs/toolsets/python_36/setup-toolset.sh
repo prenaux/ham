@@ -9,13 +9,17 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/python_36"
 # path setup
 case $HAM_OS in
     NT*)
-        # Assumes the python 3.6 installer has run first and installed in the
-        # default folder
+        # Look for python in default install destination...
         export PYTHON_DIR="$HOME/AppData/Local/Programs/Python/Python36"
         export PATH=${PYTHON_DIR}:${PYTHON_DIR}/DLLs:${PYTHON_DIR}/Scripts:${PATH}
         if [ ! -e "$PYTHON_DIR" ]; then
-            echo "E/Python3.6 must be installed with the standard installer in the default folder"
-            return 1
+            echo "I/Downloading Python 3.6..."
+            dl_file https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe -O"$TMP/python-3.6.8-amd64.exe"
+            errcheck $? python_36 "E/Can't download python 3"
+            echo "I/Installing Python 3.6..."
+            "$TMP/python-3.6.8-amd64.exe" -quiet
+            errcheck $? python_36 "E/Can't install python 3"
+            rm "$TMP/python-3.6.8-amd64.exe"
         fi
         alias python3=${PYTHON_DIR}/python.exe
         # I have no word for how insane the python 'path handling' works on
@@ -23,13 +27,14 @@ case $HAM_OS in
         export PYTHON3_BINDIR="$HOME/AppData/Roaming/Python/Python36/Scripts/"
         export PATH=$PYTHON3_BINDIR:$PATH
         ;;
+
     OSX*)
         if [ ! -e "/usr/local/bin/pip3" ]; then
             echo "I/pip not found, installing..."
             brew install python3
-            errcheck $? aws "E/Can't install python 3"
+            errcheck $? python_36 "E/Can't install python 3"
             if [ ! -e "/usr/local/bin/pip3" ]; then
-                errcheck $? aws "E/Can't install pip 3"
+                errcheck $? python_36 "E/Can't install pip 3"
             fi
         fi
         alias python=python3
@@ -43,9 +48,11 @@ case $HAM_OS in
         fi
         export PATH=$PYTHON3_BINDIR:$PATH
         ;;
+
     LINUX*)
         export PATH=~/.local/bin:${PATH}
         ;;
+
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
