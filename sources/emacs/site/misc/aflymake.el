@@ -365,6 +365,7 @@ are the string substitutions (see `format')."
     ("\\.p[ml]\\'" aflymake-perl-init)
     ("\\.php[345]?\\'" aflymake-php-init)
     ("\\.js\\'" aflymake-javascript-init)
+    ("\\.jsx\\'" aflymake-javascript-init)
     ("\\.css\\'" aflymake-css-init)
     ("\\.h\\'" aflymake-master-make-header-init aflymake-master-cleanup)
     ("\\.java\\'" aflymake-simple-make-java-init aflymake-simple-java-cleanup)
