@@ -377,7 +377,7 @@ exports.test = function(aParams) {
 function lint(aParams,aDone) {
   var exec = require('child_process').exec;
   exec(
-    'eslint --ext .js --ext .jsx ./sources',
+    'eslint --format unix --ext .js --ext .jsx ./sources',
     function (error, stdout, stderr) {
       console.log(NI.stringTrim(stdout));
       console.log(NI.stringTrim(stderr));
