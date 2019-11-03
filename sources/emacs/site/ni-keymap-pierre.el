@@ -116,6 +116,7 @@
  (global-set-key (key "M-'") 'golden-ratio-scroll-screen-up)
  (global-set-key (key "M-;") 'golden-ratio-scroll-screen-down)
  (global-set-key (key "M-.") 'ni-goto-matching-bracket)
+ (global-set-key (key "C-.") 'ni-goto-matching-bracket)
  (global-set-key (kbd "M->") 'ni-backward-left-bracket)
  (global-set-key (kbd "M-<") 'ni-forward-right-bracket)
 
