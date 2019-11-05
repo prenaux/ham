@@ -23,7 +23,7 @@ case $HAM_OS in
         ;;
     OSX*)
         ln -s /usr/bin/python2.7 "${HAM_HOME}/bin/osx-x86/python2"
-        if [ ! -e "/usr/local/bin/pip2.7" ]; then
+        if [ ! -e "/usr/local/bin/pip" ]; then
             echo "I/pip not found, installing..."
             sudo easy_install pip
         fi
