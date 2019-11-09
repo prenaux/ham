@@ -1,0 +1,16 @@
+Import base-GCC-rules.ham ;
+
+actions together piecemeal Archive
+{
+  $(AR) "$(<)" "$(>:T)"
+}
+
+actions Link
+{
+  $(LINK) $(LINKFLAGS) $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) -o "$(<)"
+}
+
+actions DllLink
+{
+  $(LINK) $(LINKFLAGS) $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) -shared -o "$(<)"
+}

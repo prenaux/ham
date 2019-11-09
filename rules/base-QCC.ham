@@ -1,0 +1,5 @@
+Import base-GCC.ham ;
+
+CC = qcc -V gcc_ntoarmv7le ;
+C++ = qcc -V gcc_ntoarmv7le_cpp ;
+LINK = qcc -V gcc_ntoarmv7le_cpp ;

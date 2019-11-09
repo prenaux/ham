@@ -15,7 +15,7 @@ echo == Create output unix folder
 mkdir -p bin.unix
 
 echo == Building jambase.c...
-#gcc -o bin.unix/mkjambase mkjambase.c
+gcc -o bin.unix/mkjambase mkjambase.c
 ./bin.unix/mkjambase jambase.c jambase
 
 echo == Building Ham
