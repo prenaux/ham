@@ -16,7 +16,7 @@ if $(OS) = MACOSX
       EXIT "E/Unknown OSPlat for MacOS:" $(OSPLAT) ;
     }
   }
-  MACOSX_MINVER ?= 10.11 ;
+  MACOSX_MINVER ?= 10.13 ;
 
   CLANG_BASE_FLAGS =
     -arch x86_64
