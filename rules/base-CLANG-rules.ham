@@ -21,6 +21,7 @@ if $(OS) = MACOSX
   CLANG_BASE_FLAGS =
     -arch x86_64
     -mmacosx-version-min=$(MACOSX_MINVER)
+    -isysroot $(MACOS_SDK_PATH) # System sdk path, macOS only
   ;
 
   CCFLAGS += $(CLANG_BASE_FLAGS) ;

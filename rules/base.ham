@@ -689,21 +689,23 @@ rule Cc
   CCHDRS on $(<) = [ on $(<) FIncludes $(HDRS) ] ;
   CCDEFS on $(<) = [ on $(<) FDefines $(DEFINES) ] ;
 
+  # NOTE: this only works under GENERATE_CMD_JSON flag to create command json only, on impact with other build setup
   if $(GENERATE_CMD_JSON) {
     if ! [ FExists $(GENERATE_CMD_JSON) ] {
       FEcho $(GENERATE_CMD_JSON) : "" : create nl ;
     }
-    local HEADERS = [ FIncludesDash $(HDRS) ] ;
+    local HEADERS = [ FIncludesDash [ on $(<) FGetAbsolutePath $(HDRS) ] ] ;
     local DEFINES = [ FDefinesDash $(DEFINES) ] ;
     local INPUT = [ FGetAbsolutePath [ FDirName $(SUBDIR) $(>:G=) ] ] ;
-    local OUTPUT = [ FGetAbsolutePath [ FDirName $(SUBDIR) $(<:G=) ] ] ;
-    local COMMAND = "$(C++)" -c -o "$(OUTPUT)" "$(C++FLAGS)" "$(OPTIM)" $(DEFINES) $(HEADERS) "$(INPUT)" ;
+    local OUTPUT = [ FDirName $(SUBDIR) $(<:G=) ] ;
+    local COMMAND = "$(CMD_JSON_COMPILER_PATH)$(CC)" "$(C++FLAGS)" "$(OPTIM)" $(DEFINES) $(HEADERS) -o "$(OUTPUT)" -c "$(INPUT)" ;
     local COMMAND = $(COMMAND:J=" ") ;
-    # ECHO "COMMAND:" $(COMMAND) ;
+
+    # ECHO "COMMAND:" $(PWD) ;
     FEcho $(GENERATE_CMD_JSON) : "{" : nl ;
-    FEcho $(GENERATE_CMD_JSON) : "  \"file\": \"$(INPUT)\"," ;
-    FEcho $(GENERATE_CMD_JSON) : "  \"output\": \"$(OUTPUT)\"," : nl ;
-    FEcho $(GENERATE_CMD_JSON) : "  \"command\": \"$(COMMAND)\"" : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"directory\": \"$(OBJDIR:P=)\"," : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"command\": \"$(COMMAND)\"," : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"file\": \"$(INPUT)\"" : nl ;
     FEcho $(GENERATE_CMD_JSON) : "}," : nl ;
   }
 }
@@ -729,21 +731,22 @@ rule C99
   CCHDRS on $(<) = [ on $(<) FIncludes $(HDRS) ] ;
   CCDEFS on $(<) = [ on $(<) FDefines $(DEFINES) ] ;
 
+  # NOTE: this only works under GENERATE_CMD_JSON flag to create command json only, on impact with other build setup
   if $(GENERATE_CMD_JSON) {
     if ! [ FExists $(GENERATE_CMD_JSON) ] {
       FEcho $(GENERATE_CMD_JSON) : "" : create nl ;
     }
-    local HEADERS = [ FIncludesDash $(HDRS) ] ;
+    local HEADERS = [ FIncludesDash [ on $(<) FGetAbsolutePath $(HDRS) ] ] ;
     local DEFINES = [ FDefinesDash $(DEFINES) ] ;
     local INPUT = [ FGetAbsolutePath [ FDirName $(SUBDIR) $(>:G=) ] ] ;
-    local OUTPUT = [ FGetAbsolutePath [ FDirName $(SUBDIR) $(<:G=) ] ] ;
-    local COMMAND = "$(C++)" -c -o "$(OUTPUT)" "$(C++FLAGS)" "$(OPTIM)" $(DEFINES) $(HEADERS) "$(INPUT)" ;
+    local OUTPUT = [ FDirName $(SUBDIR) $(<:G=) ] ;
+    local COMMAND = "$(CMD_JSON_COMPILER_PATH)$(CC)" "$(C++FLAGS)" "$(OPTIM)" $(DEFINES) $(HEADERS) -o "$(OUTPUT)" -c "$(INPUT)" ;
     local COMMAND = $(COMMAND:J=" ") ;
-    # ECHO "COMMAND:" $(COMMAND) ;
+    # ECHO "COMMAND:" $(PWD) ;
     FEcho $(GENERATE_CMD_JSON) : "{" : nl ;
-    FEcho $(GENERATE_CMD_JSON) : "  \"file\": \"$(INPUT)\"," ;
-    FEcho $(GENERATE_CMD_JSON) : "  \"output\": \"$(OUTPUT)\"," : nl ;
-    FEcho $(GENERATE_CMD_JSON) : "  \"command\": \"$(COMMAND)\"" : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"directory\": \"$(OBJDIR:P=)\"," : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"command\": \"$(COMMAND)\"," : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"file\": \"$(INPUT)\"" : nl ;
     FEcho $(GENERATE_CMD_JSON) : "}," : nl ;
   }
 }
@@ -769,21 +772,22 @@ rule C++
   CCHDRS on $(<) = [ on $(<) FIncludes $(HDRS) ] ;
   CCDEFS on $(<) = [ on $(<) FDefines $(DEFINES) ] ;
 
+  # NOTE: this only works under GENERATE_CMD_JSON flag to create command json only, on impact with other build setup
   if $(GENERATE_CMD_JSON) {
     if ! [ FExists $(GENERATE_CMD_JSON) ] {
       FEcho $(GENERATE_CMD_JSON) : "" : create nl ;
     }
-    local HEADERS = [ FIncludesDash $(HDRS) ] ;
+    local HEADERS = [ FIncludesDash [ on $(<) FGetAbsolutePath $(HDRS) ] ] ;
     local DEFINES = [ FDefinesDash $(DEFINES) ] ;
     local INPUT = [ FGetAbsolutePath [ FDirName $(SUBDIR) $(>:G=) ] ] ;
-    local OUTPUT = [ FGetAbsolutePath [ FDirName $(SUBDIR) $(<:G=) ] ] ;
-    local COMMAND = "$(C++)" -c -o "$(OUTPUT)" "$(C++FLAGS)" "$(OPTIM)" $(DEFINES) $(HEADERS) "$(INPUT)" ;
+    local OUTPUT = [ FDirName $(SUBDIR) $(<:G=) ] ;
+    local COMMAND = "$(CMD_JSON_COMPILER_PATH)$(C++)" "$(C++FLAGS)" "$(OPTIM)" $(DEFINES) $(HEADERS) -o "$(OUTPUT)" -c "$(INPUT)" ;
     local COMMAND = $(COMMAND:J=" ") ;
-    # ECHO "COMMAND:" $(COMMAND) ;
+    # ECHO "COMMAND:" $(PWD) ;
     FEcho $(GENERATE_CMD_JSON) : "{" : nl ;
-    FEcho $(GENERATE_CMD_JSON) : "  \"file\": \"$(INPUT)\"," ;
-    FEcho $(GENERATE_CMD_JSON) : "  \"output\": \"$(OUTPUT)\"," : nl ;
-    FEcho $(GENERATE_CMD_JSON) : "  \"command\": \"$(COMMAND)\"" : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"directory\": \"$(OBJDIR:P=)\"," : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"command\": \"$(COMMAND)\"," : nl ;
+    FEcho $(GENERATE_CMD_JSON) : "  \"file\": \"$(INPUT)\"" : nl ;
     FEcho $(GENERATE_CMD_JSON) : "}," : nl ;
   }
 }

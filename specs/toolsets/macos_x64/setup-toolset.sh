@@ -7,6 +7,8 @@ if [ $? != 0 ]; then return 1; fi
 
 case $HAM_OS in
     OSX*)
+        # Added system sdk path using the xcode command line tool..
+        export MACOS_SDK_PATH=$(xcrun --show-sdk-path)
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
@@ -22,6 +24,10 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}"
 
 export OSPLAT=X64
 export BUILD_BIN_LOA=osx-x64
+
+# finding correct clang compiler dir
+local dir=$(clang --version | grep InstalledDir)
+export CMD_JSON_COMPILER_PATH=${dir#*' '}/
 
 VER="--- macos_x64 -----------------------
 `clang --version`"
