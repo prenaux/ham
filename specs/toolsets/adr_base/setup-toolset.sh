@@ -25,8 +25,8 @@ case $HAM_OS in
     OSX)
         export ADR_ROOT_DIR="${HAM_TOOLSET_DIR}/osx-x86"
         export ADR_NDK_PREBUILT=darwin-x86_64
-        export ADR_NDK_VERSION=r10d
-        export GCC_VER=4.8
+        export ADR_NDK_VERSION=r12b # can't find r10d on google website now.. so we use the same one as windows
+        export GCC_VER=4.9
         chmod +x "${HAM_TOOLSET_DIR}/adr-"*
         ;;
     *)
@@ -127,7 +127,8 @@ export GCC_EXE_BASE=${GCC_BASE}-
 export GCC_DIR="${ADR_DIR_NDK}/toolchains/${GCC_BASE_DIR}-${GCC_VER}/prebuilt/$ADR_NDK_PREBUILT"
 export ADR_LIBGCC_PATH="${GCC_DIR}/lib/gcc/${GCC_BASE_DIR}/${GCC_VER}/libgcc.a"
 
-export PATH="${HAM_TOOLSET_DIR}":"${ADR_DIR_BASE}/scripts":"${GCC_DIR}/bin":"${ADR_DIR_BASE}/sdk/tools":"${ADR_DIR_BASE}/sdk/platform-tools":${PATH}
+# macOS has a ld command by default in the path, we need to add our path after the origin one, so it can be found first
+export PATH=${PATH}:"${HAM_TOOLSET_DIR}":"${ADR_DIR_BASE}/scripts":"${GCC_DIR}/bin":"${ADR_DIR_BASE}/sdk/tools":"${ADR_DIR_BASE}/sdk/platform-tools"
 
 VER="--- android ------------------------
 cpu: $ADR_CPU_PROFILE, $ADR_CPU_ABI
@@ -152,7 +153,9 @@ export ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT="${ADR_LLVM_TOOLCHAIN_ROOT}/prebuilt/$AD
 export ADR_LLVM_TOOLCHAIN_PREFIX="${ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT}/bin/"
 export PATH="${ADR_LLVM_TOOLCHAIN_PREFIX}":${PATH}
 
-export GRADLE_USER_HOME="${ADR_DIR_BASE}/gradle"
+# other IDE like IJ can't find this path cause it was in our toolset.. so is better to leave it as default
+# or we need to found a way to set it in the IDE
+# export GRADLE_USER_HOME="${ADR_DIR_BASE}/gradle"
 export ANDROID_HOME=${ADR_SDK_BASE_DIR}
 
 VER="$VER
