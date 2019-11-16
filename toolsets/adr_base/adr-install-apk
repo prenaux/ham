@@ -2,6 +2,10 @@
 . ham-bash-lib.sh
 PACKAGE_CLASS=${2}
 APK_PATH=${1}
+if [ -z "${APK_PATH}" -o -z "${PACKAGE_CLASS}" ]; then
+    echo "E/Syntax: adr-install-apk APK_PATH PACKAGE_CLASS"
+    exit 1
+fi
 if [ ! -e "${APK_PATH}" ]; then
     echo "E/Can't find apk: '${APK_PATH}' !"
     exit 1
