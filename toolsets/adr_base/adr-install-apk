@@ -27,7 +27,7 @@ else
     echo "'${PACKAGE_CLASS}' is already installed."
 fi
 
-if [ "${APK_MD5}" == "${APK_PREV_MD5}" ]; then
+if [ ! -z "${APK_PREV_MD5}" -a "${APK_MD5}" == "${APK_PREV_MD5}" ]; then
     echo "'${APK_NAME}' is up-to-date."
 else
     echo "'${APK_NAME}' is not up-to-date."

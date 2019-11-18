@@ -25,6 +25,7 @@ $(PICFLAGS)
 -Wno-uninitialized
 -Wno-address
 -Werror=return-stack-address
+-Wno-unknown-attributes
 ;
 ANDROID_CC_ARGS +=
   $(ADR_CC_ARGS)

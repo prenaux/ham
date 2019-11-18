@@ -8,42 +8,6 @@ if [ $? != 0 ]; then return 1; fi
 toolset_import ant
 if [ $? != 0 ]; then return 1; fi
 
-# toolset
-export HAM_TOOLSET=ANDROID
-export HAM_TOOLSET_VER=17
-export HAM_TOOLSET_NAME=adr_${ADR_VERSION}_${ADR_CPU_TYPE}
-export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/adr_base"
-
-# adr setup
-case $HAM_OS in
-    NT)
-        export ADR_ROOT_DIR="${HAM_TOOLSET_DIR}/nt-x86"
-        export ADR_NDK_PREBUILT=windows
-        export ADR_NDK_VERSION=r12b
-        export GCC_VER=4.9
-        ;;
-    OSX)
-        export ADR_ROOT_DIR="${HAM_TOOLSET_DIR}/osx-x86"
-        export ADR_NDK_PREBUILT=darwin-x86_64
-        export ADR_NDK_VERSION=r12b # can't find r10d on google website now.. so we use the same one as windows
-        export GCC_VER=4.9
-        chmod +x "${HAM_TOOLSET_DIR}/adr-"*
-        ;;
-    *)
-        echo "E/Toolset: Unsupported host OS"
-        return 1
-        ;;
-esac
-
-# dl if missing
-if [ ! -e "$ADR_ROOT_DIR"  ]; then
-    toolset_dl adr_base adr_base_nt-x86
-    if [ ! -e "$ADR_ROOT_DIR" ]; then
-        echo "adr_base nt-x86 folder doesn't exist in the toolset"
-        return 1
-    fi
-fi
-
 # Supported Android Platforms
 # 42: Android 4.2, 4.2.2    17    JELLY_BEAN_MR1
 # 22: Android 2.2.x          8    FROYO
@@ -68,6 +32,73 @@ case $ADR_VERSION in
     *)
         echo "E/Android toolset: Unsupported version: '${ADR_VERSION}' !"
         return 1;
+esac
+
+# toolset
+export HAM_TOOLSET=ANDROID
+export HAM_TOOLSET_VER=17
+export HAM_TOOLSET_NAME=adr_${ADR_VERSION}_${ADR_CPU_TYPE}
+export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/adr_base"
+
+# adr setup
+case $HAM_OS in
+    NT)
+        export ADR_NDK_PREBUILT=windows
+        export ADR_DIR_NDK="${HAM_TOOLSET_DIR}/nt-x86/ndk_r12b"
+        export ADR_DIR_SDK="${HAM_TOOLSET_DIR}/nt-x86/sdk"
+        export GCC_VER=4.9
+        # dl if missing
+        if [ ! -e "$ADR_DIR_SDK" -o ! -e "$ADR_DIR_NDK" ]; then
+            toolset_dl adr_base adr_base_nt-x86
+            if [ ! -e "$ADR_DIR_SDK" -o ! -e "$ADR_DIR_NDK" ]; then
+                echo "adr_base nt-x86 folder doesn't exist in the toolset"
+                return 1
+            fi
+        fi
+        ;;
+    OSX)
+        export ADR_NDK_PREBUILT=darwin-x86_64
+        export ADR_NDK_VERSION=r12b
+        export GCC_VER=4.9
+        export ADR_DIR_SDK="/usr/local/share/android-sdk"
+        chmod +x "${HAM_TOOLSET_DIR}/adr-"*
+
+        # Test the SDK
+        if [ ! -d "$ADR_DIR_SDK" -o ! -d "${ADR_DIR_SDK}/platforms/${ADR_SDK_PLATFORM}" ]; then
+            echo "I/Can't find android sdk, installing with brew..."
+            brew cask install android-sdk android-platform-tools
+            echo "I/Making sure the Android SDK isn't quarantined..."
+            sudo xattr -r -d com.apple.quarantine /usr/local/Caskroom/android-sdk/
+            sudo xattr -r -d com.apple.quarantine /usr/local/Caskroom/android-platform-tools/
+            echo "I/Downloading platform ${ADR_SDK_PLATFORM}..."
+            touch ~/.android/repositories.cfg
+            sdkmanager --update
+            sdkmanager "platform-tools" "platforms;${ADR_SDK_PLATFORM}"
+            echo "I/Android SDK and requirements should now be installed."
+        fi
+        if [ ! -d "$ADR_DIR_SDK" -o ! -d "${ADR_DIR_SDK}/platforms/${ADR_SDK_PLATFORM}" ]; then
+            echo "adr_base osx can't install the android sdk & ndk & platform"
+            return 1
+        fi
+
+        # Test the NDK
+        export ADR_DIR_NDK="${HAM_TOOLSET_DIR}/osx-x64/android-ndk-r12b"
+        if [ ! -d "$ADR_DIR_NDK" ]; then
+            # Download the toolset - it contains the NDK r12b
+            toolset_check_and_dl_ver adr_base osx-x64 v1 || return 1
+            # Init the toolset
+            echo "I/Making sure the Android NDK isn't quarantined..."
+            sudo xattr -r -d com.apple.quarantine "$ADR_DIR_NDK"
+            if [ ! -d "$ADR_DIR_NDK" ]; then
+                echo "adr_base osx can't find the android ndk"
+                return 1
+            fi
+        fi
+        ;;
+    *)
+        echo "E/Toolset: Unsupported host OS"
+        return 1
+        ;;
 esac
 
 case $ADR_CPU_TYPE in
@@ -96,14 +127,9 @@ case $ADR_CPU_TYPE in
 esac
 
 export ADR_GCC_OPT=-O2
-
-export ADR_DIR_BASE="${ADR_ROOT_DIR}"
-export ADR_DIR_NDK="${ADR_ROOT_DIR}/ndk_${ADR_NDK_VERSION}"
 export ADR_DIR_NDK_USR="${ADR_DIR_NDK}/platforms/$ADR_NDK_PLATFORM/arch-${ADR_CPU_TYPE}/usr"
 
-export ADR_SDK_BASE_DIR="${ADR_DIR_BASE}/sdk"
-
-export ADR_SDK_PLATFORM_DIR="${ADR_DIR_BASE}/sdk/platforms/${ADR_SDK_PLATFORM}"
+export ADR_SDK_PLATFORM_DIR="${ADR_DIR_SDK}/platforms/${ADR_SDK_PLATFORM}"
 if [ ! -e "$ADR_SDK_PLATFORM_DIR"  ]; then
     echo "E/Android toolset: can't find SDK platform:" ${ADR_SDK_PLATFORM_DIR}
     return 1
@@ -128,7 +154,7 @@ export GCC_DIR="${ADR_DIR_NDK}/toolchains/${GCC_BASE_DIR}-${GCC_VER}/prebuilt/$A
 export ADR_LIBGCC_PATH="${GCC_DIR}/lib/gcc/${GCC_BASE_DIR}/${GCC_VER}/libgcc.a"
 
 # macOS has a ld command by default in the path, we need to add our path after the origin one, so it can be found first
-export PATH=${PATH}:"${HAM_TOOLSET_DIR}":"${ADR_DIR_BASE}/scripts":"${GCC_DIR}/bin":"${ADR_DIR_BASE}/sdk/tools":"${ADR_DIR_BASE}/sdk/platform-tools"
+export PATH=${PATH}:"${HAM_TOOLSET_DIR}":"${ADR_DIR_BASE}/scripts":"${GCC_DIR}/bin":"${ADR_DIR_SDK}/tools":"${ADR_DIR_SDK}/platform-tools"
 
 VER="--- android ------------------------
 cpu: $ADR_CPU_PROFILE, $ADR_CPU_ABI
@@ -153,10 +179,7 @@ export ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT="${ADR_LLVM_TOOLCHAIN_ROOT}/prebuilt/$AD
 export ADR_LLVM_TOOLCHAIN_PREFIX="${ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT}/bin/"
 export PATH="${ADR_LLVM_TOOLCHAIN_PREFIX}":${PATH}
 
-# other IDE like IJ can't find this path cause it was in our toolset.. so is better to leave it as default
-# or we need to found a way to set it in the IDE
-# export GRADLE_USER_HOME="${ADR_DIR_BASE}/gradle"
-export ANDROID_HOME=${ADR_SDK_BASE_DIR}
+export ANDROID_HOME=${ADR_DIR_SDK}
 
 VER="$VER
 --- adr-clang ------------------
