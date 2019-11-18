@@ -244,13 +244,20 @@ toolset_import_once() {
 
 toolset_dl_and_extract() {
     export CWD=`pwd`
+    export DL_DIR="${HAM_HOME}/toolsets/_dl"
     export DIR="${HAM_HOME}/toolsets/$1"
-    export ARCH_URL="http://cdn2.talansoft.com/ftp/toolsets/$2.7z"
+    export ARCH_URL="https://cdn2.talansoft.com/ftp/toolsets/$2.7z"
     # export ARCH_URL="http://localhost:8123/data/toolsets/$2.7z"
     export DLFILENAME="_$2.7z"
     echo "=== Importing toolset '$1' from $DIR"
     mkdir -p "${DIR}"
     pushd "${DIR}" > /dev/null
+
+    if [ -e "$DL_DIR/$2.7z" ]; then
+        echo "I/Copying archive found at: $DL_DIR/$2.7z"
+        cp "$DL_DIR/$2.7z" "./$DLFILENAME"
+    fi
+
     if [ $? != 0 ]; then
         echo "E/Can't cd to the toolset's directory '$DIR'."
         return 1;
