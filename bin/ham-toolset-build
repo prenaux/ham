@@ -31,10 +31,17 @@ TS_VER=$3
 TS_DIR="${HAM_HOME}/toolsets/${TS_NAME}/${TS_LOA}"
 TS_VER_NAME=${TS_NAME}_${TS_LOA}_${TS_VER}
 TS_VER_FILE_NAME=toolset_${TS_VER_NAME}
+
+if [ ! -d "$TS_DIR" ]; then
+    echo "Can't find toolset folder: ${TS_DIR}"
+    print_help
+fi
+
 set -ex
 cd "$TS_DIR"
 rm -f toolset_${TS_NAME}_*
 echo "${TS_VER_FILE_NAME}" > "${TS_VER_FILE_NAME}"
+
 # 'cd ..' because we need the LOA to be the root of the archive
 cd ..
 7z-pack-dir "${TS_DL_DIR}/${TS_VER_NAME}.7z" "${TS_LOA}"
