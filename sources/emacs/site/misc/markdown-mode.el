@@ -9467,39 +9467,43 @@ spaces, or alternatively a TAB should be used as the separator."
   ;; Defun movement
   (setq-local beginning-of-defun-function #'markdown-beginning-of-defun)
   (setq-local end-of-defun-function #'markdown-end-of-defun)
+
+  ;; Pierre: Commented all of this because I really just want a consistent
+  ;; paragraph behavior between all text-like modes.
   ;; Paragraph filling
-  (setq-local fill-paragraph-function #'markdown-fill-paragraph)
-  (setq-local paragraph-start
-              ;; Should match start of lines that start or separate paragraphs
-              (mapconcat #'identity
-                         '(
-                           "\f" ; starts with a literal line-feed
-                           "[ \t\f]*$" ; space-only line
-                           "\\(?:[ \t]*>\\)+[ \t\f]*$"; empty line in blockquote
-                           "[ \t]*[*+-][ \t]+" ; unordered list item
-                           "[ \t]*\\(?:[0-9]+\\|#\\)\\.[ \t]+" ; ordered list item
-                           "[ \t]*\\[\\S-*\\]:[ \t]+" ; link ref def
-                           "[ \t]*:[ \t]+" ; definition
-                           "^|" ; table or Pandoc line block
-                           )
-                         "\\|"))
-  (setq-local paragraph-separate
-              ;; Should match lines that separate paragraphs without being
-              ;; part of any paragraph:
-              (mapconcat #'identity
-                         '("[ \t\f]*$" ; space-only line
-                           "\\(?:[ \t]*>\\)+[ \t\f]*$"; empty line in blockquote
-                           ;; The following is not ideal, but the Fill customization
-                           ;; options really only handle paragraph-starting prefixes,
-                           ;; not paragraph-ending suffixes:
-                           ".*  $" ; line ending in two spaces
-                           "^#+"
-                           "[ \t]*\\[\\^\\S-*\\]:[ \t]*$") ; just the start of a footnote def
-                         "\\|"))
-  (setq-local adaptive-fill-first-line-regexp "\\`[ \t]*[A-Z]?>[ \t]*?\\'")
-  (setq-local adaptive-fill-regexp "\\s-*")
-  (setq-local adaptive-fill-function #'markdown-adaptive-fill-function)
-  (setq-local fill-forward-paragraph-function #'markdown-fill-forward-paragraph)
+  ;; (setq-local fill-paragraph-function #'markdown-fill-paragraph)
+  ;; (setq-local paragraph-start
+              ;; ;; Should match start of lines that start or separate paragraphs
+              ;; (mapconcat #'identity
+                         ;; '(
+                           ;; "\f" ; starts with a literal line-feed
+                           ;; "[ \t\f]*$" ; space-only line
+                           ;; "\\(?:[ \t]*>\\)+[ \t\f]*$"; empty line in blockquote
+                           ;; "[ \t]*[*+-][ \t]+" ; unordered list item
+                           ;; "[ \t]*\\(?:[0-9]+\\|#\\)\\.[ \t]+" ; ordered list item
+                           ;; "[ \t]*\\[\\S-*\\]:[ \t]+" ; link ref def
+                           ;; "[ \t]*:[ \t]+" ; definition
+                           ;; "^|" ; table or Pandoc line block
+                           ;; )
+                         ;; "\\|"))
+  ;; (setq-local paragraph-separate
+              ;; ;; Should match lines that separate paragraphs without being
+              ;; ;; part of any paragraph:
+              ;; (mapconcat #'identity
+                         ;; '("[ \t\f]*$" ; space-only line
+                           ;; "\\(?:[ \t]*>\\)+[ \t\f]*$"; empty line in blockquote
+                           ;; ;; The following is not ideal, but the Fill customization
+                           ;; ;; options really only handle paragraph-starting prefixes,
+                           ;; ;; not paragraph-ending suffixes:
+                           ;; ".*  $" ; line ending in two spaces
+                           ;; "^#+"
+                           ;; "[ \t]*\\[\\^\\S-*\\]:[ \t]*$") ; just the start of a footnote def
+                         ;; "\\|"))
+  ;; (setq-local adaptive-fill-first-line-regexp "\\`[ \t]*[A-Z]?>[ \t]*?\\'")
+  ;; (setq-local adaptive-fill-regexp "\\s-*")
+  ;; (setq-local adaptive-fill-function #'markdown-adaptive-fill-function)
+  ;; (setq-local fill-forward-paragraph-function #'markdown-fill-forward-paragraph)
+
   ;; Outline mode
   (setq-local outline-regexp markdown-regex-header)
   (setq-local outline-level #'markdown-outline-level)
