@@ -7,7 +7,9 @@ TAG=`echo ${HEAD_DATE_UTC_FILE}_${CURRENT_BRANCH}_${HEAD_HASH}`
 
 # see: https://git-scm.com/docs/pretty-formats
 if [ "$1" == "json" ]; then
-    TZ=UTC git show --date=iso-local --quiet HEAD --pretty=format:"{\"hash\":\"${TAG}\", \"hash\":\"%h\", \"author\":\"%cn\", \"commit date\":\"${HEAD_DATE_UTC_ISO}\", \"commit subject\":\"%s\", \"branch\":\"${CURRENT_BRANCH}\"}"
+    TZ=UTC git show --date=iso --quiet HEAD --pretty=format:"{\"hash\":\"${TAG}\", \"hash\":\"%h\", \"author\":\"%cn\", \"commit date\":\"${HEAD_DATE_UTC_ISO}\", \"commit subject\": \"%s\", \"branch\":\"${CURRENT_BRANCH}\"}"
+elif [ "$1" == "hash" ]; then
+    echo ${TAG}
 else
-    TZ=UTC git show --date=iso-local --quiet HEAD --pretty=format:"- tag: ${TAG}%n- hash: %h%n- author: \"%cn\"%n- commitDate: \"${HEAD_DATE_UTC_ISO}\"%n- commitSubject:\"%s\"%n- branch: ${CURRENT_BRANCH}%n"
+    TZ=UTC git show --date=iso --quiet HEAD --pretty=format:"- tag: ${TAG}%n- hash: %h%n- author: \"%cn\"%n- commitDate: \"${HEAD_DATE_UTC_ISO}\"%n- commitSubject: \"%s\"%n- branch: ${CURRENT_BRANCH}%n"
 fi
