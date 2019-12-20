@@ -379,6 +379,7 @@ function lint(aParams,aDone) {
   exec(
     'eslint --format unix --ext .js --ext .jsx ./sources',
     function (error, stdout, stderr) {
+      console.log("# lint");
       console.log(NI.stringTrim(stdout));
       console.log(NI.stringTrim(stderr));
       if (error !== null) {
