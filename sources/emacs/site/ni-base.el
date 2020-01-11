@@ -375,3 +375,22 @@ The list of brackets to jump to is defined by `ni-left-brackets' and `ni-right-b
      ((looking-back (regexp-opt ni-right-brackets) (max (- (point) 1) 1))
       (backward-sexp))
      (t (backward-up-list 1 'ESCAPE-STRINGS 'NO-SYNTAX-CROSSING)))))
+
+;;;======================================================================
+;;; Dark mode
+;;;======================================================================
+(defun ni-shell-command-to-string-no-stderr (aCommand)
+  (with-output-to-string
+    (with-current-buffer
+        standard-output
+      (process-file shell-file-name nil '(t nil)  nil shell-command-switch aCommand))))
+
+;; Usage:
+;;   (ni-check-dark-mode
+;;    (lambda () (message "Is Dark mode"))
+;;    (lambda () (message "Is Light mode")))
+(defun ni-check-dark-mode (aDarkMode aLightMode)
+  (if (and (string-match "darwin" (prin1-to-string system-type))
+           (string= (ni-shell-command-to-string-no-stderr "printf %s \"$( osascript -e \'tell application \"System Events\" to tell appearance preferences to return dark mode\' )\"") "true"))
+      (if aDarkMode (funcall aDarkMode))
+    (if aLightMode (funcall aLightMode))))

@@ -67,12 +67,26 @@
 ;;; Disable all the auto-indent, eletric mode and other BS that drives me nuts
 ;;;======================================================================
 (NotBatchMode
+ (setq max-lisp-eval-depth 1000000)
+ (setq max-specpdl-size 20000)
+ (setq tab-width 2)
+ (setq default-tab-width 2)
  (setq c-electric-pound-behavior nil)
  (setq css-electric-keys nil)
  (setq minibuffer-electric-default-mode nil)
  (setq xml-lite-electric-slash nil)
  ;; Ohhh yes, don't beep you F***... errr mmm...
  (setq ring-bell-function #'ignore)
+
+ ;; Turn off the "hover" tooltip when hovering the modeline, because the
+ ;; tooltip box stays even after switching app on macOS
+ (setq show-help-function nil)
+
+ (setq org-startup-folded nil)
+
+ (when (fboundp 'electric-indent-mode)
+   (electric-indent-mode t))
+ (setq-default electric-indent-inhibit t)
 )
 
 ;;;======================================================================
@@ -511,3 +525,29 @@ If the new path's directories does not exist, create them."
 ;;;======================================================================
 (NotBatchMode
  (require 'ni-keymap-pierre))
+
+;;;======================================================================
+;;; Dark mode
+;;;======================================================================
+(set '--dark-mode-state "initial")
+(defun ni-dark-mode-update-theme ()
+  (interactive)
+  (require 'ni-theme-solarized)
+  (ni-check-dark-mode
+   (lambda ()
+     (if (not (string= --dark-mode-state "dark"))
+         (progn
+           (set '--dark-mode-state "dark")
+           (load-theme 'solarized-dark t)
+           (set-cursor-color "#cc0000")
+           (message "Changed to dark mode"))
+       (message "Is already dark mode")))
+   (lambda ()
+     (if (not (string= --dark-mode-state "light"))
+         (progn
+           (set '--dark-mode-state "light")
+           (load-theme 'solarized-light t)
+           (set-cursor-color "#cc0000")
+           (message "Changed to light mode"))
+       (message "Is already light mode")))
+   ))
