@@ -1,0 +1,72 @@
+#!/bin/bash
+
+function usage {
+    SCRIPT_NAME=`basename "$0"`
+    echo "usage: $SCRIPT_NAME -u \"slack url\" -m \"message body\" (options)"
+    echo "	-u    The slack hook url to post to"
+    echo "	-m    The message body"
+    echo "	-t    (Optional) The title of the message: default is 'post-to-slack'"
+    echo "	-c    (Optional) The channel you are posting to: default is 'dev'"
+    echo "	-i    (Optional) The icon of the message: default is 'hamster'"
+    echo "	-l    (Optional) The color of the message: good, warning, danger or #hexcolor"
+    echo "example:"
+    echo "  $SCRIPT_NAME -u \"<slack hook url>\" -m \"this a successful message\" -t \"this is a title\" -c \"channel\" -i \"heavy_check_mark\" -l \"good\""
+    echo "  $SCRIPT_NAME -u \"<slack hook url>\" -m \"this an error message\" -t \"this is a title\" -c \"channel\" -i \"x\" -l \"danger\""
+    exit 1
+}
+
+CHAN_NAME="dev"
+MSG_TITLE="post-to-slack"
+MSG_ICON="hamster"
+MSG_COLOR=""
+while getopts ":t:m:c:u:i:l:h" opt; do
+  case ${opt} in
+    u) SLACK_URL="$OPTARG" ;;
+    m) MSG_BODY="$OPTARG" ;;
+    t) MSG_TITLE="$OPTARG" ;;
+    c) CHAN_NAME="$OPTARG" ;;
+    i) MSG_ICON="$OPTARG" ;;
+    l) MSG_COLOR="$OPTARG" ;;
+    h) usage ;;
+    \?) echo "Invalid option -$OPTARG" >&2 ;;
+  esac
+done
+
+if [[ ! "${SLACK_URL}" ]]; then
+    echo "E/No slack url specified."
+    usage
+fi
+if [[ ! "${MSG_BODY}" ]]; then
+    echo "E/No message specified."
+    usage
+fi
+
+# Make sure we dont have " in the messages which breaks our json request, we
+# just replace them with '
+MSG_BODY=${MSG_BODY//\"/\'}
+MSG_TITLE=${MSG_TITLE//\"/\'}
+
+read -d '' payLoad << EOF
+{
+        "channel": "#${CHAN_NAME}",
+        "username": "$(hostname)",
+        "icon_emoji": ":${MSG_ICON}:",
+        "attachments": [
+            {
+                "fallback": "${MSG_TITLE}",
+                "color": "${MSG_COLOR}",
+                "title": "${MSG_TITLE}",
+                "fields": [{
+                    "value": "${MSG_BODY}",
+                    "short": false
+                }]
+            }
+        ]
+    }
+EOF
+
+curl --write-out %{http_code} \
+     -X POST \
+     -H 'Content-type: application/json' \
+     --data "${payLoad}" ${SLACK_URL}
+echo ""
