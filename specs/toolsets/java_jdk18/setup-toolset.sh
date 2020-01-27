@@ -20,16 +20,17 @@ case $HAM_OS in
         fi
         ;;
     OSX)
-        export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+        export JAVA_HOME="${HAM_TOOLSET_DIR}/osx-x64/"
         if [ ! -e "$JAVA_HOME/bin/java" -o ! -e "$JAVA_HOME/bin/javac" ]; then
-            brew cask install adoptopenjdk/openjdk/adoptopenjdk8
-            export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+            toolset_check_and_dl_ver java_jdk18 osx-x64 v1 || return 1
+            echo "I/Making sure the JDK isn't quarantined..."
+            sudo xattr -r -d com.apple.quarantine "${JAVA_HOME}"
             if [ ! -e "$JAVA_HOME/bin/java" -o ! -e "$JAVA_HOME/bin/javac" ]; then
                 echo "E/osx-x64 can't install Java 1.8"
                 return 1
             fi
         fi
-        export PATH="${JAVA_HOME}/bin":${PATH}
+        export PATH="${JAVA_HOME}/bin":"${JAVA_HOME}/jre/bin":${PATH}
         ;;
     LINUX)
         export JAVA_HOME="${HAM_TOOLSET_DIR}/${HAM_BIN_LOA}/"
