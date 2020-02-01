@@ -18,6 +18,7 @@
 (require 'ni-file-cache)
 (require 'ni-ham)
 (require 'ni-flymake)
+(require 'ni-gdb)
 (require 'ham-flymake)
 (require 'go-mode)
 
