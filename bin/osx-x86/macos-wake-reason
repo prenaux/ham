@@ -1,0 +1,3 @@
+#!/bin/bash -ex
+START_DATE=`date -v-5d +"%Y-%m-%d"`
+log show --start $START_DATE --style syslog | fgrep "Wake reason"

@@ -1,0 +1,2 @@
+#!/bin/bash -ex
+pmset -g assertions | egrep '(PreventUserIdleSystemSleep|PreventUserIdleDisplaySleep)'
