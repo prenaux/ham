@@ -56,7 +56,7 @@ if [ "$1" == "-x" ]; then
     CONCURRENT=1
     shift
 fi
-if [ -z $CONCURRENT ]; then
+if [ -z "$CONCURRENT" ]; then
     echo "I/Running sequentially"
 else
     echo "I/Running concurrently"
@@ -67,7 +67,7 @@ for ARG in $REPOS_CWD; do
     echo "== Repo '$ARG'"
     cd "$ARG"
     if [ ! -z "$1" ]; then
-        if [ -z $CONCURRENT ]; then
+        if [ -z "$CONCURRENT" ]; then
             git-batch $*
             echo ""
         else

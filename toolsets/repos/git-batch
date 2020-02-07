@@ -2,6 +2,9 @@
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 GIT_BATCH_DEFAULT_REMOTE=origin
+if [ -z "$GIT_UI" ]; then
+    GIT_UI="fork status"
+fi
 
 # the help
 usage() {
@@ -20,6 +23,7 @@ usage() {
     echo "  -t    Push all tags (upload) to '$GIT_BATCH_DEFAULT_REMOTE'"
     echo "  -s    Porcelain status of the repo"
     echo "  -S    Full status of the repo"
+    echo "  -o    Open repo in $GIT_UI if there's some changes to the repo"
     echo "  -y    Fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into 'current branch',"
     echo "        then push all to '$GIT_BATCH_DEFAULT_REMOTE'. Alias for '-f -m -u -t'."
     echo ""
@@ -48,12 +52,8 @@ if [ $# = 0 ]; then
     usage
 fi
 
-if [ -z "$GITK_CMD" ]; then
-    GITK_CMD=gitk
-fi
-
 # process the arguments
-while getopts "hsSfFlutmy" OPT
+while getopts "hsSofFlutmy" OPT
 do
     CMD=
     case "$OPT" in
@@ -68,6 +68,17 @@ do
             ;;
         S)
             CMD="git status"
+            ;;
+        o)
+            open_git_repo_if_changed() {
+                if [ -z "`git status --porcelain`" ]; then
+                    echo "No changes"
+                else
+                    echo "Some changes, opening with $GIT_UI"
+                    $GIT_UI
+                fi
+            }
+            CMD="open_git_repo_if_changed"
             ;;
         f)
             CMD="git fetch --all"
