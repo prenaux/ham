@@ -1,0 +1,98 @@
+#!/bin/bash
+help() {
+    echo "Syntax:"
+    echo "  git-stash push|find STASH_NAME"
+    echo "  git-stash (try)pop|apply|drop STASH_NAME"
+    echo "  git-stash list"
+    exit 1
+}
+
+# List command
+if [ "$1" == "list" ]; then
+    git stash list
+    exit 0
+fi
+
+if [ -z "$1" ]; then
+    echo "E/No stash operation specified, should be push or pop."
+    help
+fi
+OPERATION=$1
+shift
+
+if [ -z "$1" ]; then
+    echo "E/No stash name specified."
+    help
+fi
+NAME=git-stash-$1
+shift
+ID=$(git stash list | grep "$NAME" | cut -d: -f1)
+
+case $OPERATION in
+    # Push a new stash
+    push)
+        if [ ! -z "$ID" ]; then
+            echo "E/Stash '$NAME' already exists."
+            help
+        fi
+        git stash push --include-untracked -m $NAME
+        ;;
+    # Apply stash and then drop it, exit 1 if the stash doesnt exist
+    pop)
+        if [ -z "$ID" ]; then
+            echo "E/Can't find stash '$NAME'"
+            help
+        fi
+        git stash apply $ID
+        git stash drop $ID
+        ;;
+    # Apply stash and then drop it, exit 0 and message if the stash doesnt exist
+    trypop)
+        if [ -z "$ID" ]; then
+            echo "I/No stash '$NAME'"
+        else
+            git stash apply $ID
+            git stash drop $ID
+        fi
+        ;;
+    # Apply stash, exit 1 if the stash doesnt exist
+    apply)
+        if [ -z "$ID" ]; then
+            echo "E/Can't find stash '$NAME'"
+            help
+        fi
+        git stash apply $ID
+        ;;
+    # Apply stash, message if the stash doesnt exist
+    tryapply)
+        if [ -z "$ID" ]; then
+            echo "I/No stash '$NAME'"
+        else
+            git stash apply $ID
+        fi
+        ;;
+    # Drop the specified stash
+    drop)
+        if [ -z "$ID" ]; then
+            echo "E/Can't find stash '$NAME'"
+            help
+        fi
+        git stash drop $ID
+        ;;
+    # Drop the specified stash, message if the stash doesnt exist
+    trydrop)
+        if [ -z "$ID" ]; then
+            echo "I/Can't find stash '$NAME'"
+        else
+            git stash drop $ID
+        fi
+        ;;
+    # Find the id of the specified stash
+    find)
+        echo $ID
+        ;;
+    *)
+        echo "E/Unknown git-stash operation '$OPERATION'"
+        help
+        ;;
+esac
