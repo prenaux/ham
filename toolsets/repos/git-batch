@@ -3,7 +3,7 @@
 
 GIT_BATCH_DEFAULT_REMOTE=origin
 if [ -z "$GIT_UI" ]; then
-    GIT_UI="fork status"
+    GIT_UI="lazygit"
 fi
 
 # the help
