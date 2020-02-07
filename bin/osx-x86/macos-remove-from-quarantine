@@ -1,0 +1,2 @@
+#!/bin/bash -ex
+sudo xattr -r -d com.apple.quarantine $*
