@@ -7,8 +7,10 @@
 ;;;======================================================================
 (NotBatchMode
  (agl-begin-time-block "File Cache")
+ (require 'filecache)
+ (require 'ido)
 
- (defvar my-file-cache-name "~/.emacs-file-cache")
+ (defvar my-file-cache-name "~/.emacs-filecache")
 
  ;; --- from Denis Bueno's .emacs - http://obfuscatedcode.wordpress.com/my-dot-emacs/ ---
  ;;
@@ -171,8 +173,6 @@
             (file-cache-read-cache-from-file my-file-cache-name)
             (message "=== File Cache reading done !")))))
 
- (require 'filecache)
- (require 'ido)
  (defun file-cache-ido-find-file (file)
    "Using ido, interactively open file from file cache'.
     First select a file, matched using ido-switch-buffer against the contents

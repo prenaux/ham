@@ -1,0 +1,5 @@
+PROG = emacs-filecache-utils ;
+SRC = emacs-filecache-utils.cpp parg.c ;
+FlyMakeSetup check-syntax : $(SRC) ;
+Main $(PROG) : $(SRC) ;
+RunExe Run_$(PROG) : $(PROG) ;
