@@ -17,8 +17,8 @@
   ;; the current line but indents the actual new line.
   (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
   (global-set-key (kbd "RET") 'electric-newline-and-maybe-indent)
-  (global-set-key (kbd "<C-j>") 'newline)
  )
+ (global-set-key [(control return)] 'agl-newline-and-indent-same-level)
 
  (OSX
   (global-set-key (kbd "<home>") 'move-beginning-of-line)

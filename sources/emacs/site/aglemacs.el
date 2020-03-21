@@ -527,6 +527,16 @@ BEG and END (region to sort)."
   (interactive)
   (insert (agl-uuid3)))
 
+;; Useful for times where indentation doesnt work - common in multiline strings
+(defun agl-newline-and-indent-same-level ()
+  "Insert a newline, then indent to the same column as the current line."
+  (interactive)
+  (let ((col (save-excursion
+               (back-to-indentation)
+               (current-column))))
+    (newline)
+    (indent-to-column col)))
+
 ;;;======================================================================
 ;;; Search / Find in files
 ;;;======================================================================
