@@ -5,7 +5,7 @@
 echo "I/Installing packages with scripts..."
 npm install -g \
     @2fd/graphdoc@2.4.x
-    eslint@3.x \
+    eslint@5.x \
     gulp@3.x \
     jsonlint@1.6.x \
     node-pre-gyp \
@@ -17,8 +17,7 @@ echo "I/Installing regular packages..."
 npm install -g --no-bin-links \
     awesome-typescript-loader@3.x \
     css-loader@0.15.x \
-    eslint-plugin-promise@3.5.x \
-    eslint-plugin-react@3.5.x \
+    eslint-plugin-react@7.x \
     expose-loader@0.7.x \
     extract-text-webpack-plugin@0.8.x \
     file-loader@0.8.x \
