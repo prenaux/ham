@@ -4,7 +4,7 @@
 
 echo "I/Installing packages with scripts..."
 npm install -g \
-    @2fd/graphdoc@2.4.x
+    @2fd/graphdoc@2.4.x \
     eslint@5.x \
     gulp@3.x \
     jsonlint@1.6.x \
