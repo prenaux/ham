@@ -20,6 +20,12 @@ if [ "$1" == "nostash" ]; then
     shift
 fi
 
+FETCH=1
+if [ "$1" == "nofetch" ]; then
+    FETCH=0
+    shift
+fi
+
 if [ $# = 1 ]; then
     ORIGIN=origin
     BRANCH=$1
@@ -48,7 +54,9 @@ if [ "`git branch --list tmp-git-force-pull`" ]; then
 fi
 
 git checkout -b tmp-git-force-pull
-git fetch $ORIGIN +$BRANCH:$BRANCH
+if [ $FETCH == 1 ]; then
+    git fetch $ORIGIN +$BRANCH:$BRANCH
+fi
 if [ $STASH == 1 ]; then
     git-stash trydrop git-force-pull
     git-stash push git-force-pull
