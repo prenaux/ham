@@ -464,7 +464,7 @@ rule tkPkgSrc {
   if $(PKGGROUP) = modules ||
      $(PKGGROUP) = modulelibs
   {
-    s = _$(PACKAGE)_ModuleDef.cpp $(s) ;
+    s = $(s) _$(PACKAGE)_ModuleDef.cpp ;
   }
   return $(s) ;
 }
