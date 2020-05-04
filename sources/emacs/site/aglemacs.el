@@ -245,7 +245,7 @@
                                   '("xml" "xsd" "rng"
                                     "xslt" "xsl" "gml"
                                     "vlk" "level" "plist"
-                                    "nish"
+                                    "nish" "niui"
                                    ) t) "\\'")
                    'nxml-mode))
 (setq nxml-slash-auto-complete-flag t)
