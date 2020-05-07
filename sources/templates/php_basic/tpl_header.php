@@ -2,7 +2,13 @@
      Utilities
 -->
 <?php
-$SERVER_ROOT = getenv('SERVER_ROOT', true) ?: getenv('SERVER_ROOT') ?: "/~lachlan/";
+$SERVER_ROOT = getenv('SERVER_ROOT', true) ?: getenv('SERVER_ROOT') ?: "/";
+if ($SERVER_ROOT == "//") {
+  // Workaround the fact that `/` alone doesnt work in an envvar on windows, so
+  // we pass `//`' which works, but of course doesnt on Unix, so we fix that
+  // here...
+  $SERVER_ROOT = "/";
+}
 
 function root_url($url) {
   global $SERVER_ROOT;

@@ -14,8 +14,12 @@ case $HAM_OS in
         toolset_check_and_dl_ver php nt-x86 v7_3 || return 1
         ;;
     OSX*)
-        export PATH="${HAM_TOOLSET_DIR}":${PATH}
-        # PHP comes with the OS... yup
+        export PHP_HOME="/usr/local/opt/php@7.3/";
+        if [ ! -e "$PHP_HOME/bin/php" ]; then
+            echo "I/Brew PHP 7.3 not found, trying to install."
+            brew install php@7.3
+        fi
+        export PATH="${HAM_TOOLSET_DIR}":"${HOME}/.composer/vendor/bin":"${PHP_HOME}/bin":${PATH}
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
@@ -25,7 +29,7 @@ esac
 
 VER="--- php ------------------------
 `php --version`
-`php_composer -V`"
+`composer -V`"
 if [ $? != 0 ]; then
     echo "E/Can't get version."
     return 1
