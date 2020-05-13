@@ -35,7 +35,7 @@ case $OPERATION in
             echo "E/Stash '$NAME' already exists."
             help
         fi
-        git stash push --include-untracked -m $NAME
+        git stash save --include-untracked $NAME
         ;;
     # Apply stash and then drop it, exit 1 if the stash doesnt exist
     pop)
