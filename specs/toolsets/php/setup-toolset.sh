@@ -12,6 +12,18 @@ case $HAM_OS in
         export PHP_HOME="${HAM_TOOLSET_DIR}/nt-x86/"
         export PATH="${PHP_HOME}":"${HAM_TOOLSET_DIR}":${PATH}
         toolset_check_and_dl_ver php nt-x86 v7_3 || return 1
+        if [ ! -e "C:/Windows/php.ini" ]; then
+            echo "!!!"
+            echo "!!! You have to copy $PHP_HOME/php_ini_for_c_windows/php-ini-nt-x86.ini to"
+            echo "!!! C:/Windows/php.ini with the Windows Explorer as it requires admin rights."
+            echo "!!!"
+            pushd "$PHP_HOME/../php_ini_for_c_windows"
+            explorer .
+            popd
+            pushd "C:/Windows"
+            explorer .
+            popd
+        fi
         ;;
     OSX*)
         export PHP_HOME="/usr/local/opt/php@7.3/";
