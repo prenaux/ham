@@ -62,11 +62,11 @@ if $(WINRT) = 1 {
   # -sdl: Adds additional Security Development Lifecycle (SDL) recommended
   #       checks. These include enabling additional secure code generation
   #       features and enables extra security-relevant warnings as errors.
-  CCFLAGS     ?= -sdl -fp:precise -EHsc -D "UNICODE" -D "_UNICODE" -D "WINAPI_FAMILY=WINAPI_FAMILY_APP" ;
+  CCFLAGS     ?= -source-charset:utf-8 -execution-charset:utf-8 -sdl -fp:precise -EHsc -D "UNICODE" -D "_UNICODE" -D "WINAPI_FAMILY=WINAPI_FAMILY_APP" ;
   C++FLAGS    ?= -ZW -Zl $(CCFLAGS) ;
 }
 else {
-  C++FLAGS    ?= -W4 ;
+  C++FLAGS    ?= -source-charset:utf-8 -execution-charset:utf-8 -W4 ;
   CCFLAGS     ?= $(CCFLAGS) ;
 }
 
