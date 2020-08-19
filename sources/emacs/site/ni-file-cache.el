@@ -78,7 +78,8 @@
       (defun file-cache-save-cache-to-file (file)
         "Save contents of `file-cache-alist' to FILE.
          For later retrieval using `file-cache-read-cache-from-file'"
-        (interactive "FFile: ")
+        (interactive
+         (list (read-file-name "File: " my-file-cache-name)))
         (with-temp-file (expand-file-name file)
           (prin1 file-cache-alist (current-buffer))))
 
@@ -86,7 +87,8 @@
         "Clear `file-cache-alist' and read cache from FILE.
          The file cache can be saved to a file using
          `file-cache-save-cache-to-file'."
-        (interactive "fFile: ")
+        (interactive
+         (list (read-file-name "File: " my-file-cache-name)))
         (file-cache-clear-cache)
         (let ((buf (find-file-noselect file)))
           (with-current-buffer buf

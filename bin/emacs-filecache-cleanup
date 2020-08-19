@@ -1,0 +1,3 @@
+#!/bin/bash -ex
+cp ~/.emacs-filecache ~/.emacs-filecache-bak
+emacs-filecache-utils -o ~/.emacs-filecache -c ~/.emacs-filecache-bak exists
