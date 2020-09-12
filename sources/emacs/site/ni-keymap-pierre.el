@@ -142,11 +142,9 @@
 ;;;======================================================================
 ;;; ni-autocomplete-company.el
 ;;;======================================================================
- (if (boundp 'company-ni-idl-complete)
-     (progn
-       ;; (global-set-key (kbd "C-/") 'company-complete-common)
-       (global-set-key (kbd "C-/") 'company-ni-idl-complete)
-     ))
+ (global-set-key (kbd "C-/") 'company-complete)
+ ;; (global-set-key (kbd "C-/") 'company-complete-common)
+ ;; (global-set-key (kbd "C-/") 'company-ni-idl-complete)
 
 ;;;======================================================================
 ;;; ni-flymake.el
