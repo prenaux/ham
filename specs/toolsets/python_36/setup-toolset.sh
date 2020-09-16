@@ -38,7 +38,9 @@ case $HAM_OS in
             fi
         fi
         alias python=python3
-        if [ -e "$HOME/Library/Python/3.7/bin" ]; then
+        if [ -e "$HOME/Library/Python/3.8/bin" ]; then
+            export PYTHON3_BINDIR=$HOME/Library/Python/3.8/bin
+        elif [ -e "$HOME/Library/Python/3.7/bin" ]; then
             export PYTHON3_BINDIR=$HOME/Library/Python/3.7/bin
         elif [ -e "$HOME/Library/Python/3.6/bin" ]; then
             export PYTHON3_BINDIR=$HOME/Library/Python/3.6/bin
