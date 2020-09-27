@@ -1907,6 +1907,10 @@ rule SubDir
   # Note use of variable expanded rule invocation
 
   $(SUBDIRRULES) $(<) ;
+
+  if ! [ FExists $(SUBDIR) ] {
+    EXIT "Can't find subdirectory: '$(SUBDIR)'" ;
+  }
 }
 
 rule FSubDirPath
