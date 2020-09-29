@@ -3,3 +3,4 @@ Import base-GCC.ham ;
 CC = clang ;
 C++ = clang++ ;
 LINK = clang++ ;
+CLANG = 1 ;
