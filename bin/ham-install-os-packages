@@ -18,17 +18,17 @@ case $HAM_OS in
         # preferences General section. Note that ham needs bash and macOS has
         # deprecated it so this is something you'll want to do even if bash 3
         # is still available on your machine.
-        HOMEBREW_NO_AUTO_UPDATE=1 brew install bash jq yq wget doxygen
+        HOMEBREW_NO_AUTO_UPDATE=1 brew install bash jq yq wget doxygen lftp
         ;;
     LINUX)
         if [ $(type apt-get 2>/dev/null | wc -l) = 1 ]; then
             echo "### Installing packages required by ham on Linux (apt-get) ###"
             echo "I/Installing apt-get packages"
-            sudo apt-get -y install xsltproc p7zip-full git curl python3-pip gcc g++ clang ffmpeg libcurl4-openssl-dev mesa-common-dev mesa-utils freeglut3-dev libsdl2-dev ntpdate
+            sudo apt-get -y install xsltproc p7zip-full git curl python3-pip gcc g++ clang ffmpeg libcurl4-openssl-dev mesa-common-dev mesa-utils freeglut3-dev libsdl2-dev ntpdate lftp
         elif [ $(type pacman 2>/dev/null | wc -l) = 1 ]; then
             echo "### Installing packages required by ham on Linux (pacman) ###"
             echo "I/Installing pacman packages"
-            sudo pacman -S install libxslt p7zip git python-pip
+            sudo pacman -S install libxslt p7zip git python-pip lftp
         else
             echo "E/Unsupported LINUX package manager"
             return 1
