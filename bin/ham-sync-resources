@@ -1,0 +1,138 @@
+#!/bin/bash
+# import ham
+export HAM_NO_VER_CHECK=1
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+# the help
+usage() {
+    echo "usage: ham-sync-resources server project command"
+    echo ""
+    echo "command:"
+    echo "  pull   Pull data from the server to the local data folder"
+    echo "  push   Push data from the local data folder to the server"
+    echo ""
+    echo "example:"
+    echo "  # Get the new data from the server"
+    echo "  ham-sync-resources sftp://USER@nas.talansoft.com:55022 Playground_202010 pull"
+    echo "  # Push the new data from the server"
+    echo "  ham-sync-resources sftp://USER@nas.talansoft.com:55022 Playground_202010 push"
+    echo ""
+
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        # sourced...
+        return 1
+    else
+        # regular call
+        exit 1
+    fi
+}
+
+SYNC_SERVER=$1
+shift
+if [[ -z "$SYNC_SERVER" ]]; then
+    echo "E/Server not specified."
+    usage
+    exit 1
+fi
+
+SYNC_PROJECT=$1
+shift
+if [[ -z "$SYNC_PROJECT" ]]; then
+    echo "E/Project not specified."
+    usage
+    exit 1
+fi
+
+SYNC_COMMAND=$1
+shift
+if [[ -z "$SYNC_COMMAND" ]]; then
+    echo "E/Command not specified."
+    usage
+    exit 1
+fi
+
+# Local & destination folders
+LOCAL_DIR="`pwd`/data"
+REMOTE_DIR="/Projects/lftp_sync/$SYNC_PROJECT"
+
+# Validate using _sync_data
+if [[ ! -e "$LOCAL_DIR/_sync_data" ]]; then
+    echo "E/Couldn't find '$LOCAL_DIR/_sync_data' which is required to make sure that you're syncing the right folder."
+    exit 1
+fi
+SYNC_DATA_SYNC_PROJECT=`cat "$LOCAL_DIR/_sync_data"`
+if [[ "$SYNC_DATA_SYNC_PROJECT" != "$SYNC_PROJECT" ]]; then
+    echo "E/_sync_data project name doesnt match, expecting '$SYNC_PROJECT', but _sync_data says '$SYNC_DATA_SYNC_PROJECT'."
+    exit 1
+fi
+
+echo "I/Sync Server: $SYNC_SERVER"
+echo "I/Sync Project: $SYNC_PROJECT"
+case "$HAM_OS" in
+    #
+    # macOS / Linux command, which use WinSCP
+    #
+    NT*)
+        LOCAL_DIR=`nativedir $LOCAL_DIR`
+        case "$SYNC_COMMAND" in
+            push)
+                echo "I/Pushing from data to server..."
+                winscp -console -command "option batch on" "open $SYNC_SERVER" "synchronize remote "$LOCAL_DIR" "$REMOTE_DIR""
+                ;;
+            push_delete)
+                echo "I/Pushing from data to server..."
+                winscp -console -command "option batch on" "open $SYNC_SERVER" "synchronize remote -delete "$LOCAL_DIR" "$REMOTE_DIR""
+                ;;
+            pull)
+                echo "I/Pulling from server to local data folder..."
+                winscp -console -command "option batch on" "open $SYNC_SERVER" "synchronize local "$LOCAL_DIR" "$REMOTE_DIR""
+                ;;
+            pull_delete)
+                echo "I/Pulling from server to local data folder..."
+                winscp -console -command "option batch on" "open $SYNC_SERVER" "synchronize local -delete "$LOCAL_DIR" "$REMOTE_DIR""
+                ;;
+            *)
+                usage
+                ;;
+        esac
+        ;;
+
+    #
+    # macOS / Linux command, which use lftp
+    #
+    *)
+        LFTP=`which lftp`
+        if [[ -z "$LFTP" ]]; then
+            echo "E/Can't find 'lftp'. You can install it with your package manager: 'brew|apt-get install lftp'"
+            exit 1
+        fi
+
+        MIRROR_COMMON_PARAMS="--verbose=1 --parallel=10 --continue --no-perm"
+        # MIRROR_COMMON_PARAMS="$MIRROR_COMMON_PARAMS --dry-run"
+        case "$SYNC_COMMAND" in
+            push)
+                echo "I/Pushing from data to server..."
+                MIRROR_PARAMS="$MIRROR_COMMON_PARAMS --reverse $LOCAL_DIR $REMOTE_DIR"
+                ;;
+            push_delete)
+                echo "I/Pushing from data to server..."
+                MIRROR_PARAMS="$MIRROR_COMMON_PARAMS --delete --reverse $LOCAL_DIR $REMOTE_DIR"
+                ;;
+            pull)
+                echo "I/Pulling from server to local data folder..."
+                MIRROR_PARAMS="$MIRROR_COMMON_PARAMS $REMOTE_DIR $LOCAL_DIR"
+                ;;
+            pull_delete)
+                echo "I/Pulling from server to local data folder..."
+                MIRROR_PARAMS="$MIRROR_COMMON_PARAMS --delete $REMOTE_DIR $LOCAL_DIR"
+                ;;
+            *)
+                usage
+                ;;
+        esac
+        lftp $SYNC_SERVER -e "set sftp:auto-confirm yes ; set cmd:fail-exit true ; mirror $MIRROR_PARAMS ; exit"
+        ;;
+esac
+
+echo "I/Done"

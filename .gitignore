@@ -96,3 +96,4 @@ bin/.bash_history
 sources/*/tests/*.exe
 sources/*/tests/*.x86
 sources/*/tests/*.x64
+bin/nt-x86/winscp.ini
