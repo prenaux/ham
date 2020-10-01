@@ -1,0 +1,29 @@
+#!/bin/bash
+JSON=compile_commands.json
+TMP_PATH=~/_ham/_temp_$JSON
+rm -f $JSON && rm -f $TMP_PATH && ham -- -n GENERATE_CMD_JSON=$TMP_PATH all
+
+# Add the missing brackets to make it valid json and output it in the project
+sed '
+1i\
+[
+$a\
+}]
+$ d' < $TMP_PATH 1<> $JSON
+
+# Get rid of the temp file
+rm $TMP_PATH
+
+# Generate gtags.files, requires global to be installed
+if [ "$1" == gtags ]; then
+    if [ -e "$JSON" ]; then
+        grep '"file"' compile_commands.json | sed 's~.*"file": "~~g' | sed 's~"~~g' > gtags.files
+        if [ ! -e "GTAGS" ]; then
+            gtags
+        fi
+        global -u
+    else
+        echo "$JSON not found."
+        exit 1
+    fi
+fi
