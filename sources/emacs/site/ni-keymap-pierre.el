@@ -4,20 +4,10 @@
 ;;;======================================================================
 ;;; aglemacs.el
 ;;;======================================================================
- (GNUEmacs23
-  (global-set-key (kbd "RET") 'newline-and-indent)
-  (global-set-key (kbd "<S-return>") 'newline)
-  (OSX
-   (global-set-key (kbd "<kp-delete>") 'delete-char)
-  )
- )
-
- (GNUEmacs24
-  ;; Disable electric mode so that 'enter' insert a new line without modifying
-  ;; the current line but indents the actual new line.
-  (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
-  (global-set-key (kbd "RET") 'electric-newline-and-maybe-indent)
- )
+ ;; Disable electric mode so that 'enter' insert a new line without modifying
+ ;; the current line but indents the actual new line.
+ (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
+ (global-set-key (kbd "RET") 'electric-newline-and-maybe-indent)
  (global-set-key [(control return)] 'agl-newline-and-indent-same-level)
 
  (OSX
@@ -88,10 +78,6 @@
  ;; extended expand
  (global-set-key [(meta /)] (make-agl-expand))
 
- ;; Previous/Next errors
- (define-key global-map "\M-1" 'next-error)
- (define-key global-map "\M-2" 'previous-error)
-
  ;; shift-down comments the current line and goes down
  (define-key global-map [(shift down)] 'agl-comment-and-go-down)
  ;; shift-up uncomments the current line and goes up
@@ -109,8 +95,7 @@
  (define-key global-map "\C-h\C-a" 'beginning-of-buffer)
  (define-key global-map "\C-h\C-e" 'end-of-buffer)
 
- (global-set-key (kbd "M-j") 'macro-join-line)
- (global-set-key (kbd "C-j") 'macro-join-line)
+ (global-set-key (kbd "C-M-j") 'join-line)
 
  (require 'golden-ratio-scroll-screen)
  (global-set-key (key "M-'") 'golden-ratio-scroll-screen-up)
@@ -183,10 +168,15 @@
 ;;;======================================================================
 ;;; ni-user-pierre.el
 ;;;======================================================================
- (global-set-key [f5] 'save-all-and-compile)
- (global-set-key [(control f5)] 'compile)
- (global-set-key [f6] 'previous-error)
- (global-set-key [f7] 'next-error)
+
+ ;; Ask for compile command and then compile
+ (global-set-key (key "C-h C-n") 'compile)
+ ;; Save all then compile with the last compile command used
+ (global-set-key (key "C-h C-b") 'save-all-and-compile)
+
+ ;; Previous/Next errors
+ (define-key global-map "\M-1" 'next-error)
+ (define-key global-map "\M-2" 'previouse-error)
 
  ;; Disabled the insert key, remap it to control + insert.
  (define-key global-map [(insert)] nil)

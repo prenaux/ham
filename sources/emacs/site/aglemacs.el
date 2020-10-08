@@ -278,7 +278,6 @@
 (add-to-list 'auto-mode-alist '("\\.as\\'" . actionscript-mode))
 (add-to-list 'auto-mode-alist '("\\.es\\'" . actionscript-mode))
 
-
 ;;*** Objective-C *****************************************************************
 (add-to-list 'auto-mode-alist '("\\.mm\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.lnt\\'" . c++-mode))

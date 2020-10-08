@@ -85,9 +85,12 @@
 
  (setq org-startup-folded nil)
 
- (when (fboundp 'electric-indent-mode)
-   (electric-indent-mode t))
  (setq-default electric-indent-inhibit t)
+
+ ;; Eldoc "Show function arglist or variable docstring in echo area".
+ ;; Not useful to me and slows down the editor.
+ (when (fboundp 'global-eldoc-mode)
+   (global-eldoc-mode -1))
 )
 
 ;;;======================================================================
@@ -425,8 +428,10 @@ If the new path's directories does not exist, create them."
  (require 'ni-autocomplete-pabbrev)
 
  ;; company-mode only when Ctrl+/ is pressed
- (require 'ni-autocomplete-company)
- (setq company-ni-idl-merge-dabbrev  nil)
+ ;; Note: Disabled because its just not very useful and just makes things
+ ;; slower and sometimes break macros when its triggered
+ ;; (require 'ni-autocomplete-company)
+ ;; (setq company-ni-idl-merge-dabbrev  nil)
 
  ;; put the following in your .emacs if you want company to show up automatically without pressing Ctrl+/
  ;; (setq company-idle-delay-default 0.15)
