@@ -164,6 +164,7 @@
  (global-set-key (key "C-x C-f") 'jcl-file-cache-ido-find-file)
  (define-key global-map (kbd "C-S-r") 'file-cache-ido-find-file)
  (define-key global-map (kbd "C-S-M-r") 'file-cache-update-my-cache)
+ (global-set-key (kbd "C-h C-o") 'ni-ido-imenu)
 
 ;;;======================================================================
 ;;; ni-user-pierre.el
