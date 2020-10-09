@@ -177,7 +177,7 @@
 
  ;; Previous/Next errors
  (define-key global-map "\M-1" 'next-error)
- (define-key global-map "\M-2" 'previouse-error)
+ (define-key global-map "\M-2" 'previous-error)
 
  ;; Disabled the insert key, remap it to control + insert.
  (define-key global-map [(insert)] nil)
