@@ -21,6 +21,11 @@ LINKFLAGS +=
   -fdata-sections
 ;
 
+if $(CLANG_ANALYZER) = 1 {
+  CLANG_CC_ARGS += --analyze ;
+  ECHO "W/Building with Clang's static analyzer" ;
+}
+
 ### OSX ###
 if $(OSX) {
   CLANG_CC_ARGS += -fobjc-arc ;
