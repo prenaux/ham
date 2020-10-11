@@ -190,10 +190,6 @@ TK_DIR_BIN ?= [ FDirName $(TK_DIR) bin $(BIN_LOA) ] ;
 logVar TK_DIR_BIN ;
 MakeLocate tkdir : $(TK_DIR_BIN) ;
 
-TK_DIR_INCLUDE ?= [ FDirName $(TK_DIR) include ] ;
-logVar TK_DIR_INCLUDE ;
-MakeLocate tkdir : $(TK_DIR_INCLUDE) ;
-
 TK_DIR_SHADER_CGC1_INCLUDE ?= [ FDirName $(TK_DIR) scripts cgc ] ;
 logVar TK_DIR_SHADER_CGC1_INCLUDE ;
 MakeLocate tkdir : $(TK_DIR_SHADER_CGC1_INCLUDE) ;
@@ -333,109 +329,8 @@ rule tkCopyDataToObjDir {
 }
 
 #----------------------------------------------------------------------
-#     API Copy
-#----------------------------------------------------------------------
-
-# tkAPICopy TARGET : MODULE : RELDIRS
-rule tkAPICopy {
-  local TARGET = API_$(<) ;
-  NOTFILE $(TARGET) ;
-
-  local r ;
-  for _i in $(3) {
-    local dir ;
-    local idir ;
-    local ddir ;
-    if $(_i) = .. {
-      dir = [ FDirName $(SUBDIR) API ] ;
-      idir = "" ;
-      ddir = [ FDirName $(TK_DIR_INCLUDE) $(idir) ] ;
-    }
-    else {
-      if $(_i) = . {
-        _i = ;
-      }
-      local base = [ FDirName $(SUBDIR) API $(2) ] ;
-      dir = [ FDirName $(base) $(_i) ] ;
-      idir = [ FDirName $(2) $(_i) ] ;
-      ddir = [ FDirName $(TK_DIR_INCLUDE) $(idir) ] ;
-    }
-    local srcs = [ GlobAllSrc $(dir) : c cxx cpp h hxx hpp __h ] ;
-    # ECHO "Dir: " $(dir) ;
-    # ECHO "IDir: " $(idir) ;
-    # ECHO "DDir: " $(ddir) ;
-    # ECHO "RDir: " $(rdir) ;
-    # ECHO "SUB: " $(SUBDIR) ;
-    MakeLocate $(TARGET)_dir : $(ddir) ;
-    NotFile $(TARGET)_dir ;
-    NoUpdate $(TARGET)_dir ;
-    for _j in $(srcs) {
-      local s = [ FDirName $(dir) $(_j) ] ;
-      local d = [ FDirName $(ddir) $(_j) ] ;
-      if $(d:S) = ".__h" {
-        d = $(d:S="") ;
-      }
-      reld = [ FDirName $(idir) $(d:B)$(d:S) ] ;
-      reld = "<"$(SUBDIR)">"$(reld) ; # Our own grist...
-      s = [ FGristFiles $(s) ] ;
-      d = [ FGristFiles $(d) ] ;
-      DEPENDS $(d) : $(TARGET)_dir ;
-      FilePreserveRO $(d) : $(s) ;
-      INCLUDES $(d) : $(s) ;
-      INCLUDES $(reld) : $(s) ;
-      r += $(d) ;
-      # ECHO "$(d:S) $(s) -> $(d)" ;
-      # ECHO "REL: $(reld)" ;
-      DEPENDS $(TARGET) : $(d) ;
-    }
-  }
-  DEPENDS $(<) : $(TARGET) ;
-  DEPENDS API : $(TARGET) ;
-  return $(r) ;
-}
-
-# tkIncludeCopy TARGET : FILES : INC_SUBDIR
-rule tkIncludeCopy {
-  local TARGET = API_$(<) ;
-  NOTFILE $(TARGET) ;
-
-  local r = ;
-
-  local DEST_DIR ;
-  if $(3) {
-    DEST_DIR = [ FDirName $(TK_DIR_INCLUDE) $(3) ] ;
-  }
-  else {
-    DEST_DIR = [ FDirName $(TK_DIR_INCLUDE) ] ;
-  }
-  MakeLocate $(TARGET)_dir : $(DEST_DIR) ;
-  NotFile $(TARGET)_dir ;
-  NoUpdate $(TARGET)_dir ;
-
-  for _i in $(>) {
-    local DEST = [ FDirName $(DEST_DIR) $(_i) ] ;
-    local SRC = [ FDirName $(SUBDIR) $(_i) ] ;
-
-    SRC = [ FGristFiles $(SRC) ] ;
-    DEST = [ FGristFiles $(DEST) ] ;
-
-    DEPENDS $(DEST) : $(TARGET)_dir ;
-    FilePreserveRO $(DEST) : $(SRC) ;
-    DEPENDS $(TARGET) : $(DEST) ;
-
-    r += $(DEST) ;
-    Clean clean : $(DEST) ;
-  }
-  DEPENDS $(<) : $(TARGET) ;
-  DEPENDS API : $(TARGET) ;
-  return $(r) ;
-}
-
-#----------------------------------------------------------------------
 #     Compilation setup
 #----------------------------------------------------------------------
-HDRS += $(TK_DIR_INCLUDE) ;
-SHADER_HDRS += $(TK_DIR_INCLUDE) ;
 SHADER_CGC1_HDRS += $(TK_DIR_SHADER_CGC1_INCLUDE) ;
 SHADER_GLSL_HDRS += $(TK_DIR_SHADER_GLSL_INCLUDE) ;
 
@@ -763,9 +658,6 @@ rule tkDefPackage
 rule tkDefModuleEx
 {
   tkDefPackage $(1) : $(2) : $(5) : $(3) ;
-  if $(4) {
-    DEPHDRS += [ FDirName $(TK_DIR_INCLUDE) $(4) ] ;
-  }
   MODXML = [ FSubDirAbsName "_"$(PACKAGE)"_Desc.xml" ] ;
   Clean clean : $(MODXML) ;
 }
@@ -1070,8 +962,6 @@ rule tkBuildPackage
 
   ### All files ###
   local _all = $(_src) $(_exsrc) $(_nopchsrc) ;
-
-  ObjectHdrs $(_all) : [ FDirName $(TK_DIR_INCLUDE) ] ;
 
   ### Shaders ###
   if $(_shaders) = 1 {
