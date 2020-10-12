@@ -400,6 +400,11 @@ If the new path's directories does not exist, create them."
  (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
  (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
  (add-to-list 'auto-mode-alist '("\\.yaml[a-z]*$" . yaml-mode))
+ (defun ni-pierre-yaml-mode-hook ()
+   (require 'highlight-indentation)
+   (highlight-indentation-mode 1)
+   )
+ (add-hook 'yaml-mode-hook 'ni-pierre-yaml-mode-hook)
 
  (require 'haml-mode)
  (add-to-list 'auto-mode-alist '("\\.haml$" . haml-mode))

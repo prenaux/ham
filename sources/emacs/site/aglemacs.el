@@ -258,7 +258,7 @@
 (add-to-list 'auto-mode-alist '("\\.rcss\\'" . css-mode))
 (autoload 'css-mode "css-mode" nil t)
 
-;;*** YAWS **************************************************************
+;;*** ISS ***************************************************************
 (autoload 'iss-mode "iss-mode" "Innosetup Script Mode" t)
 (add-to-list 'auto-mode-alist '("\\.iss\\'" . iss-mode))
 
