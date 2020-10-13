@@ -65,6 +65,22 @@ Suitable for inclusion in `c-offsets-alist'."
       (goto-char (match-end 0))))
     (vector (+ 2 (current-column)))))
 
+;;
+;; To change the indentation of a line, we need to see which syntactic
+;; components affect the offset calculations for that line. Hit ‘C-c C-s’ on
+;; the offending line. This yields something like this:
+;;
+;;     ((substatement-open . 44))
+;;
+;; so we know that to change the offset, we need to change the indentation for
+;; the ‘substatement-open’ syntactic symbol. To do this interactively, just
+;; hit ‘C-c C-o’ (‘c-set-offset’). This prompts you for the syntactic symbol
+;; to change, providing a reasonable default. In this case, the default is
+;; ‘substatement-open’, which is just the syntactic symbol we want to change!
+;;
+;; After you hit return, CC Mode will then prompt you for the new offset
+;; value, with the old value as the default.
+;;
 (defconst talansoft-c-style
   `((c-recognize-knr-p . nil)
     (c-enable-xemacs-performance-kludge-p . t) ; speed up indentation in XEmacs
@@ -106,13 +122,16 @@ Suitable for inclusion in `c-offsets-alist'."
                        list-close-comma
                        scope-operator))
     (c-offsets-alist . ((arglist-intro talansoft-c-lineup-expression-plus-2)
+                        (statement-block-intro . +)
                         (func-decl-cont . ++)
                         (member-init-intro . ++)
                         (inher-intro . ++)
                         (comment-intro . 0)
-                        (arglist-close . c-lineup-arglist)
+                        (arglist-close . +)
+                        (arglist-cont-nonempty . 0)
                         (topmost-intro . 0)
                         (block-open . 0)
+                        (block-close . 0)
                         (inline-open . 0)
                         (substatement-open . 0)
                         (statement-cont
