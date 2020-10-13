@@ -47,7 +47,7 @@ if $(ADR_LLVM_VERSION) {
     -Wno-non-literal-null-conversion
   ;
   ANDROID_CPP_ARGS +=
-    -std=c++11
+    -std=$(C++VERSION)
     -Wno-narrowing
   ;
   ANDROID_LINK_BASE_ARGS +=
@@ -70,7 +70,7 @@ else {
     -finput-charset=UTF-8
   ;
   ANDROID_CPP_ARGS +=
-    -std=c++11
+    -std=$(C++VERSION)
     -Wno-narrowing
     # Fix compilation error with BOOST_STATIC_CONSTANT
     -Wno-invalid-offsetof

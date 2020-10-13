@@ -8,7 +8,7 @@ GCC_CC_ARGS +=
   -Wno-unused-value
 ;
 GCC_CPP_ARGS +=
-  -std=c++11
+  -std=$(C++VERSION)
   -Wno-narrowing
 ;
 

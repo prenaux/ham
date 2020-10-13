@@ -40,7 +40,7 @@ SUFPCH = .h.gch ;
 
 C++FLAGS +=
   --memory-init-file 0
-  -std=c++11
+  -std=$(C++VERSION)
 ;
 
 EMSCRIPTEN_COMPILATION_SETTINGS =

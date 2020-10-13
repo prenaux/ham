@@ -9,7 +9,7 @@ QCC_CC_ARGS +=
   -D_XOPEN_SOURCE=600
 ;
 QCC_CPP_ARGS +=
-  -std=c++11
+  -std=$(C++VERSION)
   -Wno-narrowing
   -D_XOPEN_SOURCE=600
   -D_HAS_C9X=1

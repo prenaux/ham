@@ -32,7 +32,7 @@ CLANG_CC_ARGS +=
 ;
 
 CLANG_CPP_ARGS +=
--std=c++11
+-std=$(C++VERSION)
 -Wno-c++11-narrowing
 ;
 
