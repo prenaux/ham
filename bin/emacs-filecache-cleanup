@@ -1,3 +1,10 @@
-#!/bin/bash -ex
-cp ~/.emacs-filecache ~/.emacs-filecache-bak
-emacs-filecache-utils -o ~/.emacs-filecache -c ~/.emacs-filecache-bak exists
+#!/bin/bash
+export HAM_NO_VER_CHECK=1
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+set -ex
+
+DATE=`arch_date`
+cp ~/.emacs-filecache ~/.emacs-filecache-bak-${DATE}
+emacs-filecache-utils -o ~/.emacs-filecache-${DATE} -C ~/.emacs-filecache-bak-${DATE} exists
+cp ~/.emacs-filecache-${DATE} ~/.emacs-filecache
