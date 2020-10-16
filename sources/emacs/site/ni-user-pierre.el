@@ -60,6 +60,7 @@
              (c++-mode . 1)
              (niscript-mode . 1)
              (js-mode . 1)
+             (java-mode . 1)
              (-mode . 1)
             ))))
 )
