@@ -385,7 +385,7 @@ comments have been removed."
 
 (defconst nip-possibly-braceless-keyword-re
   (regexp-opt
-   '("catch" "do" "else" "function" "if" "try")
+   '("catch" "do" "else" "for" "foreach" "function" "if" "return" "try" "while")
    'words)
   "Regular expression matching keywords that are optionally
   followed by an opening brace.")
@@ -405,7 +405,6 @@ a comma)."
              (save-excursion
                (and (nip-re-search-backward "[?:{]" nil t)
                     (looking-at "?")))))))
-
 
 (defun nip-continued-expression-p ()
   "Returns non-nil if the current line continues an expression."

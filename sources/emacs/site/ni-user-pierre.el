@@ -63,7 +63,23 @@
              (java-mode . 1)
              (-mode . 1)
             ))))
-)
+
+ ;; (ni-turn-on-christmas) if you like syntax highlighting
+ (defun ni-turn-on-christmas ()
+   (interactive)
+   ;; turn on christmas
+   (progn
+     (setq font-lock-maximum-decoration 2)
+     (global-font-lock-mode t)
+     (setq font-lock-maximum-decoration
+           '((c-mode . 2)
+             (c++-mode . 2)
+             (niscript-mode . 2)
+             (js-mode . 2)
+             (java-mode . 2)
+             (-mode . 2)
+            ))))
+ )
 
 ;;;======================================================================
 ;;; Disable all the auto-indent, eletric mode and other BS that drives me nuts
