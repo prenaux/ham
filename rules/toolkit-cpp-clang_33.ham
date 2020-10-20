@@ -1,3 +1,8 @@
+if $(BUILD) = da {
+  # Build with the sanitizer in debug mode
+  CLANG_SANITIZE ?= 1 ;
+}
+
 STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
 
 CLANG_CC_ARGS +=
@@ -21,9 +26,14 @@ LINKFLAGS +=
   -fdata-sections
 ;
 
+# TODO: This should be under Lint?
 if $(CLANG_ANALYZER) = 1 {
   CLANG_CC_ARGS += --analyze ;
   ECHO "W/Building with Clang's static analyzer" ;
+}
+if $(CLANG_SANITIZE) = 1 {
+  CLANG_CC_ARGS += -fsanitize=address ;
+  ECHO "W/Building with -fsanitize=address" ;
 }
 
 ### OSX ###
@@ -99,6 +109,9 @@ else {
 }
 
 ### Link flags ###
+if $(CLANG_SANITIZE) = 1 {
+  LINKFLAGS += -fsanitize=address ;
+}
 LINKLIBS += ;
 
 rule tkCC++Build
