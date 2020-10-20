@@ -237,3 +237,5 @@
 (add-to-list 'auto-mode-alist '("\\.sql\\'" . ni-sql-mode))
 (add-to-list 'auto-mode-alist '("\\.psql\\'" . ni-sql-mode))
 (add-to-list 'auto-mode-alist '("\\.mysql\\'" . ni-sql-mode))
+(add-to-list 'auto-mode-alist '("\\.pks\\'" . ni-sql-mode)) ;; oracle
+(add-to-list 'auto-mode-alist '("\\.pkb\\'" . ni-sql-mode)) ;; oracle
