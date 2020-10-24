@@ -111,6 +111,28 @@
 )
 
 ;;;======================================================================
+;;; Setup sort
+;;;======================================================================
+(NotBatchMode
+
+ ;; by default ignore case when sorting
+ (custom-set-variables
+  '(sort-fold-case t t)
+  )
+
+ (defun sort-lines-nocase ()
+   (interactive)
+   (let ((sort-fold-case t))
+     (call-interactively 'sort-lines)))
+
+ (defun sort-lines-case ()
+   (interactive)
+   (let ((sort-fold-case nil))
+     (call-interactively 'sort-lines)))
+
+ )
+
+;;;======================================================================
 ;;; Keyboard
 ;;;======================================================================
 (NotBatchMode
