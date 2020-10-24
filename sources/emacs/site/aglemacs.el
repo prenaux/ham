@@ -42,6 +42,12 @@
            (delete-file filename)
            (message "Deleted file %s" filename)
            (kill-buffer))))))
+
+
+ (OSX
+  (defun ni-show-in-finder ()
+    (interactive)
+    (shell-command (concat "open -R " buffer-file-name))))
 )
 
 ;;;======================================================================
