@@ -126,8 +126,6 @@
  (push '(".+\\.cpp$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
  (push '(".+\\.cxx$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
  (push '(".+\\.cni$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
- (push '(".+\\.hpp$" ham-flymake-cpp-make-init-tocpp) aflymake-allowed-file-name-masks)
- (push '(".+\\.inl$" ham-flymake-cpp-make-init-tocpp) aflymake-allowed-file-name-masks)
  (push '(".+\\.m$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
  (push '(".+\\.mm$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
 
