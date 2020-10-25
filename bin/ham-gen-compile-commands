@@ -1,5 +1,5 @@
 #!/bin/bash
-ham -- -n -a -oactions.txt all && ni $HAM_HOME/scripts/gen_compile_commands.ni -f $(pwd)/sources/actions.txt && rm sources/actions.txt
+ham -- -n -a -oactions.txt all >/dev/null && ni $HAM_HOME/scripts/gen_compile_commands.ni -f $(pwd)/sources/actions.txt && rm sources/actions.txt
 
 # Generate gtags.files, requires global to be installed
 if [ "$1" == gtags ]; then
