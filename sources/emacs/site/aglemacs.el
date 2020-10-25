@@ -123,13 +123,7 @@
   "adds a few special keywords for c and c++ modes"
   (font-lock-add-keywords
    nil
-   '(("niImpl" . font-lock-keyword-face)
-     ("niOverride" . font-lock-keyword-face)
-     ("niVisitNext" . font-lock-keyword-face)
-     ("niVisitQPtr" . font-lock-keyword-face)
-     ("niVisit" . font-lock-keyword-face)
-     ("fun" . font-lock-keyword-face)
-    )
+   '(("\\<\\(niImpl\\|niOverride\\|niVisitor\\|niVisit\\)\\>" . font-lock-keyword-face))
   )
 )
 
