@@ -24,8 +24,11 @@ case $HAM_OS in
         export WINE_PREFIX_DIR="${HAM_TOOLSET_DIR}/osx-x64/wine-prefix"
         export WINEPREFIX="$WINE_PREFIX_DIR"
         export WINEARCH=win64
-        export LC_ALL=en_EN.UTF-8
+        # Should be done in the script launcher of the executable
         # export WINEDEBUG=-all
+        # Commented because it leads to "warning: setlocale: LC_ALL: cannot
+        # change locale (en_EN.UTF-8): No such file or directory"
+        # export LC_ALL=en_EN.UTF-8
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
