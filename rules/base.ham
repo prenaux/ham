@@ -757,7 +757,7 @@ rule C99
 # Compile the C++ source file _source_. Similar to @CC, called by @Object
 #
 # Do not call this rule directly, since _object_ and _source_ may have
-# have platform-specific file extensions
+# platform-specific file extensions
 #
 rule C++
 {
@@ -2843,7 +2843,13 @@ rule FlyMakeSetup
   if $(>) {
     NOTFILE $(<) ;
     local s = [ FGristFiles [ FTarget $(>) ] ] ;
+
+    local ODIR = [ FDirName [ VarOnGet LOCATE_TARGET : $(>) ] $(>:D:G=) ] ;
+    MkDir $(ODIR) ;
+
     Objects $(>) ;
+
+    DEPENDS $(<) : $(ODIR) ;
     DEPENDS $(<) : $(s) ;
     if $(3) = noremovetemp {
       RmTemps $(<) : $(s) ;

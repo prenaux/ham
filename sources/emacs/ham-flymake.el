@@ -98,6 +98,32 @@
   (file-truename (expand-file-name (file-name-nondirectory file-name)
                                    (expand-file-name (int-to-string (abs (random))) (aflymake-get-temp-dir)))))
 
+(progn
+   (defun ham-flymake-get-temp-filename-extension (ext)
+     (cond
+      ;; rename the extensions to extensions that get compiled
+      ((string= ext "h") "cpp")
+      ((string= ext "hpp") "cpp")
+      ((string= ext "hxx") "cpp")
+      ((string= ext "inl") "cpp")
+      ((string= ext "ixx") "cpp")
+      ((string= ext "cppm") "cpp")
+      (t ext)))
+
+   (defun ham-flymake-get-temp-filename (file-name prefix)
+     (let ((dir (file-name-directory file-name))
+           (basename (file-name-sans-extension (file-name-nondirectory  file-name)))
+           (baseext (file-name-extension file-name))
+           (ext (ham-flymake-get-temp-filename-extension (file-name-extension file-name)))
+           )
+       (concat dir
+               "_"
+               basename
+               "_" (if (string= baseext ext) prefix (concat baseext "_" prefix))
+               (and ext (concat "." ext)))))
+
+  (ham-flymake-get-temp-filename "stuff/something.hpp" "aflymake"))
+
 ;; Generates a _FILENAME_.EXT tempfile (adds a _ in front so that the Glob of Ham skips it always)
 ;; Ex: (ham-flymake-create-temp-inplace "c:/machin/roger.java" "xxx") -> "c:/machin/_roger_xxx.java"
 (defun ham-flymake-create-temp-inplace (file-name prefix)
@@ -105,12 +131,7 @@
     (error "Invalid file-name"))
   (or prefix
       (setq prefix "flymake"))
-  (let* ((temp-name (concat (file-name-directory file-name)
-                            "_"
-                            (file-name-sans-extension (file-name-nondirectory  file-name))
-                            "_" prefix
-                            (and (file-name-extension file-name)
-                                 (concat "." (file-name-extension file-name))))))
+  (let* ((temp-name (ham-flymake-get-temp-filename file-name prefix)))
     (aflymake-log 3 "create-temp-inplace: file=%s temp=%s" file-name temp-name)
     temp-name))
 
@@ -128,6 +149,11 @@
  (push '(".+\\.cni$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
  (push '(".+\\.m$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
  (push '(".+\\.mm$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
+ (push '(".+\\.h$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
+ (push '(".+\\.hpp$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
+ (push '(".+\\.hxx$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
+ (push '(".+\\.ixx$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
+ (push '(".+\\.cppm$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
 
 ;;**********************************************************************
 ;; Flymake - Java & Scala

@@ -26,6 +26,14 @@ LINKFLAGS +=
   -fdata-sections
 ;
 
+if $(FLYMAKE) = 1 {
+  # Happens when we're compiling header files with flymake since the temporary
+  # flymake file is a cpp file.
+  CLANG_CC_ARGS +=
+    -Wno-pragma-once-outside-header
+  ;
+}
+
 # TODO: This should be under Lint?
 if $(CLANG_ANALYZER) = 1 {
   CLANG_CC_ARGS += --analyze ;
