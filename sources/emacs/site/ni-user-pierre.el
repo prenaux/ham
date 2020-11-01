@@ -69,15 +69,15 @@
    (interactive)
    ;; turn on christmas
    (progn
-     (setq font-lock-maximum-decoration 2)
+     (setq font-lock-maximum-decoration 3)
      (global-font-lock-mode t)
      (setq font-lock-maximum-decoration
-           '((c-mode . 2)
-             (c++-mode . 2)
-             (niscript-mode . 2)
-             (js-mode . 2)
-             (java-mode . 2)
-             (-mode . 2)
+           '((c-mode . 3)
+             (c++-mode . 3)
+             (niscript-mode . 3)
+             (js-mode . 3)
+             (java-mode . 3)
+             (-mode . 3)
             ))))
  )
 
@@ -571,12 +571,6 @@ If the new path's directories does not exist, create them."
 (add-hook 'typescript-mode-hook 'aflymake-mode)
 
 ;;;======================================================================
-;;; Java imports
-;;;======================================================================
-(require 'java-imports)
-(setq java-imports-find-block-function 'java-imports-find-place-sorted-block)
-
-;;;======================================================================
 ;;; Keymap
 ;;;======================================================================
 (NotBatchMode
@@ -585,25 +579,36 @@ If the new path's directories does not exist, create them."
 ;;;======================================================================
 ;;; Dark mode
 ;;;======================================================================
-(set '--dark-mode-state "initial")
-(defun ni-dark-mode-update-theme ()
-  (interactive)
-  (require 'ni-theme-solarized)
-  (ni-check-dark-mode
-   (lambda ()
-     (if (not (string= --dark-mode-state "dark"))
-         (progn
-           (set '--dark-mode-state "dark")
-           (load-theme 'solarized-dark t)
-           (set-cursor-color "#cc0000")
-           (message "Changed to dark mode"))
-       (message "Is already dark mode")))
-   (lambda ()
-     (if (not (string= --dark-mode-state "light"))
-         (progn
-           (set '--dark-mode-state "light")
-           (load-theme 'solarized-light t)
-           (set-cursor-color "#cc0000")
-           (message "Changed to light mode"))
-       (message "Is already light mode")))
-   ))
+(NotBatchMode
+ (set '--dark-mode-state "initial")
+ (add-to-list 'custom-theme-load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/themes"))
+
+ (defun ni-theme-set-light-mode ()
+   (interactive)
+   (set '--dark-mode-state "light")
+   (load-theme 'solarized-light t)
+   (set-cursor-color "#cc0000")
+   (message "Changed to light mode"))
+
+ (defun ni-theme-set-dark-mode ()
+   (interactive)
+   (set '--dark-mode-state "dark")
+   ;;(load-theme 'solarized-dark t)
+   (load-theme 'vscode-dark-plus t)
+   (set-cursor-color "#cc0000")
+   (message "Changed to dark mode"))
+
+ (defun ni-dark-mode-update-theme ()
+   (interactive)
+   (require 'ni-theme-solarized)
+   (ni-check-dark-mode
+    (lambda ()
+      (if (not (string= --dark-mode-state "dark"))
+          (progn (ni-theme-set-dark-mode))
+        (message "Is already dark mode")))
+    (lambda ()
+      (if (not (string= --dark-mode-state "light"))
+          (progn (ni-theme-set-light-mode))
+        (message "Is already light mode")))
+    ))
+ )

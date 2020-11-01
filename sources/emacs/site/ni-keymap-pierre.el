@@ -212,8 +212,13 @@
  (define-key global-map "\C-h\C-d" 'direx:jump-to-directory)
 
 ;;;======================================================================
-;;; java-imports
+;;; ido M-x enhancement
 ;;;======================================================================
- (define-key java-mode-map (kbd "M-i") 'java-imports-add-import-dwim)
+ (require 'smex)
+ (smex-initialize)
+ (global-set-key (kbd "M-x") 'smex)
+ (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+ ;; This is your old M-x.
+ (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
 )
