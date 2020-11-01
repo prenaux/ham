@@ -192,11 +192,11 @@ MakeLocate tkdir : $(TK_DIR_BIN) ;
 
 TK_DIR_SHADER_CGC1_INCLUDE ?= [ FDirName $(TK_DIR) scripts cgc ] ;
 logVar TK_DIR_SHADER_CGC1_INCLUDE ;
-MakeLocate tkdir : $(TK_DIR_SHADER_CGC1_INCLUDE) ;
+# MakeLocate tkdir : $(TK_DIR_SHADER_CGC1_INCLUDE) ; # We dont want to create this by default
 
 TK_DIR_SHADER_GLSL_INCLUDE ?= [ FDirName $(TK_DIR) scripts glsl ] ;
 logVar TK_DIR_SHADER_GLSL_INCLUDE ;
-MakeLocate tkdir : $(TK_DIR_SHADER_GLSL_INCLUDE) ;
+# MakeLocate tkdir : $(TK_DIR_SHADER_GLSL_INCLUDE) ; # We dont want to create this by default
 
 TK_DIR_LIBS ?= [ FDirName $(TK_DIR) libs $(LIBS_LOA) ] ;
 logVar TK_DIR_LIBS ;
