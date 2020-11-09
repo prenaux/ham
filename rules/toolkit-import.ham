@@ -118,6 +118,9 @@ rule tkImportDoCopy {
   DEPENDS $(1) : $(p) ;
   DEPENDS tkimport : $(p) ;
   DEPENDS pass1 : tkimport ;
+  # TODO: Commented because regular binaries aren't cleaned. I think
+  # everything should ideally.
+  # Clean clean : $(p) ;
   return $(p) ;
 }
 
