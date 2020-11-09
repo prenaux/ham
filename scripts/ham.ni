@@ -2,7 +2,7 @@
 ::Import("lang.ni")
 ::Import("fs.ni")
 
-@namespace "ham" {
+module <- {
   _osArch = null
   _build = null
   _hamPath = null
@@ -353,8 +353,46 @@
     return r
   }
 
-  function _writeBashScriptToTempFile(aScript) {
+  function _writeRawBashScriptToTempFile(aScript) {
     local tmpFilePath = getNewTempFilePath("sh")
+    ::fs.writeString(aScript,tmpFilePath)
+    return tmpFilePath
+  }
+
+  function runRawBash(aScript,abKeepStdOut,abEchoStdout) {
+    local tmpFilePath = _writeRawBashScriptToTempFile(aScript)
+    if (_debugEchoAll) {
+      ::dbg(::format("I/Running from %s\n-----------------------\n%s\n-----------------------"
+                     tmpFilePath, aScript));
+    }
+    return runProcess(
+      getBashPath().quote() + " " + tmpFilePath.quote(),
+      abKeepStdOut,abEchoStdout)
+  }
+
+  function runDetachedRawBash(aScript) {
+    local tmpFilePath = _writeRawBashScriptToTempFile(aScript)
+    {
+      ::dbg(::format("I/Running detached from %s\n-----------------------\n%s\n-----------------------"
+                     tmpFilePath, aScript));
+    }
+    return runDetachedProcess(
+      getBashPath().quote() + " " + tmpFilePath.quote(),
+      true,true)
+  }
+
+  function seqRawBash(aScript,aOptions) {
+    local tmpFilePath = _writeRawBashScriptToTempFile(aScript)
+    if (_debugEchoAll) {
+      ::dbg(::format("I/Running from %s\n-----------------------\n%s\n-----------------------"
+                     tmpFilePath, aScript));
+    }
+    return seqProcess(
+      getBashPath().quote() + " " + tmpFilePath.quote(),
+      aOptions)
+  }
+
+  function _writeHamBashScriptToTempFile(aScript) {
     local text = ""
 
     // Make the script abort if any command fails
@@ -375,12 +413,11 @@
 
     text += aScript
 
-    ::fs.writeString(text,tmpFilePath)
-    return tmpFilePath
+    return _writeRawBashScriptToTempFile(text);
   }
 
   function runBash(aScript,abKeepStdOut,abEchoStdout) {
-    local tmpFilePath = _writeBashScriptToTempFile(aScript)
+    local tmpFilePath = _writeHamBashScriptToTempFile(aScript)
     if (_debugEchoAll) {
       ::dbg(::format("I/Running from %s\n-----------------------\n%s\n-----------------------"
                      tmpFilePath, aScript));
@@ -391,7 +428,7 @@
   }
 
   function runDetachedBash(aScript) {
-    local tmpFilePath = _writeBashScriptToTempFile(aScript)
+    local tmpFilePath = _writeHamBashScriptToTempFile(aScript)
     {
       ::dbg(::format("I/Running detached from %s\n-----------------------\n%s\n-----------------------"
                      tmpFilePath, aScript));
@@ -402,7 +439,7 @@
   }
 
   function seqBash(aScript,aOptions) {
-    local tmpFilePath = _writeBashScriptToTempFile(aScript)
+    local tmpFilePath = _writeHamBashScriptToTempFile(aScript)
     if (_debugEchoAll) {
       ::dbg(::format("I/Running from %s\n-----------------------\n%s\n-----------------------"
                      tmpFilePath, aScript));
@@ -412,6 +449,7 @@
       aOptions)
   }
 }
+::namespace("ham", module);
 
 function ::bash(aScript) {
   return ::ham.runBash(aScript,true,true)
