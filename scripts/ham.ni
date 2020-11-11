@@ -230,7 +230,7 @@ module <- {
 
     } while(1)
 
-    local procRet = proc.WaitForExitCode();
+    local procRet = proc.WaitForExitCode(invalid);
     return {
       succeeded = procRet.x.toint()
       exitCode = procRet.y.toint()
@@ -337,7 +337,7 @@ module <- {
         }
 
         if (validCount == 0) {
-          local ret = _proc.WaitForExitCode()
+          local ret = _proc.WaitForExitCode(invalid)
           r.stopped = true
           r.succeeded = ret.x.toint()
           r.exitCode = ret.y.toint()
