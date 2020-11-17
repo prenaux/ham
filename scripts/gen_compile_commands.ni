@@ -16,7 +16,7 @@ function main() {
 
   if (os == "nt")
   {
-    local exe = "bin/cl.exe"
+    local exe = "cl.exe"
     while (f.Tell() != f.size) {
       local line = f.ReadStringLine();
       if (line.contains(exe)) {
