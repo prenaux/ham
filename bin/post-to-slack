@@ -65,7 +65,7 @@ read -d '' payLoad << EOF
     }
 EOF
 
-curl --write-out %{http_code} \
+curl -s --write-out %{http_code} \
      -X POST \
      -H 'Content-type: application/json' \
      --data "${payLoad}" ${SLACK_URL}
