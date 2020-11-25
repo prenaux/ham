@@ -19,6 +19,7 @@ usage() {
     echo "  -F    Prune and Fetch all branches from all remotes"
     echo "  -l    Print the last 4 commit messages"
     echo "  -m    Fetch & merge (pull) from '$GIT_BATCH_DEFAULT_REMOTE' to 'current branch'"
+    echo "  -M    Force fetch & merge (git-force-pull) from '$GIT_BATCH_DEFAULT_REMOTE' to 'current branch'"
     echo "  -u    Push all (upload) to '$GIT_BATCH_DEFAULT_REMOTE'"
     echo "  -t    Push all tags (upload) to '$GIT_BATCH_DEFAULT_REMOTE'"
     echo "  -s    Porcelain status of the repo"
@@ -26,6 +27,7 @@ usage() {
     echo "  -o    Open repo in $GIT_UI if there's some changes to the repo"
     echo "  -y    Fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into 'current branch',"
     echo "        then push all to '$GIT_BATCH_DEFAULT_REMOTE'. Alias for '-f -m -u -t'."
+    echo "  -Y    Same as '-y' but force pull instead. Alias for '-f -M -u -t'."
     echo ""
     echo "example:"
     echo "  # fetch all from '$GIT_BATCH_DEFAULT_REMOTE', merge '$GIT_BATCH_DEFAULT_REMOTE' into 'current branch',"
@@ -53,7 +55,7 @@ if [ $# = 0 ]; then
 fi
 
 # process the arguments
-while getopts "hsSofFlutmy" OPT
+while getopts "hsSofFlutmMyY" OPT
 do
     CMD=
     case "$OPT" in
@@ -99,8 +101,15 @@ do
             export GIT_CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
             CMD="git pull --ff-only origin ${GIT_CURRENT_BRANCH}"
             ;;
+        M)
+            export GIT_CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
+            CMD="git-force-pull ${GIT_CURRENT_BRANCH}"
+            ;;
         y)
             CMD="git-batch -f -m -u -t"
+            ;;
+        Y)
+            CMD="git-batch -f -M -u -t"
             ;;
     esac
 
