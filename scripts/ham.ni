@@ -187,6 +187,7 @@ module <- {
         ::dbg("... Deleted temp file:" f "("+(r ? "yes" : "didnt exist")+")")
       }
     }
+    ::dbg("... Deleted" filesToCollect.size() "temp ham files.")
   }
 
   // Return {
