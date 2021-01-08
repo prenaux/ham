@@ -5,6 +5,7 @@ export HAM_TOOLSET=CMAKE
 export HAM_TOOLSET_VER=35
 export HAM_TOOLSET_NAME=cmake
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/cmake"
+export PATH="${HAM_TOOLSET_DIR}:${PATH}"
 
 # path setup
 case $HAM_OS in
@@ -17,6 +18,8 @@ case $HAM_OS in
             return 1
         fi
         ;;
+    OSX*)
+      ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
