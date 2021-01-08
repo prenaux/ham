@@ -1,0 +1,74 @@
+#!/bin/bash
+BUILD_SHARED_LIBS=OFF
+while getopts 'hcg:da:n:srd' flag; do
+  case "${flag}" in
+    h)
+      echo "Cross build script for "
+      echo " "
+      echo "$build [options] application [arguments]"
+      echo " "
+      echo "options:"
+      echo "-h, --help       show brief help"
+      echo "-a, --arch       build arch"
+      echo "-c, --clean      clean up current build cache"
+      echo "-g, --generator  build with cmake generator"
+      echo "-n, --name       build with target name only"
+      echo "-s, --shared     build with shared libraries"
+      echo "-t, --type       build type (Debug|RelWithDebInfo|Release|MinSizeRel)"
+      echo "-r, --run        run target if possible"
+      echo "-d, --debug      build debug"
+      exit 0
+      ;;
+    c) CLEAR_OPT=1 ;;
+    a) BUILD_ARCH="${OPTARG}" ;;
+    g) BUILD_GENERATOR="${OPTARG}" ;;
+    n) BUILD_NAME="${OPTARG}" ;;
+    s) BUILD_SHARED_LIBS=ON ;;
+    r) BUILD_RUN=1 ;;
+    d) BUILD_TYPE=Debug ;;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
+if [ -z "$BUILD_ARCH" ]; then
+  BUILD_ARCH=$(uname -m)-$OSTYPE
+fi
+
+export CMAKE_BUILD_ARCH=$BUILD_ARCH
+
+PROJECT_DIR=$(pwd)
+PROJECT_NAME="${PROJECT_DIR##*/}"
+PROJECT_NAME_LOW=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]')
+CMAKE_CACHE_DIR="$HOME/_ham/cmake"
+
+BUILD_EXT=da
+if [ -z "$BUILD_TYPE" ]; then
+  BUILD_TYPE=Release
+  BUILD_EXT=ra
+fi
+
+BUILD_DIR="$CMAKE_CACHE_DIR/$BUILD_ARCH-$PROJECT_NAME_LOW-$BUILD_EXT"
+
+if [ "$CLEAR_OPT" ]; then
+  rm -rf $BUILD_DIR
+fi
+
+if [ "$BUILD_ARCH" ]; then
+  TOOLCHAIN_FILE="$HAM_TOOLSET_DIR/toolchains/$BUILD_ARCH.cmake"
+  if [ ! -f "$TOOLCHAIN_FILE" ]; then
+    TOOLCHAIN_FILE=""
+  fi
+fi
+
+if [ -z "$BUILD_GENERATOR" ]; then
+  BUILD_GENERATOR=Ninja
+fi
+
+cmake -H. -G "$BUILD_GENERATOR" -B"$BUILD_DIR" -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN_FILE" -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+if [ $BUILD_NAME ]; then
+  OPT_TARGET="--target $BUILD_NAME"
+fi
+
+cmake --build "$BUILD_DIR" $OPT_TARGET
