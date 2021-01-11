@@ -7,14 +7,32 @@ include(CMakeParseArguments)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)  # enable compile_commands.json
 set(CMAKE_CXX_STANDARD 14) # using c++ 14
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/libs)
-
 set(NISDK_OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bin/$ENV{CMAKE_BUILD_ARCH}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${NISDK_OUTPUT_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${NISDK_OUTPUT_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/$ENV{CMAKE_BUILD_ARCH}")
 
-# if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-# endif()
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN32")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWIN32")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DOSX")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOSX")
+
+  # We need to use libtool on apple to stop warnings
+  if(NOT CMAKE_LIBTOOL)
+    find_program(CMAKE_LIBTOOL NAMES libtool)
+  endif()
+  if(CMAKE_LIBTOOL)
+    set(CMAKE_LIBTOOL ${CMAKE_LIBTOOL} CACHE PATH "libtool executable")
+    message(STATUS "Found libtool - ${CMAKE_LIBTOOL}")
+    get_property(languages GLOBAL PROPERTY ENABLED_LANGUAGES)
+    foreach(lang ${languages})
+      set(CMAKE_${lang}_CREATE_STATIC_LIBRARY
+        "${CMAKE_LIBTOOL} -static -o <TARGET> -a -no_warning_for_no_symbols <LINK_FLAGS> <OBJECTS> ")
+    endforeach()
+  endif()
+endif()
 
 macro(get_all_targets_recursive targets dir)
   get_property(subdirectories DIRECTORY ${dir} PROPERTY SUBDIRECTORIES)
@@ -143,7 +161,7 @@ function(add_target_library)
     PARSED_ARGS # prefix of output variables
     "" # list of names of the boolean arguments (only defined ones will be true)
     "NAME;DIR" # list of names of mono-valued arguments
-    "SRCS;INCS;LIBS;FLAGS;APIS;FILES" # list of names of multi-valued arguments (output variables are lists)
+    "SRCS;INCS;LIBS;FLAGS;APIS;SYSTEM;FILES" # list of names of multi-valued arguments (output variables are lists)
     ${ARGN} # arguments of the function to parse, here we take the all original ones
     )
   # # note: if it remains unparsed arguments, here, they can be found in variable PARSED_ARGS_UNPARSED_ARGUMENTS
@@ -177,10 +195,8 @@ function(add_target_library)
 
   add_library(${PARSED_ARGS_NAME} ${all_src})
 
-  # shared libraries need PIC
   set_property(TARGET ${PARSED_ARGS_NAME} PROPERTY POSITION_INDEPENDENT_CODE 1)
   set_property(TARGET ${PARSED_ARGS_NAME} PROPERTY ENABLE_EXPORTS 1)
-  # # set_property(TARGET ${PARSED_ARGS_NAME} PROPERTY STATIC_LIBRARY_FLAGS "-no_warning_for_no_symbols")
 
   target_compile_options(${PARSED_ARGS_NAME} PRIVATE ${PARSED_ARGS_FLAGS})
 
@@ -192,12 +208,23 @@ function(add_target_library)
     target_include_directories(${PARSED_ARGS_NAME} PRIVATE ${basedir}/${inc})
   endforeach()
 
+  foreach(sys ${PARSED_ARGS_SYSTEM})
+    target_include_directories(${PARSED_ARGS_NAME} SYSTEM PRIVATE ${basedir}/${sys})
+  endforeach()
+
   foreach(api ${PARSED_ARGS_APIS})
     target_include_directories(${PARSED_ARGS_NAME} PUBLIC ${basedir}/${api})
   endforeach()
 
   target_link_libraries(${PARSED_ARGS_NAME} PUBLIC ${PARSED_ARGS_LIBS})
   target_compile_options(${PARSED_ARGS_NAME} PRIVATE ${PARSED_ARGS_FLAGS})
+
+  # add_library(${PARSED_ARGS_NAME}_shared SHARED)
+  # target_link_libraries(${PARSED_ARGS_NAME}_shared PUBLIC ${PARSED_ARGS_NAME})
+  # add_library(${PARSED_ARGS_NAME}_static STATIC)
+  # target_link_libraries(${PARSED_ARGS_NAME}_static PUBLIC ${PARSED_ARGS_NAME})
+  # set_target_properties(${PARSED_ARGS_NAME} PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "stdafx.h")
+  # cotire(${PARSED_ARGS_NAME})
 endfunction()
 
 function(add_target_executable)
