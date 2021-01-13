@@ -1,7 +1,3 @@
-actions together piecemeal Archive
-{
-  $(AR) "$(<)" "$(>:T)"
-}
 
 if $(OS) = MACOSX
 {
@@ -38,8 +34,18 @@ if $(OS) = MACOSX
   {
     $(LINK) $(LINKFLAGS) $(LINKFLAGS_EXE) $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
   }
+
+  actions together piecemeal Archive
+  {
+    libtool -static -no_warning_for_no_symbols -o "$(<)" "$(>:T)"
+  }
 }
 else {
+  actions together piecemeal Archive
+  {
+    $(AR) "$(<)" "$(>:T)"
+  }
+
   actions DllLink
   {
     $(LINK) $(LINKFLAGS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
