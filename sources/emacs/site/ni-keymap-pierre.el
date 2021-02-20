@@ -21,6 +21,13 @@
   (global-set-key [(control left)] 'backward-word)
  )
 
+ ; Delete without passing by the killring
+ (global-set-key (kbd "C-S-k") 'agl-delete-line-backward) ; Ctrl+Shift+k
+ (global-set-key (kbd "C-k") 'agl-delete-line)
+ (global-set-key (kbd "M-d") 'agl-delete-word)
+ (global-set-key (kbd "<M-backspace>") 'agl-backward-delete-word)
+ (global-set-key (kbd "<C-backspace>") 'agl-backward-delete-word)
+
  ;; isearch - the defaults are _so_ annoying...
  (define-key isearch-mode-map (kbd "<backspace>") 'isearch-del-char) ; bs means bs
  (define-key isearch-mode-map (kbd "<delete>")    'isearch-delete-char)  ; delete means delete

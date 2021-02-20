@@ -1100,4 +1100,64 @@ as lines repeating any text already on the line before point.."
    "ns-drag-n-drop-other-frame override to always open file when dragged on Emacs window."
    (interactive "e")
    (ns-drag-n-drop event))
+
+ (defun agl-drag-n-drop (event)
+  ""
+  (interactive "e")
+  (let* ((window (posn-window (event-start event)))
+         (arg (car (cdr (cdr event))))
+         (type (car arg))
+         (operations (car (cdr arg)))
+         (objects (cdr (cdr arg)))
+         (string (mapconcat 'identity objects "\n")))
+    (set-frame-selected-window nil window)
+    (raise-frame)
+    (setq window (selected-window))
+    (find-file string)))
+ (global-set-key [drag-n-drop] 'agl-drag-n-drop)
+
+ (setq ns-pop-up-frames nil)
+)
+
+;;;======================================================================
+;;; Delete without putting it in the kill ring
+;;;======================================================================
+(NotBatchMode
+ (defun agl-delete-word (arg)
+   "Delete characters forward until encountering the end of a word.
+With argument, do this that many times.
+This command does not push text to `kill-ring'."
+   (interactive "p")
+   (delete-region
+    (point)
+    (progn
+      (forward-word arg)
+      (point))))
+
+ (defun agl-backward-delete-word (arg)
+   "Delete characters backward until encountering the beginning of a word.
+With argument, do this that many times.
+This command does not push text to `kill-ring'."
+   (interactive "p")
+   (agl-delete-word (- arg)))
+
+ (defun agl-delete-line ()
+   "Delete text from current position to end of line char.
+This command does not push text to `kill-ring'."
+   (interactive)
+   (delete-region
+    (point)
+    (progn (end-of-line 1) (point)))
+   (delete-char 1))
+
+ (defun agl-delete-line-backward ()
+   "Delete text between the beginning of the line to the cursor position.
+This command does not push text to `kill-ring'."
+   (interactive)
+   (let (p1 p2)
+     (setq p1 (point))
+     (beginning-of-line 1)
+     (setq p2 (point))
+     (delete-region p1 p2)))
+
 )
