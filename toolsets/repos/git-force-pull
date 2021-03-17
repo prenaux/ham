@@ -38,34 +38,30 @@ if [ -z "$BRANCH" ]; then
     usage
 fi
 
-if git pull --ff-only ${ORIGIN} ${BRANCH}; then
-    echo "I/git-force-pull: pull --ff-only successfull."
+set -ex
+if [ $STASH == 1 ]; then
+    git-stash trydrop git-force-pull
+    git-stash push git-force-pull
+    git checkout $BRANCH
+    git-stash trypop git-force-pull
 else
-    set -ex
-    if [ $STASH == 1 ]; then
-        git-stash trydrop git-force-pull
-        git-stash push git-force-pull
-        git checkout $BRANCH
-        git-stash trypop git-force-pull
-    else
-        git checkout $BRANCH
-    fi
+    git checkout $BRANCH
+fi
 
-    if [ "`git branch --list tmp-git-force-pull`" ]; then
-        git branch -D tmp-git-force-pull
-    fi
-
-    git checkout -b tmp-git-force-pull
-    if [ $FETCH == 1 ]; then
-        git fetch $ORIGIN +$BRANCH:$BRANCH
-    fi
-    if [ $STASH == 1 ]; then
-        git-stash trydrop git-force-pull
-        git-stash push git-force-pull
-        git checkout $BRANCH
-        git-stash trypop git-force-pull
-    else
-        git checkout $BRANCH
-    fi
+if [ "`git branch --list tmp-git-force-pull`" ]; then
     git branch -D tmp-git-force-pull
 fi
+
+git checkout -b tmp-git-force-pull
+if [ $FETCH == 1 ]; then
+    git fetch $ORIGIN +$BRANCH:$BRANCH
+fi
+if [ $STASH == 1 ]; then
+    git-stash trydrop git-force-pull
+    git-stash push git-force-pull
+    git checkout $BRANCH
+    git-stash trypop git-force-pull
+else
+    git checkout $BRANCH
+fi
+git branch -D tmp-git-force-pull
