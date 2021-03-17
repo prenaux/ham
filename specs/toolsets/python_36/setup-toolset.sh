@@ -29,16 +29,18 @@ case $HAM_OS in
         ;;
 
     OSX*)
-        if [ ! -e "/usr/local/bin/pip3" ]; then
+        if [ -z "which pip3" ]; then
             echo "I/pip not found, installing..."
             brew install python3
             errcheck $? python_36 "E/Can't install python 3"
-            if [ ! -e "/usr/local/bin/pip3" ]; then
+            if [ -z "which pip3" ]; then
                 errcheck $? python_36 "E/Can't install pip 3"
             fi
         fi
         alias python=python3
-        if [ -e "$HOME/Library/Python/3.8/bin" ]; then
+        if [ -e "$HOME/Library/Python/3.9/bin" ]; then
+            export PYTHON3_BINDIR=$HOME/Library/Python/3.9/bin
+        elif [ -e "$HOME/Library/Python/3.8/bin" ]; then
             export PYTHON3_BINDIR=$HOME/Library/Python/3.8/bin
         elif [ -e "$HOME/Library/Python/3.7/bin" ]; then
             export PYTHON3_BINDIR=$HOME/Library/Python/3.7/bin

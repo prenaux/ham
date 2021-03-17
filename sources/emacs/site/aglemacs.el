@@ -788,15 +788,17 @@ BEG and END (region to sort)."
 (setq inhibit-startup-message t)
 (setq inhibit-startup-echo-area-message t)
 
-;; Remove the menu bar, scroll bar, tool bar, tab bar...
-;; (if (boundp 'menu-bar-mode)
-    ;; (menu-bar-mode -1))
-(if (boundp 'scroll-bar-mode)
-    (scroll-bar-mode -1))
-(if (boundp 'tool-bar-mode)
-    (tool-bar-mode -1))
-(if (boundp 'tabbar-mode)
-    (tabbar-mode -1))
+(if (display-graphic-p)
+    (progn
+      ;; Remove the menu bar, scroll bar, tool bar, tab bar...
+      ;; (if (boundp 'menu-bar-mode)
+      ;; (menu-bar-mode -1))
+      (if (boundp 'scroll-bar-mode)
+          (scroll-bar-mode -1))
+      (if (boundp 'tool-bar-mode)
+          (tool-bar-mode -1))
+      (if (boundp 'tabbar-mode)
+          (tabbar-mode -1))))
 
 ;; Cursor
 (blink-cursor-mode -1)

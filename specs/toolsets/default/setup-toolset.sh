@@ -4,7 +4,11 @@ case $HAM_OS in
         . ham-toolset-import.sh msvc_15_x64
         ;;
     OSX*)
-        . ham-toolset-import.sh macos_x64
+        if [ "$HAM_BIN_LOA" == "osx-arm64" ]; then
+            . ham-toolset-import.sh macos_arm64
+        else
+            . ham-toolset-import.sh macos_x64
+        fi
         ;;
     LINUX)
         . ham-toolset-import.sh linux_x64

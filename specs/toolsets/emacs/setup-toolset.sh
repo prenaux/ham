@@ -23,6 +23,10 @@ case $HAM_OS in
         fi
         ;;
     OSX*)
+        if [ -z `which emacs`]; then
+            echo "W/Couldn't find emacs, trying to install with brew"
+            brew install emacs
+        fi
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

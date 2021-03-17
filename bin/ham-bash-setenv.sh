@@ -21,7 +21,7 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
             export PATH=$PATH:`unxpath $WINDIR`/System32
             ;;
         OSX)
-            export PATH=$WORK/niSDK/bin:$HAM_HOME/bin:$HAM_HOME/bin/osx-x86:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$BASH_START_PATH
+            export PATH=$WORK/niSDK/bin:$HAM_HOME/bin:$HAM_HOME/bin/$HAM_BIN_LOA:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$BASH_START_PATH
             ;;
         LINUX)
             export PATH=$WORK/niSDK/bin:$HAM_HOME/bin:$HAM_HOME/bin/$HAM_BIN_LOA:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$BASH_START_PATH

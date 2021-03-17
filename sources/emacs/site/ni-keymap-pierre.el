@@ -87,8 +87,10 @@
 
  ;; shift-down comments the current line and goes down
  (define-key global-map [(shift down)] 'agl-comment-and-go-down)
+ (define-key global-map (kbd "M-+") 'agl-comment-and-go-down)
  ;; shift-up uncomments the current line and goes up
  (define-key global-map [(shift up)] 'agl-uncomment-and-go-up)
+ (define-key global-map (kbd "M-_") 'agl-uncomment-and-go-up)
  ;; inc number under cursor
  (define-key global-map (kbd "M-=") 'agl-increment-number-at-point)
  ;; dec number under cursor
@@ -129,7 +131,7 @@
 
  (require 'expand-region)
  (global-set-key (kbd "C-2") 'er/expand-region)
- (global-set-key (kbd "C-@") 'er/expand-region)
+ (global-set-key (kbd "M-@") 'er/expand-region)
 
 ;;;======================================================================
 ;;; ni-autocomplete-company.el

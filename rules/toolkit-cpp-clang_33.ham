@@ -37,11 +37,11 @@ if $(FLYMAKE) = 1 {
 # TODO: This should be under Lint?
 if $(CLANG_ANALYZER) = 1 {
   CLANG_CC_ARGS += -DCLANG_ANALYZER=1 --analyze ;
-  ECHO "W/Building with Clang's static analyzer" ;
+  ECHO "I/Building with Clang's static analyzer" ;
 }
 if $(CLANG_SANITIZE) = 1 {
   CLANG_CC_ARGS += -DCLANG_SANITIZE=1 -fsanitize=address ;
-  ECHO "W/Building with -fsanitize=address" ;
+  ECHO "I/Building with -fsanitize=address" ;
 }
 
 ### OSX ###
