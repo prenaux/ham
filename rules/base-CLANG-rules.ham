@@ -12,6 +12,9 @@ if $(OS) = MACOSX
     else if $(OSPLAT) = X86 {
       MACOSX_ARCH = x86 ;
     }
+    else if $(OSPLAT) = ARM64 {
+      MACOSX_ARCH = arm64 ;
+    }
     else {
       EXIT "E/Unknown OSPlat for MacOS:" $(OSPLAT) ;
     }
@@ -19,7 +22,7 @@ if $(OS) = MACOSX
   MACOSX_MINVER ?= 10.13 ;
 
   CLANG_BASE_FLAGS =
-    -arch x86_64
+    -arch $(MACOSX_ARCH)
     -mmacosx-version-min=$(MACOSX_MINVER)
     -isysroot $(MACOS_SDK_PATH) # System sdk path, macOS only
   ;
