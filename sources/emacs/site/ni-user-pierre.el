@@ -254,7 +254,9 @@ If the new path's directories does not exist, create them."
 
  ;;; Use hamgrep on macOS
  (OSX
-  (setq pt-executable (concat "\"" HAM_HOME "/bin/osx-x64/hamgrep"  "\""))
+  (if (string-match "^aarch64-.*" system-configuration)
+      (setq pt-executable (concat "\"" HAM_HOME "/bin/osx-arm64/hamgrep"  "\""))
+    (setq pt-executable (concat "\"" HAM_HOME "/bin/osx-x64/hamgrep"  "\"")))
   (setq pt-arguments (list "--smart-case")))
 
 )
