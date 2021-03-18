@@ -53,6 +53,7 @@
 # endif
 
 #ifdef OS_MACOSX
+#include <unistd.h>
 #define _exit exit
 #endif
 
@@ -486,7 +487,7 @@ execcmd(
 			dup( fd );
 		}
 
-		execvp( argv[0], argv );
+		execvp( argv[0], (char**)argv );
 		_exit(127);
 	}
 # endif

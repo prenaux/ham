@@ -72,6 +72,7 @@ LIST *	list_new( LIST *head, const char *string, int copy );
 void	list_print( LIST *l );
 int	list_length( LIST *l );
 LIST *	list_sublist( LIST *l, int start, int count );
+void list_fprint( FILE* fp, LIST *l );
 
 # define list_next( l ) ((l)->next)
 

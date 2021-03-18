@@ -44,11 +44,15 @@
 # include "pathsys.h"
 # include "hdrmacro.h"
 # include "buffer.h"
+# include "execcmd.h"
 
 #if defined OS_NT
 #include <sys/stat.h>
 #endif
 
+#if defined OS_MACOSX
+#include <unistd.h>
+#endif
 #include <time.h>
 
 /*

@@ -12,7 +12,7 @@ case $HAM_OS in
         PT_CMD="$HAM_HOME/bin/nt-x86/pt"
         ;;
     OSX)
-        PT_CMD="$HAM_HOME/bin/osx-x86/pt"
+        PT_CMD="$HAM_HOME/bin/$HAM_BIN_LOA/pt"
         ;;
     LINUX)
         PT_CMD="$HAM_HOME/bin/lin-x64/pt"

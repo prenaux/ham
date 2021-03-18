@@ -63,6 +63,10 @@
 # include "execcmd.h"
 # include "buffer.h"
 
+#ifdef OS_MACOSX
+#include <unistd.h>
+#endif
+
 static void make1a( TARGET *t, TARGET *parent );
 static void make1b( TARGET *t );
 static void make1c( TARGET *t );

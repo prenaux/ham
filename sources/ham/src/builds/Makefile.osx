@@ -1,0 +1,83 @@
+# Makefile to build Ham on Unix with the default compiler
+# (i.e. "cc" or "$CC" when defined)
+#
+# To use it, you must be in the top Ham source directory,
+# and call
+#
+#    make
+#
+# the program "ham" will be created in the new
+# directory named "bin.unix"
+#
+
+CC      = gcc
+TARGET  = -o ham0
+CFLAGS  = -g -O2 -Wno-parentheses -Wno-string-plus-int
+
+# CFLAGS  = -g -O2 -fno-strict-aliasing
+# REM: GCC 4.2+ crashes if -fno-strict-aliasing isnt specified
+#      Specified on the command line (in _build_linux_x64.sh)
+
+all: ham0
+	chmod a+w jambase.c
+	./ham0
+
+include common.mk
+
+############################################################################
+#
+# The following is very specific and deals with installation
+# it implements "make install" and "make uninstall" for the
+# Ham executable.
+#
+# Note that for now, no documentation is installed with the executable
+#
+
+BUILD_DIR    := bin.unix
+
+
+prefix       := /usr/local
+exec_prefix  := ${prefix}
+libdir       := ${exec_prefix}/lib
+bindir       := ${exec_prefix}/bin
+includedir   := ${prefix}/include
+datadir      := ${prefix}/share
+
+version_info := @version_info@
+
+DELETE       := rm -f
+DELDIR       := rmdir
+
+# The Ham executable name. This is 'ham' on Unix, except Cygwin where
+# it will be "ham.exe". Yuckk..
+#
+JAMEXE       := ham
+
+INSTALL         := /usr/local/bin/ginstall -c
+INSTALL_PROGRAM := ${INSTALL}
+MKINSTALLDIRS   := builds/unix/mkinstalldirs
+
+
+.PHONY: install uninstall check clean distclean
+
+# Unix installation and deinstallation targets.
+# Package managers can use the DESTDIR variable to force another
+# installation prefix
+#
+install: ham0
+	$(MKINSTALLDIRS) $(DESTDIR)$(bindir)
+	$(INSTALL_PROGRAM) $(BUILD_DIR)/$(JAMEXE) $(DESTDIR)$(bindir)/$(JAMEXE)
+
+
+uninstall:
+	-$(DELETE) $(DESTDIR)$(bindir)/$(JAMEXE)
+
+clean:
+	-$(DELETE) $(BUILD_DIR)/*
+	-$(DELETE) ham0
+
+distclean: clean
+	-$(DELETE) config.log config.status Makefile
+
+check:
+	@echo There is no validation suite for this package.

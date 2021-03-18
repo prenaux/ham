@@ -67,9 +67,12 @@ else {
   code = execunix.c fileunix.c pathunix.c ;
 }
 
-if $(UNIX) && $(OS) = CYGWIN
-{
+if $(UNIX) && $(OS) = CYGWIN {
   CCFLAGS += -D__cygwin__ ;
+}
+
+if $(OS) = MACOSX {
+  CCFLAGS += -Wno-parentheses -Wno-string-plus-int ;
 }
 
 # For ham profiling/debugging.
@@ -87,9 +90,9 @@ if $(DEBUG)
     # Always have debug infos
   }
   else {
-	CCFLAGS += -g ;
-	LINKFLAGS += -g ;
-	LOCATE_TARGET = $(LOCATE_TARGET)/g ;
+    CCFLAGS += -g ;
+    LINKFLAGS += -g ;
+    LOCATE_TARGET = $(LOCATE_TARGET)/g ;
   }
 }
 
@@ -108,9 +111,8 @@ if $(OS) = NT
 }
 
 # Do we know yacc?
-
 if $(YACC) 	{ code += jamgram.y ; }
-else            { code += jamgram.c ; }
+else        { code += jamgram.c ; }
 
 #
 # Build the jamgram.y from the jamgram.yy
