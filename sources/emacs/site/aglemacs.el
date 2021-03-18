@@ -47,7 +47,18 @@
  (OSX
   (defun ni-show-in-finder ()
     (interactive)
-    (shell-command (concat "open -R " buffer-file-name))))
+    (shell-command (concat "open -R " buffer-file-name)))
+
+  (defun ni-open-from-pbpaste ()
+    (interactive)
+    (let ((filename (shell-command-to-string "pbpaste")))
+      (cond
+       ((file-exists-p filename)
+        (message (concat "Opening file path from clipboard: " filename))
+        (find-file filename)
+        )
+       (t (message "No existing file in clipboard."))))))
+
 )
 
 ;;;======================================================================
@@ -1024,6 +1035,31 @@ With zero ARG, skip the last one and mark next."
          (interactive "p")
          (kmacro-exec-ring-item
           (quote ([5 67108896 down 134217837 32] 0 "%d")) arg)))
+ (OSX
+  (defun ni-macos-pbcopy-text (text &optional push)
+    (let ((process-connection-type nil))
+      (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+        (process-send-string proc text)
+        (process-send-eof proc))))
+
+  (defun ni-macos-pbcopy ()
+    (interactive)
+    (let ((deactivate-mark t))
+      (call-process-region (point) (mark) "pbcopy")))
+
+  (defun ni-macos-pbpaste ()
+    (interactive)
+    (call-process-region (point) (if mark-active (mark) (point)) "pbpaste" t t))
+
+  (defun ni-macos-pbcut ()
+    (interactive)
+    (pbcopy)
+    (delete-region (region-beginning) (region-end))))
+
+ (defun ni-clipboard-copy-text (text &optional push)
+   (if (display-graphic-p)
+       (kill-new text)
+   (ni-macos-pbcopy-text text)))
 
  (defun ni-copy-file-path (&optional *dir-path-only-p)
    "Copy the current buffer's file path or dired path to `kill-ring'.
@@ -1032,13 +1068,11 @@ If `universal-argument' is called first, copy only the dir path.
 URL `http://ergoemacs.org/emacs/emacs_copy_file_path.html'
 Version 2017-01-27"
    (interactive "P")
-   (let ((-fpath
-          (if (equal major-mode 'dired-mode)
-              (expand-file-name default-directory)
-            (if (buffer-file-name)
-                (buffer-file-name)
-              (user-error "Current buffer is not associated with a file.")))))
-     (kill-new
+   (let ((-fpath (if (equal major-mode 'dired-mode)
+                     (expand-file-name default-directory)
+                   (if (buffer-file-name) (buffer-file-name)
+                     (user-error "Current buffer is not associated with a file.")))))
+     (ni-clipboard-copy-text
       (if *dir-path-only-p
           (progn
             (message "Directory path copied: 「%s」" (file-name-directory -fpath))

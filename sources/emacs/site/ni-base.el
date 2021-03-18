@@ -315,11 +315,11 @@ else return default-directory"
      (cond
       ((equal current-prefix-arg '(16))
        (list (read-from-minibuffer "Run: " "vcs-grep"
-  			           nil nil 'grep-history)
-	     nil))
+  			                           nil nil 'grep-history)
+	           nil))
       (t (let* ((regexp (ni-find-read-regexp "Git grep for: "))
-		(dir (read-directory-name "In directory: " (ni-find-search-directory))))
-	   (list regexp dir))))))
+		            (dir (read-directory-name "In directory: " (ni-find-search-directory))))
+	         (list regexp dir))))))
   (ni-vcs-grep--run regexp dir))
 
 (defun ni-vcs-grep-current-dir (regexp &optional dir)
@@ -330,12 +330,12 @@ else return default-directory"
      (cond
       ((equal current-prefix-arg '(16))
        (list (read-from-minibuffer "Run: " "vcs-grep"
-  			           nil nil 'grep-history)
-	     nil))
-      (t (let* ((regexp (ni-find-read-regexp "Git grep for: ")
-		        (dir (read-directory-name "In directory: " default-directory)))
-	        (list regexp dir))))))
-   (ni-vcs-grep--run regexp dir)))
+  			                           nil nil 'grep-history)
+	           nil))
+      (t (let* ((regexp (ni-find-read-regexp "Git grep for: "))
+		            (dir (read-directory-name "In directory: " default-directory)))
+	         (list regexp dir))))))
+  (ni-vcs-grep--run regexp dir))
 
 ;;;======================================================================
 ;;; Navigation utilities
