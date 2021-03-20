@@ -9,17 +9,13 @@ npm install -g \
     gulp@3.x \
     jsonlint@1.6.x \
     node-pre-gyp \
-    npm-flatten \
-    react-native-cli@0.1.x \
-    typescript@2.2.x \
+    npm-flatten
 
 echo "I/Installing regular packages..."
 npm install -g --no-bin-links \
-    awesome-typescript-loader@3.x \
     css-loader@0.15.x \
     eslint-plugin-react@7.x \
     eslint-plugin-promise@4.2.1 \
-    expose-loader@0.7.x \
     extract-text-webpack-plugin@0.8.x \
     file-loader@0.8.x \
     jsx-loader@0.13.x \
@@ -33,7 +29,6 @@ npm install -g --no-bin-links \
     script-loader@0.6.x \
     style-loader@0.12.x \
     supertest@1.x \
-    tsd@0.6.x \
     url-loader@0.5.x \
     webpack-dev-server@1.x \
     webpack@1.x \

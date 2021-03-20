@@ -21,6 +21,9 @@ case $HAM_OS in
                 echo "W/Couldn't find node, will try to install it with brew."
                 brew install node@15
             fi
+            export NODEJS_GLOBAL_MODULES_DIR="/opt/homebrew/lib/node_modules/"
+            export PATH=${HAM_TOOLSET_DIR}:${PATH}
+            export NODE_PATH=$NODEJS_GLOBAL_MODULES_DIR
         else
             toolset_check_and_dl_ver nodejs osx-x86 v10_16 || return 1
             export NODEJS_DIR="${HAM_TOOLSET_DIR}/osx-x86/"
