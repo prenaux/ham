@@ -2,8 +2,6 @@
 
 . ham-toolset-import.sh xslt_tools
 if [ $? != 0 ]; then return 1; fi
-toolset_import gcc_470
-if [ $? != 0 ]; then return 1; fi
 
 case $HAM_OS in
     OSX*)
@@ -23,14 +21,14 @@ export HAM_TOOLSET_NAME=clang_33
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}"
 
 export OSPLAT=ARM64
-export BUILD_BIN_LOA=osx-arm64
+export BUILD_BIN_LOA=$HAM_BIN_LOA
 
 # finding correct clang compiler dir
 local dir=$(clang --version | grep InstalledDir)
 export CMD_JSON_COMPILER_PATH=${dir#*' '}/
 
 VER="--- macos_arm64 ---------------------
-`clang --version`"
+`clang -arch arm64 --version`"
 if [ $? != 0 ]; then
     echo "E/Can't get version."
     return 1

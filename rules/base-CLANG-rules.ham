@@ -6,13 +6,13 @@ actions together piecemeal Archive
 if $(OS) = MACOSX
 {
   if ! $(MACOSX_ARCH) {
-    if $(OSPLAT) = X64 {
+    if $(OSPLAT:U) = X64 {
       MACOSX_ARCH = x86_64 ;
     }
-    else if $(OSPLAT) = X86 {
+    else if $(OSPLAT:U) = X86 {
       MACOSX_ARCH = x86 ;
     }
-    else if $(OSPLAT) = ARM64 {
+    else if $(OSPLAT:U) = ARM64 {
       MACOSX_ARCH = arm64 ;
     }
     else {

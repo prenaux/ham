@@ -45,7 +45,24 @@ rule runInDir {
 
 if $(RUN_IMPORT) {
   Import run-$(RUN_IMPORT).ham ;
+  # If RUN_IMPORT is specified we assume by default that we can run executables...
+  TARGET_FEATURE_RUN_EXE ?= 1 ;
 }
 else {
-  Import run-$(OS)-$(TARGET_OS).ham ;
+  if $(BUILD_BIN_LOA) = $(BIN_LOA) {
+    # Unless specified otherwise we can run binaries that have the same host and
+    # target cpu architecture
+    TARGET_FEATURE_RUN_EXE ?= 1 ;
+    Import run-$(OS)-$(TARGET_OS).ham ;
+  }
+  else {
+    # Unless specified otherwise we cant run binaries that have different host
+    # and target cpu architecture
+    TARGET_FEATURE_RUN_EXE ?= 0 ;
+    Import run-warning.ham ;
+  }
 }
+
+# ECHO "... BUILD_BIN_LOA:" $(BUILD_BIN_LOA) ;
+# ECHO "... BIN_LOA:" $(BIN_LOA) ;
+# ECHO "... TARGET_FEATURE_RUN_EXE:" $(TARGET_FEATURE_RUN_EXE) ;
