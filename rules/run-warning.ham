@@ -3,9 +3,9 @@
 # executables to test when cross compiling so we just print a warning.
 #
 actions runInDir_ {
-  echo "W/Can't run exe, different host/target arch ($(BUILD_BIN_LOA)/$(BIN_LOA)):" $(RUN_EXE)
+  echo "W/runInDir: Can't run exe, different host/target arch ($(BUILD_BIN_LOA)/$(BIN_LOA)):" $(RUN_EXE)
 }
 
 actions runInDebugger_ {
-  echo "W/Can't run debugger, different host/target arch ($(BUILD_BIN_LOA)/$(BIN_LOA)):" $(RUN_EXE)
+  echo "W/runInDebugger: Can't run debugger, different host/target arch ($(BUILD_BIN_LOA)/$(BIN_LOA)):" $(RUN_EXE)
 }

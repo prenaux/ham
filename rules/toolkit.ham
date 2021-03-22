@@ -10,7 +10,6 @@ if ! [ FExists $(TOP_DIR) ] {
 
 Import log.ham ;
 Import assert.ham ;
-Import run.ham ;
 
 NOTFILE pass1 ;
 NOTFILE build_tools ;
@@ -986,3 +985,8 @@ rule tkBuildPackage
 
   return $(_all) ;
 }
+
+#----------------------------------------------------------------------
+#     RUN
+#----------------------------------------------------------------------
+Import run.ham ;

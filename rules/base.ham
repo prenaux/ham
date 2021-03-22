@@ -841,21 +841,6 @@ rule FilePreserveRO
   Chmod $(<) ;
 }
 
-if $(OS) = MACOSX {
-  actions FilePreserveRO
-  {
-    # unlock the destination if its locked, this can happen if using other file system than HFS on OSX
-    chflags -f nouchg "$(<)"
-    ham-exec-retry $(CP_PRESERVE) "$(>)" "$(<)"
-  }
-}
-else {
-  actions FilePreserveRO
-  {
-    ham-exec-retry $(CP_PRESERVE) "$(>)" "$(<)"
-  }
-}
-
 rule FilePreserveEXE
 {
   Depends files : $(<) ;
@@ -863,10 +848,6 @@ rule FilePreserveEXE
   SEARCH on $(>) = $(SEARCH_SOURCE) ;
   MODE on $(<) = $(EXEMODE) ;
   Chmod $(<) ;
-}
-actions FilePreserveEXE
-{
-  ham-exec-retry $(CP_PRESERVE) "$(>)" "$(<)"
 }
 
 # Straight copy
@@ -2332,9 +2313,37 @@ actions File
   ham-exec-retry $(CP) "$(>)" "$(<)"
 }
 
-actions FilePreserve
-{
-  ham-exec-retry $(CP_PRESERVE) "$(>)" "$(<)"
+
+if $(OS) = MACOSX {
+  # On macOS we have to delete the destination before copying otherwise
+  # gatekeeper will think its suspicious and `Kill: 9` our processes when they
+  # start.
+  actions FilePreserveRO {
+    rm -f "$(<)"
+    $(CP_PRESERVE) "$(>)" "$(<)"
+  }
+  actions FilePreserveEXE {
+    rm -f "$(<)"
+    $(CP_PRESERVE) "$(>)" "$(<)"
+  }
+  actions FilePreserve {
+    rm -f "$(<)"
+    $(CP_PRESERVE) "$(>)" "$(<)"
+  }
+}
+else {
+  actions FilePreserveRO
+  {
+    ham-exec-retry $(CP_PRESERVE) "$(>)" "$(<)"
+  }
+  actions FilePreserveEXE
+  {
+    ham-exec-retry $(CP_PRESERVE) "$(>)" "$(<)"
+  }
+  actions FilePreserve
+  {
+    ham-exec-retry $(CP_PRESERVE) "$(>)" "$(<)"
+  }
 }
 
 if $(UNIX) {
