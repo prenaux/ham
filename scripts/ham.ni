@@ -16,14 +16,17 @@ module <- {
     if (_hamPath)
       return _hamPath;
 
-    // Relative path is still has priority on HAM_HOME, HAM_HOME is an OS
-    // global thing, the local version wins by default because that's how its
-    // distributed in installers & apps.
-    local hamHome = ::gRootFS.GetAbsolutePath(
-      ::gLang.property["ni.dirs.bin"] + "../../../ham");
+    local hamHome = ::gRootFS.GetAbsolutePath(::gLang.property["ni.dirs.bin"] + "ham");
+    if (!::fs.dirExists(hamHome)) {
+      hamHome = ::gRootFS.GetAbsolutePath(
+        ::gLang.property["ni.dirs.bin"] + "../../../ham");
+      if (!::fs.dirExists(hamHome)) {
+        throw "Can't find ham directory: " + hamHome
+      }
+    }
+
     local hamPath = "".setdir(hamHome).adddirback("bin").SetFile("ham");
-    if (!::gRootFS.FileExists(hamPath,::eFileAttrFlags.AllFiles))
-    {
+    if (!::fs.fileExists(hamPath)) {
       local hamHomeEnv = ::gLang.env["HAM_HOME"];
       if (hamHomeEnv.?len()) {
         hamHome = ::gRootFS.GetAbsolutePath(hamHomeEnv);
