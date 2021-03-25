@@ -46,12 +46,12 @@ shift
 
 # Check that they are all git directories
 for ARG in $REPOS_CWD; do
-    if [ ! -d $ARG/.git ]; then
+    if [ ! -d "$ARG/.git" ]; then
         echo "E/Not a git directory: '$ARG'"
         ERR_NOTGITDIR=1
     fi
 done
-if [ ! -d $ARG ]; then
+if [ ! -d "$ARG" ]; then
     exit 1
 fi
 
