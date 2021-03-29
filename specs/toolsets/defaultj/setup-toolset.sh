@@ -1,13 +1,14 @@
 #!/bin/bash
 
+. ham-toolset-import.sh repos
+. ham-toolset-import.sh build_jni
+
 # path setup
 case $HAM_OS in
     NT*)
-        . ham-toolset-import.sh build_jni
         . ham-toolset-import.sh default
         ;;
     OSX*)
-        . ham-toolset-import.sh build_jni
         . ham-toolset-import.sh default
         ;;
     *)

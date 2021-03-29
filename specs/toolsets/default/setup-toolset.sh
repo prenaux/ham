@@ -1,4 +1,5 @@
 #!/bin/bash
+. ham-toolset-import.sh repos
 case $HAM_OS in
     NT*)
         . ham-toolset-import.sh msvc_15_x64
