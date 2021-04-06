@@ -1,0 +1,67 @@
+# CLANG_EXE_BASE ?= "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/Llvm/bin" ;
+
+SLASH   ?= / ;
+SUFLIB  ?= .lib ;
+SUFOBJ  ?= .obj ;
+SUFEXE  ?= .exe ;
+SUFDLL  ?= .dll ;
+DLLIMPLIB ?= 1 ;
+CHMOD   ?= chmod ;
+
+CC ?= clang ;
+C++  ?= clang++ ;
+LINK ?= clang++ ;
+AR   ?= llvm-ar qc ;
+
+SDK_VERSION = 10.0.18362.0 ;
+ARCH = x64 ;
+
+MSVC_SDK = $(MSVC_DIR)/winsdk/10 ;
+MSVC_SDK_INCLUDE = $(MSVC_SDK)/Include/$(SDK_VERSION) ;
+MSVC_SDK_LIB = $(MSVC_SDK)/Lib/$(SDK_VERSION) ;
+MSVC_TOOLS = $(MSVC_DIR)/2019/BuildTools/VC/Tools/MSVC/14.27.29110 ;
+
+BASE_FLAGS =
+-target x86_64-pc-win32
+-frtti
+-isystem $(MSVC_SDK_INCLUDE)/ucrt
+-isystem $(MSVC_SDK_INCLUDE)/um
+-isystem $(MSVC_SDK_INCLUDE)/shared
+-isystem $(MSVC_SDK_INCLUDE)/winrt
+-isystem $(MSVC_SDK_INCLUDE)/cppwinrt
+-isystem $(MSVC_TOOLS)/include
+;
+
+C++FLAGS = $(BASE_FLAGS) ;
+CCFLAGS = $(BASE_FLAGS) ;
+
+
+LINKLIBS    ?=  ;
+OPTIM       ?= "" ;
+STDHDRS     ?= ;
+UNDEFFLAG   ?= "-u _" ;
+
+
+#----------------------------------------------------------------------
+#     LOA
+#----------------------------------------------------------------------
+LOA_OS = nt ;
+LOA_ARCH = x64 ;
+MSVC = 1 ;
+# --target=x86_64-pc-win32 -fuse-ld=lld-link -nostartfiles -nostdlib
+LINKFLAGS =
+-fuse-ld=lld-link
+-target x86_64-pc-win32
+-L$(MSVC_TOOLS)/lib/$(ARCH)
+-L$(MSVC_SDK_LIB)/ucrt/$(ARCH)
+-L$(MSVC_SDK_LIB)/um/$(ARCH)
+-nostdlib -lmsvcrt -Wno-msvcnot-found 
+-Wl,-machine:$(ARCH)
+-Xlinker /SUBSYSTEM:WINDOWS
+-lwinmm
+-lgdi32
+-luser32
+-lshell32
+-g -Xclang -gcodeview -O0 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd
+-lwinmm -lgdi32 -luser32 -lshell32 -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -loldnames 
+;
