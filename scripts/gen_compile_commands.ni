@@ -52,5 +52,5 @@ function main() {
     }
   }
   ::json.toFile(arr,"compile_commands.json",true)
-  ::println("writed to compile_commands.json done.")
+  ::println("Done, wrote compile_commands.json.")
 }
