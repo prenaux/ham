@@ -249,7 +249,7 @@ comments have been removed."
   "Regular expression matching any future lisp reserved words in niScript.")
 
 (defconst nip-pp-re
-  (regexp-opt '("CreateInstance" "CreateGlobalInstance" "QueryInterface" "Import" "NewImport"
+  (regexp-opt '("CreateInstance" "CreateGlobalInstance" "QueryInterface" "Import" "NewImport" "ImportModule" "NewImportModule"
                 "Array" "Table" "List" "Map" "Set"  "Vector"
                 "Vec2" "Vec3" "Vec4" "RGB" "RGBA" "Quat" "Plane" "Rect" "Matrix" "UUID"
                 ) 'words)
@@ -276,12 +276,14 @@ comments have been removed."
       "main"
       "print" "println" "printdebug" "printdebugln"
       "isValid"
+      "isModule"
       "MessageID"
       "clock"
       "setraiseerrormode"
       "getraiseerrormode"
       "assert"
       "getroottable"
+      "getvmroottable"
       "compilestring"
       "bind"
       "ultof"

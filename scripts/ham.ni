@@ -2,7 +2,7 @@
 ::Import("lang.ni")
 ::Import("fs.ni")
 
-module <- {
+local module = {
   _osArch = null
   _build = null
   _hamPath = null
@@ -454,14 +454,20 @@ module <- {
       aOptions)
   }
 }
-::namespace("ham", module);
 
-function ::bash(aScript) {
-  return ::ham.runBash(aScript,true,true)
+if (::isModule(this)) {
+  this.module = module
 }
-function ::bashDetached(aScript) {
-  return ::ham.runDetachedBash(aScript)
-}
-function ::bashSeq(aScript) {
-  return ::ham.seqBash(aScript)
+else {
+  ::namespace("ham", module);
+
+  function ::bash(aScript) {
+    return ::ham.runBash(aScript,true,true)
+  }
+  function ::bashDetached(aScript) {
+    return ::ham.runDetachedBash(aScript)
+  }
+  function ::bashSeq(aScript) {
+    return ::ham.seqBash(aScript)
+  }
 }
