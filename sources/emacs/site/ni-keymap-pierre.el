@@ -21,6 +21,9 @@
   (global-set-key [(control left)] 'backward-word)
  )
 
+ ;; ibuffer
+ (global-set-key (key "C-x C-b") 'ibuffer)
+
  ; Delete without passing by the killring
  (global-set-key (kbd "C-S-k") 'agl-delete-line-backward) ; Ctrl+Shift+k
  (global-set-key (kbd "C-k") 'agl-delete-line)
