@@ -1,6 +1,9 @@
 #!/bin/bash
-BUILD_SHARED_LIBS=OFF
-while getopts 'hcg:da:n:srd' flag; do
+
+# archs x86_64-msys
+
+BUILD_SHARED_LIBS=ON
+while getopts 'hcg:da:n:p:srd' flag; do
   case "${flag}" in
     h)
       echo "Cross build script for "
@@ -13,7 +16,7 @@ while getopts 'hcg:da:n:srd' flag; do
       echo "-c, --clean      clean up current build cache"
       echo "-g, --generator  build with cmake generator"
       echo "-n, --name       build with target name only"
-      echo "-s, --shared     build with shared libraries"
+      echo "-s, --static     build with static libraries"
       echo "-t, --type       build type (Debug|RelWithDebInfo|Release|MinSizeRel)"
       echo "-r, --run        run target if possible"
       echo "-d, --debug      build debug"
@@ -23,7 +26,8 @@ while getopts 'hcg:da:n:srd' flag; do
     a) BUILD_ARCH="${OPTARG}" ;;
     g) BUILD_GENERATOR="${OPTARG}" ;;
     n) BUILD_NAME="${OPTARG}" ;;
-    s) BUILD_SHARED_LIBS=ON ;;
+    p) BUILD_PROJECT="${OPTARG}" ;;
+    s) BUILD_SHARED_LIBS=OFF ;;
     r) BUILD_RUN=1 ;;
     d) BUILD_TYPE=Debug ;;
     *) print_usage
@@ -35,20 +39,17 @@ if [ -z "$BUILD_ARCH" ]; then
   BUILD_ARCH=$(uname -m)-$OSTYPE
 fi
 
-export CMAKE_BUILD_ARCH=$BUILD_ARCH
-
-PROJECT_DIR=$(pwd)
-PROJECT_NAME="${PROJECT_DIR##*/}"
-PROJECT_NAME_LOW=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]')
-CMAKE_CACHE_DIR="$HOME/_ham/cmake"
-
 BUILD_EXT=da
 if [ -z "$BUILD_TYPE" ]; then
   BUILD_TYPE=Release
   BUILD_EXT=ra
 fi
 
-BUILD_DIR="$CMAKE_CACHE_DIR/$BUILD_ARCH-$PROJECT_NAME_LOW-$BUILD_EXT"
+export CMAKE_BUILD_ARCH=$BUILD_ARCH
+export CMAKE_CACHE_DIR="$HOME/_ham/cmake"
+export CMAKE_BUILD_EXT="$BUILD_EXT"
+
+BUILD_DIR="$CMAKE_CACHE_DIR/$BUILD_ARCH-$BUILD_EXT"
 
 if [ "$CLEAR_OPT" ]; then
   rm -rf $BUILD_DIR
