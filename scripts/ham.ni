@@ -260,6 +260,7 @@ local module = {
         drainStdErrBeforeStdIn = aOptions.?drainStdErrBeforeStdIn || false
         detached = aOptions.?detached || false
       }
+      _debugEchoAll = _debugEchoAll
 
       function runCommand() {
         _count <- 0
@@ -308,14 +309,12 @@ local module = {
           stderrLine = ""
         }
 
-        local debugEchoAll = ::ham._debugEchoAll
-
         // drain stderr
         if (::lang.isValid(_procStderr) && !_procStderr.partial_read) {
           ++validCount
           local line = _procStderr.ReadStringLine()
           if (!line.?empty()) {
-            if (debugEchoAll) {
+            if (_debugEchoAll) {
               ::dbg("D/SEQ-STDERR: " + line + "\n")
             }
             r.stderrLine = line
@@ -333,7 +332,7 @@ local module = {
             ++validCount
             local line = _procStdout.ReadStringLine()
             if (!line.?empty()) {
-              if (debugEchoAll) {
+              if (_debugEchoAll) {
                 ::dbg("D/SEQ-STDOUT: " + line + "\n")
               }
               r.stdoutLine = line
