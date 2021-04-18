@@ -31,8 +31,6 @@ case $HAM_OS in
             export JAVA_HOME="${HAM_TOOLSET_DIR}/osx-x64/"
             if [ ! -e "$JAVA_HOME/bin/java" -o ! -e "$JAVA_HOME/bin/javac" ]; then
                 toolset_check_and_dl_ver java_jdk18 osx-x64 v1 || return 1
-                echo "I/Making sure the JDK isn't quarantined..."
-                sudo xattr -r -d com.apple.quarantine "${JAVA_HOME}"
                 if [ ! -e "$JAVA_HOME/bin/java" -o ! -e "$JAVA_HOME/bin/javac" ]; then
                     echo "E/osx-x64 can't install Java 1.8"
                     return 1

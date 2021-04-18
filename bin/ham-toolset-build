@@ -34,11 +34,12 @@ TS_VER_FILE_NAME=toolset_${TS_VER_NAME}
 
 if [ ! -d "$TS_DIR" ]; then
     echo "Can't find toolset folder: ${TS_DIR}"
-    print_help
+    help
 fi
 
 set -ex
 cd "$TS_DIR"
+toolset_unquarantine_dir "$TS_DIR"
 rm -f toolset_${TS_NAME}_*
 echo "${TS_VER_FILE_NAME}" > "${TS_VER_FILE_NAME}"
 

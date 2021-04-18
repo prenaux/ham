@@ -16,10 +16,6 @@ case $HAM_OS in
         export WINE_USR_DIR="${HAM_TOOLSET_DIR}/osx-x64/wine_4/usr"
         if [ ! -e "$WINE_USR_DIR/bin/wine64" ]; then
             toolset_check_and_dl_ver wine osx-x64 v4|| return 1
-            echo "I/Making sure that Wine isn't quarantined..."
-            sudo xattr -r -d com.apple.quarantine "${WINE_USR_DIR}/bin"
-            sudo xattr -r -d com.apple.quarantine "${WINE_USR_DIR}/lib"
-            sudo xattr -r -d com.apple.quarantine "${WINE_USR_DIR}/lib64"
         fi
         export WINE_PREFIX_DIR="${HAM_TOOLSET_DIR}/osx-x64/wine-prefix"
         export WINEPREFIX="$WINE_PREFIX_DIR"

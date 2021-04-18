@@ -64,6 +64,8 @@ toolsets/*/osx-x86/
 toolsets/*/_*osx-x86*.7z
 toolsets/*/osx-x64/
 toolsets/*/_*osx-x64*.7z
+toolsets/*/osx-arm64/
+toolsets/*/_*osx-arm64*.7z
 toolsets/*/lin-x64/
 toolsets/*/_*lin-x64*.7z
 toolsets/*/jars/

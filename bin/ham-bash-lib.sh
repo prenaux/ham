@@ -242,6 +242,15 @@ toolset_import_once() {
     fi
 }
 
+toolset_unquarantine_dir() {
+    case $HAM_OS in
+        OSX*)
+            echo "I/Fixing macOS quarantine..."
+            sudo xattr -r -d com.apple.quarantine "$1"
+            ;;
+    esac
+}
+
 toolset_dl_and_extract() {
     export CWD=`pwd`
     export DL_DIR="${HAM_HOME}/toolsets/_dl"
@@ -290,6 +299,9 @@ toolset_dl_and_extract() {
         fi
         popd
     fi
+
+    toolset_unquarantine_dir "${DIR}"
+    echo "I/Done, downloaded and extracted toolset '$1'."
 }
 
 toolset_dl_cleanup() {
@@ -302,7 +314,6 @@ toolset_dl_cleanup() {
 
 toolset_info() {
     echo "=== Ham Info ======================================"
-    echo "PODS = ${HAM_IMPORTED_PODS}"
     echo "TOOLSETS = ${HAM_IMPORTED_TOOLSETS}"
     echo "MAIN TOOLSET = ${HAM_TOOLSET}, VER: ${HAM_TOOLSET_VER}, NAME: ${HAM_TOOLSET_NAME}, DIR: ${HAM_TOOLSET_DIR}"
     echo -n "TOOLS VERSION = "
@@ -358,136 +369,6 @@ toolset_check_and_dl_ver() {
         toolset_dl_cleanup ${TS_NAME} ${TS_VER_NAME}
     fi
 }
-
-########################################################################
-##  Pods
-########################################################################
-# usage: pod_import NAME LOA VERSION
-pod_import() {
-    ALREADY_IMPORTED=`ni-hget HAM_IMPORTS_PODS $1`
-    if [[ $ALREADY_IMPORTED = "1" ]]; then
-        echo "I/Already imported '$1'."
-    else
-        pod_check_and_dl_ver $1 $2 $3
-        if [ $? != 0 ]; then
-            return 1
-        fi
-        . ham-pod-import.sh $1 $2 $3
-        if [ $? != 0 ]; then
-            return 1
-        fi
-    fi
-}
-
-# usage: pod_check_and_dl_ver NAME LOA VERSION
-# example: pod_check_and_dl_ver repos nt-x86 v2
-pod_check_and_dl_ver() {
-    . ham-pod-setenv.sh $1 $2 $3
-    if [ ! -e "${POD_DIR}/${POD_VER_FILE_NAME}" ]; then
-        pod_bak_mv ${POD_LOA}
-        pod_dl_and_extract ${POD_NAME} ${POD_VER_NAME}
-        if [ ! -e "${POD_DIR}/${POD_VER_FILE_NAME}" ]; then
-            echo "E/Pod '$POD_NAME': Can't find '${POD_VER_FILE_NAME}' in '${POD_DIR}'."
-            return 1
-        fi
-        pod_bak_rm ${POD_LOA}
-    fi
-}
-
-# usage: pod_dl_and_extract name loa version
-pod_dl_and_extract() {
-    . ham-pod-setenv.sh $1 $2 $3
-    export CWD=`pwd`
-    export DLDIR="`nativedir "${HAM_HOME}"`/pods/_dl"
-    export DLFILENAME="${POD_VER_NAME}.7z"
-    export ARCH_URL="http://cdn2.talansoft.com/ftp/pods/${DLFILENAME}"
-    # export ARCH_URL="https://tsdata2.blob.core.windows.net/ftp/pods/${DLFILENAME}"
-
-    if [ ! -e "${DLDIR}/${DLFILENAME}" ]; then
-        mkdir -p "${DLDIR}"
-        pushd "${DLDIR}" > /dev/null
-        if [ $? != 0 ]; then
-            echo "E/Can't cd to the pod's download directory '$DLDIR'."
-            return 1;
-        fi
-        echo "I/Downloading from '${ARCH_URL}' to '${DLDIR}/${DLFILENAME}'."
-        dl_file "${ARCH_URL}" -O"${DLFILENAME}.wget"
-        if [ $? != 0 ]; then
-            echo "E/Download failed !"
-            popd
-            return 1;
-        fi
-        mv "$DLFILENAME.wget" "$DLFILENAME"
-        popd
-    fi
-
-    if [ -e "${DLDIR}/${DLFILENAME}" ]; then
-        mkdir -p "${POD_DIR}"
-        pushd "${POD_DIR}" > /dev/null
-        if [ $? != 0 ]; then
-            echo "E/Can't cd to the pod's directory '$POD_DIR'."
-            return 1;
-        fi
-        echo "I/Extracting '${DLDIR}/${DLFILENAME}'"
-        7z x -y "${DLDIR}/${DLFILENAME}" | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
-        if [ ${PIPESTATUS[0]} != 0 ]; then
-            echo "E/Extraction failed ! Removing corrupted archive, please re-run the environment setup."
-            rm "$DLFILENAME"
-            popd
-            return 1;
-        fi
-        popd
-    fi
-}
-
-pod_bak_mv() {
-    if [ -e "$1" ]; then
-        mv -f "$1" "$1__bak"
-    fi;
-}
-
-pod_bak_rm() {
-    if [ -e "$1__bak" ]; then
-        rm -Rf "$1__bak"
-    fi;
-}
-
-# usage: pod_build NAME LOA VERSION
-# Build a pod's package
-pod_build() {
-    echo "I/Building Pod '$1' $2 $3"
-    . ham-pod-setenv.sh $1 $2 $3
-    rm -f _ham_pod_$1
-    echo $POD_VER_NAME > $POD_VER_FILE_NAME
-    export DLFILENAME="${HAM_HOME}/pods/_dl/${POD_VER_NAME}.7z"
-    if [ -e "${DLFILENAME}" ]; then
-        mv "${DLFILENAME}" "${DLFILENAME}.bak"
-    fi
-    export BUILD_NIP="./_build_pod_${POD_LOA}.nip"
-    if [ ! -e "${BUILD_NIP}" ]; then
-        export BUILD_NIP="../_build_pod_${POD_LOA}.nip"
-        if [ ! -e "${BUILD_NIP}" ]; then
-            echo "Can't find pod build script '_build_pod_${POD_LOA}.nip'"
-            return 1
-        fi
-    fi
-    "$WORK/niSDK/bin/ni" -e -I "$WORK/niSDK/scripts" -I "$WORK/ham/scripts" "${BUILD_NIP}"
-    if [ $? != 0 ]; then echo "Can't build $1 $2 pod."; return 1; fi
-}
-
-# usage: pod_up NAME LOA VERSION
-# Upload a built pod package to the server
-pod_up() {
-    . ham-pod-setenv.sh $1 $2 $3
-    export DLFILENAME="${HAM_HOME}/pods/_dl/${POD_VER_NAME}.7z"
-    if [ ! -e "${DLFILENAME}" ]; then
-        echo "E/Pod '$POD_NAME': Can't find ${DLFILENAME} to upload."
-        return 1
-    fi
-    echo "I/Pod '$POD_NAME' found '${DLFILENAME}' to upload."
-    cloud_copy "${DLFILENAME}" pods
-}
-
 
 ########################################################################
 ##  Utils
