@@ -14,8 +14,8 @@ case $HAM_OS in
         export PATH="${FFMPEG_DIR}":${PATH}
         ;;
     OSX*)
-        toolset_check_and_dl_ver ffmpeg osx-x64 v3 || return 1
-        export FFMPEG_DIR="${HAM_TOOLSET_DIR}/osx-x64/"
+        toolset_check_and_dl_ver ffmpeg $HAM_BIN_LOA v4 || return 1
+        export FFMPEG_DIR="${HAM_TOOLSET_DIR}/$HAM_BIN_LOA/"
         export PATH="${FFMPEG_DIR}":${PATH}
         ;;
     LINUX)
