@@ -113,19 +113,21 @@ macro(project_init)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)  # enable compile_commands.json
   set(CMAKE_CXX_STANDARD 14) # using c++ 14
 
-  # We need to use libtool on apple to stop warnings
-  if(NOT CMAKE_LIBTOOL)
-    find_program(CMAKE_LIBTOOL NAMES libtool)
-  endif()
+  if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    # We need to use libtool on apple to stop warnings
+    if(NOT CMAKE_LIBTOOL)
+      find_program(CMAKE_LIBTOOL NAMES libtool)
+    endif()
 
-  if(CMAKE_LIBTOOL)
-    set(CMAKE_LIBTOOL ${CMAKE_LIBTOOL} CACHE PATH "libtool executable")
-    message(STATUS "Found libtool - ${CMAKE_LIBTOOL}")
-    get_property(languages GLOBAL PROPERTY ENABLED_LANGUAGES)
-    foreach(lang ${languages})
-      set(CMAKE_${lang}_CREATE_STATIC_LIBRARY
-        "${CMAKE_LIBTOOL} -static -o <TARGET> -a -no_warning_for_no_symbols <LINK_FLAGS> <OBJECTS> ")
-    endforeach()
+    if(CMAKE_LIBTOOL)
+      set(CMAKE_LIBTOOL ${CMAKE_LIBTOOL} CACHE PATH "libtool executable")
+      message(STATUS "Found libtool - ${CMAKE_LIBTOOL}")
+      get_property(languages GLOBAL PROPERTY ENABLED_LANGUAGES)
+      foreach(lang ${languages})
+        set(CMAKE_${lang}_CREATE_STATIC_LIBRARY
+          "${CMAKE_LIBTOOL} -static -o <TARGET> -a -no_warning_for_no_symbols <LINK_FLAGS> <OBJECTS> ")
+      endforeach()
+    endif()
   endif()
 
   # Global flags
