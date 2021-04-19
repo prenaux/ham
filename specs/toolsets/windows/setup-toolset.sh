@@ -24,7 +24,7 @@ export HAM_TOOLSET=WINDOWS
 export HAM_TOOLSET_VER=15
 export HAM_TOOLSET_NAME=windows
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/windows"
-export MSVC_DIR="${HAM_HOME}/toolsets/msvc_19_x64/nt-x86/"
+export MSVC_DIR="${HAM_HOME}/toolsets/msvc_19_x64/nt-x86"
 
 export PATH=${PATH}:${CLANG_DIR}
 
