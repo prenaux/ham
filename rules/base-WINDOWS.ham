@@ -10,7 +10,7 @@ CHMOD   ?= chmod ;
 
 CC ?= clang ;
 C++  ?= clang++ ;
-LINK ?= clang++ ;
+LINK ?= clang ;
 AR   ?= llvm-ar qc ;
 
 SDK_VERSION = 10.0.18362.0 ;
@@ -23,6 +23,7 @@ MSVC_TOOLS = $(MSVC_DIR)/2019/BuildTools/VC/Tools/MSVC/14.27.29110 ;
 
 BASE_FLAGS =
 -target x86_64-pc-win32
+-m64
 -frtti
 -isystem $(MSVC_SDK_INCLUDE)/ucrt
 -isystem $(MSVC_SDK_INCLUDE)/um
@@ -48,20 +49,20 @@ UNDEFFLAG   ?= "-u _" ;
 LOA_OS = nt ;
 LOA_ARCH = x64 ;
 MSVC = 1 ;
-# --target=x86_64-pc-win32 -fuse-ld=lld-link -nostartfiles -nostdlib
+
 LINKFLAGS =
 -fuse-ld=lld-link
--target x86_64-pc-win32
+--target=x86_64-pc-win32
+-nostartfiles
+-nostdlib
+-m64
+-DWIN32 -fno-common -fvisibility=hidden -ffunction-sections -fdata-sections
+-O3 -DNDEBUG -D_DLL -D_MT
 -L$(MSVC_TOOLS)/lib/$(ARCH)
 -L$(MSVC_SDK_LIB)/ucrt/$(ARCH)
 -L$(MSVC_SDK_LIB)/um/$(ARCH)
--nostdlib -lmsvcrt -Wno-msvcnot-found 
--Wl,-machine:$(ARCH)
+-lmsvcrt -lwinmm -lgdi32 -luser32 -lshell32 -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -loldnames
 -Xlinker /SUBSYSTEM:WINDOWS
--lwinmm
--lgdi32
--luser32
--lshell32
--g -Xclang -gcodeview -O0 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd
--lwinmm -lgdi32 -luser32 -lshell32 -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -loldnames 
 ;
+
+# -Xlinker /SUBSYSTEM:WINDOWS
