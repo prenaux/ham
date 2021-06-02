@@ -285,6 +285,8 @@
 (add-to-list 'auto-mode-alist '("\\.hlsl\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.metal\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.cl\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.fsl\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.nisl\\'" . c++-mode))
 
 ;;*** Actionscript ****************************************************************
 (autoload 'actionscript-mode "actionscript-mode" nil t)
