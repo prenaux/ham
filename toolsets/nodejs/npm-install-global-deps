@@ -9,7 +9,8 @@ npm install -g \
     gulp@3.x \
     jsonlint@1.6.x \
     node-pre-gyp \
-    npm-flatten
+    npm-flatten \
+    heroku
 
 echo "I/Installing regular packages..."
 npm install -g --no-bin-links \
