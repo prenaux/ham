@@ -367,6 +367,9 @@ rule tkPkgSrc {
 rule tkPkgSrcSubDirLst {
   return [ SrcSubDir $(PACKAGE) : $(<) : $(OBJDIR) : $(>) ] ;
 }
+rule tkPkgSrcSubDirLstNoHdrs {
+  return [ SrcSubDirNoHdrs $(PACKAGE) : $(<) : $(OBJDIR) : $(>) ] ;
+}
 
 # tkPkgSrcSubDir d1..dn : exts ;
 # If extensions is not specified defaults to cpp/cc/c.
