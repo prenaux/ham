@@ -231,6 +231,11 @@ if $(OSX) = 1 || $(IOSMAC) = 1 {
 
   actions shaderMetal
   {
+    $(SHADER_METAL_SDK)/metal $(SHADER_METAL_FLAGS) $(SHADER_METAL_DEFS) $(SHADER_METAL_HDRS) "$(>)" -o "$(<)"
+  }
+
+  actions shaderMetalDiag
+  {
     $(SHADER_METAL_SDK)/metal $(SHADER_METAL_FLAGS) $(SHADER_METAL_DEFS) $(SHADER_METAL_HDRS) -serialize-diagnostics "$(<).dia" "$(>)" -o "$(<)"
   }
 
