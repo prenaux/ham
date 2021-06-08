@@ -199,9 +199,9 @@ if $(OSX) = 1 || $(IOSMAC) = 1 {
   rule shaderMetal
   {
     Depends $(<) : $(>) ;
-    SHADER_METAL_FLAGS on $(<) += $(SHADER_CCFLAGS) $(SHADER_METAL_FLAGS) ;
-    SHADER_METAL_HDRS on $(<) = [ on $(<) FIncludes $(SHADER_HDRS) $(SHADER_METAL_HDRS) ] ;
-    SHADER_METAL_DEFS on $(<) = [ on $(<) FDefines $(SHADER_DEFINES) $(SHADER_METAL_DEFINES) ] ;
+    SHADER_METAL_FLAGS on $(<) += $(SHADER_METAL_FLAGS) ;
+    SHADER_METAL_HDRS on $(<) = [ on $(<) FIncludes $(SHADER_METAL_HDRS) ] ;
+    SHADER_METAL_DEFS on $(<) = [ on $(<) FDefines $(SHADER_METAL_DEFINES) ] ;
   }
 
   # /shaderMetalLibraryFromObjects library : objects ;
