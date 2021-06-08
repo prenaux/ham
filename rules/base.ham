@@ -925,11 +925,12 @@ rule HdrRule
   # care if we can't actually find the headers (they may have been
   # within ifdefs),
 
+  # ECHO "... HdrRule: " $(<) "::" $(>) ;
+
   local s = $(>:G=$(HDRGRIST:E)) ;
   local t = $(HDRSEARCH) ;
   t += $(DEPHDRS) ;
-
-  #  Echo "MYHDR: " $(t) ;
+  # ECHO "... -> t: " $(t) ;
 
   Includes $(<) : $(s) ;
   SEARCH on $(s) = $(HDRSEARCH) ;
@@ -944,7 +945,7 @@ rule HdrRule
     # 	t += [ FDirName $(_i) $(>:D) ] ;
   #   }
   t += $(HDROPENED:DC) ;
-  #  Echo "HDROPEN: " $(HDROPENED:D) ;
+  # ECHO "... -> HDROPENED: " $(HDROPENED) ;
 
   HDRSEARCH on $(s) = $(t) ;
   HDRSCAN on $(s) = $(HDRSCAN) ;
@@ -2397,21 +2398,6 @@ actions SoftLink
 {
   ham-exec-retry $(RM) "$(<)" && $(LN) -s "$(>)" "$(<)"
 }
-
-#
-# Backwards compatibility with jam 1, where rules were uppercased.
-#
-
-rule BULK { Bulk $(<) : $(>) ; }
-rule FILE { File $(<) : $(>) ; }
-rule HDRRULE { HdrRule $(<) : $(>) ; }
-rule LIBRARY { Library $(<) : $(>) ; }
-rule LIBS { LinkLibraries $(<) : $(>) ; }
-rule LINK { Link $(<) : $(>) ; }
-rule MAIN { Main $(<) : $(>) ; }
-rule SETUID { Setuid $(<) ; }
-rule SHELL { Shell $(<) : $(>) ; }
-rule UNDEFINES { Undefines $(<) : $(>) ; }
 
 # The the absolute path of the specified path, using / as file separator
 rule FGetAbsolutePath {
