@@ -46,6 +46,7 @@
 (require 'thingatpt)
 (require 'dash)
 (require 's)
+(require 'dash)
 
 (defcustom pt-executable
   "pt"
@@ -105,19 +106,17 @@
   (pt-regexp--run regexp directory args))
 
 (defun pt-work-get-dirs (dir)
-  (cond
-   ((string-prefix-p "/" dir)
-    (list
-     (concat "\"" dir "/sources" "\"")
-     (concat "\"" dir "/scripts" "\""))
-   )
-   (t
-    (list
-     (concat "\"" (getenv "WORK") "/" dir "/sources" "\"")
-     (concat "\"" (getenv "WORK") "/" dir "/scripts" "\""))
-   )
-  )
-)
+  (-map
+   (lambda (d) (concat "\"" d "\""))
+   (-filter
+    (lambda (d) (file-directory-p d))
+    (-map
+     (lambda (d)
+       (cond
+        ((string-prefix-p "/" dir) (concat dir "/" d))
+        (t (concat (getenv "WORK") "/" dir "/" d))))
+     (list "rules" "sources" "scripts"))
+    )))
 
 (defvar pt-work-regexp-history-dirs nil
   "History for dirs of pt-work-regexp.")
