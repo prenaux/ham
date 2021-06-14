@@ -1,17 +1,6 @@
 TK_SRC_WORK_DIR ?= $(WORK) ;
 TK_IMPORTED ?= ;
 
-rule tkFindToolkitDir {
-  local dirBase = [ FDirName $(TOP) node_modules $(1) ] ;
-  if ! [ FExists $(dirBase) ] {
-    dirBase = [ FDirName $(TOP) .. node_modules $(1) ] ;
-    if ! [ FExists $(dirBase) ] {
-      dirBase = [ FDirName $(WORK) $(1) ] ;
-    }
-  }
-  return $(dirBase) ;
-}
-
 # tkImport TOOLKIT : DLLS : EXES ;
 rule tkImport {
   if [ ListContains $(TK_IMPORTED) : $(1) ] {
@@ -45,9 +34,6 @@ rule tkImport {
     }
   }
 
-  local dirInclude = [ FDirName $(dirBase) include ] ;
-  local dirScripts = [ FDirName $(dirBase) scripts ] ;
-
   # Import rules if any
   local rulesFile = [ FDirName $(dirBase) sources _rules_tkimport.ham ] ;
   if ! [ FExists $(rulesFile) ] {
@@ -63,13 +49,6 @@ rule tkImport {
 
   # add to the list of imported toolkits
   TK_IMPORTED += $(1) ;
-
-  # add the include folders
-  HDRS += $(dirInclude) ;
-  NI_HDRS += $(dirScripts) ;
-  SHADER_HDRS += $(dirInclude) ;
-  SHADER_CGC1_HDRS += [ FDirName $(dirScripts) cgc ] ;
-  SHADER_GLSL_HDRS += [ FDirName $(dirScripts) glsl ] ;
 
   if ! ( $(NO_DLL) = 1 ) {
     # import/copy the dlls

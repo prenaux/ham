@@ -327,6 +327,17 @@ rule tkCopyDataToObjDir {
   return $(r) ;
 }
 
+rule tkFindToolkitDir {
+  local dirBase = [ FDirName $(TOP) node_modules $(1) ] ;
+  if ! [ FExists $(dirBase) ] {
+    dirBase = [ FDirName $(TOP) .. node_modules $(1) ] ;
+    if ! [ FExists $(dirBase) ] {
+      dirBase = [ FDirName $(WORK) $(1) ] ;
+    }
+  }
+  return $(dirBase) ;
+}
+
 #----------------------------------------------------------------------
 #     Compilation setup
 #----------------------------------------------------------------------
