@@ -4,7 +4,7 @@ RUN_DIR ?= . ;
 RUN_SYMBOLS_DIR ?= . ;
 RUN_EXE_SUFFIX ?= $(SUFEXE) ;
 
-# runInDebugger_ TARGET : WHAT : INDIR : PARAMS
+# runInDebugger_ TARGET : WHAT/EXE : INDIR/EXEDIR : PARAMS
 rule runInDebugger_ {
   if $(3) {
     WORK_DIR on $(<) = $(3) ;
@@ -13,17 +13,16 @@ rule runInDebugger_ {
     WORK_DIR on $(<) = $(RUN_DIR) ;
   }
   RUN_EXE on $(<) = [ FDirName $(RUN_DIR) $(>)$(RUN_EXE_SUFFIX) ] ;
-  PARAMS on $(<) = $(4) ;
-
+  A10 on $(<) = $(4) ;
   DEPENDS $(<) : $(>) ;
 }
 
-# runInDebugger WHAT : INDIR : PARAMS ;
+# runInDebugger TARGET : WHAT/EXE : INDIR/EXEDIR : PARAMS ;
 rule runInDebugger {
-  runInDebugger_ Debug_$(<) : $(<) : $(2) : $(3) ;
+  runInDebugger_ Debug_$(<) : $(<) : $(2) : $(3) : $(4) ;
 }
 
-# runInDir_ TARGET : WHAT : INDIR : PARAMS
+# runInDir_ TARGET : WHAT/EXE : INDIR/EXEDIR : PARAMS
 rule runInDir_ {
   if $(3) {
     WORK_DIR on $(<) = $(3) ;
@@ -32,14 +31,13 @@ rule runInDir_ {
     WORK_DIR on $(<) = $(RUN_DIR) ;
   }
   RUN_EXE on $(<) = [ FDirName $(RUN_DIR) $(>)$(RUN_EXE_SUFFIX) ] ;
-  PARAMS on $(<) = $(4) ;
-
+  A10 on $(<) = $(4) ;
   DEPENDS $(<) : $(>) ;
 }
 
-# runInDir WHAT : INDIR : PARAMS ;
+# runInDir TARGET : WHAT/EXE : INDIR/EXEDIR : PARAMS ;
 rule runInDir {
-  runInDir_ Run_$(<) : $(<) : $(2) : $(3) ;
+  runInDir_ Run_$(<) : $(<) : $(2) : $(3) : $(4) ;
   runInDebugger $(<) : $(2) : $(3) ;
 }
 
