@@ -351,6 +351,7 @@
  (agl-begin-time-block "IDO completion")
 
  (ido-mode t)
+ (require 'ido-completing-read+)
 
  ;; Ohhh, yes... please thanks god, this makes sure that ido won't switch to
  ;; an active frame (window) if the buffer is already opened there. It'll just
@@ -364,7 +365,7 @@
  ;; and my typo was not a match in the TAGS file. The following fixed
  ;; the issue for me:
  ;; https://bitbucket.org/durin42/dotfiles/src/tip/.elisp/settings/50.localfuncs.el#cl-9
- (defvar af-ido-flex-fuzzy-limit (* 2000 5))
+ (defvar af-ido-flex-fuzzy-limit 10000)
  (defadvice ido-set-matches-1 (around my-ido-set-matches-1 activate)
    (let ((ido-enable-flex-matching (< (* (length (ad-get-arg 0)) (length ido-text))
                                       af-ido-flex-fuzzy-limit)))
@@ -376,6 +377,9 @@
    (define-key ido-mode-map (kbd "tab") 'ido-complete)
    (define-key ido-mode-map "\C-t" 'ido-toggle-regexp) ; same as in isearch
    (define-key ido-mode-map "\C-d" 'ido-enter-dired))  ; cool
+
+ (setq ido-ubiquitous-max-items 10000
+    ido-cr+-max-items 10000)
 
  (setq
   ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]"))
@@ -394,11 +398,10 @@
   ido-record-commands nil
   ido-max-work-directory-list 0
   ido-max-work-file-list 0
-  )
+  ido-ubiquitous-mode 1)
 
  ;; Seems there's an issue with th max directory size on OSX
- (GNUEmacs23
-  (setq ido-max-directory-size 100000000))
+ (setq ido-max-directory-size 100000000)
 
  (defun ni-ido-imenu ()
    "Update the imenu index and then use ido to select a symbol to navigate to.
