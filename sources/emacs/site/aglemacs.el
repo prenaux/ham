@@ -351,7 +351,7 @@
  (agl-begin-time-block "IDO completion")
 
  (ido-mode t)
- (require 'ido-completing-read+)
+ (require 'ido-completing-read-plus)
 
  ;; Ohhh, yes... please thanks god, this makes sure that ido won't switch to
  ;; an active frame (window) if the buffer is already opened there. It'll just

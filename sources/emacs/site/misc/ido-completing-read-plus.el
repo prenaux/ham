@@ -1,8 +1,8 @@
-;;; ido-completing-read+.el --- A completing-read-function using ido  -*- lexical-binding: t -*-
+;;; ido-completing-read-plus.el --- A completing-read-function using ido  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2011-2017 Ryan C. Thompson
 
-;; Filename: ido-completing-read+.el
+;; Filename: ido-completing-read-plus.el
 ;; Author: Ryan C. Thompson <rct@thompsonclan.org>
 ;; Created: Sat Apr  4 13:41:20 2015 (-0700)
 ;; Version: 4.14
@@ -23,15 +23,15 @@
 ;; (almost) every function that uses the standard completion function
 ;; `completing-read'.
 
-;; This package implements the `ido-completing-read+' function, which
+;; This package implements the `ido-completing-read-plus' function, which
 ;; is a wrapper for `ido-completing-read'. Importantly, it detects
 ;; edge cases that ordinary ido cannot handle and either adjusts them
 ;; so ido *can* handle them, or else simply falls back to Emacs'
 ;; standard completion instead. Hence, you can safely set
-;; `completing-read-function' to `ido-completing-read+' without
+;; `completing-read-function' to `ido-completing-read-plus' without
 ;; worrying about breaking completion features that are incompatible
 ;; with ido. (Package authors interested in implementing ido support
-;; within their packages can also use `ido-completing-read+' instead
+;; within their packages can also use `ido-completing-read-plus' instead
 ;; of `ido-completing-read' to provide a more consistent user
 ;; experience.)
 
@@ -53,10 +53,10 @@
 ;; other means (for example, magit). See `M-x describe-variable
 ;; ido-cr+-disable-list' for more information.
 
-;; ido-completing-read+ version 4.0 is a major update. The formerly
+;; ido-completing-read-plus version 4.0 is a major update. The formerly
 ;; separate package ido-ubiquitous has been subsumed into
-;; ido-completing-read+, so ido-ubiquitous 4.0 is just a wrapper that
-;; loads ido-completing-read+ and displays a warning about being
+;; ido-completing-read-plus, so ido-ubiquitous 4.0 is just a wrapper that
+;; loads ido-completing-read-plus and displays a warning about being
 ;; obsolete. If you have previously customized ido-ubiquitous, be sure
 ;; to check out `M-x customize-group ido-completing-read-plus' after
 ;; updating to 4.0 and make sure the new settings are to your liking.
@@ -80,10 +80,10 @@
 ;;
 ;;; Code:
 
-(defconst ido-completing-read+-version "4.14"
-  "Currently running version of ido-completing-read+.
+(defconst ido-completing-read-plus-version "4.14"
+  "Currently running version of ido-completing-read-plus.
 
-Note that when you update ido-completing-read+, this variable may
+Note that when you update ido-completing-read-plus, this variable may
 not be updated until you restart Emacs.")
 
 (require 'nadvice)
@@ -117,7 +117,7 @@ Debug info is printed to the *Messages* buffer."
 This only has an effect when `ido-cr+-debug-mode' is non-nil.
 Arguments are identical to `message'."
   (when ido-cr+-debug-mode
-    (apply #'message (concat "ido-completing-read+: " format-string) args)))
+    (apply #'message (concat "ido-completing-read-plus: " format-string) args)))
 
 ;;; Ido variables
 
@@ -141,7 +141,7 @@ INITVALUE and DOCSTRING arguments."
 
 This variable was originally declared in `ido.el' without an
 initial value or docstring. The documentation you're reading
-comes from re-declaring it in `ido-completing-read+.el' in order
+comes from re-declaring it in `ido-completing-read-plus.el' in order
 to suppress some byte-compilation warnings. Setting another
 package's variable is not safe in general, but in this case it
 should be, because ido always let-binds this variable before
@@ -215,7 +215,7 @@ generally be nil while running an idle timer.")
  "4.2")
 
 (defvar ido-cr+-orig-completing-read-args nil
-  "Original arguments passed to `ido-completing-read+'.
+  "Original arguments passed to `ido-completing-read-plus'.
 
 These are used for falling back to `completing-read-default'.")
 
@@ -271,7 +271,7 @@ not need to be modified by users.")
   ;; unless that is already set to the ido completer, in which case
   ;; use `completing-read-default'.
   (if (memq completing-read-function
-            '(ido-completing-read+
+            '(ido-completing-read-plus
               ido-completing-read
               ;; Current ido-ubiquitous function
               completing-read-ido-ubiquitous
@@ -294,7 +294,7 @@ or C-b."
 (defcustom ido-cr+-max-items 30000
   "Max collection size to use ido-cr+ on.
 
-If `ido-completing-read+' is called on a collection larger than
+If `ido-completing-read-plus' is called on a collection larger than
 this, the fallback completion method will be used instead. To
 disable fallback based on collection size, set this to nil."
   :type '(choice (const :tag "No limit" nil)
@@ -313,7 +313,7 @@ disable fallback based on collection size, set this to nil."
 (define-obsolete-variable-alias
   'ido-cr+-function-blacklist
   'ido-cr+-disable-list
-  "ido-completing-read+ 4.14")
+  "ido-completing-read-plus 4.14")
 
 (defcustom ido-cr+-disable-list
   '(read-file-name-internal
@@ -366,7 +366,7 @@ regular expressions, only name-based matching is possible."
 (define-obsolete-variable-alias
   'ido-cr+-function-whitelist
   'ido-cr+-allow-list
-  "ido-completing-read+ 4.14")
+  "ido-completing-read-plus 4.14")
 
 (defcustom ido-cr+-allow-list
   nil
@@ -425,7 +425,7 @@ instead of leaving it as nil.")
   "Functions & commands with alternate behavior when DEF is nil.
 
 This variable has the same format as `ido-cr+-disable-list'. When
-`ido-completing-read+` is called through `completing-read'
+`ido-completing-read-plus` is called through `completing-read'
 by/with any command, function, or collection matched by entries
 in this list, it will behave differently when DEF is nil. Instead
 of using the empty string as the default value, it will use the
@@ -474,7 +474,7 @@ case, the DATA part of the signal is used as the message."
 
 (defun ido-cr+--called-from-completing-read ()
   "Return non-nil if the most recent call to ido-cr+ was from `completing-read'."
-  (equal (cadr (backtrace-frame 1 'ido-completing-read+))
+  (equal (cadr (backtrace-frame 1 'ido-completing-read-plus))
          'completing-read))
 
 (defmacro ido-cr+-function-is-in-list (fun fun-list &optional list-name)
@@ -525,7 +525,7 @@ information manually if it is known."
 (define-obsolete-function-alias
   'ido-cr+-function-is-blacklisted
   'ido-cr+-disabled-in-function-p
-  "ido-completing-read+ 4.14")
+  "ido-completing-read-plus 4.14")
 
 (defsubst ido-cr+-disabled-in-function-p (fun)
   "Return non-nil if ido-cr+ is disabled for FUN.
@@ -536,7 +536,7 @@ See `ido-cr+-disable-list'."
 (define-obsolete-function-alias
   'ido-cr+-function-is-whitelisted
   'ido-cr+-allowed-in-function-p
-  "ido-completing-read+ 4.14")
+  "ido-completing-read-plus 4.14")
 
 (defsubst ido-cr+-allowed-in-function-p (fun)
   "Return non-nil if ido-cr+ is allowed for FUN.
@@ -546,7 +546,7 @@ See `ido-cr+-allow-list'."
       (ido-cr+-function-is-in-list fun ido-cr+-allow-list)))
 
 ;;;###autoload
-(defun ido-completing-read+ (prompt collection &optional predicate
+(defun ido-completing-read-plus (prompt collection &optional predicate
                                     require-match initial-input
                                     hist def inherit-input-method)
   "Ido-based method for reading from the minibuffer with completion.
@@ -808,7 +808,7 @@ See the varaible `ido-cr+-replace-completely' for more information."
       ;; activate, so just run the function as normal
       (apply orig-fun args)
     ;; Otherwise, we need to activate ido-cr+.
-    (apply #'ido-completing-read+ args)))
+    (apply #'ido-completing-read-plus args)))
 ;;;###autoload
 (advice-add 'ido-completing-read :around
             #'ido-completing-read@ido-cr+-replace)
@@ -827,7 +827,7 @@ See `ido-cr+-current-command' for more information."
 
 ;; Fallback on magic C-f and C-b
 (defun ido-magic-forward-char@ido-cr+-fallback (&rest _args)
-  "Allow falling back in ido-completing-read+."
+  "Allow falling back in ido-completing-read-plus."
   (when (ido-cr+-active)
     ;; `ido-context-switch-command' is already let-bound at this
     ;; point.
@@ -836,7 +836,7 @@ See `ido-cr+-current-command' for more information."
             #'ido-magic-forward-char@ido-cr+-fallback)
 
 (defun ido-magic-backward-char@ido-cr+-fallback (&rest _args)
-  "Allow falling back in ido-completing-read+."
+  "Allow falling back in ido-completing-read-plus."
   (when (ido-cr+-active)
     ;; `ido-context-switch-command' is already let-bound at this
     ;; point.
@@ -1141,7 +1141,7 @@ when ido completion is or is not used by customizing
   ;; `completing-read-function'.
   (setq completing-read-function
         (if ido-ubiquitous-mode
-            #'ido-completing-read+
+            #'ido-completing-read-plus
           ido-cr+-fallback-function)))
 
 (defcustom ido-cr+-auto-update-disable-list 'notify
@@ -1188,7 +1188,7 @@ will simply be re-added the next time Emacs starts.)"
 (define-obsolete-function-alias
   'ido-cr+-update-blacklist
   'ido-cr+-update-disable-list
-  "ido-completing-read+ 4.14")
+  "ido-completing-read-plus 4.14")
 
 (defun ido-cr+-update-disable-list (&optional save quiet)
   "Re-add any missing default entries to `ido-cr+-disable-list'.
@@ -1251,7 +1251,7 @@ disable list was modified."
 (define-obsolete-function-alias
   'ido-cr+-maybe-update-blacklist
   'ido-cr+-maybe-update-disable-list
-  "ido-completing-read+ 4.14")
+  "ido-completing-read-plus 4.14")
 
 (defun ido-cr+-maybe-update-disable-list ()
   "Maybe call `ico-cr+-update-disable-list.
@@ -1263,7 +1263,7 @@ disable list was modified."
              (new-entries (cl-set-difference defval curval :test #'equal)))
         (if new-entries
             (if (eq ido-cr+-auto-update-disable-list 'notify)
-                (display-warning 'ido-completing-read+ (format "There are %s new disable list entries available. Use `M-x ido-cr+-update-disable-list' to install them. (See `ido-cr+-auto-update-disable-list' for more information.)" (length new-entries)))
+                (display-warning 'ido-completing-read-plus (format "There are %s new disable list entries available. Use `M-x ido-cr+-update-disable-list' to install them. (See `ido-cr+-auto-update-disable-list' for more information.)" (length new-entries)))
               (ido-cr+--debug-message "Initiating disable list update.")
               (ido-cr+-update-disable-list t))
           (ido-cr+--debug-message "No disable list updates available.")))
@@ -1271,6 +1271,6 @@ disable list was modified."
 
 (ido-cr+-maybe-update-disable-list)
 
-(provide 'ido-completing-read+)
+(provide 'ido-completing-read-plus)
 
-;;; ido-completing-read+.el ends here
+;;; ido-completing-read-plus.el ends here
