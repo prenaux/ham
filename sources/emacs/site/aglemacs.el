@@ -351,7 +351,11 @@
  (agl-begin-time-block "IDO completion")
 
  (ido-mode t)
- (require 'ido-completing-read-plus)
+
+ ;; This is more of a Emacs24 issue than a Windows issue I think, but for now
+ ;; it'll do...
+ (NotWindows
+  (require 'ido-completing-read-plus))
 
  ;; Ohhh, yes... please thanks god, this makes sure that ido won't switch to
  ;; an active frame (window) if the buffer is already opened there. It'll just
