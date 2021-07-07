@@ -1,0 +1,12 @@
+#!/bin/bash
+export HAM_NO_VER_CHECK=1
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "which python3" ]]; then
+    . ham-toolset python_36
+fi
+DIR="$1"
+if [[ -z "$DIR" ]]; then
+   DIR="."
+fi
+echo "I/Serving directory '$DIR'"
+python3 -m http.server -d "$DIR"
