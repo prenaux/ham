@@ -13,6 +13,7 @@ JSCC_WARN_ARGS =
 # -Wno-warn-absolute-paths
 -Wno-unused-value
 -Wno-unused-variable
+-Wno-unused-function
 -Werror=return-stack-address
 ;
 if $(LOA_LINKER) = clang || $(LOA_LINKER) = em {
@@ -44,21 +45,18 @@ C++FLAGS +=
 ;
 
 EMSCRIPTEN_COMPILATION_SETTINGS =
-  -s DISABLE_EXCEPTION_CATCHING=1 -s WARN_ON_UNDEFINED_SYMBOLS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=1
+  -s DISABLE_EXCEPTION_CATCHING=1
 ;
 
-EMSCRIPTEN_USE_ASM_JS ?= 1 ;
-
-if $(EMSCRIPTEN_USE_ASM_JS) = 1 {
-  EMSCRIPTEN_COMPILATION_SETTINGS +=
-    -s ALLOW_MEMORY_GROWTH=0 -s ASM_JS=1
-  ;
-}
-else {
-  EMSCRIPTEN_COMPILATION_SETTINGS +=
-    -s ALLOW_MEMORY_GROWTH=1 -s ASM_JS=0
-  ;
-}
+EMSCRIPTEN_LINKER_SETTINGS =
+  -s MINIFY_HTML=0
+  # ALLOW_MEMORY_GROWTH is documented as being efficient in wasm, so we enable
+  # it since we only target wasm
+  -s ALLOW_MEMORY_GROWTH=1
+  # Great on paper, but its implemented by just lowercasing everything which
+  # is not good enough...
+  # -s CASE_INSENSITIVE_FS=1
+;
 
 ### "Debug" (da) build flags ###
 JSCC_DBG_ARGS = $(STRICT_ALIASING_FLAGS) ;
@@ -67,16 +65,12 @@ JSCC_DBG_ARGS += -g2 -O1 -s GL_ASSERTIONS=1 $(EMSCRIPTEN_COMPILATION_SETTINGS) ;
 ### Optimized (ra) build flags ###
 JSCC_OPT_ARGS = $(STRICT_ALIASING_FLAGS) ;
 JSCC_OPT_ARGS +=
-  -O2 -s ASSERTIONS=0
+  -O2
   $(EMSCRIPTEN_COMPILATION_SETTINGS)
-  # Experimental flags
-  -s INLINING_LIMIT=150
-  --llvm-opts \"['-Os']\"
-  # --llvm-lto 3 # Increases code size...
 ;
 
 ### Link flags ###
-LINKFLAGS += --memory-init-file 0 --shell-file [ FQuote $(HAM_HOME)/sources/jscc/shell.html ] ;
+LINKFLAGS += $(EMSCRIPTEN_LINKER_SETTINGS) ;
 if $(DEBUG) = 1 {
   LINKFLAGS += $(JSCC_DBG_ARGS) ;
 }

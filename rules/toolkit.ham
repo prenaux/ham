@@ -552,7 +552,7 @@ rule tkDefPackage
   PKGGROUP = $(3) ;
   PKGTARGET_LIB = ;
   PKGTARGET_JS = ;
-  PKGTARGETF2 = ;
+  PKGTARGET_WASM = ;
   if $(PKGGROUP) = jar || $(PKGGROUP) = apk {
     OBJDIR = [ FDirName $(BASEOBJDIR) jvm-$(TK_NAME:L) $(PACKAGE) ] ;
     PKGBUILD = $(PACKAGE) ;
@@ -606,6 +606,8 @@ rule tkDefPackage
       if $(SUFEXE) = .html {
         PKGTARGET_JS = $(PKGBUILD:S=.js) ;
         FilePreserve [ FDirName $(OUTDIR:/) $(PKGTARGET_JS) ] : $(PKGTARGET_JS:/) ;
+        PKGTARGET_WASM = $(PKGBUILD:S=.wasm) ;
+        FilePreserve [ FDirName $(OUTDIR:/) $(PKGTARGET_WASM) ] : $(PKGTARGET_WASM:/) ;
       }
     }
     else {
@@ -627,12 +629,6 @@ rule tkDefPackage
   else {
     PKGTARGETF = $(PKGTARGET) ;
   }
-  if $(PKGTARGET_LIB) {
-    PKGTARGETF2 = $(PKGTARGET_LIB) ;
-  }
-  if $(PKGTARGET_JS) {
-    PKGTARGETF2 = $(PKGTARGET_JS) ;
-  }
 
   # Target directory
   LOCATE_TARGET = $(OBJDIR) ;
@@ -653,6 +649,13 @@ rule tkDefPackage
     DEPENDS $(PKGTARGET_JS) : tkdir ;
     DEPENDS $(PKGTARGET_JS) : tkimport ;
   }
+  if $(PKGTARGET_WASM) {
+    MakeLocate $(PKGTARGET_WASM) : $(TK_DIR_BIN) ;
+    MakeLocate $(PKGTARGET_WASM) : $(OBJDIR) ;
+    DEPENDS $(PKGTARGET_WASM) : $(PKGTARGETF) ;
+    DEPENDS $(PKGTARGET_WASM) : tkdir ;
+    DEPENDS $(PKGTARGET_WASM) : tkimport ;
+  }
   DEPENDS $(PKGGROUP) : $(PACKAGE) ;
   DEPENDS all : $(PKGGROUP) ;
 
@@ -664,7 +667,6 @@ rule tkDefPackage
   logVerbose "- Type        : $(PKGTYPE)" ;
   logVerbose "- Target      : $(PKGTARGET)" ;
   logVerbose "- Target File : $(PKGTARGETF)" ;
-  logVerbose "- Target2     :" $(PKGTARGETF2) ;
 }
 
 # tkDefModuleEx module_name : version : outdir : depdir : group ;
@@ -915,6 +917,12 @@ rule tkBuildPackage
       DEPENDS $(PACKAGE)_js : $(p) ;
       f += $(p) ;
     }
+
+    if $(PKGTARGET_WASM) {
+      local p = [ tkFile $(PKGTARGET_WASM:B)$(_stamp)$(PKGTARGET_WASM:S) : $(PKGTARGET_WASM) : $(TK_DIR_BIN) ] ;
+      DEPENDS $(PACKAGE)_wasm : $(p) ;
+      f += $(p) ;
+    }
   }
   else {
     f += $(d) ;
@@ -927,6 +935,11 @@ rule tkBuildPackage
     if $(PKGTARGET_JS) {
       f += $(PKGTARGET_JS) ;
       DEPENDS $(PACKAGE)_js : $(PKGTARGET_JS) ;
+    }
+
+    if $(PKGTARGET_WASM) {
+      f += $(PKGTARGET_WASM) ;
+      DEPENDS $(PACKAGE)_wasm : $(PKGTARGET_WASM) ;
     }
   }
 

@@ -1,3 +1,4 @@
+EMSCRIPTEN = 1 ;
 OSPLAT = JS ;
 
 SLASH   ?= / ;
