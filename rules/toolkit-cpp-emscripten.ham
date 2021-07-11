@@ -1,3 +1,8 @@
+if $(BUILD) = da {
+  # Build with the sanitizer in debug mode
+  CLANG_SANITIZE ?= 1 ;
+}
+
 STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
 
 TEMPDIR_JSCC = [ FDirName $(TEMPDIR) jscc ] ;
@@ -48,6 +53,15 @@ EMSCRIPTEN_COMPILATION_SETTINGS =
   -s DISABLE_EXCEPTION_CATCHING=1
 ;
 
+if $(CLANG_ANALYZER) = 1 {
+  EMSCRIPTEN_COMPILATION_SETTINGS += -DCLANG_ANALYZER=1 --analyze ;
+  ECHO "I/Building with Clang's static analyzer" ;
+}
+if $(CLANG_SANITIZE) = 1 {
+  EMSCRIPTEN_COMPILATION_SETTINGS += -DCLANG_SANITIZE=1 -fsanitize=address -fsanitize=undefined ;
+  ECHO "I/Building with -fsanitize=address" ;
+}
+
 EMSCRIPTEN_LINKER_SETTINGS =
   -s MINIFY_HTML=0
   # ALLOW_MEMORY_GROWTH is documented as being efficient in wasm, so we enable
@@ -60,10 +74,7 @@ EMSCRIPTEN_LINKER_SETTINGS =
 
 ### "Debug" (da) build flags ###
 JSCC_DBG_ARGS = $(STRICT_ALIASING_FLAGS) ;
-JSCC_DBG_ARGS +=
-  -O1 -g2 -fsanitize=address -fsanitize=undefined
-  $(EMSCRIPTEN_COMPILATION_SETTINGS)
-;
+JSCC_DBG_ARGS += -O1 -g2 $(EMSCRIPTEN_COMPILATION_SETTINGS) ;
 
 ### Optimized (ra) build flags ###
 JSCC_OPT_ARGS = $(STRICT_ALIASING_FLAGS) ;
