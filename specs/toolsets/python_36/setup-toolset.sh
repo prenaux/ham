@@ -33,6 +33,10 @@ case $HAM_OS in
             echo "I/pip not found, installing..."
             brew install python3
             errcheck $? python_36 "E/Can't install python 3"
+            # Install pytest so that we have a Library folder, its just
+            # simpler than trying to do without it
+            pip3 install --user pytest
+            errcheck $? python_36 "E/Can't install pytest with pip3"
             if [ -z "which pip3" ]; then
                 errcheck $? python_36 "E/Can't install pip 3"
             fi
