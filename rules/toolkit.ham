@@ -24,7 +24,7 @@ AssertVarDefined HAM_TOOLSET_VER ;
 
 if $(OS) = MACOSX {
   BUILD_BIN_LOA ?= $(BIN_LOA) ;
-  BUILD_SUFEXE = $(SUFEXE) ;
+  BUILD_SUFEXE = "" ;
 }
 else if $(OS) = LINUX {
   BUILD_BIN_LOA ?= $(BIN_LOA) ;

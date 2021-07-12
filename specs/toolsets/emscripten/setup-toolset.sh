@@ -22,6 +22,7 @@ case $HAM_OS in
             brew install emscripten
         fi
         export PATH=${HAM_TOOLSET_DIR}:${PATH}
+        export BUILD_BIN_LOA=$HAM_BIN_LOA
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
