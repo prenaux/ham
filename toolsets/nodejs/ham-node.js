@@ -45,7 +45,11 @@ function lazyLoadWebPack() {
 //======================================================================
 // Front-end
 //======================================================================
-var configFrontEnd = function(aIsDev,aUseSourceMap) {
+var configFrontEnd = function(aIsDev,aUseSourceMap,aServerType) {
+  NI.assert.isDefined(aIsDev, "aIsDev should be defined");
+  NI.assert.isDefined(aUseSourceMap, "aUseSourceMap should be defined");
+  NI.assert.stringNotEmpty(aServerType, "aServerType should be defined");
+
   var entry = {};
   var clientFilesDir = PATH.resolve(baseDir, 'sources/client/');
   var clientFiles = niFS.walkSync(clientFilesDir);
@@ -125,6 +129,7 @@ var configFrontEnd = function(aIsDev,aUseSourceMap) {
     plugins: [
       new WEBPACK.DefinePlugin({
         __BACKEND__: false,
+        __SERVER_TYPE__: JSON.stringify(aServerType),
         __DEV__: aIsDev,
       }),
       // Use the plugin to specify the resulting filename (and add needed
@@ -158,7 +163,8 @@ function buildOnBuild(done) {
 
 function frontendBuild(aParams,aDone) {
   lazyLoadWebPack();
-  var myConfig = configFrontEnd(false,true);
+  var serverType = NI.selectn("serverType", aParams) || appConfig.serverType;
+  var myConfig = configFrontEnd(false,true,serverType);
 
   function rmDir(dirPath,aRemoveThisDir) {
     var files = FS.readdirSync(dirPath);
@@ -211,11 +217,11 @@ exports.frontendBuild = frontendBuild;
 var webpackServer = undefined;
 function frontendWatch(aParams) {
   lazyLoadWebPack();
-  var useSourceMap = NI.selectn("useSourceMap",aParams);
-  var serverType = NI.selectn("serverType", aParams) || 'web';
+  var useSourceMap = NI.selectn("useSourceMap",aParams) || false;
+  var serverType = NI.selectn("serverType", aParams) || appConfig.serverType;
   var serverPort = NI.selectn("serverPort", aParams);
-  var bundlePort = parseInt(serverPort) || global.bundlePort;
-  var myConfig = configFrontEnd(true,useSourceMap);
+  var bundlePort = parseInt(serverPort) || appConfig.bundlePort;
+  var myConfig = configFrontEnd(true,useSourceMap,serverType);
 
   // Use 'eval', its *much* faster than source-map
   myConfig.devtool = useSourceMap ? 'source-map' : 'eval';
@@ -268,7 +274,7 @@ exports.frontendWatch = frontendWatch;
 
 // $ nodemon -e js,jsx --ignore "sources/*-test.js" --ignore "sources/client.js" --ignore "sources/client/*" --watch sources sources/server.js
 function backendWatch(aParams) {
-  var serverType = NI.selectn("serverType", aParams) || 'web';
+  var serverType = NI.selectn("serverType", aParams) || appConfig.serverType;
   var serverPort = NI.selectn("serverPort", aParams);
   var nodeEnv = NI.selectn("nodeEnv",aParams) || 'development';
   var debug = NI.selectn("debug", aParams) || false;
@@ -380,8 +386,14 @@ function lint(aParams,aDone) {
     'eslint --format unix --ext .js --ext .jsx ./sources',
     function (error, stdout, stderr) {
       console.log("# lint");
-      console.log(NI.stringTrim(stdout));
-      console.log(NI.stringTrim(stderr));
+      var o = NI.stringTrim(stdout);
+      if (!NI.isEmpty(o)) {
+        console.log(NI.stringTrim(o));
+      }
+      var o = NI.stringTrim(stderr);
+      if (!NI.isEmpty(o)) {
+        console.log(NI.stringTrim(o));
+      }
       if (error !== null) {
         // console.log('exec error: ' + error);
         errorExit("Linting failed.");
