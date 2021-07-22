@@ -188,7 +188,9 @@
 (Windows
  (setq aflymake-eslint-executable (concat (getenv "WORK") "/ham/toolsets/nodejs/nt-x86/eslint")))
 (OSX
- (setq aflymake-eslint-executable (concat (getenv "WORK") "/ham/toolsets/nodejs/osx-x86/bin/eslint")))
+ (if (string-match "^aarch64-.*" system-configuration)
+     (setq aflymake-eslint-executable "/opt/homebrew/bin/eslint")
+   (setq aflymake-eslint-executable (concat (getenv "WORK") "/ham/toolsets/nodejs/osx-x86/bin/eslint"))))
 
 (defun ham-flymake-eslint-init ()
   (aflymake-easy-load 'aflymake-eslint-command
