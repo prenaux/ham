@@ -10,7 +10,8 @@ npm install -g \
     jsonlint@1.6.x \
     node-pre-gyp \
     npm-flatten \
-    heroku
+    heroku \
+    yarn
 
 echo "I/Installing regular packages..."
 npm install -g --no-bin-links \
@@ -32,5 +33,4 @@ npm install -g --no-bin-links \
     supertest@1.x \
     url-loader@0.5.x \
     webpack-dev-server@1.x \
-    webpack@1.x \
-    yarn
+    webpack@1.x
