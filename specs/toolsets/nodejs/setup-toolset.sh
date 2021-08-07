@@ -13,7 +13,7 @@ case $HAM_OS in
         export NODEJS_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
         export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}/node_modules"
         export PATH=${HAM_TOOLSET_DIR}:"${NODEJS_DIR}":"${NODEJS_DIR}/bin":${PATH}
-        export NODE_PATH=$NODEJS_DIR/lib/node_modules
+        export NODE_PATH="$NODEJS_DIR/lib/node_modules"
         ;;
     OSX*)
         if [ "$HAM_BIN_LOA" == "osx-arm64" ]; then
@@ -25,11 +25,11 @@ case $HAM_OS in
             export PATH=${HAM_TOOLSET_DIR}:${PATH}
             export NODE_PATH=$NODEJS_GLOBAL_MODULES_DIR
         else
-            toolset_check_and_dl_ver nodejs osx-x86 v10_16 || return 1
-            export NODEJS_DIR="${HAM_TOOLSET_DIR}/osx-x86/"
-            export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}lib/node_modules"
+            toolset_check_and_dl_ver nodejs osx-x64 v14_17 || return 1
+            export NODEJS_DIR="${HAM_TOOLSET_DIR}/osx-x64"
+            export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}/lib/node_modules"
             export PATH=${HAM_TOOLSET_DIR}:"${NODEJS_DIR}/bin":${PATH}
-            export NODE_PATH=$NODEJS_DIR/lib/node_modules
+            export NODE_PATH="$NODEJS_DIR/lib/node_modules"
         fi
         ;;
     LINUX*)
