@@ -1,3 +1,8 @@
 #!/bin/bash
-export NODE_PATH=$NODEJS_GLOBAL_MODULES_DIR/:`pwd`/node_modules/
-node "$HAM_HOME/toolsets/nodejs/ham-node.js" "$@"
+export NODE_PATH=$NODEJS_GLOBAL_MODULES_DIR/:$(pwd)/node_modules/
+if [ -e "$(pwd)/.pnp.cjs" ]; then
+    echo "I/Using Yarn .pnp.cjs"
+    NODE_OPTIONS="--require $(pwd)/.pnp.cjs" node "$HAM_HOME/toolsets/nodejs/ham-node.js" "$@"
+else
+    node "$HAM_HOME/toolsets/nodejs/ham-node.js" "$@"
+fi
