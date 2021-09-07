@@ -1,3 +1,4 @@
 #!/bin/bash
 . ham-bash-lib.sh
+set -ex
 ffmpeg -i "$1" -c:v libx264 -preset medium -crf 31 -c:a mp3 -b:a 128k "$2"

@@ -1,3 +1,4 @@
 #!/bin/bash
 . ham-bash-lib.sh
+set -ex
 ffmpeg -i "$1" -acodec flac "$2"
