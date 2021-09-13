@@ -1,0 +1,9 @@
+#!/bin/bash
+while [[ $PWD != / ]] ; do
+    RET=`find "$PWD" -maxdepth 1 -name "$@"`
+    if [ -e "$RET" ]; then
+        echo $RET
+        break
+    fi
+    cd ..
+done

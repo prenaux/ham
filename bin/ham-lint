@@ -1,0 +1,15 @@
+#!/bin/bash
+export HAM_NO_VER_CHECK=1
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+LINT_SCRIPT=$(ham-find-file-up "_lint.sh")
+if [ -e "$LINT_SCRIPT" ]; then
+    # echo "Running linter: $LINT_SCRIPT"
+    set -x
+    pwd
+    "$LINT_SCRIPT" "$@"
+else
+    echo "No _lint.sh found in any parent folder."
+    exit 1
+fi

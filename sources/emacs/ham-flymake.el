@@ -185,12 +185,12 @@
 ;;**********************************************************************
 (require 'aflymake-eslint)
 
-(Windows
- (setq aflymake-eslint-executable (concat (getenv "WORK") "/ham/toolsets/nodejs/nt-x86/eslint")))
-(OSX
- (if (string-match "^aarch64-.*" system-configuration)
-     (setq aflymake-eslint-executable "/opt/homebrew/bin/eslint")
-   (setq aflymake-eslint-executable (concat (getenv "WORK") "/ham/toolsets/nodejs/osx-x86/bin/eslint"))))
+;; There's so many way to run eslint depending on the javascript project setup
+;; that we're bow delegating that to ham-lint to figure out. ham-lint looks
+;; for a _lint.sh bash script in any of the parent folder and then runs that
+;; with the JS file as parameter. The goal of _lint.sh is to run the
+;; appropriate linting tool.
+(setq aflymake-eslint-executable (concat (getenv "WORK") "/ham/bin/ham-lint"))
 
 (defun ham-flymake-eslint-init ()
   (aflymake-easy-load 'aflymake-eslint-command
