@@ -1,4 +1,9 @@
 #!/bin/bash
 . ham-bash-lib.sh
+SRC="$1"
+DST="$2"
+if [ -z "$DST" ]; then
+    DST="${SRC%.*}_mq.mp4"
+fi
 set -ex
-ffmpeg -i "$1" -c:v libx264 -preset medium -crf 31 -c:a mp3 -b:a 128k "$2"
+ffmpeg -i "$SRC" -c:v libx264 -preset medium -crf 31 -c:a mp3 -b:a 128k "$DST"

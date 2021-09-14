@@ -1,4 +1,9 @@
 #!/bin/bash
 . ham-bash-lib.sh
+SRC="$1"
+DST="$2"
+if [ -z "$DST" ]; then
+    DST="${SRC%.*}_wav8.wav"
+fi
 set -ex
-ffmpeg -i "$1" -acodec pcm_u8 -ar 22050 "$2"
+ffmpeg -i "$SRC" -acodec pcm_u8 -ar 22050 "$DST"
