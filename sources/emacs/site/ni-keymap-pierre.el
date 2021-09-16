@@ -220,6 +220,7 @@
 
  ;; Projectile
  (define-key projectile-mode-map (kbd "C-z") 'projectile-command-map)
+ (define-key projectile-mode-map (kbd "C-z C-z") 'projectile-find-file)
  (define-key projectile-mode-map (kbd "C-z C-f") 'projectile-find-file)
  (define-key projectile-mode-map (kbd "C-z C-p") 'projectile-switch-project)
 
