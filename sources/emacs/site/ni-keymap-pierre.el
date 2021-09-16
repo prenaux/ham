@@ -219,8 +219,11 @@
  (define-key global-map "\C-h\C-d" 'direx:jump-to-directory)
 
  ;; Projectile
- (require 'projectile)
  (define-key projectile-mode-map (kbd "C-z") 'projectile-command-map)
  (define-key projectile-mode-map (kbd "C-z C-f") 'projectile-find-file)
  (define-key projectile-mode-map (kbd "C-z C-p") 'projectile-switch-project)
+
+ ;; Treemacs
+ (global-set-key (kbd "M-<f1>") 'treemacs-find-file)
+ (global-set-key (kbd "M-<f2>") 'treemacs-add-and-display-current-project)
 )

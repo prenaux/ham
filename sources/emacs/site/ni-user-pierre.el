@@ -573,12 +573,6 @@ If the new path's directories does not exist, create them."
 (add-hook 'typescript-mode-hook 'aflymake-mode)
 
 ;;;======================================================================
-;;; Keymap
-;;;======================================================================
-(NotBatchMode
- (require 'ni-keymap-pierre))
-
-;;;======================================================================
 ;;; Dark mode
 ;;;======================================================================
 (NotBatchMode
@@ -629,3 +623,27 @@ If the new path's directories does not exist, create them."
  (projectile-mode +1)
  (setq projectile-completion-system 'ivy)
 )
+
+;;;======================================================================
+;;; Treemacs
+;;;======================================================================
+(NotBatchMode
+ (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/treemacs"))
+ (require 'treemacs)
+ (require 'treemacs-projectile)
+
+ (treemacs-follow-mode t)
+
+ ;; You might need to run `M-x all-the-icons-install-fonts` and restart emacs
+ ;; for the font icons to be setup properly.
+ (IsNotTerminal
+  (require 'all-the-icons)
+  (require 'treemacs-all-the-icons)
+  (treemacs-load-theme "all-the-icons"))
+)
+
+;;;======================================================================
+;;; Keymap
+;;;======================================================================
+(NotBatchMode
+ (require 'ni-keymap-pierre))
