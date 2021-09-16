@@ -224,6 +224,6 @@
  (define-key projectile-mode-map (kbd "C-z C-p") 'projectile-switch-project)
 
  ;; Treemacs
- (global-set-key (kbd "M-<f1>") 'treemacs-find-file)
+ (global-set-key (kbd "M-<f1>") 'ni-treemacs-find-file)
  (global-set-key (kbd "M-<f2>") 'treemacs-add-and-display-current-project)
 )
