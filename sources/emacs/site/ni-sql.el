@@ -24,11 +24,10 @@
 (defun ni-sql-connect-server (connection)
   "Connect to the input server using sql-servers-list"
   (interactive
-   ;; use ido-completing-read or completing-read
-   (list (ido-completing-read "Select server: "
-                              (mapcar (lambda (item)
-                                        (symbol-name (nth 0 item)))
-                                      sql-connection-alist)))
+   (list (completing-read "Select server: "
+                          (mapcar (lambda (item)
+                                    (symbol-name (nth 0 item)))
+                                  sql-connection-alist)))
   )
   ;; get the sql connection info and product from the sql-connection-alist
   (let* ((connection-info (assoc (intern connection) sql-connection-alist))

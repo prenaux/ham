@@ -613,4 +613,19 @@ If the new path's directories does not exist, create them."
           (progn (ni-theme-set-light-mode))
         (message "Is already light mode")))
     ))
- )
+)
+
+;;;======================================================================
+;;; Ivy
+;;;======================================================================
+(NotBatchMode
+ (require 'ni-ivy))
+
+;;;======================================================================
+;;; Projectile
+;;;======================================================================
+(NotBatchMode
+ (require 'projectile)
+ (projectile-mode +1)
+ (setq projectile-completion-system 'ivy)
+)

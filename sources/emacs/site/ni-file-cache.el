@@ -175,98 +175,24 @@
             (file-cache-read-cache-from-file my-file-cache-name)
             (message "=== File Cache reading done !")))))
 
- (defun file-cache-ido-find-file (file)
-   "Using ido, interactively open file from file cache'.
-    First select a file, matched using ido-switch-buffer against the contents
-    in `file-cache-alist'. If the file exist in more than one
-    directory, select directory. Lastly the file is opened."
-   (interactive (list (file-cache-ido-read "File: "
-                                           (mapcar
-                                            (lambda (x)
-                                              (car x))
-                                            file-cache-alist))))
-   (let* ((record (assoc file file-cache-alist)))
-     (find-file
-      (expand-file-name
-       file
-       (if (= (length record) 2)
-           (car (cdr record))
-         (file-cache-ido-read
-          (format "Find %s in dir: " file) (cdr record)))))))
-
- (defun file-cache-ido-read (prompt choices)
-   (let ((ido-make-buffer-list-hook
-          (lambda ()
-            (setq ido-temp-list choices))))
-     (ido-read-buffer prompt)))
-
- (defun ni-keys-ido ()
-  "Add my keybindings for ido."
-  (define-key ido-completion-map [escape] 'keyboard-escape-quit))
- (add-hook 'ido-setup-hook 'ni-keys-ido)
-
- (defun jcl-file-cache-ido-find-file (&optional aInitialFile)
-   "Open a file from the file cache.
-First select a file from `file-cache-alist'.  If the file exist
-in more than one directory one is asked to select which to open.
-If you find out that the desired file is not present in the file
-cache then you may want to fallback to normal ido find file with
-C-f.
-Bind this command to C-x C-f to get:
-
- C-x C-f         -> Open file in filecache.
- C-x C-f C-f     -> Open file with normal ido.
- C-x C-f C-f C-f -> Open file with vanilla find-file.
-"
+ (defun ni-file-cache-ivy-find-file (&optional aInitialFile)
+   "Open a file from the file cache."
    (interactive)
-   (let* (jcl-ido-text
-          (file (let ((ido-setup-hook (cons (lambda ()
-                                              (define-key ido-completion-map [(control ?f)]
-                                                (lambda (arg)
-                                                  (interactive "P")
-                                                  (if jcl-ido-text
-                                                      (ido-magic-forward-char arg)
-                                                    (setq jcl-ido-text ido-text
-                                                          ido-text 'fallback-from-cache
-                                                          ido-exit 'done)
-                                                    (exit-minibuffer)))))
-                                            ido-setup-hook)))
-                  (ido-completing-read "Cached File: "
-                                       (mapcar 'car file-cache-alist)
-                                       nil nil aInitialFile))))
-     (if (eq file 'fallback-from-cache)
-         (progn
-           (setq minibuffer-history (delete 'fallback-from-cache minibuffer-history))
-           (ido-file-internal ido-default-file-method
-                              nil
-                              nil
-                              "Ido Find File: "
-                              nil
-                              jcl-ido-text))
-       (let ((record (assoc file file-cache-alist)))
-         (find-file
-          (expand-file-name
-           file
-           (if (= (length record) 2)
-               (cadr record)
-             (ido-completing-read (format "Find %s in dir: " file)
-                                  (cdr record)
-                                  nil
-                                  t))))))))
-
- ;; Find file at point
- (defun ni-ffap ()
-   (interactive)
-   (if (or (thing-at-point-looking-at "[ \t]*include[ \t]+\"\\([^ \t\r\n\"]+\\)\"")
-           (thing-at-point-looking-at "[ \t]*::Import(+\"\\([^ \t\r\n\"]+\\)\")")
-           (thing-at-point-looking-at "[ \t]*::NewImport(+\\([^ \t\r\n]+\\))")
-           (thing-at-point-looking-at "[ \t]*(require[ \t]+'\\([^ \t\r\n]+\\))")
-           (thing-at-point-looking-at "[ \t]*#[ \t]*include[ \t]+[\"<]\\([^\">\r\n]+\\)\\([\">]\\|$\\)"))
-       (progn
-         (jcl-file-cache-ido-find-file
-          (file-name-nondirectory (buffer-substring-no-properties (match-beginning 1)
-                                                                  (match-end 1)))))
-     (jcl-file-cache-ido-find-file)))
+   (let* (my-ivy-text
+          (file
+           (completing-read "Cached File: "
+                            (mapcar 'car file-cache-alist)
+                            nil nil aInitialFile)))
+     (let ((record (assoc file file-cache-alist)))
+       (find-file
+        (expand-file-name
+         file
+         (if (= (length record) 2)
+             (cadr record)
+           (completing-read (format "Find %s in dir: " file)
+                                (cdr record)
+                                nil
+                                t)))))))
 
  ;; Save the cache when before we close emacs
  (add-hook 'kill-emacs-hook 'file-cache-save-my-cache-to-file)

@@ -27,24 +27,22 @@
 (defun remove-duplicates-str (list)
   (delete "" (remove-duplicates list :test 'equal :from-end t)))
 
-(defun ido-complete-comint-history ()
+(defun my-complete-comint-history ()
   (interactive)
   (insert
-   (ido-completing-read "comint-history: "
+   (completing-read "comint-history: "
                         (remove-duplicates-str
                          (buffer-to-list
                          (find-file-noselect comint-history-file))))))
 
-;; Use IDO fro comint history
-;; See: http://paste.lisp.org/display/37129 (modified to remove duplicate)
-(defun ido-complete-comint-input-ring ()
+(defun my-complete-comint-input-ring ()
   "Fetch a previous element from history using ido-like completion.
 This function searches *all* elements in history, not just
 previous or next elements like Comint's normal completion.
 So you can bind it to both M-r and M-s."
   (interactive)
   (unless (null comint-input-ring)
-    (let* ((elt (ido-completing-read "History: " (delete "" (remove-duplicates (cddr (ring-elements comint-input-ring)) :test #'string=)) nil t))
+    (let* ((elt (completing-read "History: " (delete "" (remove-duplicates (cddr (ring-elements comint-input-ring)) :test #'string=)) nil t))
            (pos (comint-previous-matching-input-string-position
                  (regexp-quote elt) 1)))
       (unless (null pos)
@@ -60,8 +58,8 @@ So you can bind it to both M-r and M-s."
 )
 
 (defun ni-comint-history-hook ()
-  (local-set-key (kbd "M-s") 'ido-complete-comint-history)
-  (local-set-key (kbd "M-r") 'ido-complete-comint-input-ring))
+  (local-set-key (kbd "M-s") 'my-complete-comint-history)
+  (local-set-key (kbd "M-r") 'my-complete-comint-input-ring))
 
 (add-hook 'comint-input-filter-functions 'save-comint-history)
 (add-hook 'shell-mode-hook 'ni-comint-history-hook)

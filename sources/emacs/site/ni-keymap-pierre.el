@@ -171,12 +171,7 @@
 ;;; ni-file-cache.el
 ;;;======================================================================
 
- ;; C-xC-f repmapped to ni-ffap, which opens the file at point be default, if
- ;; not found calls the default open file
- (global-set-key (key "C-x C-f") 'jcl-file-cache-ido-find-file)
- (define-key global-map (kbd "C-S-r") 'file-cache-ido-find-file)
- (define-key global-map (kbd "C-S-M-r") 'file-cache-update-my-cache)
- (global-set-key (kbd "C-h C-o") 'ni-ido-imenu)
+ (global-set-key (key "C-x C-f") 'ni-file-cache-ivy-find-file)
 
 ;;;======================================================================
 ;;; ni-user-pierre.el
@@ -223,14 +218,9 @@
 
  (define-key global-map "\C-h\C-d" 'direx:jump-to-directory)
 
-;;;======================================================================
-;;; ido M-x enhancement
-;;;======================================================================
- (require 'smex)
- (smex-initialize)
- (global-set-key (kbd "M-x") 'smex)
- (global-set-key (kbd "M-X") 'smex-major-mode-commands)
- ;; This is your old M-x.
- (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
-
+ ;; Projectile
+ (require 'projectile)
+ (define-key projectile-mode-map (kbd "C-z") 'projectile-command-map)
+ (define-key projectile-mode-map (kbd "C-z C-f") 'projectile-find-file)
+ (define-key projectile-mode-map (kbd "C-z C-p") 'projectile-switch-project)
 )
