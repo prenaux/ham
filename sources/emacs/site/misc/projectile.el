@@ -320,12 +320,14 @@ See `projectile-register-project-type'."
 
 (defcustom projectile-project-root-files-bottom-up
   '(".projectile" ; projectile project marker
+    "package.json"; package.json because using multiple
     ".git"        ; Git VCS root dir
     ".hg"         ; Mercurial VCS root dir
     ".fslckout"   ; Fossil VCS root dir
     "_FOSSIL_"    ; Fossil VCS root DB on Windows
     ".bzr"        ; Bazaar VCS root dir
     "_darcs"      ; Darcs VCS root dir
+    "_ham_project"; Ham project
     )
   "A list of files considered to mark the root of a project.
 The bottommost (parentmost) match has precedence."
