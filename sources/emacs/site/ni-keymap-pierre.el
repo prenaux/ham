@@ -216,15 +216,13 @@
 
  (define-key global-map "\C-h\C-\\" 'indent-region)
 
- (define-key global-map "\C-h\C-d" 'direx:jump-to-directory)
-
  ;; Projectile
- (define-key projectile-mode-map (kbd "C-z") 'projectile-command-map)
- (define-key projectile-mode-map (kbd "C-z C-z") 'projectile-find-file)
- (define-key projectile-mode-map (kbd "C-z C-f") 'projectile-find-file)
- (define-key projectile-mode-map (kbd "C-z C-p") 'projectile-switch-project)
+ (define-key projectile-mode-map (kbd "C-x C-p") 'projectile-find-file)
+ (define-key projectile-mode-map (kbd "C-x p") 'projectile-switch-project)
+ (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
  ;; Treemacs
- (global-set-key (kbd "M-<f1>") 'ni-treemacs-find-file)
- (global-set-key (kbd "M-<f2>") 'treemacs-add-and-display-current-project)
+ (global-set-key (kbd "C-h C-d") 'ni-treemacs-find-file)
+ (global-set-key (kbd "C-h d") 'ni-treemacs-find-file)
+ (global-set-key (kbd "C-h p") 'treemacs-add-and-display-current-project)
 )

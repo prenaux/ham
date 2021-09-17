@@ -631,6 +631,7 @@ If the new path's directories does not exist, create them."
  (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/treemacs"))
  (require 'treemacs)
  (require 'treemacs-projectile)
+ (require 'cfrs)
 
  (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
        treemacs-deferred-git-apply-delay        0.5
