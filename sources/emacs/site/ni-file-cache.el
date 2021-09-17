@@ -175,14 +175,18 @@
             (file-cache-read-cache-from-file my-file-cache-name)
             (message "=== File Cache reading done !")))))
 
+ (defun ni-file-cache-reload ()
+   (interactive)
+   (file-cache-read-cache-from-file my-file-cache-name))
+
  (defun ni-file-cache-ivy-find-file (&optional aInitialFile)
    "Open a file from the file cache."
    (interactive)
    (let* (my-ivy-text
           (file
            (completing-read "Cached File: "
-                            (mapcar 'car file-cache-alist)
-                            nil nil aInitialFile)))
+                                (mapcar 'car file-cache-alist)
+                                nil nil aInitialFile)))
      (let ((record (assoc file file-cache-alist)))
        (find-file
         (expand-file-name
