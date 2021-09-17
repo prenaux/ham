@@ -11,6 +11,12 @@
 (setq ivy-count-format "(%d/%d) ")
 (setq ivy-initial-inputs-alist nil)
 
+;; 1/3 of the window height for the minibuffer height
+(setq ivy-height-alist
+      '((t
+         lambda (_caller)
+         (/ (frame-height) 3))))
+
 (global-set-key (kbd "M-x") #'counsel-M-x)
 
 (defmacro ni-ivy-quit-and-run (&rest body)
@@ -28,6 +34,12 @@
   (interactive "P")
   (ni-ivy-quit-and-run
    (counsel-find-file)))
+
+;; Ido behavior for Ivy. ido allows you to use C-j to view the current
+;; directory. If you press RET on a directory, completion continues from that
+;; directly.
+(define-key ivy-minibuffer-map (kbd "C-j") #'ivy-immediate-done)
+(define-key ivy-minibuffer-map (kbd "RET") #'ivy-alt-done)
 
 ;; C-f always open counsel-find-file when in an ivy minibuffer, this is a
 ;; useful fallback
