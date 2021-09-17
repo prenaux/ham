@@ -57,6 +57,21 @@
    (t
     (append (agl-list-flatten (car mylist)) (agl-list-flatten (cdr mylist))))))
 
+;; Return the default value of search like functions
+(defun ni-get-default-search-text ()
+  ""
+  (substring-no-properties
+   (cond
+    ;; Marked text
+    ((use-region-p)
+     (let* ((beg (region-beginning))
+            (end (region-end))
+            (eol (save-excursion (goto-char beg) (line-end-position))))
+       (buffer-substring-no-properties beg (min end eol))))
+    ;; None
+    (t
+     ""))))
+
 ;;;======================================================================
 ;;; OS Environment
 ;;;======================================================================

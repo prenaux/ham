@@ -610,10 +610,27 @@ If the new path's directories does not exist, create them."
 )
 
 ;;;======================================================================
-;;; Ivy
+;;; Ivy & Swiper
 ;;;======================================================================
 (NotBatchMode
- (require 'ni-ivy))
+ (require 'ni-ivy)
+
+ (require 'swiper)
+
+ ;; Search what's been marked otherwise isearch
+ (defun ni-swiper-isearch ()
+   "`swiper' with `ivy-thing-at-point'."
+   (interactive)
+   (let ((thing (ni-get-default-search-text)))
+     (cond
+      ((not (string-empty-p thing))
+       (progn
+         (when (use-region-p)
+           (deactivate-mark))
+         (swiper (regexp-quote thing))))
+      (t (swiper-isearch)))))
+
+)
 
 ;;;======================================================================
 ;;; Projectile
@@ -622,6 +639,11 @@ If the new path's directories does not exist, create them."
  (require 'projectile)
  (projectile-mode +1)
  (setq projectile-completion-system 'ivy)
+
+ ;; Prevent projectile from automatically creating projects when visiting
+ ;; files. For example, navigating to the definition of a function from a
+ ;; dependency will add the dependency directory as a project.
+ (setq projectile-track-known-projects-automatically nil)
 )
 
 ;;;======================================================================
@@ -648,7 +670,7 @@ If the new path's directories does not exist, create them."
        treemacs-goto-tag-strategy               'refetch-index
        treemacs-indentation                     2
        treemacs-indentation-string              " "
-       treemacs-is-never-other-window           t
+       treemacs-is-never-other-window           nil
        treemacs-max-git-entries                 5000
        treemacs-missing-project-action          'ask
        treemacs-move-forward-on-expand          nil

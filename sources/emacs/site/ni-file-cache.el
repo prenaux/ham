@@ -179,7 +179,7 @@
    (interactive)
    (file-cache-read-cache-from-file my-file-cache-name))
 
- (defun ni-file-cache-ivy-find-file (&optional aInitialFile)
+ (defun ni-file-cache-find-file (&optional aInitialFile)
    "Open a file from the file cache."
    (interactive)
    (let* (my-ivy-text
@@ -197,6 +197,21 @@
                                 (cdr record)
                                 nil
                                 t)))))))
+
+ ;; Find file at point
+ (defun ni-file-cache-find-file-at-point ()
+   (interactive)
+   (if (or
+        (thing-at-point-looking-at "^[ \t]*include[ \t]+\"\\([^ \t\r\n\"]+\\)\"$")
+        (thing-at-point-looking-at "^[ \t]*::Import(+\"\\([^ \t\r\n\"]+\\)\")$")
+        (thing-at-point-looking-at "^[ \t]*::NewImport(+\\([^ \t\r\n]+\\))$")
+        (thing-at-point-looking-at "^[ \t]*(require[ \t]+'\\([^ \t\r\n]+\\))$")
+        (thing-at-point-looking-at "^[ \t]*#[ \t]*include[ \t]+[\"<]\\([^\">\r\n]+\\)\\([\">]\\|$\\)$"))
+       (progn
+         (ni-file-cache-find-file
+          (file-name-nondirectory (buffer-substring-no-properties (match-beginning 1)
+                                                                  (match-end 1)))))
+     (ni-file-cache-find-file (ni-get-default-search-text))))
 
  ;; Save the cache when before we close emacs
  (add-hook 'kill-emacs-hook 'file-cache-save-my-cache-to-file)

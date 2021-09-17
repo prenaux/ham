@@ -168,10 +168,35 @@
      ))
 
 ;;;======================================================================
-;;; ni-file-cache.el
+;;; ni-file-cache.el / projects / window navigation
 ;;;======================================================================
 
- (global-set-key (key "C-x C-f") 'ni-file-cache-ivy-find-file)
+ ;;;; Open cached file
+ (global-set-key (key "C-x C-f") 'ni-file-cache-find-file-at-point)
+ (global-set-key (key "C-x f") 'ni-file-cache-find-file)
+
+ ;;;; Projectile
+ ;; prefix
+ (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+ ;; open file in project
+ (define-key projectile-mode-map (kbd "C-x C-p") 'projectile-find-file)
+ ;; open file in another project
+ (define-key projectile-mode-map (kbd "C-x p") 'projectile-switch-project)
+
+ ;;;; Treemacs & Ace-window
+ (require 'ace-window)
+ ;; navigate between windows
+ (global-set-key (kbd "M-o") 'ace-window)
+ ;; go to treemacs window
+ (global-set-key (kbd "C-h C-d") 'ni-treemacs-find-file)
+
+ ;;;; Swiper / Isearch
+ ;; swiper isearch
+ (global-set-key (kbd "C-s") 'ni-swiper-isearch)
+ ;; emacs' isearch
+ (global-set-key (kbd "C-S-s") 'isearch-forward)
+ ;; swiper at point
+ (global-set-key (kbd "C-;") 'swiper-thing-at-point)
 
 ;;;======================================================================
 ;;; ni-user-pierre.el
@@ -216,13 +241,4 @@
 
  (define-key global-map "\C-h\C-\\" 'indent-region)
 
- ;; Projectile
- (define-key projectile-mode-map (kbd "C-x C-p") 'projectile-find-file)
- (define-key projectile-mode-map (kbd "C-x p") 'projectile-switch-project)
- (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-
- ;; Treemacs
- (global-set-key (kbd "C-h C-d") 'ni-treemacs-find-file)
- (global-set-key (kbd "C-h d") 'ni-treemacs-find-file)
- (global-set-key (kbd "C-h p") 'treemacs-add-and-display-current-project)
-)
+ )
