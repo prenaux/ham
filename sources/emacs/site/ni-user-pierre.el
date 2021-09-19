@@ -637,6 +637,8 @@ If the new path's directories does not exist, create them."
 ;;;======================================================================
 (NotBatchMode
  (require 'projectile)
+ (diminish 'projectile-mode)
+
  (projectile-mode +1)
  (setq projectile-completion-system 'ivy)
 
