@@ -2746,11 +2746,17 @@ rule FileEchoList {
 #     Bin2H rules
 #----------------------------------------------------------------------
 
-# Bin2H DEST : SRC ;
+# Bin2H DEST : SRC : VARNAME ;
 rule Bin2H {
   # ECHO "DEST:" $(<) ;
   # ECHO "SRC:" $(>) ;
-  local var = [ Subst $(<:B) : %. : _ ] ;
+  local var ;
+  if $(3) {
+    var = $(3) ;
+  }
+  else {
+    var = [ Subst $(<:B) : %. : _ ] ;
+  }
   # ECHO "VARNAME:" $(var) ;
   VARNAME on $(<) = $(var) ;
   DEPENDS $(<) : $(>) ;
