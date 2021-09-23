@@ -2,14 +2,14 @@
 
 # toolset
 export HAM_TOOLSET=REPOS
-export HAM_TOOLSET_VER=3
+export HAM_TOOLSET_VER=4
 export HAM_TOOLSET_NAME=repos
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/repos"
 
 # platform
 case $HAM_OS in
     NT*)
-        toolset_check_and_dl_ver repos nt-x86 v3 || return 1
+        toolset_check_and_dl_ver repos nt-x86 v4 || return 1
         export REPOS_DIR="${HAM_TOOLSET_DIR}/nt-x86"
         export PATH=${HAM_TOOLSET_DIR}:${PATH}:${REPOS_DIR}/bin/:${REPOS_DIR}/git/bin/:${REPOS_DIR}/git/usr/bin/:${REPOS_DIR}/hg
         export OPENSSL_CONF="${REPOS_DIR}/git/ssl/openssl.cnf"
