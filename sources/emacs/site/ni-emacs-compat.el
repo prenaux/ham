@@ -111,6 +111,11 @@
    (not (string-match "nil" (prin1-to-string window-system)))
    (cons 'progn x)))
 
+(defmacro GNUEmacsMin25 (&rest x)
+  (list
+   'if (not (version< emacs-version "25.0"))
+   (cons 'progn x)))
+
 (defmacro DontExecute (&rest x) ())
 
 (defun agl-begin-time-block (name)

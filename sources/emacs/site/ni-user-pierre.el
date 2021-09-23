@@ -652,6 +652,8 @@ If the new path's directories does not exist, create them."
 ;;; Treemacs
 ;;;======================================================================
 (NotBatchMode
+ (GNUEmacsMin25
+
  (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/treemacs"))
  (require 'treemacs)
  (require 'treemacs-projectile)
@@ -717,7 +719,7 @@ If the new path's directories does not exist, create them."
   (require 'all-the-icons)
   (require 'treemacs-all-the-icons)
   (treemacs-load-theme "all-the-icons"))
-)
+))
 
 ;;;======================================================================
 ;;; Keymap
