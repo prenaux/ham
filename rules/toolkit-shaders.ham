@@ -131,7 +131,7 @@ rule shaderCgc1
   SHADER_PROFILE on $(<) += $(PROFILE) ;
   SHADER_NAME on $(<) += $(OUTNAME) ;
   SHADER_CGC1_FLAGS on $(<) += $(SHADER_CGC1_FLAGS) ;
-  SHADER_CGC1_HDRS on $(<) += [ on $(<) FIncludes $(SHADER_CGC1_HDRS) ] ;
+  SHADER_CGC1_HDRS on $(<) += [ on $(<) FIncludesDash [ FQuote $(SHADER_CGC1_HDRS) ] ] ;
   SHADER_CGC1_DEFS on $(<) += [ on $(<) FDefines $(SHADER_DEFINES) $(SHADER_CGC1_DEFINES) ] ;
 }
 
@@ -182,7 +182,7 @@ rule shaderGlsl
   SHADER_TARGETS on $(<) += $(TARGETS) ;
   SHADER_NAME on $(<) += $(OUTNAME) ;
   SHADER_GLSL_FLAGS on $(<) += $(SHADER_GLSL_FLAGS) ;
-  SHADER_GLSL_HDRS on $(<) += [ on $(<) FIncludes $(SHADER_GLSL_HDRS) ] ;
+  SHADER_GLSL_HDRS on $(<) += [ on $(<) FIncludesDash [ FQuote $(SHADER_GLSL_HDRS) ] ] ;
   SHADER_GLSL_DEFS on $(<) += [ on $(<) FDefines $(SHADER_DEFINES) $(SHADER_GLSL_DEFINES) ] ;
   # ECHO "... shaderGlsl:" $(>) "->" $(<) ":" $(OUTNAME) ":" $(STAGE) ;
 }

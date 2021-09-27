@@ -47,6 +47,8 @@ rule tkImport {
     ECHO "I/Imported toolkit '$(1)' from: '$(dirBase)'." ;
   }
 
+  SHADER_CGC1_HDRS += [ FDirName $(dirBase) scripts cgc ] ;
+
   # add to the list of imported toolkits
   TK_IMPORTED += $(1) ;
 
