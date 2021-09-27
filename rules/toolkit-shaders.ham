@@ -140,6 +140,7 @@ if $(SHADER_NICGC_SERVER) {
   {
     SRC_ABSPATH="`pwd`/$(>)"
     SRC_PP="$(<:S=.pp.txt)"
+    set -e
     # Preprocess the shader
     $(NICPP_EXE) -D$(SHADER_PROFILE)=1 $(SHADER_CGC1_DEFS) $(SHADER_CGC1_HDRS) "${SRC_ABSPATH}" "${SRC_PP}"
     # Compile the preprocessed shader
