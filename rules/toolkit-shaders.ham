@@ -4,6 +4,15 @@
 SHADER_HDRS_DEPS ?= 1 ;
 if $(WINDOWS) = 1 {
   SHADER_COMPILE ?= 1 ;
+  # Use the local nicgc compiler
+  SHADER_NICGC_SERVER ?= ;
+}
+else if $(OSX) = 1 {
+  # It is by default since the remote shader compiler would make the build
+  # dependant on an internet connection.
+  SHADER_COMPILE ?= 0 ;
+  # Use the remote nicgc compiler
+  SHADER_NICGC_SERVER ?= "http://nicgc.bitscollider.com" ;
 }
 else {
   SHADER_COMPILE ?= 0 ;
@@ -25,7 +34,7 @@ rule shaderObject
   local COMPILE_AS = $(>:S) ;
   if $(SHADER_COMPILE) = 0 {
     if ! [ FExists $(<) ] {
-      EXIT "F/Shader '$(<)' can't be found & no shader compiler." ;
+      EXIT "F/Shader '$(<)' can't be found & no shader compiler. Use SHADER_COMPILE=1 to force enable the shader compiler." ;
     }
     return $(<) ;
   }
@@ -33,11 +42,11 @@ rule shaderObject
   Clean clean : $(<) ;
   SEARCH on $(>) = $(SEARCH_SOURCE) ;
   switch $(COMPILE_AS) {
-    case .metal : HDRS on $(<) = $(SHADER_HDRS) $(SHADER_METAL_HDRS) ;
-    case .cgc : HDRS on $(<) = $(SHADER_HDRS) $(SHADER_CGC1_HDRS) ;
-    case .glsl : HDRS on $(<) = $(SHADER_HDRS) $(SHADER_GLSL_HDRS) ;
-    case * : HDRS on $(<) = $(SHADER_HDRS) ;
+    case .metal : HDRS on $(<) = $(SHADER_METAL_HDRS) ;
+    case .cgc : HDRS on $(<) = $(SHADER_CGC1_HDRS) ;
+    case .glsl : HDRS on $(<) = $(SHADER_GLSL_HDRS) ;
   }
+
   if $(SHADER_HDRS_DEPS) = 1 {
     HDRRULE on $(>) = HdrRule ;
     HDRSCAN on $(>) = $(HDRPATTERN) ;
@@ -121,16 +130,30 @@ rule shaderCgc1
 
   SHADER_PROFILE on $(<) += $(PROFILE) ;
   SHADER_NAME on $(<) += $(OUTNAME) ;
-  SHADER_CGC1_FLAGS on $(<) += $(SHADER_CCFLAGS) $(SHADER_CGC1_FLAGS) ;
-  SHADER_CGC1_HDRS on $(<) += [ on $(<) FIncludes $(HDRS) ] ;
+  SHADER_CGC1_FLAGS on $(<) += $(SHADER_CGC1_FLAGS) ;
+  SHADER_CGC1_HDRS on $(<) += [ on $(<) FIncludes $(SHADER_CGC1_HDRS) ] ;
   SHADER_CGC1_DEFS on $(<) += [ on $(<) FDefines $(SHADER_DEFINES) $(SHADER_CGC1_DEFINES) ] ;
-  # ECHO "... shaderCgc1:" $(>) "->" $(<) ":" $(OUTNAME) ":" $(PROFILE) ;
 }
 
-actions shaderCgc1
-{
-  SRC_ABSPATH="`pwd`/$(>)"
-  $(NICGC_EXE) $(SHADER_CGC1_FLAGS) $(SHADER_CGC1_DEFS) $(SHADER_CGC1_HDRS) $(SHADER_PROFILE) $(SHADER_NAME) "${SRC_ABSPATH}" "$(<)"
+if $(SHADER_NICGC_SERVER) {
+  actions shaderCgc1
+  {
+    SRC_ABSPATH="`pwd`/$(>)"
+    SRC_PP="$(<:S=.pp.txt)"
+    # Preprocess the shader
+    $(NICPP_EXE) -D$(SHADER_PROFILE)=1 $(SHADER_CGC1_DEFS) $(SHADER_CGC1_HDRS) "${SRC_ABSPATH}" "${SRC_PP}"
+    # Compile the preprocessed shader
+    $(NICGC_EXE) -S "$(SHADER_NICGC_SERVER)" $(SHADER_CGC1_FLAGS) $(SHADER_CGC1_DEFS) $(SHADER_CGC1_HDRS) $(SHADER_PROFILE) $(SHADER_NAME) "${SRC_PP}" "$(<)"
+    # Cleanup temps
+    rm -f "${SRC_PP}"
+  }
+}
+else {
+  actions shaderCgc1
+  {
+    SRC_ABSPATH="`pwd`/$(>)"
+    $(NICGC_EXE) $(SHADER_CGC1_FLAGS) $(SHADER_CGC1_DEFS) $(SHADER_CGC1_HDRS) $(SHADER_PROFILE) $(SHADER_NAME) "${SRC_ABSPATH}" "$(<)"
+  }
 }
 
 #----------------------------------------------------------------------
@@ -157,8 +180,8 @@ rule shaderGlsl
   SHADER_PROFILE on $(<) += $(PROFILE) ;
   SHADER_TARGETS on $(<) += $(TARGETS) ;
   SHADER_NAME on $(<) += $(OUTNAME) ;
-  SHADER_GLSL_FLAGS on $(<) += $(SHADER_CCFLAGS) $(SHADER_GLSL_FLAGS) ;
-  SHADER_GLSL_HDRS on $(<) += [ on $(<) FIncludes $(HDRS) ] ;
+  SHADER_GLSL_FLAGS on $(<) += $(SHADER_GLSL_FLAGS) ;
+  SHADER_GLSL_HDRS on $(<) += [ on $(<) FIncludes $(SHADER_GLSL_HDRS) ] ;
   SHADER_GLSL_DEFS on $(<) += [ on $(<) FDefines $(SHADER_DEFINES) $(SHADER_GLSL_DEFINES) ] ;
   # ECHO "... shaderGlsl:" $(>) "->" $(<) ":" $(OUTNAME) ":" $(STAGE) ;
 }
@@ -166,7 +189,7 @@ rule shaderGlsl
 actions shaderGlsl
 {
   SRC_ABSPATH="`pwd`/$(>)"
-  $(NICGC_EXE) @nish $(SHADER_GLSL_FLAGS) $(SHADER_GLSL_DEFS) $(SHADER_GLSL_HDRS) -x $(SHADER_STAGE) -p $(SHADER_PROFILE) -t $(SHADER_TARGETS) -n $(SHADER_NAME) "${SRC_ABSPATH}" "$(<)"
+  $(NISH_EXE) @nish $(SHADER_GLSL_FLAGS) $(SHADER_GLSL_DEFS) $(SHADER_GLSL_HDRS) -x $(SHADER_STAGE) -p $(SHADER_PROFILE) -t $(SHADER_TARGETS) -n $(SHADER_NAME) "${SRC_ABSPATH}" "$(<)"
 }
 
 #----------------------------------------------------------------------
