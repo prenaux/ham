@@ -183,12 +183,14 @@
  ;; open file in another project
  (define-key projectile-mode-map (kbd "C-x p") 'projectile-switch-project)
 
- ;;;; Treemacs & Ace-window
+ ;;;; ace-window
  (require 'ace-window)
  ;; navigate between windows
  (global-set-key (kbd "M-o") 'ace-window)
- ;; go to treemacs window
- (global-set-key (kbd "C-h C-d") 'ni-treemacs-find-file)
+
+ ;; go to file tree window
+ (global-set-key (kbd "C-h C-d") 'direx:jump-to-project-file-other-window)
+ (global-set-key (kbd "C-h d") 'direx:jump-to-project-file)
 
  ;;;; Swiper / Isearch
  ;; swiper isearch
