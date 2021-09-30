@@ -6,6 +6,14 @@
 (require 'dired-rainbow)
 (require 'dired-collapse)
 
+(defun ni-set-dired-buffer-name ()
+  "change buffer name to end with slash"
+  (let ((name (buffer-name)))
+    (if (not (string-match "/$" name))
+        (rename-buffer (concat "*dired: " name "/*") t))))
+
+(add-hook 'dired-mode-hook 'ni-set-dired-buffer-name)
+
 (defun ni-dired-toggle-or-open ()
   "Toggle subtree or open the file."
   (interactive)

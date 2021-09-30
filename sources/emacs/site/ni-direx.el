@@ -1,13 +1,13 @@
 (provide 'ni-direx)
 (require 'direx)
 
-(defun ni-set-dired-buffer-name ()
+(defun ni-set-direx-buffer-name ()
   "change buffer name to end with slash"
   (let ((name (buffer-name)))
     (if (not (string-match "/$" name))
-        (rename-buffer (concat "*dired: " name "/*") t))))
+        (rename-buffer (concat "*direx: " name "/*") t))))
 
-(add-hook 'dired-mode-hook 'ni-set-dired-buffer-name)
+(add-hook 'direx:direx-mode-hook 'ni-set-direx-buffer-name)
 
 (defun direx:jump-to-project-file ()
   (interactive)

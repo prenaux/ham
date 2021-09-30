@@ -13,6 +13,10 @@
  (OSX
   (global-set-key (kbd "<home>") 'move-beginning-of-line)
   (global-set-key (kbd "<end>") 'move-end-of-line)
+  ;; disable Cmd-w & Cmd-q which close emacs and the current frame. In
+  ;; particular Cmd-w is a common mistake.
+  (global-unset-key (kbd "s-w"))
+  (global-unset-key (kbd "s-q"))
  )
  (Aquamacs
   (define-key osx-key-mode-map [home] 'beginning-of-line)
@@ -49,6 +53,7 @@
 
  ;; Move to the 'next' window (in clockwise order)
  (global-set-key (key "M-`") 'other-window)
+ (global-set-key (kbd "M-o") 'other-window)
 
  ;; Forward/Backward word under point
  (global-set-key (key "M-p") 'agl-search-word-backward)
@@ -182,11 +187,6 @@
  (define-key projectile-mode-map (kbd "C-x C-p") 'projectile-find-file)
  ;; open file in another project
  (define-key projectile-mode-map (kbd "C-x p") 'projectile-switch-project)
-
- ;;;; ace-window
- (require 'ace-window)
- ;; navigate between windows
- (global-set-key (kbd "M-o") 'ace-window)
 
  ;; go to file tree window
  (global-set-key (kbd "C-h C-d") 'direx:jump-to-project-file-other-window)
