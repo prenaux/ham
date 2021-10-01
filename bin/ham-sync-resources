@@ -6,11 +6,18 @@ if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
 
 # the help
 usage() {
-    echo "usage: ham-sync-resources server project command"
+    echo ""
+    echo "usage: ham-sync-resources server project command (dry-run)"
     echo ""
     echo "command:"
-    echo "  pull   Pull data from the server to the local data folder"
-    echo "  push   Push data from the local data folder to the server"
+    echo "  pull   Pull data from the server to the local data folder."
+    echo "  push   Push data from the local data folder to the server."
+    echo ""
+    echo "  pull_delete  Pull data from the server to the local data folder,"
+    echo "               deletes from the local copy any file not present."
+    echo "               on the server"
+    echo "  push_delete  Push data from the local data folder to the server,"
+    echo "               deletes from the server any file not present locally."
     echo ""
     echo "example:"
     echo "  # Get the new data from the server"
@@ -50,6 +57,14 @@ if [[ -z "$SYNC_COMMAND" ]]; then
     echo "E/Command not specified."
     usage
     exit 1
+fi
+
+if [[ "$1" == "dry-run" ]]; then
+    echo "I/Dry run."
+    DRY_RUN="yes"
+    shift
+else
+    DRY_RUN=""
 fi
 
 # Local & destination folders
@@ -108,8 +123,10 @@ case "$HAM_OS" in
             exit 1
         fi
 
-        MIRROR_COMMON_PARAMS="--verbose=1 --parallel=10 --continue --no-perm"
-        # MIRROR_COMMON_PARAMS="$MIRROR_COMMON_PARAMS --dry-run"
+        MIRROR_COMMON_PARAMS="--verbose=1 --parallel=10 --use-pget-n=8 --continue --no-perm --exclude .DS_Store"
+        if [[ ! -z "$DRY_RUN" ]]; then
+            MIRROR_COMMON_PARAMS="$MIRROR_COMMON_PARAMS --dry-run"
+        fi
         case "$SYNC_COMMAND" in
             push)
                 echo "I/Pushing from data to server..."
@@ -131,7 +148,9 @@ case "$HAM_OS" in
                 usage
                 ;;
         esac
+        set -x
         lftp $SYNC_SERVER -e "set sftp:auto-confirm yes ; set cmd:fail-exit true ; mirror $MIRROR_PARAMS ; exit"
+        set +x
         ;;
 esac
 
