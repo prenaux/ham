@@ -631,9 +631,12 @@ If the new path's directories does not exist, create them."
 ;;;======================================================================
 (NotBatchMode
  (require 'projectile)
- (diminish 'projectile-mode)
 
- (projectile-mode +1)
+ ;; We don't enable projectile-mode, we only use projectile for "open file in
+ ;; project" and projectile-mode makes opening files really slow in large
+ ;; projects.
+ ;; (projectile-mode +1)
+
  (setq projectile-completion-system 'ivy)
 
  ;; Prevent projectile from automatically creating projects when visiting

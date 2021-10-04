@@ -181,12 +181,10 @@
  (global-set-key (key "C-x f") 'ni-file-cache-find-file)
 
  ;;;; Projectile
- ;; prefix
- (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
  ;; open file in project
- (define-key projectile-mode-map (kbd "C-x C-p") 'projectile-find-file)
+ (global-set-key (kbd "C-x C-p") 'projectile-find-file)
  ;; open file in another project
- (define-key projectile-mode-map (kbd "C-x p") 'projectile-switch-project)
+ (global-set-key (kbd "C-x p") 'projectile-switch-project)
 
  ;; go to file tree window
  (global-set-key (kbd "C-h C-d") 'direx:jump-to-project-file-other-window)
