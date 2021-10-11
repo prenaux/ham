@@ -24,10 +24,10 @@ case $HAM_OS in
         "$RUN_DEBUGGER" -debugexe $@
         ;;
     OSX*)
-        PATH="/usr/bin:$PATH" lldb -- $@
+        PATH="/usr/bin:$PATH" lldb -o run -- $@
         ;;
     LINUX*)
-        gdb -- $@
+        gdb -ex run -- $@
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
