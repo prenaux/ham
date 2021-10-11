@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#
+# Example use with xargs:
+#   find . -name "*.wav" | xargs -n1 -P 20 ffmpeg_remove_begin_end_silence_inplace
+#
+
+SRC="$1"
+DST="${SRC%.*}_nosilence.wav"
+ffmpeg_remove_begin_end_silence "$SRC" "$DST"
+rm "$SRC"
+mv "$DST" "$SRC"
