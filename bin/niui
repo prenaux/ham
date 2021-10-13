@@ -7,4 +7,4 @@ if [[ ! -e "$SCRIPT_DIR/ni" ]]; then
     echo "E/Couldn't find ni at '$SCRIPT_DIR/ni'."
     exit 1
 fi
-"$NISDK_DIR/bin/ni" "$@"
+"$NISDK_DIR/bin/niui" "$@"
