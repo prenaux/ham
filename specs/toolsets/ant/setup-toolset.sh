@@ -1,5 +1,5 @@
 #!/bin/bash
-. ham-toolset-import.sh java_jdk18
+. ham-toolset-import.sh java_jdk
 if [ $? != 0 ]; then return 1; fi
 
 # toolset
