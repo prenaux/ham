@@ -17,8 +17,17 @@ case $HAM_OS in
             fi
             export PATH="${JAVA_HOME}/bin":${PATH}
         else
-            toolset_check_and_dl_ver java_jdk_11 $HAM_BIN_LOA v11_0_12 || return 1
-            export JAVA_HOME="${HAM_TOOLSET_DIR}/$HAM_BIN_LOA/"
+            if [ ! -d "/usr/local/Cellar/openjdk@11/" ]; then
+                echo "W/Couldn't find openjdk@11's java, trying to install with brew"
+                brew install openjdk@11
+                if [ ! -d "/usr/local/Cellar/openjdk@11/" ]; then
+                    echo "F/Couldn't find openjdk@11's java even after installing"
+                    return 1
+                fi
+            fi
+            JAVA_11_BREW_VER=`ls /usr/local/Cellar/openjdk@11/`
+            echo "I/JAVA_11_BREW_VER: $JAVA_11_BREW_VER"
+            export JAVA_HOME="/usr/local/Cellar/openjdk@11/$JAVA_11_BREW_VER/"
         fi
         ;;
     *)
