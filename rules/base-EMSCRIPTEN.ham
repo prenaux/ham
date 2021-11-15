@@ -10,10 +10,10 @@ SUFDLL  ?= .so ;
 CCFLAGS  = -DJSCC -D__JSCC__ -D__JSCC_WEB__ -fvisibility=hidden ;
 C++FLAGS = $(CCFLAGS) ;
 
-CC   ?= emcc ;
-C++  ?= em++ ;
-LINK ?= em++ ;
-AR   ?= emar ru ;
+CC   = emcc ;
+C++  = em++ ;
+LINK = em++ ;
+AR   = emar ru ;
 
 LINKFLAGS   ?= "" ;
 LINKLIBS    ?=  ;
