@@ -10,8 +10,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/postgres"
 # path setup
 case $HAM_OS in
     NT*)
-        export POSTGRES_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH="${POSTGRES_DIR}/bin":${PATH}
+        export POSTGRES_DIR="${HAM_TOOLSET_DIR}/nt-x86"
         if [ ! -e "$POSTGRES_DIR" ]; then
             toolset_dl postgres postgres_nt-x86
             if [ ! -e "$POSTGRES_DIR" ]; then
@@ -19,17 +18,19 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        export PATH="${POSTGRES_DIR}/bin":${PATH}
         ;;
     OSX*)
-        export POSTGRES_DIR="${HAM_TOOLSET_DIR}/osx-x64/"
-        export PATH="${POSTGRES_DIR}/bin":${PATH}
-        if [ ! -e "$POSTGRES_DIR" ]; then
-            toolset_dl postgres postgres_osx-x64
-            if [ ! -e "$POSTGRES_DIR" ]; then
-                echo "E/nt-x86 folder doesn't exist in the toolset"
+        export POSTGRES_DIR="`brew --prefix postgresql@10`"
+        if [ ! -e "$POSTGRES_DIR/bin/postgres" ]; then
+            echo "I/Brew postgresql@10 not found, trying to install."
+            ham-brew install postgresql@10
+            if [ ! -e "$POSTGRES_DIR/bin/postgres" ]; then
+                echo "E/Brew postgresql@10 install failed."
                 return 1
             fi
         fi
+        export PATH="${POSTGRES_DIR}/bin":${PATH}
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

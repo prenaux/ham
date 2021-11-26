@@ -9,7 +9,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/php"
 # path setup
 case $HAM_OS in
     NT*)
-        export PHP_HOME="${HAM_TOOLSET_DIR}/nt-x86/"
+        export PHP_HOME="${HAM_TOOLSET_DIR}/nt-x86"
         export PATH="${PHP_HOME}":"${HAM_TOOLSET_DIR}":${PATH}
         toolset_check_and_dl_ver php nt-x86 v7_3 || return 1
         if [ ! -e "C:/Windows/php.ini" ]; then
@@ -26,10 +26,14 @@ case $HAM_OS in
         fi
         ;;
     OSX*)
-        export PHP_HOME="/usr/local/opt/php@7.3/";
+        export PHP_HOME="`brew --prefix php@7.4`";
         if [ ! -e "$PHP_HOME/bin/php" ]; then
-            echo "I/Brew PHP 7.3 not found, trying to install."
-            brew install php@7.3
+            echo "I/Brew php@7.4 not found, trying to install."
+            ham-brew install php@7.4
+            if [ ! -e "$PHP_HOME/bin/php" ]; then
+                echo "E/Brew php@7.4 install failed."
+                return 1
+            fi
         fi
         export PATH="${HAM_TOOLSET_DIR}":"${HOME}/.composer/vendor/bin":"${PHP_HOME}/bin":${PATH}
         ;;
