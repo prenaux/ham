@@ -254,3 +254,34 @@
 (defun ham-flymake-json-cleanup () t)
 
 (push '(".+\\.json$" ham-flymake-json-init ham-flymake-json-cleanup) aflymake-allowed-file-name-masks)
+
+;;**********************************************************************
+;; Flymake - ham-lint
+;;**********************************************************************
+(require 'aflymake-easy)
+
+(defvar aflymake-ham-lint-executable
+  (concat (getenv "WORK") "/ham/bin/ham-lint")
+  "The ham-lint executable to use for syntax checking.")
+
+;; phpstan error parser
+(defvar aflymake-ham-lint-err-line-patterns-php
+  '(
+    ("^[ ]*\\(.*\.php:\\)\\([0-9]+\\):[ ]*\\(.*\\)" nil 2 nil 3)
+    ("PHP Fatal error:[ ]*\\(.*\\) in \\(.*\.php\\) on line \\([0-9]+\\)" nil 3 nil 1)
+    ))
+
+;; TODO add some options for eslint CLI
+(defun aflymake-ham-lint-command (filename)
+  "Construct a command that flymake can use to run eslint on a file."
+  (list aflymake-ham-lint-executable filename))
+
+;; do nothing because we compile inplace
+(defun ham-flymake-ham-lint-cleanup () t)
+
+(defun ham-flymake-ham-lint-php-init ()
+  (aflymake-easy-load 'aflymake-ham-lint-command
+                      aflymake-ham-lint-err-line-patterns-php
+                      'inplace "php"))
+
+(push '(".+\\.php$" ham-flymake-ham-lint-php-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
