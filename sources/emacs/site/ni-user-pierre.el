@@ -447,6 +447,7 @@ If the new path's directories does not exist, create them."
  (add-to-list 'auto-mode-alist '("\\.yml$" . pierre-yaml-mode))
  (add-to-list 'auto-mode-alist '("\\.yaml$" . pierre-yaml-mode))
  (add-to-list 'auto-mode-alist '("\\.yaml[a-z]*$" . pierre-yaml-mode))
+ (add-to-list 'auto-mode-alist '("\\.neon$" . pierre-yaml-mode))
 
  (require 'haml-mode)
  (add-to-list 'auto-mode-alist '("\\.haml$" . haml-mode))
