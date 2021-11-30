@@ -20,6 +20,7 @@
 (require 'ni-flymake)
 (require 'ni-gdb)
 (require 'ham-flymake)
+(require 'ham-fix)
 (require 'go-mode)
 
 (NotBatchMode
