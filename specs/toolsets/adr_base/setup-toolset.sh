@@ -16,23 +16,8 @@ if [ -z "$ADR_VERSION"  ]; then
     return 1
 fi
 
-case $ADR_VERSION in
-    50)
-        export ADR_SDK_PLATFORM=android-21
-        export ADR_NDK_PLATFORM=android-21
-        ;;
-    42)
-        export ADR_SDK_PLATFORM=android-17
-        export ADR_NDK_PLATFORM=android-17
-        ;;
-    22)
-        export ADR_SDK_PLATFORM=android-8
-        export ADR_NDK_PLATFORM=android-8
-        ;;
-    *)
-        echo "E/Android toolset: Unsupported version: '${ADR_VERSION}' !"
-        return 1;
-esac
+export ADR_SDK_PLATFORM=android-$ADR_API
+export ADR_NDK_VERSION=23.1.7779620
 
 # toolset
 export HAM_TOOLSET=ANDROID
@@ -58,16 +43,16 @@ case $HAM_OS in
         fi
         ;;
     OSX)
-        export ADR_NDK_PREBUILT=darwin-x86_64
-        export ADR_NDK_VERSION=r12b
-        export GCC_VER=4.9
+        export SYSTEM_NAME=$(uname)-$(uname -m)
+        export ADR_NDK_PREBUILT=${SYSTEM_NAME,,}
         export ADR_DIR_SDK="/usr/local/share/android-sdk"
+        export ADR_DIR_NDK="${ADR_DIR_SDK}/ndk/${ADR_NDK_VERSION}"
         chmod +x "${HAM_TOOLSET_DIR}/adr-"*
 
         # Test the SDK
         if [ ! -d "$ADR_DIR_SDK" -o ! -d "${ADR_DIR_SDK}/platforms/${ADR_SDK_PLATFORM}" ]; then
             echo "I/Can't find android sdk, installing with brew..."
-            ham-brew cask install android-sdk android-platform-tools
+            ham-brew install --cask android-sdk android-platform-tools
             echo "I/Making sure the Android SDK isn't quarantined..."
             sudo xattr -r -d com.apple.quarantine /usr/local/Caskroom/android-sdk/
             sudo xattr -r -d com.apple.quarantine /usr/local/Caskroom/android-platform-tools/
@@ -75,25 +60,12 @@ case $HAM_OS in
             touch ~/.android/repositories.cfg
             sdkmanager --update
             sdkmanager "platform-tools" "platforms;${ADR_SDK_PLATFORM}"
+            sdkmanager --install "ndk;${ADR_NDK_VERSION}" --channel=3
             echo "I/Android SDK and requirements should now be installed."
         fi
         if [ ! -d "$ADR_DIR_SDK" -o ! -d "${ADR_DIR_SDK}/platforms/${ADR_SDK_PLATFORM}" ]; then
             echo "adr_base osx can't install the android sdk & ndk & platform"
             return 1
-        fi
-
-        # Test the NDK
-        export ADR_DIR_NDK="${HAM_TOOLSET_DIR}/osx-x64/android-ndk-r12b"
-        if [ ! -d "$ADR_DIR_NDK" ]; then
-            # Download the toolset - it contains the NDK r12b
-            toolset_check_and_dl_ver adr_base osx-x64 v1 || return 1
-            # Init the toolset
-            echo "I/Making sure the Android NDK isn't quarantined..."
-            sudo xattr -r -d com.apple.quarantine "$ADR_DIR_NDK"
-            if [ ! -d "$ADR_DIR_NDK" ]; then
-                echo "adr_base osx can't find the android ndk"
-                return 1
-            fi
         fi
         ;;
     *)
@@ -128,7 +100,6 @@ case $ADR_CPU_TYPE in
 esac
 
 export ADR_GCC_OPT=-O2
-export ADR_DIR_NDK_USR="${ADR_DIR_NDK}/platforms/$ADR_NDK_PLATFORM/arch-${ADR_CPU_TYPE}/usr"
 
 export ADR_SDK_PLATFORM_DIR="${ADR_DIR_SDK}/platforms/${ADR_SDK_PLATFORM}"
 if [ ! -e "$ADR_SDK_PLATFORM_DIR"  ]; then
@@ -136,48 +107,17 @@ if [ ! -e "$ADR_SDK_PLATFORM_DIR"  ]; then
     return 1
 fi
 
-export ADR_NDK_PLATFORM_DIR="${ADR_DIR_NDK}/platforms/${ADR_NDK_PLATFORM}"
-if [ ! -e "$ADR_NDK_PLATFORM_DIR"  ]; then
-    echo "E/Android toolset: can't find NDK platform:" ${ADR_NDK_PLATFORM_DIR}
-    return 1
-fi
-if [ ! -e "$ADR_DIR_NDK_USR"  ]; then
-    echo "E/Android toolset: can't find NDK platform for CPU arch:" ${ADR_DIR_NDK_USR}
-    return 1
-fi
 
-export ADR_SYSTEM_LINKLIBS=""
+export PATH=${PATH}:"${HAM_TOOLSET_DIR}":"${ADR_DIR_BASE}/scripts":"${ADR_DIR_SDK}/tools":"${ADR_DIR_SDK}/platform-tools"
 
 export CYGWIN=nodosfilewarning # disable awesome cygwin warning...
 
-export GCC_EXE_BASE=${GCC_BASE}-
-export GCC_DIR="${ADR_DIR_NDK}/toolchains/${GCC_BASE_DIR}-${GCC_VER}/prebuilt/$ADR_NDK_PREBUILT"
-export ADR_LIBGCC_PATH="${GCC_DIR}/lib/gcc/${GCC_BASE_DIR}/${GCC_VER}/libgcc.a"
-
-# macOS has a ld command by default in the path, we need to add our path after the origin one, so it can be found first
-export PATH=${PATH}:"${HAM_TOOLSET_DIR}":"${ADR_DIR_BASE}/scripts":"${GCC_DIR}/bin":"${ADR_DIR_SDK}/tools":"${ADR_DIR_SDK}/platform-tools"
-
-VER="--- android ------------------------
-cpu: $ADR_CPU_PROFILE, $ADR_CPU_ABI
-sdk: $ADR_SDK_PLATFORM
-ndk: $ADR_NDK_VERSION, $ADR_NDK_PLATFORM, $ADR_NDK_PREBUILT
---- adr-gcc ------------------------
-`${GCC_EXE_BASE}gcc --version`"
-if [ $? != 0 ]; then
-    echo "E/Can't get gcc version."
-    return 1
-fi
-
-export ADR_LIBCPP_DIR_INCLUDE="$ADR_DIR_NDK/sources/cxx-stl/stlport/stlport"
-export ADR_LIBCPP_DIR_LIBS="$ADR_DIR_NDK/sources/cxx-stl/stlport/libs/$ADR_CPU_ABI"
-export ADR_LIBCPP_DEFINES="-DANDROID_STLPORT"
-export ADR_LIBCPP_LINKER_LIB="-lstlport_static"
-
-export ADR_LLVM_VERSION=3.8
 export ADR_LLVM_NAME=llvm
 export ADR_LLVM_TOOLCHAIN_ROOT="${ADR_DIR_NDK}/toolchains/${ADR_LLVM_NAME}"
 export ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT="${ADR_LLVM_TOOLCHAIN_ROOT}/prebuilt/$ADR_NDK_PREBUILT"
 export ADR_LLVM_TOOLCHAIN_PREFIX="${ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT}/bin/"
+export ADR_DIR_NDK_USR="${ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT}/sysroot/usr"
+export ADR_DIR_NDK_PLATFORM="${ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT}/sysroot/usr/lib/arm-linux-androideabi/21"
 export PATH="${ADR_LLVM_TOOLCHAIN_PREFIX}":${PATH}
 
 export ANDROID_HOME=${ADR_DIR_SDK}
