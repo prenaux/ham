@@ -1,57 +1,23 @@
 ANDROID = 1 ;
-
-if $(HAM_TOOLSET_NAME) = adr_50_arm {
-  OSPLAT = ARM ;
-}
-else if $(HAM_TOOLSET_NAME) = adr_50_x86 {
-  OSPLAT = X86 ;
-}
-else if $(HAM_TOOLSET_NAME) = adr_50_arm64 {
-  OSPLAT = ARM64 ;
-}
-else {
-  EXIT "base-ANDROID: Unknown toolset name:" $(HAM_TOOLSET_NAME) ;
-}
-
 Import base-GCC.ham ;
 SUFDLL = .so ;
 
-if $(ADR_LLVM_VERSION)  {
-  ECHO "# Using LLVM for Android build." ;
-  if ( $(OSPLAT) = ARM ) {
-    LLVM_TRIPLE = armv7-none-linux-androideabi ;
-    CC = clang ;
-    C++ = clang++ ;
-    LINK = clang ;
+ECHO "# Using LLVM for Android build." ;
 
-    CCFLAGS = -gcc-toolchain [ FQuote $(GCC_DIR) ] -target $(LLVM_TRIPLE) ;
-    C++FLAGS = -gcc-toolchain [ FQuote $(GCC_DIR) ] -target $(LLVM_TRIPLE) ;
-    LINKFLAGS = -gcc-toolchain [ FQuote $(GCC_DIR) ] -no-canonical-prefixes -target $(LLVM_TRIPLE) ;
-  }
-  else if ( $(OSPLAT) = ARM64 ) {
-    LLVM_TRIPLE = aarch64-none-linux-android ;
-    CC = clang ;
-    C++ = clang++ ;
-    LINK = clang ;
-
-    CCFLAGS = -gcc-toolchain [ FQuote $(GCC_DIR) ] -target $(LLVM_TRIPLE) ;
-    C++FLAGS = -gcc-toolchain [ FQuote $(GCC_DIR) ] -target $(LLVM_TRIPLE) ;
-    LINKFLAGS = -gcc-toolchain [ FQuote $(GCC_DIR) ] -no-canonical-prefixes -target $(LLVM_TRIPLE) ;
-  }
-  else if ( $(OSPLAT) = X86 ) {
-    LLVM_TRIPLE = i686-none-linux-android  ;
-    CC = clang ;
-    C++ = clang++ ;
-    LINK = clang ;
-
-    CCFLAGS = -gcc-toolchain [ FQuote $(GCC_DIR) ] -target $(LLVM_TRIPLE) ;
-    C++FLAGS = -gcc-toolchain [ FQuote $(GCC_DIR) ] -target $(LLVM_TRIPLE) ;
-    LINKFLAGS = -gcc-toolchain [ FQuote $(GCC_DIR) ] -no-canonical-prefixes -target $(LLVM_TRIPLE) ;
-  }
-  else {
-    EXIT "base-ANDROID: Unknown OSPLAT with ADR_LLVM_VERSION." ;
-  }
+if ( $(ADR_CPU_TYPE) = arm ) {
+  LLVM_TRIPLE = armv7a-linux-androideabi$ADR_API ;
 }
-else {
-  ECHO "# Using GCC for Android build." ;
+else if ( $(ADR_CPU_TYPE) = arm64 ) {
+  LLVM_TRIPLE = aarch64-none-linux-android$ADR_API ;
 }
+else if ( $(ADR_CPU_TYPE) = x86 ) {
+  LLVM_TRIPLE = i686-none-linux-android$ADR_API ;
+}
+
+CC = clang ;
+C++ = clang++ ;
+LINK = clang++ ;
+AR = llvm-ar ;
+CCFLAGS = -target $(LLVM_TRIPLE) ;
+C++FLAGS = -target $(LLVM_TRIPLE) ;
+LINKFLAGS = -no-canonical-prefixes -target $(LLVM_TRIPLE) ;

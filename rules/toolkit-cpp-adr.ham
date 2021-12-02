@@ -11,11 +11,7 @@ $(PICFLAGS)
 -fstack-protector
 -fno-short-enums
 -fvisibility=hidden
--DANDROID
--D__LITTLE_ENDIAN__
-[ FQuoteFlag -I : $(ADR_DIR_NDK_USR)/include ]
 -Werror -Wall
-# -Wno-psabi
 -Wno-trigraphs
 -Wno-sign-compare
 -Wno-unknown-pragmas
@@ -24,165 +20,56 @@ $(PICFLAGS)
 -Wno-unused
 -Wno-uninitialized
 -Wno-address
--Werror=return-stack-address
+;
+
+# Clang
+ANDROID_CC_ARGS +=
+-D__CLANG__
+-Wno-return-type-c-linkage
+-Wno-tautological-compare
+-Wno-implicit-exception-spec-mismatch
+-Wno-shift-negative-value
+-Wno-non-literal-null-conversion
+-Wno-compare-distinct-pointer-types
 -Wno-unknown-attributes
+-Wno-for-loop-analysis
+-Wno-int-in-bool-context
+-Wno-misleading-indentation
+-Werror=return-stack-address
+# TODO: Remove this, this is actually a very useful warning.
+-Wno-inconsistent-missing-override
 ;
-ANDROID_CC_ARGS +=
-  $(ADR_CC_ARGS)
-;
-
-# For boost...
-ANDROID_CC_ARGS +=
--pthread -Wno-deprecated-declarations
-;
-
-if $(ADR_LLVM_VERSION) {
-  # Clang
-  ANDROID_CC_ARGS +=
-    -D__CLANG__
-    -Wno-return-type-c-linkage
-    -Wno-tautological-compare
-    -Wno-implicit-exception-spec-mismatch
-    -Wno-shift-negative-value
-    -Wno-non-literal-null-conversion
-  ;
-  ANDROID_CPP_ARGS +=
-    -std=$(C++VERSION)
-    -Wno-narrowing
-  ;
-  ANDROID_LINK_BASE_ARGS +=
-    # -flto
-  ;
-  if $(ADR_LLVM_VERSION) = 3.4 {
-    ANDROID_CC_ARGS +=
-      -Wno-deprecated-register
-      -Wno-non-literal-null-conversion
-      -Wno-extern-c-compat
-      -Wno-typedef-redefinition
-    ;
-  }
-  # TODO: Remove this, this is actually a very useful warning.
-  ANDROID_CC_ARGS += -Wno-inconsistent-missing-override ;
-}
-else {
-  # GCC 4.4.3
-  ANDROID_CC_ARGS +=
-    -finput-charset=UTF-8
-  ;
-  ANDROID_CPP_ARGS +=
-    -std=$(C++VERSION)
-    -Wno-narrowing
-    # Fix compilation error with BOOST_STATIC_CONSTANT
-    -Wno-invalid-offsetof
-  ;
-  if $(GCC_VER) = 4.8 {
-    ANDROID_CC_ARGS += -fno-stack-protector ;
-  }
-}
 
 ANDROID_CPP_ARGS +=
+-std=$(C++VERSION)
+-Wno-narrowing
 -Wno-conversion-null
 -Wno-reorder # Warnings valid for C++ only
-$(ADR_LIBCPP_DEFINES)
-[ FQuoteFlag -I : $(ADR_LIBCPP_DIR_INCLUDE) ]
-[ FQuoteFlag -I : $(ADR_LIBCPP_DIR_LIBS)/include ]
 ;
 
 ANDROID_LINK_BASE_ARGS +=
-[ FQuoteFlag -L : $(ADR_DIR_NDK_USR)/lib ]
--nostdlib
+-ffunction-sections
+-fdata-sections
+-landroid
+-llog
+-static-libstdc++
+-Bsymbolic
+-Wl,--gc-sections
+-Wl,--no-undefined
 ;
 
 ANDROID_LINK_EXE_ARGS = $(ANDROID_LINK_BASE_ARGS)
--ffunction-sections
--fdata-sections
--Bdynamic
 -Wl,-dynamic-linker,//system/bin/linker
--Wl,--gc-sections
 -Wl,-z,nocopyreloc
--Wl,--no-undefined
-[ FQuoteFlag -Wl,-rpath-link= : $(ADR_DIR_NDK_USR)/lib/crtend_android.o ]
-[ FQuote $(ADR_DIR_NDK_USR)/lib/crtend_android.o ]
-[ FQuote $(ADR_DIR_NDK_USR)/lib/crtbegin_dynamic.o ]
 ;
 
 ANDROID_LINK_DLL_ARGS = $(ANDROID_LINK_BASE_ARGS)
--ffunction-sections
--fdata-sections
--Wl,--gc-sections
 -Wl,-z,nocopyreloc
--Wl,--no-undefined
--Wl,-shared,-Bsymbolic
 -Wl,--no-whole-archive
-[ FQuoteFlag -Wl,-rpath-link= : $(ADR_DIR_NDK_USR)/lib ]
+-shared
 ;
 
-switch $(ADR_CPU_PROFILE)
-{
-    ## ARMv5TE no FPU
-  case ARMv5 :
-    ANDROID_SO_DIR = armeabi ;
-    ANDROID_CC_ARGS +=
-    -D__ARM_ARCH_5__
-    -D__ARM_ARCH_5T__
-    -D__ARM_ARCH_5E__
-    -D__ARM_ARCH_5TE
-    -D__CPU_ARMv5__
-    -march=armv5te
-    -mtune=xscale
-    -msoft-float
-    -mthumb
-    ;
-    if ! $(ADR_LLVM_VERSION) {
-      ANDROID_CC_ARGS +=
-      -mthumb-interwork
-      ;
-    }
-    ## ARM7A VFPv3 (Cortex A8, NVidia Tegra 2, HTC Desire, ...)
-  case ARMv7A :
-    ANDROID_SO_DIR = armeabi-v7a ;
-    ANDROID_CC_ARGS +=
-    -D__ARM_ARCH_5__
-    -D__ARM_ARCH_5T__
-    -D__ARM_ARCH_5E__
-    -D__ARM_ARCH_5TE
-    -D__CPU_ARMv7A__
-    -march=armv7-a
-    -mfpu=vfpv3
-    -mfloat-abi=softfp
-    ;
-    ANDROID_LINK_BASE_ARGS = -Wl,--fix-cortex-a8 ;
-    if ! $(ADR_LLVM_VERSION) {
-      ANDROID_CC_ARGS +=
-      -mthumb-interwork
-      ;
-    }
-    else {
-      ANDROID_CC_ARGS +=
-      -Wno-unknown-attributes
-      ;
-    }
-    ## ARM64v8A
-  case ARM64v8A :
-    ANDROID_SO_DIR = arm64-v8a ;
-    ANDROID_CC_ARGS +=
-    -D__CPU_ARM64__
-    -D__CPU_ARM64_V8A__
-    ;
-    ANDROID_LINK_BASE_ARGS = ;
-    ## X86
-  case X86 :
-    ANDROID_SO_DIR = x86 ;
-    ANDROID_CC_ARGS +=
-    -D__CPU_X86__
-    ;
-    ANDROID_LINK_BASE_ARGS = ;
-  case * :
-    EXIT "Unknown Android CPU profile '"$(ADR_CPU_PROFILE)"'." ;
-}
-
-SYSTEM_LINKLIBS = [ FQuoteFlag -L : $(ADR_LIBCPP_DIR_LIBS) ] -llog -lc $(ADR_LIBCPP_LINKER_LIB) -ldl -lm -lgcc ;
-SYSTEM_LINKLIBS += $(ADR_SYSTEM_LINKLIBS) ;
+SYSTEM_LINKLIBS = -lc -ldl -lm ;
 
 CCFLAGS   += $(ANDROID_CC_ARGS) ;
 C++FLAGS  += $(ANDROID_CC_ARGS) $(ANDROID_CPP_ARGS) ;
@@ -201,13 +88,7 @@ if $(FLYMAKE) = 1 {
 }
 else {
   ADR_GCC_OPT ?= -Os ;
-  ECHO "I/Building with GCC Optimization flag:" $(ADR_GCC_OPT) ;
-  if $(ADR_LLVM_VERSION) {
-    ANDROID_OPT_ARGS = $(ADR_GCC_OPT) -fomit-frame-pointer ;
-  }
-  else {
-    ANDROID_OPT_ARGS = $(ADR_GCC_OPT) -fomit-frame-pointer -finline-limit=120 ;
-  }
+  ANDROID_OPT_ARGS = $(ADR_GCC_OPT) -fomit-frame-pointer ;
 }
 
 rule tkCC++Build

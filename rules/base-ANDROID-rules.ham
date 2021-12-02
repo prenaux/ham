@@ -2,7 +2,7 @@ Import base-GCC-rules.ham ;
 
 actions together piecemeal Archive
 {
-  $(AR) "$(<)" "$(>:T)"
+  $(AR) -rs "$(<)" "$(>:T)"
 }
 
 actions Link bind NEEDLIBS
