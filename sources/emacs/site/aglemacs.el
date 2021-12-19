@@ -288,22 +288,22 @@
 (add-to-list 'auto-mode-alist '("\\.fsl\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.nisl\\'" . c++-mode))
 
-;;*** Actionscript ****************************************************************
+;;*** Actionscript ******************************************************
 (autoload 'actionscript-mode "actionscript-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.as\\'" . actionscript-mode))
 (add-to-list 'auto-mode-alist '("\\.es\\'" . actionscript-mode))
 
-;;*** Objective-C *****************************************************************
+;;*** Objective-C *******************************************************
 (add-to-list 'auto-mode-alist '("\\.mm\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.lnt\\'" . c++-mode))
 
-;;*** Rust ************************************************************************
+;;*** Rust **************************************************************
 (autoload 'rust-mode "rust-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
 (autoload 'toml-mode "toml-mode" nil t) ;; used by cargo (rust's build system)
 (add-to-list 'auto-mode-alist '("\\.toml$" . toml-mode))
 
-;;*** Python **********************************************************************
+;;*** Python ************************************************************
 (add-to-list 'auto-mode-alist '("\\wscript$" . python-mode))
 (add-to-list 'auto-mode-alist '("\\wscript_build$" . python-mode))
 (add-to-list 'auto-mode-alist '("\\SConscript$" . python-mode))
@@ -317,32 +317,36 @@
                       (setq indent-tabs-mode nil
                             tab-width 2))))
 
-;;*** Cypher (Neo4J) **************************************************************
+;;*** Cypher (Neo4J) ****************************************************
 (NotBatchMode
  (autoload 'cypher-mode "cypher-mode" "Major mode for editing Neo4J Cypher code." t)
  (add-to-list 'auto-mode-alist '("\\.cypher\\'" . cypher-mode))
  (add-to-list 'auto-mode-alist '("\\.cyp\\'" . cypher-mode))
 )
 
-;;*** SableCC *********************************************************************
+;;*** SableCC/Polyglot **************************************************
 (autoload 'polyglot-mode "polyglot-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.polyglot\\'" . polyglot-mode))
 (add-to-list 'auto-mode-alist '("\\.productions\\'" . polyglot-mode))
 (add-to-list 'auto-mode-alist '("\\.sablecc\\'" . polyglot-mode))
 
-;;*** PowerShell Script ***********************************************************
+;;*** PowerShell Script *************************************************
 (autoload 'powershell-mode "powershell-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.ps1\\'" . powershell-mode))
 
-;;*** Nginx config ****************************************************************
+;;*** Nginx config ******************************************************
 (autoload 'nginx-mode "nginx-mode" nil t)
 
-;;*** Swift ***********************************************************************
+;;*** Swift *************************************************************
 (autoload 'swift-mode "swift-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.swift\\'" . swift-mode))
 
-;;*** Dockerfile ******************************************************************
+;;*** Dockerfile ********************************************************
 (require 'dockerfile-mode)
+
+;;*** Solidity **********************************************************
+(autoload 'solidity-mode "solidity-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.sol\\'" . solidity-mode))
 
 ;;;======================================================================
 ;;; Utils
