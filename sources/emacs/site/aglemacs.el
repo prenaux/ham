@@ -502,6 +502,22 @@ BEG and END (region to sort)."
     (indent-to-column col)))
 
 ;;;======================================================================
+;;; Time
+;;;======================================================================
+
+(defvar ni-iso-datetime-format "%FT%H:%M:%S%Z")
+
+(defun ni-insert-iso-datetime ()
+  "insert the current date and time into current buffer."
+  (interactive)
+  (insert (format-time-string ni-iso-datetime-format (current-time))))
+
+(defun ni-insert-timestamp ()
+  "insert a timestamp."
+  (interactive)
+  (insert "<" (format-time-string ni-iso-datetime-format (current-time)) "> "))
+
+;;;======================================================================
 ;;; Search / Find in files
 ;;;======================================================================
 (agl-begin-time-block "Search / Find in files")
