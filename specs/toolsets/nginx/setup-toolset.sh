@@ -22,7 +22,7 @@ case $HAM_OS in
     OSX*)
         if [ ! -x "$(command -v nginx)" ]; then
             echo "I/nginx not found, using brew to install it..."
-            brew install nginx
+            ham-brew install nginx
         fi
         if [ ! -x "$(command -v certbot)" ]; then
             echo "I/certbox not found, using brew to install it..."

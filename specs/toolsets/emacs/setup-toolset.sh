@@ -26,7 +26,7 @@ case $HAM_OS in
     OSX*)
         if [ -z `which emacs`]; then
             echo "W/Couldn't find emacs, trying to install with brew"
-            brew install emacs
+            ham-brew install emacs
         fi
         ;;
     *)

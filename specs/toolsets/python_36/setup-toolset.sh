@@ -31,7 +31,7 @@ case $HAM_OS in
     OSX*)
         if [ -z "which pip3" ]; then
             echo "I/pip not found, installing..."
-            brew install python3
+            ham-brew install python3
             errcheck $? python_36 "E/Can't install python 3"
             # Install pytest so that we have a Library folder, its just
             # simpler than trying to do without it

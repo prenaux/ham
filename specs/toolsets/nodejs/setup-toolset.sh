@@ -19,7 +19,7 @@ case $HAM_OS in
         if [ "$HAM_BIN_LOA" == "osx-arm64" ]; then
             if [ -z `which node` ]; then
                 echo "W/Couldn't find node, will try to install it with brew."
-                brew install node@15
+                ham-brew install node@15
             fi
             export NODEJS_GLOBAL_MODULES_DIR="/opt/homebrew/lib/node_modules/"
             export PATH=${HAM_TOOLSET_DIR}:${PATH}

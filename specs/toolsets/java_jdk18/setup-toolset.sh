@@ -24,7 +24,7 @@ case $HAM_OS in
             export JAVA_HOME="/opt/homebrew/opt/openjdk@11/libexec/openjdk.jdk/Contents/Home/"
             if [ ! -e "$JAVA_HOME/bin/java" ]; then
                 echo "W/Couldn't find openjdk@11's java, trying to install with brew"
-                brew install openjdk@11
+                ham-brew install openjdk@11
             fi
             export PATH="${JAVA_HOME}/bin":${PATH}
         else

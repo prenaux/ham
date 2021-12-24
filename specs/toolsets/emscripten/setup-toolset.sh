@@ -19,7 +19,7 @@ case $HAM_OS in
         if [ -z `which emcc` ]; then
             echo "W/Couldn't find emcc, will try to install it with brew."
             xcode-select --install
-            brew install emscripten
+            ham-brew install emscripten
         fi
         export PATH=${HAM_TOOLSET_DIR}:${PATH}
         export BUILD_BIN_LOA=$HAM_BIN_LOA
