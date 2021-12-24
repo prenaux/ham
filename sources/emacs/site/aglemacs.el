@@ -348,6 +348,10 @@
 (autoload 'solidity-mode "solidity-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.sol\\'" . solidity-mode))
 
+;;*** Clojure ***********************************************************
+(autoload 'clojure-mode "clojure-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.clj\\'" . clojure-mode))
+
 ;;;======================================================================
 ;;; Utils
 ;;;======================================================================
