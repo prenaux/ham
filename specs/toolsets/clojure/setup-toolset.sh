@@ -9,15 +9,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/clojure"
 # path setup
 case $HAM_OS in
     OSX*)
-        export CLJ_HOME="`brew --prefix clojure/tools/clojure`";
-        if [ ! -e "$CLJ_HOME/bin/clojure" ]; then
-            echo "I/Brew clojure not found, trying to install."
-            ham-brew install clojure/tools/clojure
-            if [ ! -e "$CLJ_HOME/bin/clojure" ]; then
-                echo "I/Brew clojure install failed."
-                return 1
-            fi
-        fi
+        ham-brew-install "clojure/tools/clojure" "bin/clojure"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
