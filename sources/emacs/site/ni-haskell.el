@@ -8,8 +8,8 @@
  (setenv "HASKELL_BIN_DIR" (concat (getenv "HAM_HOME") "/toolsets/haskell/nt-x86/bin/"))
 )
 (OSX
- (add-to-list 'exec-path (concat (getenv "HAM_HOME") "/toolsets/haskell/osx-x86/ghc.app/Contents/bin"))
- (setenv "HASKELL_BIN_DIR" (concat (getenv "HAM_HOME") "/toolsets/haskell/osx-x86/ghc.app/Contents/bin/"))
+ (add-to-list 'exec-path (concat (getenv "HAM_HOME") "/opt/homebrew/bin/"))
+ (setenv "HASKELL_BIN_DIR" (concat (getenv "HAM_HOME") "/opt/homebrew/bin/"))
 )
 
 (setq ghc-core-program (concat (getenv "HASKELL_BIN_DIR") "ghc"))
