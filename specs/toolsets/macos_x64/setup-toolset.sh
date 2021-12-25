@@ -16,7 +16,6 @@ esac
 
 # toolset
 export HAM_TOOLSET=CLANG
-export HAM_TOOLSET_VER=33
 export HAM_TOOLSET_NAME=clang_33
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}"
 

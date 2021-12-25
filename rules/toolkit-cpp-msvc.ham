@@ -206,10 +206,8 @@ rule tkCC++Build
         ObjectOptimFlags $(<) : -Zo ; # /Zo (Enhance Optimized Debugging)
       }
     }
-    if $(HAM_TOOLSET_VER) >= 9 {
-      ObjectOptimFlags $(<) : -GS- ;  # Disable buffer security check
-      strOpt += "(NoBufferSecurity) " ;
-    }
+    ObjectOptimFlags $(<) : -GS- ;  # Disable buffer security check
+    strOpt += "(NoBufferSecurity) " ;
   }
   # Set debug-only flags
   else {

@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=TEXTEDITOR
-export HAM_TOOLSET_VER=2
 export HAM_TOOLSET_NAME=texteditor
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/texteditor"
 

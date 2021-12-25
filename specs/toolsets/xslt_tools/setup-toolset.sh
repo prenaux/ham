@@ -5,7 +5,6 @@ if [ $? != 0 ]; then return 1; fi
 
 # toolset
 export HAM_TOOLSET=XSLT_TOOLS
-export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=xslt_tools
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/xslt_tools"
 

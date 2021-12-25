@@ -9,7 +9,6 @@ if [ $? != 0 ]; then return 1; fi
 
 # toolset
 export HAM_TOOLSET=KUBE
-export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=kubernetes
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/kube"
 

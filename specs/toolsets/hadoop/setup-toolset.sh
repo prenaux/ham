@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=HADOOP
-export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=hadoop
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/hadoop"
 

@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=PERL
-export HAM_TOOLSET_VER=516
 export HAM_TOOLSET_NAME=perl
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/perl"
 

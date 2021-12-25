@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=NGINX
-export HAM_TOOLSET_VER=192
 export HAM_TOOLSET_NAME=nginx
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/nginx"
 

@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=HASKELL
-export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=haskell
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/haskell"
 

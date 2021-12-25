@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=GCC
-export HAM_TOOLSET_VER=470
 export HAM_TOOLSET_NAME=gcc_470
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/gcc_470"
 

@@ -288,7 +288,6 @@ I/Toolset 'emscripten' setup successful.
 =======================================================
 HAM_IMPORTED_TOOLSET = emscripten
 HAM_TOOLSET = EMSCRIPTEN
-HAM_TOOLSET_VER = 1_25
 HAM_TOOLSET_NAME = emscripten
 HAM_TOOLSET_DIR = /Users/USERNAME/My Work/ham/toolsets/emscripten
 =======================================================

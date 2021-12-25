@@ -3,7 +3,6 @@
 
 # toolset
 export HAM_TOOLSET=POSTGRES
-export HAM_TOOLSET_VER=9
 export HAM_TOOLSET_NAME=postgres
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/postgres"
 

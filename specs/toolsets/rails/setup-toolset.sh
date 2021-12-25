@@ -7,7 +7,6 @@ toolset_import postgres || return 1
 
 # toolset
 export HAM_TOOLSET=RAILS
-export HAM_TOOLSET_VER=420
 export HAM_TOOLSET_NAME=rails
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/rails"
 

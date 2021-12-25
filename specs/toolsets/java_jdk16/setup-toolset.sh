@@ -1,7 +1,6 @@
 #!/bin/bash
 # toolset
 export HAM_TOOLSET=JAVA_JRE
-export HAM_TOOLSET_VER=6
 export HAM_TOOLSET_NAME=java_jdk16
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/java_jdk16"
 

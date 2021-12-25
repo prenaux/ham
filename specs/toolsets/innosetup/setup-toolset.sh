@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=INNOSETUP
-export HAM_TOOLSET_VER=5
 export HAM_TOOLSET_NAME=innosetup
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/innosetup"
 

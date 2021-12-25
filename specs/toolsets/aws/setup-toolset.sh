@@ -4,7 +4,6 @@
 
 # toolset
 export HAM_TOOLSET=AWS
-export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=aws
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}"
 

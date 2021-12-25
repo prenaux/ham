@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=WINUTILS
-export HAM_TOOLSET_VER=1
 export HAM_TOOLSET_NAME=winutils
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/winutils"
 

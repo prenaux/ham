@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=PHP
-export HAM_TOOLSET_VER=73
 export HAM_TOOLSET_NAME=php
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/php"
 

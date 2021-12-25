@@ -9,7 +9,6 @@ if [ $? != 0 ]; then return 1; fi
 
 # toolset
 export HAM_TOOLSET=EMSCRIPTEN
-export HAM_TOOLSET_VER=2_0
 export HAM_TOOLSET_NAME=emscripten
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/emscripten"
 

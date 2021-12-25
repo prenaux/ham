@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=EMACS
-export HAM_TOOLSET_VER=23
 export HAM_TOOLSET_NAME=emacs
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/emacs"
 

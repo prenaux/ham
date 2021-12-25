@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=MYSQL
-export HAM_TOOLSET_VER=57
 export HAM_TOOLSET_NAME=mysql
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/mysql"
 

@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=REPOS
-export HAM_TOOLSET_VER=4
 export HAM_TOOLSET_NAME=repos
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/repos"
 

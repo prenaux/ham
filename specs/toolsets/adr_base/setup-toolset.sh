@@ -36,7 +36,6 @@ esac
 
 # toolset
 export HAM_TOOLSET=ANDROID
-export HAM_TOOLSET_VER=17
 export HAM_TOOLSET_NAME=adr_${ADR_VERSION}_${ADR_CPU_TYPE}
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/adr_base"
 

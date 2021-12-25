@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=JAVA_JDK
-export HAM_TOOLSET_VER=11
 export HAM_TOOLSET_NAME=java_jdk_11
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/java_jdk_11"
 

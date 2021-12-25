@@ -315,7 +315,7 @@ toolset_dl_cleanup() {
 toolset_info() {
     echo "=== Ham Info ======================================"
     echo "TOOLSETS = ${HAM_IMPORTED_TOOLSETS}"
-    echo "MAIN TOOLSET = ${HAM_TOOLSET}, VER: ${HAM_TOOLSET_VER}, NAME: ${HAM_TOOLSET_NAME}, DIR: ${HAM_TOOLSET_DIR}"
+    echo "MAIN TOOLSET = ${HAM_TOOLSET}, NAME: ${HAM_TOOLSET_NAME}, DIR: ${HAM_TOOLSET_DIR}"
     echo -n "TOOLS VERSION = "
     echo "$HAM_TOOLSET_VERSIONS"
     echo "==================================================="

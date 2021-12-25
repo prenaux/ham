@@ -20,7 +20,6 @@ NOTFILE data ;
 NOTFILE shaders ;
 
 AssertVarDefined HAM_TOOLSET_NAME ;
-AssertVarDefined HAM_TOOLSET_VER ;
 
 if $(OS) = MACOSX {
   BUILD_BIN_LOA ?= $(BIN_LOA) ;
@@ -232,7 +231,7 @@ AssertVarDefined RUN_EXE_SUFFIX ;
 logVerbose "### BUILD ENV ###" ;
 logVerbose "- Platform : "$(OS)" ($(OSPLAT))" ;
 logVerbose "- LOA      : "$(LIBS_LOA) ;
-logVerbose "- Toolset  : "$(HAM_TOOLSET_NAME)" ("$(HAM_TOOLSET_VER)")" ;
+logVerbose "- Toolset  : "$(HAM_TOOLSET_NAME) ;
 
 #----------------------------------------------------------------------
 #     BASE STUFF

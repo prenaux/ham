@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=wine
-export HAM_TOOLSET_VER=4
 export HAM_TOOLSET_NAME=wine
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/wine"
 

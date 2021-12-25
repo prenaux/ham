@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=PYTHON
-export HAM_TOOLSET_VER=36
 export HAM_TOOLSET_NAME=python_36
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/python_36"
 

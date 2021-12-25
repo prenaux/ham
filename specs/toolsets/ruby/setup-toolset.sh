@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=RUBY
-export HAM_TOOLSET_VER=221
 export HAM_TOOLSET_NAME=ruby
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/ruby"
 

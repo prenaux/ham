@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=NODEJS
-export HAM_TOOLSET_VER=10_16
 export HAM_TOOLSET_NAME=nodejs
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/nodejs"
 

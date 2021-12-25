@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=CMAKE
-export HAM_TOOLSET_VER=35
 export HAM_TOOLSET_NAME=cmake
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/cmake"
 

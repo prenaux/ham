@@ -19,7 +19,6 @@ case $HAM_OS in
 esac
 
 export HAM_TOOLSET=VISUALC
-export HAM_TOOLSET_VER=10
 export HAM_TOOLSET_NAME=msvc_10_x86
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}"
 

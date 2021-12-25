@@ -2,7 +2,6 @@
 
 # toolset
 export HAM_TOOLSET=OPENCV30
-export HAM_TOOLSET_VER=30
 export HAM_TOOLSET_NAME=opencv30
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/opencv30/"
 

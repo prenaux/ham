@@ -6,7 +6,6 @@ if [ $? != 0 ]; then return 1; fi
 
 # toolset
 export HAM_TOOLSET=QCC
-export HAM_TOOLSET_VER=660
 export HAM_TOOLSET_NAME=qcc_660
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/qnx_660"
 
