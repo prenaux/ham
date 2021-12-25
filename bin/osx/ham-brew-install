@@ -1,0 +1,32 @@
+#!/bin/bash -e
+
+# the help
+usage() {
+    echo ""
+    echo "usage:"
+    echo "  ham-brew-install PACKAGE CHECKFILE"
+    echo ""
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        # sourced...
+        return 1
+    else
+        # regular call
+        exit 1
+    fi
+}
+
+PKGNAME="$1"
+CHECKFILE="$2"
+if [ -z "$" -o -z "$2" ]; then
+    usage
+fi
+
+PKG_HOME="`brew --prefix $PKGNAME`";
+if [ ! -e "$PKG_HOME/$CHECKFILE" ]; then
+    echo "I/Brew $PKGNAME not found, trying to install."
+    ham-brew install $PKGNAME
+    if [ ! -e "$PKG_HOME/$CHECKFILE" ]; then
+        echo "I/Brew $PKGNAME install failed."
+        exit 1
+    fi
+fi
