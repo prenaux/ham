@@ -37,21 +37,28 @@ case $HAM_OS in
         ham-brew-install ghc@8.10 "bin/ghc"
         ham-brew-install cabal-install "bin/cabal"
         ham-brew-install haskell-stack "bin/stack"
+        # Stack built exes
+        export PATH=${HOME}/.local/bin:${PATH}
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
         ;;
 esac
+export PATH=${HAM_TOOLSET_DIR}:${PATH}
 
 # Version checks
-VER="--- haskell ----------------------
+VER="--- haskell ----------------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
 GHC: `ghc --version`
 CABAL: `cabal --version | grep cabal`
-STACK: `stack --numeric-version`"
-if [ $? != 0 ]; then
-    echo "E/Can't get version."
-    return 1
+STACK: `hs-stack --numeric-version`"
+    if [ $? != 0 ]; then
+        echo "E/Can't get version."
+        return 1
+    fi
 fi
+
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
