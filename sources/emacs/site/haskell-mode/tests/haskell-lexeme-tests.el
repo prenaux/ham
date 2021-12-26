@@ -23,7 +23,7 @@ order."
     ;; Note that all of this should work both in haskell-mode and
     ;; outside of it. Currently we test only haskell-mode setup.
     (if literate
-        (literate-haskell-mode)
+        (haskell-literate-mode)
       (haskell-mode))
 
     (if (consp lines-or-contents)
@@ -70,7 +70,7 @@ buffer."
     ;; Note that all of this should work both in haskell-mode and
     ;; outside of it. Currently we test only haskell-mode setup.
     (if literate
-        (literate-haskell-mode)
+        (haskell-literate-mode)
       (haskell-mode))
 
     (font-lock-fontify-buffer)
@@ -184,6 +184,16 @@ buffer."
    '("'D'")
    '("'D'")))
 
+(ert-deftest haskell-lexeme-char-literal-5 ()
+  (check-lexemes
+   '("':'")
+   '("':'")))
+
+(ert-deftest haskell-lexeme-char-literal-6 ()
+  (check-lexemes
+   '("(':')")
+   '("(" "':'" ")")))
+
 (ert-deftest haskell-lexeme-string-literal-1 ()
   (check-lexemes
    '("\"\\   \\\"")
@@ -281,6 +291,26 @@ buffer."
   (check-lexemes
    "[xml| <xml />"
    '("[xml| <xml />")))
+
+(ert-deftest haskell-lexeme-quasi-quote-qual-1 ()
+  (check-lexemes
+   '("[Mod.xml| <xml /> |]")
+   '("[Mod.xml| <xml /> |]")))
+
+(ert-deftest haskell-lexeme-quasi-quote-qual-2 ()
+  (check-lexemes
+   '("[Mod.xml| <xml /> |] |]")
+   '("[Mod.xml| <xml /> |]" "|" "]")))
+
+(ert-deftest haskell-lexeme-quasi-quote-qual-3 ()
+  (check-lexemes
+   "[Mod.xml| <xml /> |"
+   '("[Mod.xml| <xml /> |")))
+
+(ert-deftest haskell-lexeme-quasi-quote-qual-4 ()
+  (check-lexemes
+   "[Mod.xml| <xml />"
+   '("[Mod.xml| <xml />")))
 
 (ert-deftest haskell-lexeme-literate-1 ()
   (check-lexemes

@@ -372,7 +372,7 @@ and indent when all of the following are true:
 ;; When the scope of this function ends, the variable is automatically
 ;; reverted to its old value.
 
-;; This is basicly a performance hack.  It would have been possible to
+;; This is basically a performance hack.  It would have been possible to
 ;; thread this state using a association-list through the parsers, but it
 ;; would be probably more complicated and slower due to the lack of real
 ;; closures in Emacs Lisp.
@@ -517,16 +517,17 @@ and indent when all of the following are true:
   "Translation from UnicodeSyntax tokens to their ASCII representation.")
 
 (defconst haskell-indentation-toplevel-list
-  `(("module"   . haskell-indentation-module)
-    ("data"     . haskell-indentation-data)
-    ("type"     . haskell-indentation-data)
-    ("newtype"  . haskell-indentation-data)
-    ("import"   . haskell-indentation-import)
-    ("foreign"  . haskell-indentation-foreign)
-    ("where"    . haskell-indentation-toplevel-where)
-    ("class"    . haskell-indentation-class-declaration)
-    ("instance" . haskell-indentation-class-declaration)
-    ("deriving" . haskell-indentation-deriving))
+  `(("module"    . haskell-indentation-module)
+    ("signature" . haskell-indentation-module)
+    ("data"      . haskell-indentation-data)
+    ("type"      . haskell-indentation-data)
+    ("newtype"   . haskell-indentation-data)
+    ("import"    . haskell-indentation-import)
+    ("foreign"   . haskell-indentation-foreign)
+    ("where"     . haskell-indentation-toplevel-where)
+    ("class"     . haskell-indentation-class-declaration)
+    ("instance"  . haskell-indentation-class-declaration)
+    ("deriving"  . haskell-indentation-deriving))
   "Alist of toplevel keywords with associated parsers.")
 
 (defconst haskell-indentation-type-list
@@ -1217,7 +1218,7 @@ line."
 
 (defun haskell-indentation-peek-token ()
   "Return token starting at point."
-  (cond ((looking-at "\\(if\\|then\\|else\\|let\\|in\\|mdo\\|rec\\|do\\|proc\\|case\\|of\\|where\\|module\\|deriving\\|import\\|data\\|type\\|newtype\\|class\\|instance\\)\\([^[:alnum:]'_]\\|$\\)")
+  (cond ((looking-at "\\(if\\|then\\|else\\|let\\|in\\|mdo\\|rec\\|do\\|proc\\|case\\|of\\|where\\|module\\|signature\\|deriving\\|import\\|data\\|type\\|newtype\\|class\\|instance\\)\\([^[:alnum:]'_]\\|$\\)")
          (match-string-no-properties 1))
         ((looking-at "[][(){}[,;]")
          (match-string-no-properties 0))

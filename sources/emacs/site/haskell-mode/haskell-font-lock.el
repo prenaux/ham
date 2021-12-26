@@ -27,8 +27,8 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'haskell-compat)
 (require 'haskell-lexeme)
+(require 'haskell-string)
 (require 'font-lock)
 
 ;;;###autoload
@@ -93,7 +93,8 @@ be disabled at that position."
   '("case" "class" "data" "default" "deriving" "do"
     "else" "if" "import" "in" "infix" "infixl"
     "infixr" "instance" "let" "module" "mdo" "newtype" "of"
-    "rec" "pattern" "proc" "then" "type" "where" "_")
+    "rec" "pattern" "proc" "signature" "then" "type" "where" "_"
+    "anyclass" "stock" "via")
   "Identifiers treated as reserved keywords in Haskell."
   :group 'haskell-appearance
   :type '(repeat string))
@@ -108,6 +109,7 @@ This is the case if the \".\" is part of a \"forall <tvar> . <type>\"."
                             (line-beginning-position) t)
         (not (or
               (string= " " (string (char-after start)))
+              (null (char-before start))
               (string= " " (string (char-before start))))))))
 
 (defvar haskell-yesod-parse-routes-mode-keywords
@@ -133,6 +135,8 @@ This is the case if the \".\" is part of a \"forall <tvar> . <type>\"."
     ("r" . ess-mode)
     ("rChan" . ess-mode)
     ("sql" . sql-mode)
+    ("json" . json-mode)
+    ("aesonQQ" . json-mode)
     ("parseRoutes" . haskell-yesod-parse-routes-mode))
   "Mapping from quasi quoter token to fontification mode.
 
@@ -413,11 +417,12 @@ on an uppercase identifier."
 
             ;; Special case for `as', `hiding', `safe' and `qualified', which are
             ;; keywords in import statements but are not otherwise reserved.
-            ("\\<import[ \t]+\\(?:\\(safe\\>\\)[ \t]*\\)?\\(?:\\(qualified\\>\\)[ \t]*\\)?\\(?:\"[^\"]*\"[\t ]*\\)?[^ \t\n()]+[ \t]*\\(?:\\(\\<as\\>\\)[ \t]*[^ \t\n()]+[ \t]*\\)?\\(\\<hiding\\>\\)?"
+            ("\\<import[ \t]+\\(?:\\(safe\\>\\)[ \t]*\\)?\\(?:\\(qualified\\>\\)[ \t]*\\)?\\(?:\"[^\"]*\"[\t ]*\\)?[^ \t\n()]+[ \t]*\\(?:\\(qualified\\>\\)[ \t]*\\)?\\(?:\\(\\<as\\>\\)[ \t]*[^ \t\n()]+[ \t]*\\)?\\(\\<hiding\\>\\)?"
              (1 'haskell-keyword-face nil lax)
              (2 'haskell-keyword-face nil lax)
              (3 'haskell-keyword-face nil lax)
-             (4 'haskell-keyword-face nil lax))
+             (4 'haskell-keyword-face nil lax)
+             (5 'haskell-keyword-face nil lax))
 
             ;; Special case for `foreign import'
             ;; keywords in foreign import statements but are not otherwise reserved.
@@ -536,7 +541,8 @@ on an uppercase identifier."
                         (goto-char (nth 8 state))
                         (skip-syntax-backward "w._")
                         (buffer-substring-no-properties (point) (nth 8 state))))
-               (lang-mode (cdr (assoc qqname haskell-font-lock-quasi-quote-modes))))
+               (lang-mode (cdr (assoc (haskell-string-drop-qualifier qqname)
+                                      haskell-font-lock-quasi-quote-modes))))
 
           (if (and lang-mode
                    (fboundp lang-mode))
@@ -701,7 +707,7 @@ on an uppercase identifier."
 (provide 'haskell-font-lock)
 
 ;; Local Variables:
-;; coding: utf-8-unix
+;; coding: utf-8
 ;; tab-width: 8
 ;; End:
 

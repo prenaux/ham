@@ -264,13 +264,6 @@
   (concat (getenv "WORK") "/ham/bin/ham-lint")
   "The ham-lint executable to use for syntax checking.")
 
-;; phpstan error parser
-(defvar aflymake-ham-lint-err-line-patterns-php
-  '(
-    ("^[ ]*\\(.*\.php:\\)\\([0-9]+\\):[ ]*\\(.*\\)" nil 2 nil 3)
-    ("PHP Fatal error:[ ]*\\(.*\\) in \\(.*\.php\\) on line \\([0-9]+\\)" nil 3 nil 1)
-    ))
-
 ;; TODO add some options for eslint CLI
 (defun aflymake-ham-lint-command (filename)
   "Construct a command that flymake can use to run eslint on a file."
@@ -279,9 +272,34 @@
 ;; do nothing because we compile inplace
 (defun ham-flymake-ham-lint-cleanup () t)
 
+;;*** PHP **************************************************************
+
+;; phpstan error parser
+(defvar aflymake-ham-lint-err-line-patterns-php
+  '(
+    ("^[ ]*\\(.*\.php:\\)\\([0-9]+\\):[ ]*\\(.*\\)" nil 2 nil 3)
+    ("PHP Fatal error:[ ]*\\(.*\\) in \\(.*\.php\\) on line \\([0-9]+\\)" nil 3 nil 1)
+    ))
+
 (defun ham-flymake-ham-lint-php-init ()
   (aflymake-easy-load 'aflymake-ham-lint-command
                       aflymake-ham-lint-err-line-patterns-php
                       'inplace "php"))
 
 (push '(".+\\.php$" ham-flymake-ham-lint-php-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
+
+;;*** Haskell **********************************************************
+
+;; haskell error parser
+(defvar aflymake-ham-lint-err-line-patterns-haskell
+  '(
+    ("^[ ]*\\(.*\.hs\\):\\([0-9]+\\):[0-9]+:warning:[ ]*\\(.*\\)" nil 2 nil 3)
+    ("^[ ]*\\(.*\.hs\\):\\([0-9]+\\):[0-9]+:error*\\(.*\\)" nil 2 nil 3)
+    ))
+
+(defun ham-flymake-ham-lint-haskell-init ()
+  (aflymake-easy-load 'aflymake-ham-lint-command
+                      aflymake-ham-lint-err-line-patterns-haskell
+                      'inplace "hs"))
+
+(push '(".+\\.hs$" ham-flymake-ham-lint-haskell-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)

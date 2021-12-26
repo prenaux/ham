@@ -4,17 +4,13 @@
 (require 'haskell-font-lock)
 (require 'haskell-mode)
 
-;; Emacs 24.3 has sql-mode that runs without a product and therefore
-;; without font lock initially and needs to be extra enabled
-(add-hook 'sql-mode-hook (lambda () (sql-set-product 'ansi)))
-
 (ert-deftest haskell-syntactic-test-1 ()
   "Simple keywords fontified"
   (check-properties
-    '("module Test where")
-    '(("module" "w" haskell-keyword-face)
-      ("Test" "w" haskell-constructor-face)
-      ("where" "w" haskell-keyword-face))))
+   '("module Test where")
+   '(("module" "w" haskell-keyword-face)
+     ("Test" "w" haskell-constructor-face)
+     ("where" "w" haskell-keyword-face))))
 
 (ert-deftest haskell-syntactic-test-4 ()
   "Apostrophe as part of a contructor token."
@@ -475,6 +471,15 @@
    '(("Title" t default)
      ("Books" t default))))
 
+(ert-deftest haskell-syntactic-test-quasiquoter-sql-3 ()
+  "Embedded SQL statements"
+  (check-properties
+   '("sql = [Mod.sql| SELECT title FROM books; |]")
+   '(("SELECT" t font-lock-keyword-face)
+     ("title" t default)
+     ("FROM" t font-lock-keyword-face)
+     ("books" t default))))
+
 
 (ert-deftest haskell-syntactic-test-special-not-redefined ()
   "QuasiQuote should not conflict with TemplateHaskell"
@@ -548,7 +553,7 @@
      ("Comment2" t haskell-literate-comment-face)
      ("code3" t haskell-definition-face)
      ("Comment3" t haskell-literate-comment-face))
-   'literate-haskell-mode))
+   'haskell-literate-mode))
 
 (ert-deftest haskell-literate-bird-2 ()
   ;; Haskell Report requires empty line before bird code block. So it
@@ -570,7 +575,7 @@
      ("Comment2" t haskell-literate-comment-face)
      ("code3" t haskell-definition-face)
      ("Comment3" t haskell-literate-comment-face))
-   'literate-haskell-mode))
+   'haskell-literate-mode))
 
 (ert-deftest haskell-literate-latex-1 ()
   (check-properties
@@ -592,7 +597,7 @@
      ("Comment2" t haskell-literate-comment-face)
      ("code3" t haskell-definition-face)
      ("Comment3" t haskell-literate-comment-face))
-   'literate-haskell-mode))
+   'haskell-literate-mode))
 
 (ert-deftest haskell-literate-mixed-1 ()
   ;; Although Haskell Report does not advice mixing modes, it is a
@@ -615,7 +620,7 @@
      ("Comment2" t haskell-literate-comment-face)
      ("code3" t haskell-definition-face)
      ("Comment3" t haskell-literate-comment-face))
-   'literate-haskell-mode))
+   'haskell-literate-mode))
 
 (ert-deftest haskell-type-instance ()
   "Fontify \"instance\" after \"type\""
@@ -981,6 +986,14 @@
    '(("Opt_WarnPartialTypeSignatures" t haskell-constructor-face)
      ("Cons2" t haskell-constructor-face)
      ("Cons3" t haskell-constructor-face))))
+
+(ert-deftest haskell-type-colors-33 ()
+  (check-properties
+   "import X qualified as Y"
+   '(("X" t haskell-constructor-face)
+     ("qualified" t haskell-keyword-face)
+     ("as" t haskell-keyword-face)
+     ("Y" t haskell-constructor-face))))
 
 (ert-deftest haskell-pattern-1 ()
   "Fontify the \"pattern\" keyword in contexts related to pattern synonyms."

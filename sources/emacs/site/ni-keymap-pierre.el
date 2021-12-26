@@ -154,6 +154,7 @@
  (global-set-key (kbd "M-3") 'aflymake-goto-next-error)
  (global-set-key (kbd "M-4") 'aflymake-goto-prev-error)
  (global-set-key (kbd "C-h C-c") 'aflymake-mode-or-syntax-check)
+ (global-set-key (kbd "C-h C-f") 'ham-fix-current-buffer)
 
 ;;;======================================================================
 ;;; ni-autocomplete-pabbrev.el

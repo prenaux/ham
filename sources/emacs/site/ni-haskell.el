@@ -8,8 +8,8 @@
  (setenv "HASKELL_BIN_DIR" (concat (getenv "HAM_HOME") "/toolsets/haskell/nt-x86/bin/"))
 )
 (OSX
- (add-to-list 'exec-path (concat (getenv "HAM_HOME") "/opt/homebrew/bin/"))
- (setenv "HASKELL_BIN_DIR" (concat (getenv "HAM_HOME") "/opt/homebrew/bin/"))
+ (add-to-list 'exec-path "/opt/homebrew/bin/")
+ (setenv "HASKELL_BIN_DIR" "/opt/homebrew/bin/")
 )
 
 (setq ghc-core-program (concat (getenv "HASKELL_BIN_DIR") "ghc"))
@@ -20,7 +20,37 @@
 
 (add-to-list 'Info-default-directory-list (concat (getenv "HAM_HOME") "/sources/emacs/site/haskell-mode"))
 
-(add-hook 'haskell-mode-hook 'haskell-indent-mode)
+(custom-set-variables
+ '(haskell-process-suggest-remove-import-lines t)
+ '(haskell-process-auto-import-loaded-modules t)
+ '(haskell-process-log t))
+
+;;;======================================================================
+;;; Indentation
+;;;======================================================================
+
+;; Default haskell indent mode, commented because its confusing and hindent
+;; takes care of proper indentation
+;; (add-hook 'haskell-mode-hook 'haskell-indent-mode)
+
+;; Custom simple indentation
+(defun ni-haskell-setup-indentation ()
+  "Setup variables for editing Haskell files."
+  (setq whitespace-line-column 80)
+  (make-local-variable 'tab-stop-list)
+  (setq tab-stop-list (number-sequence 2 80 2))
+  (haskell-indentation-mode 0)
+  (setq indent-line-function 'indent-relative))
+(add-hook 'haskell-mode-hook 'ni-haskell-setup-indentation)
+
+;; hindent
+(require 'hindent)
+(setq hindent-process-path (concat (getenv "HOME") "/.local/bin/hindent"))
+(add-hook 'haskell-mode-hook #'hindent-mode)
+
+;;;======================================================================
+;;; Interactive
+;;;======================================================================
 (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
 
 (defun ni-haskell-mode-save-buffer-and-load-file ()
@@ -34,10 +64,9 @@
   (save-buffer)
   (haskell-compile))
 
-(custom-set-variables
- '(haskell-process-suggest-remove-import-lines t)
- '(haskell-process-auto-import-loaded-modules t)
- '(haskell-process-log t))
+;;;======================================================================
+;;; Interactive
+;;;======================================================================
 
 (eval-after-load 'haskell-mode
   '(progn

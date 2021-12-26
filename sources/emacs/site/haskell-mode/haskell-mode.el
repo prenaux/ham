@@ -12,7 +12,6 @@
 ;;          2003      Dave Love <fx@gnu.org>
 ;;          2016      Arthur Fayzrakhmanov
 ;; Keywords: faces files Haskell
-;; Version: 16.2-git
 ;; URL: https://github.com/haskell/haskell-mode
 
 ;; This file is not part of GNU Emacs.
@@ -138,7 +137,6 @@
 (require 'cl-lib)
 (require 'haskell-ghc-support)
 (require 'haskell-complete-module)
-(require 'haskell-compat)
 (require 'haskell-align-imports)
 (require 'haskell-lexeme)
 (require 'haskell-sort-imports)
@@ -182,7 +180,7 @@ With prefix argument HERE, insert it at point."
   "If not nil, the current buffer contains a literate Haskell script.
 Possible values are: `bird' and `tex', for Bird-style and LaTeX-style
 literate scripts respectively.  Set by `haskell-mode' and
-`literate-haskell-mode'.  For an ambiguous literate buffer -- i.e. does
+`haskell-literate-mode'.  For an ambiguous literate buffer -- i.e. does
 not contain either \"\\begin{code}\" or \"\\end{code}\" on a line on
 its own, nor does it contain \">\" at the start of a line -- the value
 of `haskell-literate-default' is used.")
@@ -466,7 +464,7 @@ be set to the preferred literate style."
 
     (modify-syntax-entry ?\{  "(}1nb" table)
     (modify-syntax-entry ?\}  "){4nb" table)
-    (modify-syntax-entry ?-  ". 123" table)
+    (modify-syntax-entry ?-  "< 123" table)
     (modify-syntax-entry ?\n ">" table)
 
     (modify-syntax-entry ?\` "$`" table)
@@ -559,8 +557,25 @@ be set to the preferred literate style."
            ((equal token-kind 'number)
             (put-text-property (match-beginning 0) (match-end 0) 'syntax-table (string-to-syntax "w")))
            ((equal token-kind 'char)
-            (put-text-property (match-beginning 0) (1+ (match-beginning 0)) 'syntax-table (string-to-syntax "\""))
-            (put-text-property (1- (match-end 0)) (match-end 0) 'syntax-table (string-to-syntax "\"")))
+            (save-excursion
+              (goto-char (match-beginning 2))
+              (let ((limit (match-end 2)))
+                (save-match-data
+                  (while (re-search-forward "\"" limit t)
+                    (put-text-property (match-beginning 0) (match-end 0) 'syntax-table (string-to-syntax ".")))))
+              ;; Place a generic string delimeter only when an open
+              ;; quote is closed by end-of-line Emacs acts strangely
+              ;; when a generic delimiter is not closed so in case
+              ;; string ends at the end of the buffer we will use
+              ;; plain string
+              (if (and (not (match-beginning 3))
+                       (not (equal (match-end 2) (point-max))))
+                  (progn
+                    (put-text-property (match-beginning 1) (match-end 1) 'syntax-table (string-to-syntax "|"))
+                    (put-text-property (match-end 2 ) (1+ (match-end 2)) 'syntax-table (string-to-syntax "|")))
+                (put-text-property (match-beginning 1) (match-end 1) 'syntax-table (string-to-syntax "\""))
+                (when (not (equal (match-end 2) (point-max)))
+                  (put-text-property (match-end 2 ) (1+ (match-end 2)) 'syntax-table (string-to-syntax "\""))))))
            ((equal token-kind 'string)
             (save-excursion
               (goto-char (match-beginning 2))
@@ -712,12 +727,20 @@ Returns beginning position of qualified part or nil if no qualified part found."
       pos)))
 
 (defun haskell-delete-indentation (&optional arg)
-  "Like `delete-indentation' but ignoring Bird-style \">\"."
+  "Like `delete-indentation' but ignoring Bird-style \">\".
+Prefix ARG is handled as per `delete-indentation'."
   (interactive "*P")
   (let ((fill-prefix (or fill-prefix (if (eq haskell-literate 'bird) ">"))))
     (delete-indentation arg)))
 
 (defvar eldoc-print-current-symbol-info-function)
+
+(defvar electric-pair-inhibit-predicate)
+(declare-function electric-pair-default-inhibit "elec-pair")
+(defun haskell-mode--inhibit-bracket-inside-comment-or-default (ch)
+  "An `electric-pair-mode' inhibit function for character CH."
+  (or (nth 4 (syntax-ppss))
+      (funcall #'electric-pair-default-inhibit ch)))
 
 ;; The main mode functions
 ;;;###autoload
@@ -726,7 +749,7 @@ Returns beginning position of qualified part or nil if no qualified part found."
 
 \\<haskell-mode-map>
 
-Literate Haskell scripts are supported via `literate-haskell-mode'.
+Literate Haskell scripts are supported via `haskell-literate-mode'.
 The variable `haskell-literate' indicates the style of the script in the
 current buffer.  See the documentation on this variable for more details.
 
@@ -748,9 +771,6 @@ Interaction modes:
     `interactive-haskell-mode'
       Interact with per-project GHCi processes through a REPL and
       directory-aware sessions.
-
-    `inf-haskell-mode'
-      Interact with a GHCi process using comint-mode. Deprecated.
 
 Other modes:
 
@@ -775,16 +795,16 @@ Minor modes that work well with `haskell-mode':
 - `smerge-mode': show and work with diff3 conflict markers used
   by git, svn and other version control systems."
   :group 'haskell
-  (when (version< emacs-version "24.3")
-    (error "haskell-mode requires at least Emacs 24.3"))
+  (when (version< emacs-version "25.1")
+    (error "haskell-mode requires at least Emacs 25.1"))
 
   ;; paragraph-{start,separate} should treat comments as paragraphs as well.
   (setq-local paragraph-start (concat " *{-\\| *-- |\\|" page-delimiter))
   (setq-local paragraph-separate (concat " *$\\| *\\({-\\|-}\\) *$\\|" page-delimiter))
   (setq-local fill-paragraph-function 'haskell-fill-paragraph)
   ;; (setq-local adaptive-fill-function 'haskell-adaptive-fill)
-  (setq-local comment-start "-- ")
-  (setq-local comment-padding 0)
+  (setq-local comment-start "--")
+  (setq-local comment-padding 1)
   (setq-local comment-start-skip "[-{]-[ \t]*")
   (setq-local comment-end "")
   (setq-local comment-end-skip "[ \t]*\\(-}\\|\\s>\\)")
@@ -832,6 +852,11 @@ Minor modes that work well with `haskell-mode':
             'haskell-completions-completion-at-point
             nil
             t)
+
+  ;; Avoid Emacs 25 bug with electric-pair inside comments
+  (when (eq 25 emacs-major-version)
+    (setq-local electric-pair-inhibit-predicate 'haskell-mode--inhibit-bracket-inside-comment-or-default))
+
   (haskell-indentation-mode))
 
 (defcustom haskell-mode-hook '(haskell-indentation-mode interactive-haskell-mode)
@@ -840,9 +865,8 @@ Minor modes that work well with `haskell-mode':
 Use to enable minor modes coming with `haskell-mode' or run an
 arbitrary function.
 
-Note that `inf-haskell-mode' should not be enabled at the same
-time as `haskell-interactive-mode', same exclusion principle
-applies to `haskell-indentation-mode' and `haskell-indent-mode'."
+Note that  `haskell-indentation-mode' and `haskell-indent-mode' should not be
+run at the same time."
   :group 'haskell
   :type 'hook
   :options '(capitalized-words-mode
@@ -852,7 +876,6 @@ applies to `haskell-indentation-mode' and `haskell-indent-mode'."
              haskell-indentation-mode
              highlight-uses-mode
              imenu-add-menubar-index
-             inf-haskell-mode
              interactive-haskell-mode
              turn-on-haskell-unicode-input-method))
 
@@ -958,7 +981,7 @@ list marker of some kind), and end of the obstacle."
 
 
 ;;;###autoload
-(define-derived-mode literate-haskell-mode haskell-mode "LitHaskell"
+(define-derived-mode haskell-literate-mode haskell-mode "LitHaskell"
   "As `haskell-mode' but for literate scripts."
   (setq haskell-literate
         (save-excursion
@@ -975,9 +998,15 @@ list marker of some kind), and end of the obstacle."
   (setq-local mode-line-process '("/" (:eval (symbol-name haskell-literate)))))
 
 ;;;###autoload
+(define-obsolete-function-alias 'literate-haskell-mode 'haskell-literate-mode "2020-04")
+
+
+;;;###autoload
 (add-to-list 'auto-mode-alist        '("\\.[gh]s\\'" . haskell-mode))
 ;;;###autoload
-(add-to-list 'auto-mode-alist        '("\\.l[gh]s\\'" . literate-haskell-mode))
+(add-to-list 'auto-mode-alist        '("\\.hsig\\'" . haskell-mode))
+;;;###autoload
+(add-to-list 'auto-mode-alist        '("\\.l[gh]s\\'" . haskell-literate-mode))
 ;;;###autoload
 (add-to-list 'auto-mode-alist        '("\\.hsc\\'" . haskell-mode))
 ;;;###autoload
@@ -1003,11 +1032,6 @@ list marker of some kind), and end of the obstacle."
 (defvar haskell-saved-check-command nil
   "Internal use.")
 
-(defcustom haskell-indent-spaces 2
-  "Number of spaces to indent inwards."
-  :group 'haskell
-  :type 'integer)
-
 ;; Like Python.  Should be abstracted, sigh.
 (defun haskell-check (command)
   "Check a Haskell file (default current buffer's file).
@@ -1024,15 +1048,21 @@ See `haskell-check-command' for the default."
   (save-some-buffers (not compilation-ask-about-save) nil)
   (compilation-start command))
 
+;; This function was renamed and deprecated, but we want clean
+;; byte compilation in all versions.
+(defalias 'haskell-flymake-create-temp-buffer-copy
+  (if (fboundp 'flymake-proc-init-create-temp-buffer-copy)
+      'flymake-proc-init-create-temp-buffer-copy
+    'flymake-init-create-temp-buffer-copy))
+
 (defun haskell-flymake-init ()
-  "Flymake init function for Haskell.
-To be added to `flymake-init-create-temp-buffer-copy'."
-  (let ((checker-elts (and haskell-saved-check-command
-                           (split-string haskell-saved-check-command))))
-    (list (car checker-elts)
-          (append (cdr checker-elts)
-                  (list (flymake-init-create-temp-buffer-copy
-                         'flymake-create-temp-inplace))))))
+  "Flymake init function for Haskell."
+  (when haskell-saved-check-command
+    (let ((checker-elts (split-string haskell-saved-check-command)))
+      (list (car checker-elts)
+            (append (cdr checker-elts)
+                    (list (haskell-flymake-create-temp-buffer-copy
+                           'flymake-create-temp-inplace)))))))
 
 (add-to-list 'flymake-allowed-file-name-masks '("\\.l?hs\\'" haskell-flymake-init))
 
@@ -1175,24 +1205,11 @@ generated."
          (command (haskell-cabal--compose-hasktags-command dir)))
     (if (not command)
         (error "Unable to compose hasktags command")
-      (shell-command command)
-      (haskell-mode-message-line "Tags generated.")
+      (when (zerop (shell-command command))
+        (haskell-mode-message-line "Tags generated."))
       (when and-then-find-this-tag
         (let ((tags-file-name dir))
           (xref-find-definitions and-then-find-this-tag))))))
-
-(defun haskell-mode-message-line (str)
-  "Echo STR in mini-buffer.
-Given string is shrinken to single line, multiple lines just
-disturbs the programmer."
-  (message "%s" (haskell-mode-one-line str (frame-width))))
-
-(defun haskell-mode-one-line (str width)
-  "Try to fit STR as much as possible on one line according to given WIDTH."
-  (let* ((long-line (replace-regexp-in-string "\n" " " str))
-         (condensed  (replace-regexp-in-string
-                      " +" " " (haskell-string-trim long-line))))
-    (truncate-string-to-width condensed width nil nil "…")))
 
 ;; Provide ourselves:
 (provide 'haskell-mode)
