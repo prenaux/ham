@@ -1,0 +1,9 @@
+#!/bin/bash
+echo "I/Initial setup of the generally useful haskell tools..."
+set -ex
+
+cabal update
+
+# Hoogle
+cabal install hoogle
+hoogle generate

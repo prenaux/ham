@@ -37,8 +37,8 @@ case $HAM_OS in
         ham-brew-install ghc@8.10 "bin/ghc"
         ham-brew-install cabal-install "bin/cabal"
         ham-brew-install haskell-stack "bin/stack"
-        # Stack built exes
-        export PATH=${HOME}/.local/bin:${PATH}
+        # Stack & cabal built exes
+        export PATH=${HOME}/.local/bin:${HOME}/.local/bin:${HOME}/.cabal/bin:${PATH}
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
