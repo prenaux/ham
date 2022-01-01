@@ -15,7 +15,8 @@
 (setq ghc-core-program (concat (getenv "HASKELL_BIN_DIR") "ghc"))
 (setq haskell-process-path-ghci (concat (getenv "HASKELL_BIN_DIR") "ghci"))
 (setq haskell-process-path-cabal (concat (getenv "HASKELL_BIN_DIR") "cabal"))
-(setq haskell-process-path-stack (concat (getenv "HASKELL_BIN_DIR") "stack"))
+(setq haskell-process-path-stack (concat (getenv "HAM_HOME") "/toolsets/haskell/hs-stack"))
+
 (setq haskell-compile-command (concat "\"" ghc-core-program "\"" " -Wall -ferror-spans -fforce-recomp -c \"%s\""))
 
 (add-to-list 'Info-default-directory-list (concat (getenv "HAM_HOME") "/sources/emacs/site/haskell-mode"))
@@ -23,7 +24,8 @@
 (custom-set-variables
  '(haskell-process-suggest-remove-import-lines t)
  '(haskell-process-auto-import-loaded-modules t)
- '(haskell-process-log t))
+ '(haskell-process-log t)
+ '(haskell-process-type 'stack-ghci))
 
 ;;;======================================================================
 ;;; Indentation

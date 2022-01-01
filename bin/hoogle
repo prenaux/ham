@@ -6,7 +6,9 @@
 
 # export HAM_NO_VER_CHECK=1
 # if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
-# . "$HAM_HOME/bin/ham-toolset" haskell > /dev/null
+# if [[ "$HAM_TOOLSET_NAME" != "haskell" ]]; then
+#   . "$HAM_HOME/bin/ham-toolset" haskell > /dev/null
+# fi
 
 #
 # Just access hoogle from the user folder directly, will break on Windows?

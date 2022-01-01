@@ -1,14 +1,13 @@
 #!/usr/bin/env perl
 # Remember `chmod a+x hslint, after putting on path.
 
-$ghc = 'ghc';    # where is ghc
-
 @ghc_options  = ('-Wall');      # e.g. ('-fglasgow-exts')
 @ghc_packages = ();             # e.g. ('QuickCheck')
 
 ### the following should not been edited ###
 
-@command = ($ghc, '--make', '-fno-code', $ARGV[0]);
+# @command = ('ghc', '--make', '-fno-code', $ARGV[0]);
+@command = ('hs-stack', 'runghc', '--', $ARGV[0], '--make', '-fno-code');
 
 while (@ghc_options) {
   push(@command, shift @ghc_options);
