@@ -3,25 +3,10 @@
 (add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site/haskell-mode"))
 (require 'haskell-mode-autoloads)
 
-(Windows
- (add-to-list 'exec-path (concat (getenv "HAM_HOME") "/toolsets/haskell/nt-x86/bin"))
- (setenv "HASKELL_BIN_DIR" (concat (getenv "HAM_HOME") "/toolsets/haskell/nt-x86/bin/"))
-)
-(OSX
- (add-to-list 'exec-path "/opt/homebrew/bin/")
- (setenv "HASKELL_BIN_DIR" "/opt/homebrew/bin/")
-)
-
-(setq ghc-core-program (concat (getenv "HASKELL_BIN_DIR") "ghc"))
-(setq haskell-process-path-ghci (concat (getenv "HASKELL_BIN_DIR") "ghci"))
-(setq haskell-process-path-cabal (concat (getenv "HASKELL_BIN_DIR") "cabal"))
-(setq haskell-process-path-stack (concat (getenv "HAM_HOME") "/toolsets/haskell/hs-stack"))
-
-(setq haskell-compile-command (concat "\"" ghc-core-program "\"" " -Wall -ferror-spans -fforce-recomp -c \"%s\""))
-
 (add-to-list 'Info-default-directory-list (concat (getenv "HAM_HOME") "/sources/emacs/site/haskell-mode"))
 
 (custom-set-variables
+ '(haskell-process-path-stack (concat (getenv "HAM_HOME") "/toolsets/haskell/hs-stack"))
  '(haskell-process-suggest-remove-import-lines t)
  '(haskell-process-auto-import-loaded-modules t)
  '(haskell-process-log t)
@@ -45,9 +30,10 @@
   (setq indent-line-function 'indent-relative))
 (add-hook 'haskell-mode-hook 'ni-haskell-setup-indentation)
 
-;; hindent
+;; hindent, override the regular indent commands, 'M-Q' to indent a block &
+;; 'C-M-\' to indent a region
 (require 'hindent)
-(setq hindent-process-path (concat (getenv "HOME") "/.local/bin/hindent"))
+(setq hindent-process-path (concat (getenv "HAM_HOME") "/toolsets/haskell/hs-indent"))
 (add-hook 'haskell-mode-hook #'hindent-mode)
 
 ;;;======================================================================
@@ -61,19 +47,10 @@
   (haskell-process-load-or-reload)
   (haskell-interactive-bring))
 
-(defun ni-haskell-mode-save-buffer-and-compile ()
-  (interactive)
-  (save-buffer)
-  (haskell-compile))
-
 ;;;======================================================================
-;;; Interactive
+;;; Keymap
 ;;;======================================================================
-
 (eval-after-load 'haskell-mode
   '(progn
-     (define-key haskell-mode-map (kbd "C-c C-\\") 'haskell-indent-insert-guard)
      (define-key haskell-mode-map (kbd "C-c C-,") 'ni-haskell-mode-save-buffer-and-load-file)
-     (define-key haskell-mode-map (kbd "C-c C-p") 'ni-haskell-mode-save-buffer-and-compile)
-     (define-key haskell-mode-map (kbd "C-c C-y") 'ni-haskell-mode-save-buffer-and-compile)
    ))

@@ -1,9 +1,38 @@
 #!/bin/bash
-echo "I/Initial setup of the generally useful haskell tools..."
-set -ex
+if [[ -z $HAM_HOME ]]; then
+    echo "E/HAM_HOME not set !"
+    exit 1
+fi
+. "$HAM_HOME/bin/ham-bash-lib.sh"
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+export HAM_NO_VER_CHECK=1
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# echo `unxpath "$SCRIPT_DIR"`
 
-cabal update
+echo "I/Initial setup of the generally useful haskell tools..."
+echo "I/This will take a long while the first time... easily more than 30mins :|"
+
+# .ghci
+if [ ! -e "$HOME/.ghci" ]; then
+    echo "I/Copying default .ghci..."
+    cp "${SCRIPT_DIR}/dot-ghci-example" "$HOME/.ghci"
+else
+    echo "I/Already have a .ghci..."
+fi
 
 # Hoogle
-cabal install hoogle
-hoogle generate
+if [ ! -e "${HS_STACK_BIN_DIR}/hoogle" ]; then
+    echo "I/Installing hoogle..."
+    hs-stack --verbose install hoogle
+    errcheck $? hs-initial-setup "Can't install hoogle."
+    hoogle generate
+    errcheck $? hs-initial-setup "Can't run hoogle generate."
+else
+    echo "I/hoogle already installed, not reinstalling."
+fi
+
+# Stack packages
+echo "I/Installing useful stack packages..."
+hs-stack install random
+
+echo "I/Haskell initial setup done."

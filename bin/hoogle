@@ -1,16 +1,14 @@
 #!/bin/bash
+if [ -e "$HOME/.local/bin/hoogle" ]; then
+    # echo "I/Found hoogle in ~/.local/bin"
+    HS_STACK_BIN_DIR="$HOME/.local/bin"
+else
+    # echo "I/No hoogle in ~/.local/bin, using hat..."
+    export HAM_NO_VER_CHECK=1
+    if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+    if [[ "$HAM_TOOLSET_NAME" != "haskell" ]]; then
+        . "$HAM_HOME/bin/ham-toolset" haskell > /dev/null
+    fi
+fi
 
-#------------------------------------------------------------------
-# The below is if we really want to access hoogle from the path
-#------------------------------------------------------------------
-
-# export HAM_NO_VER_CHECK=1
-# if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
-# if [[ "$HAM_TOOLSET_NAME" != "haskell" ]]; then
-#   . "$HAM_HOME/bin/ham-toolset" haskell > /dev/null
-# fi
-
-#
-# Just access hoogle from the user folder directly, will break on Windows?
-#
-$HOME/.cabal/bin/hoogle "$@"
+"${HS_STACK_BIN_DIR}/hoogle" "$@"
