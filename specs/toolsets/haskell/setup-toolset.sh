@@ -34,6 +34,11 @@ case $HAM_OS in
         export PATH="${CABAL_DIR}/bin:${PATH}"
         ;;
     OSX*)
+        if [ "$HAM_BIN_LOA" == "osx-arm64" ]; then
+            # hs-stack uses the system level ghc on M1 mac because stack fails
+            # to install it by itself
+            ham-brew-install ghc@8.10 "bin/ghc"
+        fi
         ham-brew-install haskell-stack "bin/stack"
         export HS_STACK_BIN_DIR="${HOME}/.local/bin"
         ;;
