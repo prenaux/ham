@@ -1,5 +1,4 @@
 #!/bin/bash -e
-
 # the help
 usage() {
     echo ""
@@ -21,7 +20,19 @@ if [ -z "$" -o -z "$2" ]; then
     usage
 fi
 
-PKG_HOME="`brew --prefix $PKGNAME`";
+# M1 mac folder
+if [ -d "/opt/homebrew/opt/$PKGNAME" ]; then
+    PKG_HOME="/opt/homebrew/opt/$PKGNAME";
+# Intel mac folder
+elif [ -d "/usr/local/opt/$PKGNAME" ]; then
+    PKG_HOME="/usr/local/opt/$PKGNAME";
+# Fallback, much slower
+else
+    PKG_HOME="`brew --prefix $PKGNAME`";
+    echo "W/Slow fallback for PKG_HOME: ${PKG_HOME}"
+fi
+# echo "I/PKG_HOME: ${PKG_HOME}"
+
 if [ ! -e "$PKG_HOME/$CHECKFILE" ]; then
     echo "I/Brew $PKGNAME not found, trying to install."
     ham-brew install $PKGNAME
