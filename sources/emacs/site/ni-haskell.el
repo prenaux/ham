@@ -33,7 +33,7 @@
 ;; hindent, override the regular indent commands, 'M-Q' to indent a block &
 ;; 'C-M-\' to indent a region
 (require 'hindent)
-(setq hindent-process-path (concat (getenv "HAM_HOME") "/toolsets/haskell/hs-indent"))
+(setq hindent-process-path (concat (getenv "HAM_HOME") "/toolsets/haskell/hs-indent-file"))
 (add-hook 'haskell-mode-hook #'hindent-mode)
 
 ;;;======================================================================

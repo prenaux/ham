@@ -1,22 +1,10 @@
 #!/bin/bash
-if [ -e "$HOME/.local/bin/hindent" ]; then
-    # echo "I/Found hindent in ~/.local/bin"
-    HS_STACK_BIN_DIR="$HOME/.local/bin"
-else
-    # echo "I/No hindent in ~/.local/bin, using hat..."
-    export HAM_NO_VER_CHECK=1
-    if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
-    if [[ "$HAM_TOOLSET_NAME" != "haskell" ]]; then
-        . "$HAM_HOME/bin/ham-toolset" haskell > /dev/null
-    fi
-fi
-
 if [ -z "$1" -o -d "$1" ]; then
     DIR="${1:-.}"
     echo "I/Indenting folder '$DIR'"
-    find "$DIR" -name "*.hs" -exec echo {} \; -exec hs-indent {} \;
+    find "$DIR" -name "*.hs" -exec echo {} \; -exec hs-indent-file {} \;
 else
     # Note: Echo only for debugging since stdout is used as-is in emacs
     # echo "I/Indenting '$1'"
-    "${HS_STACK_BIN_DIR}/hindent" "$@"
+    hs-indent-file "$@"
 fi
