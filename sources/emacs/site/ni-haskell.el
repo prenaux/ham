@@ -10,7 +10,8 @@
  '(haskell-process-suggest-remove-import-lines t)
  '(haskell-process-auto-import-loaded-modules t)
  '(haskell-process-log t)
- '(haskell-process-type 'stack-ghci))
+ '(haskell-process-type 'stack-ghci)
+ '(haskell-interactive-popup-errors nil))
 
 ;;;======================================================================
 ;;; Indentation
