@@ -70,6 +70,7 @@ EMSCRIPTEN_LINKER_SETTINGS =
   # Great on paper, but its implemented by just lowercasing everything which
   # is not good enough...
   # -s CASE_INSENSITIVE_FS=1
+  -s WEBGL2_BACKWARDS_COMPATIBILITY_EMULATION=1
 ;
 
 ### "Debug" (da) build flags ###
