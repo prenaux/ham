@@ -9,11 +9,18 @@
 
 (add-hook 'direx:direx-mode-hook 'ni-set-direx-buffer-name)
 
+(defun ni-get-default-project-directory ()
+  (let ((dirname default-directory)
+        (prjroot (projectile-project-root)))
+    (cond (prjroot prjroot)
+          (dirname dirname)
+          (t (error "ni-get-default-project-directory: No default or project directory found.")))))
+
 (defun direx:jump-to-project-file ()
   (interactive)
   (let ((filename buffer-file-name)
         (dirname default-directory))
-    (direx:find-directory (projectile-project-root))
+    (direx:find-directory (ni-get-default-project-directory))
     (cond (filename
            (direx:goto-item-for-tree (direx:make-regular-file filename)))
           (dirname
@@ -23,7 +30,7 @@
   (interactive)
   (let ((filename buffer-file-name)
         (dirname default-directory))
-    (direx:find-directory-other-window (projectile-project-root))
+    (direx:find-directory-other-window (ni-get-default-project-directory))
     (cond (filename
            (direx:goto-item-for-tree (direx:make-regular-file filename)))
           (dirname
