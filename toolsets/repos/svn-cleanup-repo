@@ -1,0 +1,7 @@
+#!/bin/bash
+if [ "$1" = "doit" ]; then
+    svn cleanup . --remove-unversioned
+else
+    svn status | grep '^?'
+    echo "# Type 'svn-cleanup-repo doit' to remove the unversioned files listed above."
+fi
