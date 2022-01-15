@@ -324,6 +324,16 @@ toolset_import_list() {
     done
 }
 
+toolset_is_imported() {
+    ni-hget HAM_IMPORTS_TOOLSETS $1
+}
+
+toolset_check_imported() {
+    if [[ -z "`toolset_is_imported "$1"`" ]]; then
+        die toolset_check_imported "ios toolset not imported."
+    fi
+}
+
 toolset_bak_mv() {
     if [ -e "$1" ]; then
         mv -f "$1" "$1__bak"
