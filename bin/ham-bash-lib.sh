@@ -146,11 +146,6 @@ path_filename() {
     echo "$filename"
 }
 
-thisscriptdir() {
-    DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-    echo `unxpath "$DIR"`
-}
-
 current_git_branch() {
     git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1) /'
 }
