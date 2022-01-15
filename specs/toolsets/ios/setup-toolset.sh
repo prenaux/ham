@@ -27,6 +27,8 @@ case $HAM_OS in
     OSX)
         # Default iOS arch
         export IOS_ARCH=arm64
+        ham-brew-install fastlane "bin/fastlane"
+        ham-brew-install ios-deploy "bin/ios-deploy"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
