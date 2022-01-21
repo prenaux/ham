@@ -115,6 +115,10 @@
   (list
    'if (not (version< emacs-version "25.0"))
    (cons 'progn x)))
+(defmacro GNUEmacsMin26 (&rest x)
+  (list
+   'if (not (version< emacs-version "26.0"))
+   (cons 'progn x)))
 
 (defmacro DontExecute (&rest x) ())
 

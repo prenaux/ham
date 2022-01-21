@@ -558,7 +558,7 @@ If the new path's directories does not exist, create them."
  (require 'git)
  (require 'git-blame)
 
- (GNUEmacs26
+ (GNUEmacsMin26
   (add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site/magit"))
   (require 'magit))
 )
