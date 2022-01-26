@@ -6,6 +6,8 @@ case $HAM_OS in
         echo "### No extra packages need to be installed on Windows ###"
         ;;
     OSX)
+        echo "### Make sure "$HAM_HOME/bin" isn't quarantined ###"
+        toolset_unquarantine_dir "$HAM_HOME/bin"
         echo "### Installing packages required by ham on OSX (brew) ###"
         # Install brew
         if [ -z `which brew` ]; then
