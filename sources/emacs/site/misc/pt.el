@@ -63,6 +63,15 @@
 (defvar pt-use-search-in-buffer-name t
   "If non-nil, use the search string in the pt buffer's name.")
 
+(defcustom pt-work-subdirs
+  (list "rules" "sources" "scripts")
+  "Default list of sub directories that pt-work-regexp looks for."
+  :type '(repeat (string))
+  :group 'pt)
+
+(defvar pt-work-regexp-history-dirs nil
+  "History for dirs of pt-work-regexp.")
+
 (define-compilation-mode pt-search-mode "Pt"
   "Platinum searcher results compilation mode"
   (set (make-local-variable 'truncate-lines) t)
@@ -115,11 +124,8 @@
        (cond
         ((string-prefix-p "/" dir) (concat dir "/" d))
         (t (concat (getenv "WORK") "/" dir "/" d))))
-     (list "rules" "sources" "scripts"))
+     pt-work-subdirs)
     )))
-
-(defvar pt-work-regexp-history-dirs nil
-  "History for dirs of pt-work-regexp.")
 
 ;;;###autoload
 (defun pt-work-regexp (regexp dirs &optional args)
