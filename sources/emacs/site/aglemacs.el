@@ -973,9 +973,9 @@ With zero ARG, skip the last one and mark next."
     (delete-region (region-beginning) (region-end))))
 
  (defun ni-clipboard-copy-text (text &optional push)
-   (if (display-graphic-p)
-       (kill-new text)
-   (ni-macos-pbcopy-text text)))
+   (if (fboundp 'ni-macos-pbcopy-text)
+       (ni-macos-pbcopy-text text))
+   (kill-new text))
 
  (defun ni-copy-file-path (&optional *dir-path-only-p)
    "Copy the current buffer's file path or dired path to `kill-ring'.
