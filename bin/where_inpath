@@ -8,6 +8,9 @@ case $HAM_OS in
     NT*)
         path=$("type" -p "$*")
         ;;
+    OSX*)
+        path=$("which" "$*")
+        ;;
     *)
         path=$("whereis" "$*")
         ;;

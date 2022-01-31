@@ -42,7 +42,7 @@ $VER"
 HG_PATH=`where_inpath hg`
 if [ -e "$HG_PATH" ]; then
     VER="--- mercurial ---
-`hg --version | grep 'Mercurial'`"
+`hg --version`"
     if [ $? != 0 ]; then
         echo "E/Can't get Mercurial version."
         return 1
