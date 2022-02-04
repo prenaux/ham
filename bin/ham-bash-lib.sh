@@ -169,14 +169,22 @@ update_prompt() {
     fi
 
     if test $TERM_NCOLORS -ge 8; then
-        export PS1='
-\[\033[35m$PROJECT_NAME$TOOLSET_EXTRA\033[0m\] \[\033[32m$(current_git_branch)\033[0m\]\w (\[\033[32m$USERTAG\033[0m\]) \[\033[0;36m$HAM_IMPORTED_TOOLSETS\033[0m\]
-$ '
+        PROMPT='\[\033[35m$PROJECT_NAME$TOOLSET_EXTRA\033[0m\] \[\033[32m$(current_git_branch)\033[0m\]\w (\[\033[32m$USERTAG\033[0m\]) \[\033[0;36m$HAM_IMPORTED_TOOLSETS\033[0m\]'
+
+        if [ ! -z "$DEVSERVER" ]; then
+            PROMPT="$PROMPT, \[\033[32m$DEVSERVER\033[0m\]"
+        fi
+
+        if [ ! -z "HOSTNAME_LABEL" ]; then
+            PROMPT="$PROMPT on \[\033[${HOSTNAME_COLOR:-35}m${HOSTNAME_LABEL}\033[0m\]"
+        fi
     else
-        export PS1='
-# $PROJECT_NAME$TOOLSET_EXTRA \[$(current_git_branch)\]\w ($USERTAG) $HAM_IMPORTED_TOOLSETS
-$ '
+        PROMPT='# $PROJECT_NAME$TOOLSET_EXTRA \[$(current_git_branch)\]\w ($USERTAG) $HAM_IMPORTED_TOOLSETS'
     fi
+
+    export PS1="
+$PROMPT
+$ "
 }
 
 update_project_work() {
