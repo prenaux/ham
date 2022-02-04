@@ -2,5 +2,5 @@
 
 # Make sure we go the rights we need for brew to be able to do its
 # thing... The following is copied directly from brew's prompt.
-sudo chown -R $(whoami) /usr/local/bin /usr/local/lib /usr/local/sbin
+sudo chown -R $(whoami) /usr/local/bin /usr/local/lib /usr/local/sbin /usr/local/share /usr/local/opt
 chmod u+w /usr/local/bin /usr/local/lib /usr/local/sbin
