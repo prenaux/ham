@@ -573,6 +573,8 @@ If the new path's directories does not exist, create them."
 ;;; Dark mode
 ;;;======================================================================
 (NotBatchMode
+ (require 'ni-theme-solarized)
+
  (set '--dark-mode-state "initial")
  (add-to-list 'custom-theme-load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/themes"))
 
@@ -586,14 +588,15 @@ If the new path's directories does not exist, create them."
  (defun ni-theme-set-dark-mode ()
    (interactive)
    (set '--dark-mode-state "dark")
-   ;;(load-theme 'solarized-dark t)
-   (load-theme 'vscode-dark-plus t)
+   (IsTerminal
+    (load-theme 'solarized-dark t))
+   (IsNotTerminal
+    (load-theme 'vscode-dark-plus t))
    (set-cursor-color "#cc0000")
    (message "Changed to dark mode"))
 
  (defun ni-dark-mode-update-theme ()
    (interactive)
-   (require 'ni-theme-solarized)
    (ni-check-dark-mode
     (lambda ()
       (if (not (string= --dark-mode-state "dark"))
