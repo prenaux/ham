@@ -149,6 +149,13 @@
  (setq compilation-scroll-output 'first-error)
  ;; Set compile mode to scroll with the output
  (setq compilation-scroll-output t)
+ ;; Is our default compilation command
+ (setq compile-command "ham-lint")
+
+ ;; Compilation buffer opens with word wrap on
+ (defun ni-pierre-compilation-mode-hook ()
+   (ni-word-wrap-on))
+ (add-hook 'compilation-mode-hook 'ni-pierre-compilation-mode-hook)
 
  ;; Yes... close everything... but not the buffers
  (defadvice keyboard-escape-quit (around my-keyboard-escape-quit activate)
