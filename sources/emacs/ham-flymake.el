@@ -312,3 +312,19 @@
                       'inplace "hs"))
 
 (push '(".+\\.hs$" ham-flymake-ham-lint-haskell-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
+
+;;*** Rust *************************************************************
+
+;; resut error parser
+(defvar aflymake-ham-lint-err-line-patterns-rust
+  '(("^\\(.*\\)\n[ ]+--> \\(.*.rs\\):\\([0-9]+\\):\\([0-9]+\\)$" 2 3 4 1)
+    ("^\\(.*.rs\\):\\([0-9]+\\):[0-9]+: [0-9]+:[0-9]+ [a-z]+: \\(.*\\)$" 1 2 nil 3)
+    ("^\\(.*.rs\\):\\([0-9]+\\) \\(.*\\)$" 1 2 nil 3)))
+
+(defun ham-flymake-ham-lint-rust-init ()
+  (interactive)
+  (aflymake-easy-load 'aflymake-ham-lint-command
+                      aflymake-ham-lint-err-line-patterns-rust
+                      'inplace "rs"))
+
+(push '(".+\\.rs$" ham-flymake-ham-lint-rust-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)

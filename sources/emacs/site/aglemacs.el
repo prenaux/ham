@@ -298,6 +298,7 @@
 (add-to-list 'auto-mode-alist '("\\.lnt\\'" . c++-mode))
 
 ;;*** Rust **************************************************************
+(require 'rust-compile)
 (autoload 'rust-mode "rust-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
 (autoload 'toml-mode "toml-mode" nil t) ;; used by cargo (rust's build system)
