@@ -258,6 +258,15 @@
 ;;**********************************************************************
 ;; Flymake - ham-lint
 ;;**********************************************************************
+;;
+;; err-line-patterns format:
+;;   regexp file-idx line-idx col-idx(optional) text-idx(optional)
+;;
+;; `-idx` is 1 based, 0 is the whole regexp match
+;;
+;; match-end to end of string is error text
+;;
+
 (require 'aflymake-easy)
 
 (defvar aflymake-ham-lint-executable

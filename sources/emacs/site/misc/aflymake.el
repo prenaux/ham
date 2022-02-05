@@ -1041,7 +1041,15 @@ Convert it to aflymake internal format."
 
 (require 'compile)
 
-(defvar aflymake-err-line-patterns ; regexp file-idx line-idx col-idx (optional) text-idx(optional), match-end to end of string is error text
+;
+; err-line-patterns format:
+;   regexp file-idx line-idx col-idx(optional) text-idx(optional)
+;
+; `-idx` is 1 based, 0 is the whole regexp match
+;
+; match-end to end of string is error text
+;
+(defvar aflymake-err-line-patterns
   (append
    '(
      ;; MS Visual C++ 6.0
