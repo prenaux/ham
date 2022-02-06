@@ -26,6 +26,7 @@
 (NotBatchMode
  (require 'ni-sql)
  (require 'ni-haskell)
+ (require 'ni-theme)
 )
 
 ;;;======================================================================
@@ -575,46 +576,6 @@ If the new path's directories does not exist, create them."
 ;;;======================================================================
 (add-hook 'js-mode-hook 'aflymake-mode)
 (add-hook 'typescript-mode-hook 'aflymake-mode)
-
-;;;======================================================================
-;;; Dark mode
-;;;======================================================================
-(NotBatchMode
- (require 'ni-theme-solarized)
-
- (set '--dark-mode-state "initial")
- (add-to-list 'custom-theme-load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/themes"))
-
- (defun ni-theme-set-light-mode ()
-   (interactive)
-   (set '--dark-mode-state "light")
-   (load-theme 'solarized-light t)
-   (set-cursor-color "#cc0000")
-   (message "Changed to light mode"))
-
- (defun ni-theme-set-dark-mode ()
-   (interactive)
-   (set '--dark-mode-state "dark")
-   (IsTerminal
-    (load-theme 'solarized-dark t))
-   (IsNotTerminal
-    (load-theme 'vscode-dark-plus t))
-   (set-cursor-color "#cc0000")
-   (message "Changed to dark mode"))
-
- (defun ni-dark-mode-update-theme ()
-   (interactive)
-   (ni-check-dark-mode
-    (lambda ()
-      (if (not (string= --dark-mode-state "dark"))
-          (progn (ni-theme-set-dark-mode))
-        (message "Is already dark mode")))
-    (lambda ()
-      (if (not (string= --dark-mode-state "light"))
-          (progn (ni-theme-set-light-mode))
-        (message "Is already light mode")))
-    ))
-)
 
 ;;;======================================================================
 ;;; Ivy & Swiper

@@ -1,7 +1,11 @@
+;;
+;; Usage:
+;;
+;;   (require 'ni-theme-solarized)
+;;   (load-theme 'solarized-light t) ;; for light theme
+;;   (load-theme 'solarized-dark t) ;; for dark theme
+;;
 (provide 'ni-theme-solarized)
-;; (require 'ni-theme-solarized)
-;; (load-theme 'solarized-light t) ;; for light theme
-;; (load-theme 'solarized-dark t) ;; for dark theme
 
 (add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site/solarized"))
 (add-to-list 'custom-theme-load-path (concat (getenv "HAM_HOME") "/sources/emacs/site/solarized"))
