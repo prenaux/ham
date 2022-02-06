@@ -697,6 +697,21 @@ BEG and END (region to sort)."
        eol-mnemonic-unix ?/
        eol-mnemonic-mac ?:
        eol-mnemonic-undecided ??)
+
+ (IsTerminal
+  ;; Update the terminal's title bar
+  (require 'term-title)
+  (term-title-mode)
+  ;; Hide the menu bar
+  (if (boundp 'menu-bar-mode)
+      (menu-bar-mode -1)))
+
+ (if (boundp 'scroll-bar-mode)
+     (scroll-bar-mode -1))
+ (if (boundp 'tool-bar-mode)
+     (tool-bar-mode -1))
+ (if (boundp 'tabbar-mode)
+     (tabbar-mode -1))
 )
 
 ;; tab size
@@ -716,18 +731,6 @@ BEG and END (region to sort)."
 (setq inhibit-startup-message t)
 (setq inhibit-startup-echo-area-message t)
 
-(if (display-graphic-p)
-    (progn
-      ;; Remove the menu bar, scroll bar, tool bar, tab bar...
-      ;; (if (boundp 'menu-bar-mode)
-      ;; (menu-bar-mode -1))
-      (if (boundp 'scroll-bar-mode)
-          (scroll-bar-mode -1))
-      (if (boundp 'tool-bar-mode)
-          (tool-bar-mode -1))
-      (if (boundp 'tabbar-mode)
-          (tabbar-mode -1))))
-
 ;; Cursor
 (blink-cursor-mode -1)
 (setq-default cursor-type 'box)
@@ -742,16 +745,23 @@ BEG and END (region to sort)."
 (setq confirm-nonexistent-file-or-buffer nil) ; annoying confirmation if a file or buffer does not exist when you use C-x C-f or C-x b
 
 ;; format the title-bar to always include the buffer name
-;;(setq frame-title-format "emacs - %b")
+;; (setq frame-title-format "emacs - %b")
 ;; format the title-bar to show the full path name of the buffer
 (NotBatchMode
- (setq-default
-  frame-title-format
-  (list '((buffer-file-name "emacs - %f"
-                            (dired-directory
-                             dired-directory
-                             (revert-buffer-function " %b"
-                                                     ("%b - Dir:  " default-directory)))))))
+ (setq-default frame-title-format
+              '(:eval
+                (format "%s@%s %s"
+                        (or (file-remote-p default-directory 'user)
+                            user-real-login-name)
+                        (or (file-remote-p default-directory 'host)
+                            system-name)
+                        (cond
+                         (buffer-file-truename
+                          (concat "[" buffer-file-truename "]"))
+                         (dired-directory
+                          (concat "{" dired-directory "}"))
+                         (t
+                          "[no file]")))))
 )
 
 ;;;======================================================================
