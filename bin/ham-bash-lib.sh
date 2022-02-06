@@ -175,7 +175,7 @@ update_prompt() {
             PROMPT="$PROMPT, \[\033[32m$DEVSERVER\033[0m\]"
         fi
 
-        if [ ! -z "HOSTNAME_LABEL" ]; then
+        if [ ! -z "$HOSTNAME_LABEL" ]; then
             PROMPT="$PROMPT on \[\033[${HOSTNAME_COLOR:-35}m${HOSTNAME_LABEL}\033[0m\]"
         fi
     else
