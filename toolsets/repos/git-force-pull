@@ -1,9 +1,10 @@
 #!/bin/bash
 usage() {
-    echo "usage: git-force-pull (stash) (REMOTE) BRANCH"
+    echo "usage: git-force-pull (nostash) (nofetch) BRANCH"
     echo ""
     echo "  Fetch and checkout a clean branch from the specified remote."
     echo ""
+    echo "  BRANCH can be 'current_branch' to specify the branch currently checked-out."
 
     if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
         # sourced...
@@ -39,6 +40,10 @@ if [ -z "$BRANCH" ]; then
 fi
 
 set -ex
+if [ "$BRANCH" == "current_branch" ]; then
+    BRANCH=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+fi
+
 if [ $STASH == 1 ]; then
     git-stash trydrop git-force-pull
     git-stash push git-force-pull
