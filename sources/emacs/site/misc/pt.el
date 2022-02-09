@@ -54,6 +54,12 @@
   :type 'string
   :group 'pt)
 
+(defcustom pt-remote-executable
+  nil
+  "Name of the executable to use when running through a remote/tramp connection."
+  :type 'string
+  :group 'pt)
+
 (defcustom pt-arguments
   (list "--smart-case" "-e")
   "Default arguments passed to pt."
@@ -82,12 +88,19 @@
     (set (make-local-variable 'compilation-error-regexp-alist-alist) (list (cons symbol pattern))))
   (set (make-local-variable 'compilation-error-face) grep-hit-face))
 
+(defun pt-get-executable ()
+  (if (file-remote-p default-directory)
+    (if pt-remote-executable
+        pt-remote-executable
+      pt-executable)
+    pt-executable))
+
 (defun pt-regexp--run (regexp directory &optional args)
   (let ((default-directory directory)
         (pt-full-buffer-name (concat "*pt-" regexp "*")))
     (compilation-start
      (mapconcat 'identity
-                (append (list pt-executable)
+                (append (list (pt-get-executable))
                         pt-arguments
                         args
                         '("--nogroup" "--nocolor" "--")
@@ -139,7 +152,7 @@
         (pt-full-buffer-name (concat "*pt-work-" regexp "*")))
     (compilation-start
      (mapconcat 'identity
-                (append (list pt-executable)
+                (append (list (pt-get-executable))
                         pt-arguments
                         args
                         '("--nogroup" "--nocolor" "--")

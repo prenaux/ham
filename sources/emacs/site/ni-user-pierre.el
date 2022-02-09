@@ -252,6 +252,11 @@ If the new path's directories does not exist, create them."
   (setq pt-executable (concat "\"" HAM_HOME "/bin/ham-grep"  "\"")))
  (OSX
   (setq pt-executable (concat "\"" HAM_HOME "/bin/ham-grep"  "\"")))
+
+ ;; The remote pt executable assume running on a Linux server with the same
+ ;; user name & using the standard ~/Work/ham structure.
+ (setq pt-remote-executable (concat "\"/home/" (getenv "USER") "/Work/ham/bin/ham-grep"  "\""))
+
  (setq pt-arguments
       (list
        "--smart-case" "-e"
