@@ -353,6 +353,10 @@
 (autoload 'clojure-mode "clojure-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.clj\\'" . clojure-mode))
 
+;;*** Thrift ************************************************************
+(autoload 'thrift-mode "thrift" nil t)
+(add-to-list 'auto-mode-alist '("\\.thrift\\'" . thrift-mode))
+
 ;;;======================================================================
 ;;; Utils
 ;;;======================================================================
