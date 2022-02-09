@@ -1,0 +1,20 @@
+#!/bin/bash
+export HAM_NO_VER_CHECK=1
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+case $HAM_OS in
+    NT*)
+        "$HAM_HOME/bin/nt-x86/pt.exe" "$@"
+        ;;
+    OSX*)
+        "$HAM_HOME/bin/$HAM_BIN_LOA/hamgrep" "$@"
+        ;;
+    LINUX*)
+        "$HAM_HOME/bin/$HAM_BIN_LOA/pt" "$@"
+        ;;
+    *)
+        echo "E/Toolset: Unsupported host OS"
+        return 1
+        ;;
+esac

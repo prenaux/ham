@@ -244,11 +244,14 @@ If the new path's directories does not exist, create them."
 (NotBatchMode
  (require 'pt)
 
- ;;; Use pt on Windows & Linux
  (Windows
+  ;; We use the exe directly one Windows since it doesn't launch scripts too
+  ;; reliably...
   (setq pt-executable (concat "\"" HAM_HOME "/bin/nt-x86/pt.exe" "\"")))
  (Linux
-  (setq pt-executable (concat "\"" HAM_HOME "/bin/lin-x64/pt"  "\"")))
+  (setq pt-executable (concat "\"" HAM_HOME "/bin/ham-grep"  "\"")))
+ (OSX
+  (setq pt-executable (concat "\"" HAM_HOME "/bin/ham-grep"  "\"")))
  (setq pt-arguments
       (list
        "--smart-case" "-e"
@@ -261,13 +264,6 @@ If the new path's directories does not exist, create them."
        "--ignore" "\"*.idl.xml\""
        "--ignore" "\"static/build/*\""
        ))
-
- ;;; Use hamgrep on macOS
- (OSX
-  (if (string-match "^aarch64-.*" system-configuration)
-      (setq pt-executable (concat "\"" HAM_HOME "/bin/osx-arm64/hamgrep"  "\""))
-    (setq pt-executable (concat "\"" HAM_HOME "/bin/osx-x64/hamgrep"  "\"")))
-  (setq pt-arguments (list "--smart-case")))
 
 )
 
