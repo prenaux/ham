@@ -270,6 +270,10 @@ If the new path's directories does not exist, create them."
        "--ignore" "\"static/build/*\""
        ))
 
+ ;; OSX uses hamgrep which doesn't need the ignore or -e flags
+ (OSX
+  (setq pt-arguments (list "--smart-case")))
+
 )
 
 ;;;======================================================================
