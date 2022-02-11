@@ -328,3 +328,21 @@
                       'inplace "rs"))
 
 (push '(".+\\.rs$" ham-flymake-ham-lint-rust-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
+
+;;*** niScript *********************************************************
+
+;; niscript lint warning
+;; (regexp file-idx line-idx col-idx(optional) text-idx(optional))
+(defvar aflymake-ham-lint-err-line-patterns-niscript
+  '(("^.*Lint: \\(.*\\) \\[\\(.*\\):L\\([0-9]+\\)\\].*$" 2 3 nil 1)
+    ("^.*\\[\\(.*\\):\\([0-9]+\\):\\([0-9]\\)\\] compile error: \\(.*\\)$" 1 2 3 4)))
+
+(defun ham-flymake-ham-lint-niscript-init ()
+  (interactive)
+  (aflymake-easy-load 'aflymake-ham-lint-command
+                      aflymake-ham-lint-err-line-patterns-niscript
+                      'inplace "niscript"))
+
+(push '(".+\\.ni$" ham-flymake-ham-lint-niscript-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
+(push '(".+\\.nip$" ham-flymake-ham-lint-niscript-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
+(push '(".+\\.niw$" ham-flymake-ham-lint-niscript-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
