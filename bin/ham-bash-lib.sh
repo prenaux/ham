@@ -176,7 +176,7 @@ update_prompt() {
         fi
 
         if [ ! -z "$HOSTNAME_LABEL" ]; then
-            PROMPT="$PROMPT on \[\033[${HOSTNAME_COLOR:-35}m${HOSTNAME_LABEL}\033[0m\]"
+            PROMPT="\[\033[${HOSTNAME_COLOR:-37}m${HOSTNAME_LABEL}\033[0m\] $PROMPT"
         fi
     else
         PROMPT='# $PROJECT_NAME$TOOLSET_EXTRA \[$(current_git_branch)\]\w ($USERTAG) $HAM_IMPORTED_TOOLSETS'
