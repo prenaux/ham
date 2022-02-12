@@ -625,6 +625,17 @@ If the new path's directories does not exist, create them."
 )
 
 ;;;======================================================================
+;;; Back button mode
+;;;======================================================================
+(NotBatchMode
+ (require 'visible-mark)
+ (global-visible-mark-mode 1) ;; or add (visible-mark-mode) to specific hooks
+
+ (require 'smartrep)
+ (require 'back-button)
+ (back-button-mode 1))
+
+;;;======================================================================
 ;;; Keymap
 ;;;======================================================================
 (NotBatchMode
