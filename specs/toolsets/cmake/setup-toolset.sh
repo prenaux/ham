@@ -16,6 +16,9 @@ case $HAM_OS in
             return 1
         fi
         ;;
+    OSX*)
+        ham-brew-install cmake "bin/cmake"
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
