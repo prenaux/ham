@@ -337,9 +337,13 @@ toolset_is_imported() {
 }
 
 toolset_check_imported() {
-    if [[ -z "`toolset_is_imported "$1"`" ]]; then
-        die toolset_check_imported "ios toolset not imported."
-    fi
+    HAM_DIE_SHOULD_RETURN=yes
+    for ARG in $@
+    do
+        if [[ -z "`toolset_is_imported "$ARG"`" ]]; then
+            die toolset_check_imported ""$ARG" toolset not imported."
+        fi
+    done
 }
 
 toolset_bak_mv() {
