@@ -64,6 +64,9 @@
              (niscript-mode . 1)
              (js-mode . 1)
              (java-mode . 1)
+             (csharp-mode . 1)
+             (rust-mode . 1)
+             (haskell-mode . 1)
              (-mode . 1)
             ))))
 
@@ -77,9 +80,13 @@
      (setq font-lock-maximum-decoration
            '((c-mode . 3)
              (c++-mode . 3)
+             (csharp-mode . 3)
              (niscript-mode . 3)
              (js-mode . 3)
              (java-mode . 3)
+             (csharp-mode . 3)
+             (rust-mode . 3)
+             (haskell-mode . 3)
              (-mode . 3)
             ))))
  )
@@ -111,6 +118,12 @@
  ;; Not useful to me and slows down the editor.
  (when (fboundp 'global-eldoc-mode)
    (global-eldoc-mode -1))
+
+ ;; Auto-detect indentation
+ (require 'dtrt-indent)
+ (dtrt-indent-global-mode 1)
+ (diminish 'dtrt-indent-mode)
+
 )
 
 ;;;======================================================================
@@ -384,13 +397,7 @@ If the new path's directories does not exist, create them."
     (kill-buffer nil)
     (setq count (+ count 1))
   )
-  (message (format "Done indenting %d files" num-files))
-
-(require 'dtrt-mode)
-(dtrt-indent-global-mode 1)
-(diminish 'dtrt-indent-mode)
-
-)
+  (message (format "Done indenting %d files" num-files)))
 
 ;;;======================================================================
 ;;; --- Disable unneeded warnings ---
