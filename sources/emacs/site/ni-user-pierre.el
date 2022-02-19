@@ -385,6 +385,11 @@ If the new path's directories does not exist, create them."
     (setq count (+ count 1))
   )
   (message (format "Done indenting %d files" num-files))
+
+(require 'dtrt-mode)
+(dtrt-indent-global-mode 1)
+(diminish 'dtrt-indent-mode)
+
 )
 
 ;;;======================================================================
@@ -633,7 +638,8 @@ If the new path's directories does not exist, create them."
 
  (require 'smartrep)
  (require 'back-button)
- (back-button-mode 1))
+ (back-button-mode 1)
+ (diminish 'back-button-mode))
 
 ;;;======================================================================
 ;;; Keymap
