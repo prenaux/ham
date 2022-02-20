@@ -67,6 +67,7 @@
              (csharp-mode . 1)
              (rust-mode . 1)
              (haskell-mode . 1)
+             (python-mode . 1)
              (-mode . 1)
             ))))
 
@@ -87,6 +88,7 @@
              (csharp-mode . 3)
              (rust-mode . 3)
              (haskell-mode . 3)
+             (python-mode . 3)
              (-mode . 3)
             ))))
  )
@@ -123,6 +125,7 @@
  (require 'dtrt-indent)
  (dtrt-indent-global-mode 1)
  (diminish 'dtrt-indent-mode)
+ ;; (diminish-undo 'dtrt-indent-mode)
 
 )
 
