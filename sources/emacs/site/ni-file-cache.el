@@ -105,6 +105,8 @@
       (add-hook 'find-file-hook 'file-cache-add-this-file)
       (add-hook 'kill-buffer-hook 'file-cache-add-this-file)
 
+      ;; ignore ._DAV directories in my file cache
+      (add-to-list 'file-cache-filter-regexps "/[.]_DAV")
       ;; ignore hg directories in my file cache
       (add-to-list 'file-cache-filter-regexps "/[.]hg")
       ;; ignore git directories in my file cache
