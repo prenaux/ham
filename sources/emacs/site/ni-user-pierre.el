@@ -33,19 +33,13 @@
 ;;; Server for single instance run
 ;;;======================================================================
 (NotBatchMode
- (Windows
-  ;;
-  ;; On Windows:
-  ;;
-  ;;  1) gnuserv & e.exe don't work anymore with Emacs 24.x - as in it'll kind
-  ;;     of work but a lot of things will be broken (such as magit, etc... great
-  ;;     ^^)
-  ;;
-  ;;  2) Use emacsclientw.exe to open files
-  ;;
-  (require 'server)
+ (require 'server)
+
+ (defun ni-emacs-server-start ()
+  (interactive)
   (unless (server-running-p)
-    (server-start))))
+    (server-start)))
+)
 
 ;;;======================================================================
 ;;; Font Lock
@@ -411,13 +405,15 @@ If the new path's directories does not exist, create them."
 ;;;======================================================================
 ;;; Rainbow delimiters
 ;;;======================================================================
-(agl-begin-time-block "Rainbow")
-(require 'rainbow-delimiters)
-(add-hook 'niscript-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'c++-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'c-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'js-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'niscript-mode-hook 'rainbow-delimiters-mode)
+(NotBatchMode
+ (agl-begin-time-block "Rainbow")
+ (require 'rainbow-delimiters)
+ (add-hook 'niscript-mode-hook 'rainbow-delimiters-mode)
+ (add-hook 'c++-mode-hook 'rainbow-delimiters-mode)
+ (add-hook 'c-mode-hook 'rainbow-delimiters-mode)
+ (add-hook 'js-mode-hook 'rainbow-delimiters-mode)
+ (add-hook 'niscript-mode-hook 'rainbow-delimiters-mode)
+)
 
 ;;;======================================================================
 ;;; Jump to line with feedback
@@ -586,16 +582,11 @@ If the new path's directories does not exist, create them."
  (require 'git)
  (require 'git-blame)
 
- (GNUEmacsMin26
-  (add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site/magit"))
-  (require 'magit))
-)
+  (GNUEmacsMin26
+   (add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site/magit"))
+   (require 'magit))
 
-;;;======================================================================
-;;; Flymake hooks
-;;;======================================================================
-(add-hook 'js-mode-hook 'aflymake-mode)
-(add-hook 'typescript-mode-hook 'aflymake-mode)
+)
 
 ;;;======================================================================
 ;;; Ivy & Swiper
@@ -649,10 +640,12 @@ If the new path's directories does not exist, create them."
  (require 'smartrep)
  (require 'back-button)
  (back-button-mode 1)
- (diminish 'back-button-mode))
+ (diminish 'back-button-mode)
+)
 
 ;;;======================================================================
 ;;; Keymap
 ;;;======================================================================
 (NotBatchMode
- (require 'ni-keymap-pierre))
+ (require 'ni-keymap-pierre)
+)

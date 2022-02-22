@@ -82,12 +82,15 @@
  (global-set-key (kbd "C--") 'agl-decrease-font-size)
 
  ;; Goto line
- (global-set-key "\C-h\C-l" 'goto-line)
+ (global-set-key (key "C-l") 'goto-line-with-feedback)
+ ;; Remap recenter-top-bottom (which is mapped to Ctrl-l by default) to Ctrl-Shift-L
+ (global-set-key (key "C-S-l") 'recenter-top-bottom)
 
  ;; remap regex search to Atl-s/r
  (global-set-key "\M-s" 'isearch-forward-regexp)
  (global-set-key "\M-r" 'isearch-backward-regexp)
 
+ ;; Search and replace in the current buffer
  (global-set-key "\C-h\C-h" 'qrr)
 
  ;; extended expand
@@ -234,11 +237,6 @@
  (global-set-key "\C-h\C-u" 'ni-vcs-grep-current-dir)
  (global-set-key "\C-h\C-y" 'pt-work-regexp)
  (global-set-key "\C-h\C-g" 'occur)
-
- ;; Ctrl-l goto line, more convenient than C-c C-g...
- (global-set-key (key "C-l") 'goto-line)
- ;; Remap recenter-top-bottom (which is mapped to Ctrl-l by default) to Ctrl-Shift-L
- (global-set-key (key "C-S-l") 'recenter-top-bottom)
 
  (define-key global-map "\C-h\C-\\" 'indent-region)
 
