@@ -1,4 +1,7 @@
 #!/bin/bash
+SCRIPT_SOURCED=$((return 0 2>/dev/null) && echo yes || echo "")
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ALL_ARGS="$@"
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 # the help
@@ -38,7 +41,7 @@ else
     fi
 
     toolset_import_list "$@"
-    errcheck $? ham-toolset "Can't import toolsets: $@." || return 1
+    errcheck $? ham-toolset "Can't import toolsets: $ALL_ARGS." || return 1
 
     toolset_info
     update_prompt

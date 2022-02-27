@@ -71,10 +71,15 @@ die()
 # directly from any sourced "aglDevEnv.ModuleName" file, to diagnose
 # any fatal condition.
 {
+  if [ ! -z "$SCRIPT_SOURCED" ]; then
+      HAM_DIE_SHOULD_RETURN=yes
+  fi
   complain "$@"
   if [ -z $HAM_DIE_SHOULD_RETURN ]; then
+    # echo "I/DIE: EXIT"
     exit 1
   else
+    # echo "I/DIE: RETURN"
     return 1
   fi
 }
