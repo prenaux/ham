@@ -66,7 +66,23 @@
          (item (direx:goto-item-for-tree (direx:item-tree item)))
          (t (direx:goto-item-for-tree (direx:make-directory cur-dir))))))))
 
+(defun direx:display-next-item (&optional item)
+  "Move down one line and view the current file in another window."
+  (interactive)
+  (direx:display-item item)
+  (direx:next-item))
+
+(defun direx:display-previous-item (&optional item)
+  "Move up one line and view the current file in another window."
+  (interactive)
+  (direx:display-item item)
+  (direx:previous-item))
+
 ;; Set the current directory as the only directory visible
-(define-key direx:direx-mode-map  (kbd "x")           'direx:jump-to-directory-at-point!)
+(define-key direx:direx-mode-map (kbd "x")           'direx:jump-to-directory-at-point!)
 ;; Visit the parent directory
-(define-key direx:direx-mode-map  (kbd "<backspace>") 'direx:jump-to-directory-upward)
+(define-key direx:direx-mode-map (kbd "<backspace>") 'direx:jump-to-directory-upward)
+(define-key direx:direx-mode-map (kbd "o")   'direx:display-item)
+(define-key direx:direx-mode-map (kbd "C-o") 'direx:find-item-other-window)
+(define-key direx:direx-mode-map (kbd "N")   'direx:display-next-item)
+(define-key direx:direx-mode-map (kbd "P")   'direx:display-previous-item)
