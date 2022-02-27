@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# These are needed by gyp to build native nodejs modules
+toolset_import_once default || return 1
+toolset_import_once python_36 || return 1
+
 # toolset
 export HAM_TOOLSET=NODEJS
 export HAM_TOOLSET_NAME=nodejs
@@ -52,10 +56,17 @@ case $HAM_OS in
         ;;
 esac
 
+if [ -z "`where_inpath yarn`" ]; then
+    echo "I/Yarn not found installing npm global deps..."
+    npm-install-global-deps
+fi
+
 VER="--- nodejs ------------------------
 `node --version`
 --- npm ---------------------------
-`npm --version`"
+`npm --version`
+--- yarn --------------------------
+`yarn --version`"
 if [ $? != 0 ]; then
     echo "E/Can't get version."
     return 1

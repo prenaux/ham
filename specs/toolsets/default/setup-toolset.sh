@@ -1,18 +1,18 @@
 #!/bin/bash
-. ham-toolset-import.sh repos
+toolset_import_once repos || return 1
 case $HAM_OS in
     NT*)
-        . ham-toolset-import.sh msvc_15_x64
+        toolset_import_once msvc_15_x64 || return 1
         ;;
     OSX*)
         if [ "$HAM_BIN_LOA" == "osx-arm64" ]; then
-            . ham-toolset-import.sh macos_arm64
+            toolset_import_once macos_arm64 || return 1
         else
-            . ham-toolset-import.sh macos_x64
+            toolset_import_once macos_x64 || return 1
         fi
         ;;
     LINUX)
-        . ham-toolset-import.sh linux_x64
+        toolset_import_once linux_x64 || return 1
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

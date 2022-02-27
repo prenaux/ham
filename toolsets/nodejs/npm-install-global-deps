@@ -1,6 +1,5 @@
 #!/bin/bash
 . ham-bash-lib.sh
-. hat default python_36 nodejs
 
 echo "I/Installing packages with scripts..."
 npm install -g \
