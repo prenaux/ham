@@ -1,0 +1,3 @@
+#!/bin/bash
+# List ignored files
+svn status --no-ignore | grep "^I"

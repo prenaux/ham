@@ -1,0 +1,38 @@
+#!/bin/bash
+usage() {
+    echo "usage: svn-ignore-update directory"
+    echo "  Apply the _svnignore.txt file in the specified directory."
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        # sourced...
+        return 1
+    else
+        # regular call
+        exit 1
+    fi
+}
+
+DEST="$1"
+if [ -z "$DEST" ]; then
+    echo "E/SVN folder not specified."
+    usage
+fi
+
+SVN_IGNORE="$DEST/_svnignore.txt"
+if [ ! -e "$SVN_IGNORE" ]; then
+    echo "E/_svnignore.txt not found in specified directory: '$DEST'"
+    usage
+fi
+
+echo "I/Apply _svnignore.txt"
+set -e
+cd "$DEST"
+
+while IFS= read -r line
+do
+    CURDIR="$line"
+    if [ -d "$CURDIR" ]; then
+        svn-add-folder-only "$CURDIR" || true
+    fi
+done < "$SVN_IGNORE"
+
+svn propset svn:ignore -R -F ./_svnignore.txt .
