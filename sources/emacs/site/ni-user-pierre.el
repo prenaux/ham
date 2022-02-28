@@ -117,8 +117,8 @@
 
  ;; Auto-detect indentation
  (require 'dtrt-indent)
- (dtrt-indent-global-mode 1)
- (diminish 'dtrt-indent-mode)
+ ;; (dtrt-indent-global-mode 1)
+ ;; (diminish 'dtrt-indent-mode)
  ;; (diminish-undo 'dtrt-indent-mode)
 
 )
