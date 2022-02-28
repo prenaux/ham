@@ -1,7 +1,14 @@
 #!/bin/bash
 usage() {
     echo "usage: svn-ignore-update directory"
-    echo "  Apply the _svnignore.txt file in the specified directory."
+    echo "  Apply the _svnignore_r & _svnignore_this in the specified directory."
+    echo ""
+    echo "  _svnignore_r contains the patterns that must be applied to all the subdirectories."
+    echo "  _svnignore_this contains the patterns that must be applied only to specified directory."
+    echo ""
+    echo "  Not that _svnignore_this overrides completely _svnignore_r for the specified directory,"
+    echo "  so patterns must be duplicated in both ignore list if required."
+    echo ""
     if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
         # sourced...
         return 1
@@ -17,22 +24,21 @@ if [ -z "$DEST" ]; then
     usage
 fi
 
-SVN_IGNORE="$DEST/_svnignore.txt"
-if [ ! -e "$SVN_IGNORE" ]; then
-    echo "E/_svnignore.txt not found in specified directory: '$DEST'"
+SVN_IGNORE_R="$DEST/_svnignore_r"
+if [ ! -e "$SVN_IGNORE_R" ]; then
+    echo "E/'$SVN_IGNORE_R' not found"
     usage
 fi
 
-echo "I/Apply _svnignore.txt"
+SVN_IGNORE_THIS="$DEST/_svnignore_this"
+if [ ! -e "$SVN_IGNORE_THIS" ]; then
+    echo "E/'$SVN_IGNORE_THIS' not found"
+    usage
+fi
+
+echo "I/Apply _svnignore_r & _svnignore_this"
 set -e
 cd "$DEST"
-
-while IFS= read -r line
-do
-    CURDIR="$line"
-    if [ -d "$CURDIR" ]; then
-        svn-add-folder-only "$CURDIR" || true
-    fi
-done < "$SVN_IGNORE"
-
-svn propset svn:ignore -R -F ./_svnignore.txt .
+svn add --parents --depth=empty --force .
+svn propset svn:ignore -R -F ./_svnignore_r .
+svn propset svn:ignore -F ./_svnignore_this .
