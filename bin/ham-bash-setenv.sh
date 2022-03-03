@@ -15,21 +15,38 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
 ########################################################################
 ##  PATH
 ########################################################################
+    export PATH=$BASH_START_PATH
     case $HAM_OS in
         NT*)
-            export PATH=$WORK/niSDK/bin:$HAM_HOME/bin:$HAM_HOME/bin/nt-x86:$BASH_START_PATH
-            export PATH=$PATH:`unxpath $WINDIR`/System32
+            pathenv_add "`unxpath $WINDIR`/System32" after
+            pathenv_add "$HAM_HOME/bin/nt"
             ;;
         OSX)
-            export PATH=$WORK/niSDK/bin:$HAM_HOME/bin:$HAM_HOME/bin/osx:$HAM_HOME/bin/$HAM_BIN_LOA:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$BASH_START_PATH
+            pathenv_add /opt/homebrew/bin after
+            pathenv_add /opt/homebrew/sbin after
+            pathenv_add /usr/local/bin after
+            pathenv_add /usr/bin after
+            pathenv_add /bin after
+            pathenv_add /usr/sbin after
+            pathenv_add /sbin after
+            pathenv_add "$HAM_HOME/bin/osx"
             ;;
         LINUX)
-            export PATH=$WORK/niSDK/bin:$HAM_HOME/bin:$HAM_HOME/bin/$HAM_BIN_LOA:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$BASH_START_PATH
+            pathenv_add /usr/local/sbin after
+            pathenv_add /usr/local/bin after
+            pathenv_add /usr/sbin after
+            pathenv_add /usr/bin after
+            pathenv_add /sbin after
+            pathenv_add /bin after
+            pathenv_add "$HAM_HOME/bin/linux"
             ;;
         *)
             echo "W/ham-bash-setenv.sh: Unknown HAM_OS: $HAM_OS"
             ;;
     esac
+    pathenv_add "$HAM_HOME/bin"
+    pathenv_add "$HAM_HOME/bin/$HAM_BIN_LOA"
+    pathenv_add "$WORK/niSDK/bin"
     export PATH_BACKUP=$PATH
 else
     true

@@ -152,13 +152,25 @@ path_filename() {
 }
 
 pathenv_add() {
-    if [ ! -z "$1" ] &&  [[ ":$PATH:" != *":$1:"* ]] ; then
+    if [ ! -d "$1" ]; then
+        return 0
+    fi
+    DIR=$(nativedir "$1")
+    if [ -d "$DIR" ] &&  [[ ":$PATH:" != *":$DIR:"* ]] ; then
         if [ "$2" = "after" ] ; then
-            export PATH=$PATH:$1
+            export PATH=$PATH:$DIR
         else
-            export PATH=$1:$PATH
+            export PATH=$DIR:$PATH
         fi
     fi
+}
+
+path_remove_dups() {
+    local D=${2:-:} path= dir=
+    while IFS= read -d$D dir; do
+        [[ $path$D =~ .*$D$dir$D.* ]] || path+="$D$dir"
+    done <<< "$1$D"
+    printf %s "${path#$D}"
 }
 
 current_git_branch() {
