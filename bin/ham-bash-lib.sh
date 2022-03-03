@@ -151,6 +151,16 @@ path_filename() {
     echo "$filename"
 }
 
+pathenv_add() {
+    if [ ! -z "$1" ] &&  [[ ":$PATH:" != *":$1:"* ]] ; then
+        if [ "$2" = "after" ] ; then
+            export PATH=$PATH:$1
+        else
+            export PATH=$1:$PATH
+        fi
+    fi
+}
+
 current_git_branch() {
     git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1) /'
 }
