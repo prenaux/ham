@@ -1,0 +1,28 @@
+#!/bin/bash
+export HAM_NO_VER_CHECK=1
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+# echo "ham-editor: $@" >> $HOME/ham-editor-open-log.txt
+
+FILEPATH="$1"
+
+DEFAULT_EDITOR=$(where_inpath vim)
+if [ ! -e "$DEFAULT_EDITOR" ]; then
+    DEFAULT_EDITOR=$(where_inpath vi)
+fi
+
+EMACS_CLIENT=$(where_inpath emacsclient)
+if [ -e "$EMACS_CLIENT" ]; then
+    $EMACS_CLIENT -n "$FILEPATH" --alternate-editor="$DEFAULT_EDITOR"
+    if [ $? = 0 ]; then
+        echo "I/Opened '$FILEPATH' with $EMACS_CLIENT"
+        exit 0
+    fi
+fi
+
+$DEFAULT_EDITOR "$FILEPATH"
+if [ $? = 0 ]; then
+    echo "I/Edited '$FILEPATH' with $DEFAULT_EDITOR"
+    exit 0
+fi

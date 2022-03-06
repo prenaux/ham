@@ -35,6 +35,8 @@
 (NotBatchMode
  (require 'server)
 
+ ;; (server-force-delete) ;; Stop the server
+
  (defun ni-emacs-server-start ()
   (interactive)
   (unless (server-running-p)

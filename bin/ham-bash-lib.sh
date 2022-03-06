@@ -9,6 +9,9 @@ fi
 if [[ -z $USER ]]; then
     export USER=$USERNAME
 fi
+if [[ -z $EDITOR ]]; then
+    export EDITOR=ham-editor
+fi
 
 if [[ $OS == Windows* ]]; then
     # Serious BS from Cygwin...
@@ -368,7 +371,8 @@ toolset_check_imported() {
     for ARG in $@
     do
         if [[ -z "`toolset_is_imported "$ARG"`" ]]; then
-            die toolset_check_imported ""$ARG" toolset not imported."
+            echo "E/'$ARG' toolset not imported."
+            return 1
         fi
     done
 }
