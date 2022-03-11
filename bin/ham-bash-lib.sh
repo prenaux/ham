@@ -96,7 +96,7 @@ errcheck()
 }
 
 nativedir()
-# usage: NativePathNameVariable=`nativedir "/MSYS/PathName"`
+# usage: NativePathNameVariable=$(nativedir "/directory/PathName")
 {
     DIRPATH="$1"
     case $HAM_OS in
@@ -104,17 +104,16 @@ nativedir()
             2>/dev/null cd "$DIRPATH"; pwd -W
             ;;
         *)
-            # echo "$DIRPATH"
             echo $( cd "$DIRPATH" && pwd )
             ;;
     esac
 }
 
 unxpath()
-# usage: NativePathNameVariable=`unxpath "/MSYS/PathName"`
+# usage: NativePathNameVariable=$(unxpath "/directory/PathName")
 #
-# Determine the native Native path name equivalent for the POSIX style
-# "/MSYS/PathName";  (CAVEAT:  the specified "/MSYS/PathName" *must*
+# Determine the native path name equivalent for a POSIX style
+# "/directory/PathName"; (CAVEAT: the specified "/directory/PathName" *must*
 # reference an existing *directory* on the MSYS or POSIX host).
 {
     DIR=`nativedir "$1"`
