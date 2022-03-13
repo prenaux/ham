@@ -1,15 +1,30 @@
 #!/bin/bash
 . ham-bash-lib.sh
 
+if [ "$1" = "force" ]; then
+    shift
+    echo "I/Forcing the installation of the required node modules."
+elif [ -z "$(where_inpath eslint)" -o \
+       -z "$(where_inpath gulp)" -o \
+       -z "$(where_inpath jsonlint)" -o \
+       -z "$(where_inpath node-pre-gyp)" -o \
+       -z "$(where_inpath heroku)" -o \
+       -z "$(where_inpath esbuild)" -o \
+       -z "$(where_inpath yarn)" ]; then
+    echo "I/Not all required packages are installed"
+else
+    echo "I/All required global packages are installed."
+    exit 0
+fi
+
 echo "I/Installing packages with scripts..."
 npm install -g \
-    @2fd/graphdoc@2.4.x \
     eslint@5.x \
     gulp@3.x \
     jsonlint@1.6.x \
     node-pre-gyp \
-    npm-flatten \
     heroku \
+    esbuild \
     yarn
 
 echo "I/Installing regular packages..."

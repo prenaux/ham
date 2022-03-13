@@ -19,21 +19,18 @@ case $HAM_OS in
         export NODE_PATH="$NODEJS_DIR/lib/node_modules"
         ;;
     OSX*)
-        if [ "$HAM_BIN_LOA" == "osx-arm64" ]; then
-            if [ -z `which node` ]; then
-                echo "W/Couldn't find node, will try to install it with brew."
-                ham-brew install node@15
-            fi
-            export NODEJS_GLOBAL_MODULES_DIR="/opt/homebrew/lib/node_modules/"
-            export PATH=${HAM_TOOLSET_DIR}:${PATH}
-            export NODE_PATH=$NODEJS_GLOBAL_MODULES_DIR
-        else
-            toolset_check_and_dl_ver nodejs osx-x64 v14_17 || return 1
-            export NODEJS_DIR="${HAM_TOOLSET_DIR}/osx-x64"
-            export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}/lib/node_modules"
-            export PATH=${HAM_TOOLSET_DIR}:"${NODEJS_DIR}/bin":${PATH}
-            export NODE_PATH="$NODEJS_DIR/lib/node_modules"
+        if [ -z `which node` -o -z `which npm` ]; then
+            echo "W/Couldn't find node, will try to install it with brew."
+            # reinstall and link to make sure that a boched install works
+            ham-brew reinstall node@16
+            ham-brew link --overwrite node@16
         fi
+        export NODEJS_GLOBAL_MODULES_DIR="/usr/local/lib/node_modules"
+        if [ ! -d "$NODEJS_GLOBAL_MODULES_DIR" ]; then
+            export NODEJS_GLOBAL_MODULES_DIR="/opt/homebrew/lib/node_modules"
+        fi
+        export PATH=${HAM_TOOLSET_DIR}:${PATH}
+        export NODE_PATH=$NODEJS_GLOBAL_MODULES_DIR
         ;;
     LINUX*)
         export NODEJS_DIR="${HAM_TOOLSET_DIR}/${HAM_BIN_LOA}/"
@@ -56,17 +53,17 @@ case $HAM_OS in
         ;;
 esac
 
-if [ -z "`where_inpath yarn`" ]; then
-    echo "I/Yarn not found installing npm global deps..."
-    npm-install-global-deps
-fi
+# Install any missing global node tools
+npm-install-global-deps
 
 VER="--- nodejs ------------------------
 `node --version`
 --- npm ---------------------------
 `npm --version`
 --- yarn --------------------------
-`yarn --version`"
+`yarn --version`
+--- esbuild -----------------------
+`esbuild --version`"
 if [ $? != 0 ]; then
     echo "E/Can't get version."
     return 1
