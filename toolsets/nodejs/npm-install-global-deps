@@ -3,7 +3,7 @@
 
 if [ "$1" = "force" ]; then
     shift
-    echo "I/Forcing the installation of the required node modules."
+    echo "I/npm-install-global-deps: Forcing the installation of the required node modules."
 elif [ -z "$(where_inpath eslint)" -o \
        -z "$(where_inpath gulp)" -o \
        -z "$(where_inpath jsonlint)" -o \
@@ -11,14 +11,14 @@ elif [ -z "$(where_inpath eslint)" -o \
        -z "$(where_inpath heroku)" -o \
        -z "$(where_inpath esbuild)" -o \
        -z "$(where_inpath yarn)" ]; then
-    echo "I/Not all required packages are installed"
+    echo "I/npm-install-global-deps: Not all required packages are installed"
 else
-    echo "I/All required global packages are installed."
+    echo "I/npm-install-global-deps: All required global packages are installed."
     exit 0
 fi
 
 echo "I/Installing packages with scripts..."
-npm install -g \
+npm install --force -g \
     eslint@5.x \
     gulp@3.x \
     jsonlint@1.6.x \
@@ -28,7 +28,7 @@ npm install -g \
     yarn
 
 echo "I/Installing regular packages..."
-npm install -g --no-bin-links \
+npm install --force -g --no-bin-links \
     css-loader@0.15.x \
     eslint-plugin-react@7.x \
     eslint-plugin-promise@4.2.1 \
