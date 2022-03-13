@@ -2,12 +2,13 @@
 . ham-bash-lib.sh
 
 usage() {
-    echo "usage: repos-git-batch (-x) [ commands ]"
+    echo "usage: repos-git-batch (nocheck) (-x) [ commands ]"
     echo ""
     echo "  Wrapper for git-batch that will run git-batch concurrently on all"
     echo "  git repos in the current directory."
     echo ""
-    echo "  -x specify that the commands should be run concurrently"
+    echo "  nocheck    skip git repository existance check"
+    echo "  -x         specify that the commands should be run concurrently"
     echo ""
     echo "  The arguments are passed verbatim to git-batch."
     echo ""
@@ -22,8 +23,14 @@ usage() {
     fi
 }
 
+# Check if we're running in concurrent mode
+if [ "$1" == "nocheck" ]; then
+    NO_CHECK=1
+    shift
+fi
+
 # Check that there is at least one argument...
-if [ $# = 0 -o "$1" == "-h" -o "$2" == "-h" ]; then
+if [ $# = 0 -o "$1" == "-h" -o "$2" == "-h" -o "$1" == "-?" -o "$2" == "-?" ]; then
     if [ $# = 0 ]; then
         echo "E/No argument specified"
         echo ""
@@ -54,16 +61,18 @@ shift
 # echo "REPOS_CWD:" $REPOS_CWD
 
 # Check that they are all git directories
-OIFS="$IFS"; IFS=$'\n' # Set IFS so that the for loop handle file with space in the name
-for ARG in $REPOS_CWD; do
-    if [ ! -d "$ARG/.git" ]; then
-        echo "E/Not a git directory: '$ARG'"
-        ERR_NOTGITDIR=1
+if [ -z "$NO_CHECK" ]; then
+    OIFS="$IFS"; IFS=$'\n' # Set IFS so that the for loop handle file with space in the name
+    for ARG in $REPOS_CWD; do
+        if [ ! -d "$ARG/.git" ]; then
+            echo "E/Not a git repo: '$ARG'"
+            ERR_NOTGITDIR=1
+        fi
+    done
+    IFS="$OIFS"
+    if [ ! -d "$ARG" ]; then
+        exit 1
     fi
-done
-IFS="$OIFS"
-if [ ! -d "$ARG" ]; then
-    exit 1
 fi
 
 # Check if we're running in concurrent mode
@@ -81,8 +90,10 @@ fi
 OIFS="$IFS"; IFS=$'\n' # Set IFS so that the for loop handle file with space in the name
 for ARG in $REPOS_CWD; do
     echo "== Repo '$ARG'"
-    cd "$ARG"
-    if [ ! -z "$1" ]; then
+    if [ ! -d "$ARG/.git" ]; then
+        echo "W/Not a git repo: '$ARG'"
+    elif [ ! -z "$1" ]; then
+        cd "$ARG"
         if [ -z "$CONCURRENT" ]; then
             git-batch $*
             echo ""
