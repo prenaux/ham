@@ -9,7 +9,7 @@ export PATH=${HAM_TOOLSET_DIR}:${PATH}
 
 # platform
 case $HAM_OS in
-    OSX*)
+    OSX*|LINUX*)
         export SOLANA_DATA_DIR=$HAM_TOOLSET_DIR/$HAM_BIN_LOA
         export SOLANA_BIN_DIR=$SOLANA_DATA_DIR/active_release/bin
         export PATH="$SOLANA_BIN_DIR":"$HAM_TOOLSET_DIR":$PATH

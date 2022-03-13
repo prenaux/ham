@@ -12,6 +12,11 @@ case $HAM_OS in
     OSX*)
         ham-brew-install svn "bin/svn"
         ;;
+    LINUX*)
+        if [ -z `which svn` ]; then
+            sudo apt install -y subversion
+        fi
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
