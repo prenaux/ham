@@ -9,9 +9,8 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/python_36"
 case $HAM_OS in
     NT*)
         # Look for python in default install destination...
-        export PYTHON_DIR="$HOME/AppData/Local/Programs/Python/Python36"
-        export PATH=${PYTHON_DIR}:${PYTHON_DIR}/DLLs:${PYTHON_DIR}/Scripts:${PATH}
-        if [ ! -e "$PYTHON_DIR" ]; then
+        export PYTHON3_DIR="$HOME/AppData/Local/Programs/Python/Python36"
+        if [ ! -e "$PYTHON3_DIR" ]; then
             echo "I/Downloading Python 3.6..."
             dl_file https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe -O"$TMP/python-3.6.8-amd64.exe"
             errcheck $? python_36 "E/Can't download python 3"
@@ -20,13 +19,14 @@ case $HAM_OS in
             errcheck $? python_36 "E/Can't install python 3"
             rm "$TMP/python-3.6.8-amd64.exe"
         fi
-        alias python3=${PYTHON_DIR}/python.exe
+        pathenv_add ${PYTHON3_DIR}/Scripts
+        pathenv_add ${PYTHON3_DIR}/DLLs
+        pathenv_add ${PYTHON3_DIR}
         # I have no word for how insane the python 'path handling' works on
         # Windows... but we have to deal with it anyway...
         export PYTHON3_BINDIR="$HOME/AppData/Roaming/Python/Python36/Scripts/"
-        export PATH=$PYTHON3_BINDIR:$PATH
+        pathenv_add "$PYTHON3_BINDIR"
         ;;
-
     OSX*)
         if [ -z "which pip3" ]; then
             echo "I/pip not found, installing..."
@@ -53,7 +53,7 @@ case $HAM_OS in
             echo "E/Can't find a python library folder in $HOME/Library/Python/"
             return 1
         fi
-        export PATH=$PYTHON3_BINDIR:$PATH
+        pathenv_add "$PYTHON3_BINDIR"
         ;;
 
     LINUX*)
