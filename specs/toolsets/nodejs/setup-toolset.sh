@@ -12,7 +12,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/nodejs"
 # path setup
 case $HAM_OS in
     NT*)
-        toolset_check_and_dl_ver nodejs nt-x86 v10_16 || return 1
+        toolset_check_and_dl_ver nodejs nt-x86 v16 || return 1
         export NODEJS_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
         export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}/node_modules"
         export PATH=${HAM_TOOLSET_DIR}:"${NODEJS_DIR}":"${NODEJS_DIR}/bin":${PATH}
