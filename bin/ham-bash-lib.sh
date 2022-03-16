@@ -260,7 +260,9 @@ toolset_import() {
 toolset_import_once() {
     ALREADY_IMPORTED=`ni-hget HAM_IMPORTS_TOOLSETS $1`
     if [[ $ALREADY_IMPORTED = "1" ]]; then
-        echo "I/Already imported '$1'."
+        if [ "$2" != "silent" ]; then
+            echo "I/Already imported '$1'."
+        fi
     else
         . ham-toolset-import.sh $1
     fi
