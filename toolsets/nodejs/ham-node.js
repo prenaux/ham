@@ -344,30 +344,6 @@ exports.prodServer = function(aParams) {
   backendWatch(NI.shallowClone(aParams, { nodeEnv: 'production' }));
 }
 
-var shellProcess;
-function shellRun() {
-  var cp = require('child_process');
-  shellProcess = cp.spawn(
-    PATH.join(globalNodeModulesDir, 'electron-prebuilt/dist/electron'),
-    ['.'], { detached: false });
-  shellProcess.on('exit', function() {
-    NI.log("Shell closed.");
-    if (webpackServer) {
-      webpackServer.invalidate();
-    }
-    process.exit(0);
-  });
-}
-exports.shellRun = shellRun;
-
-exports.shellDev = function(aParams) {
-  frontendWatch(NI.shallowClone(aParams, {
-    serverPort: extractFrontendPort(aParams),
-  }));
-  backendWatch(aParams);
-  shellRun();
-}
-
 exports.test = function(aParams) {
   var pathUNITTEST = PATH.join(cwd,'/sources/unittest.js');
   var UT;
