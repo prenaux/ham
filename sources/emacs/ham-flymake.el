@@ -181,32 +181,6 @@
 (push '(".+\\.scala$" ham-flymake-java-init ham-flymake-java-cleanup) aflymake-allowed-file-name-masks)
 
 ;;**********************************************************************
-;; Flymake - JavaScript
-;;**********************************************************************
-(require 'aflymake-eslint)
-
-;; There's so many way to run eslint depending on the javascript project setup
-;; that we're bow delegating that to ham-lint to figure out. ham-lint looks
-;; for a _lint.sh bash script in any of the parent folder and then runs that
-;; with the JS file as parameter. The goal of _lint.sh is to run the
-;; appropriate linting tool.
-(setq aflymake-eslint-executable (concat (getenv "WORK") "/ham/bin/ham-lint"))
-
-(defun ham-flymake-eslint-init ()
-  (aflymake-easy-load 'aflymake-eslint-command
-                     aflymake-eslint-err-line-patterns
-                     ;; this did not work with the 'tempdir, apparently eslint
-                     ;; got lost and couldn't find its .eslintrc files
-                     'inplace
-                     "js"))
-
-;; do nothing because we compile inplace
-(defun ham-flymake-eslint-cleanup () t)
-
-(push '(".+\\.js$" ham-flymake-eslint-init ham-flymake-eslint-cleanup) aflymake-allowed-file-name-masks)
-(push '(".+\\.jsx$" ham-flymake-eslint-init ham-flymake-eslint-cleanup) aflymake-allowed-file-name-masks)
-
-;;**********************************************************************
 ;; Flymake - Typescript
 ;;**********************************************************************
 (defconst aflymake-typescript-err-line-patterns
@@ -315,7 +289,7 @@
 
 ;;*** Rust *************************************************************
 
-;; resut error parser
+;; rust error parser
 (defvar aflymake-ham-lint-err-line-patterns-rust
   '(("^\\(.*\\)\n[ ]+--> \\(.*.rs\\):\\([0-9]+\\):\\([0-9]+\\)$" 2 3 4 1)
     ("^\\(.*.rs\\):\\([0-9]+\\):[0-9]+: [0-9]+:[0-9]+ [a-z]+: \\(.*\\)$" 1 2 nil 3)
@@ -346,3 +320,16 @@
 (push '(".+\\.ni$" ham-flymake-ham-lint-niscript-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
 (push '(".+\\.nip$" ham-flymake-ham-lint-niscript-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
 (push '(".+\\.niw$" ham-flymake-ham-lint-niscript-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
+
+;;*** JS/TS ************************************************************
+(defconst aflymake-ham-lint-err-line-patterns-eslint
+  '(("^[ ]*\\([0-9]+\\):\\([0-9]+\\)[ ]*\\(.*\\)$" nil 1 2 3))) ;; default eslint reporter format
+
+(defun ham-flymake-ham-lint-eslint-init ()
+  (interactive)
+  (aflymake-easy-load 'aflymake-ham-lint-command
+                      aflymake-ham-lint-err-line-patterns-eslint
+                      'inplace "niscript"))
+
+(push '(".+\\.js$" ham-flymake-ham-lint-eslint-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
+(push '(".+\\.jsx$" ham-flymake-ham-lint-eslint-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
