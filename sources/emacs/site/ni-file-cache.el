@@ -127,6 +127,8 @@
       (add-to-list 'file-cache-filter-regexps "/node_modules")
       (add-to-list 'file-cache-filter-regexps "/build/client")
       (add-to-list 'file-cache-filter-regexps "/build/server")
+      ;; ignore vendor folder from php composer
+      (add-to-list 'file-cache-filter-regexps "/vendor")
 
       ;; Ignore non-source files
       (dolist (pat (list
