@@ -1,0 +1,31 @@
+#!/bin/bash -e
+# the help
+usage() {
+    echo ""
+    echo "usage:"
+    echo "  ham-brew-installdir PACKAGE"
+    echo ""
+    echo "  Prints what should be the installation directory of the specified brew package."
+    echo "  Prints nothing if there's no brew install dir."
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        # sourced...
+        return 1
+    else
+        # regular call
+        exit 1
+    fi
+}
+
+PKGNAME="$1"
+
+# M1 mac folder
+if [ -d "/opt/homebrew/opt/" ]; then
+    PKG_HOME="/opt/homebrew/opt/$PKGNAME"
+# Intel mac folder
+elif [ -d "/usr/local/opt/" ]; then
+    PKG_HOME="/usr/local/opt/$PKGNAME"
+# Fallback, much slower
+else
+    PKG_HOME=""
+fi
+echo "${PKG_HOME}"

@@ -57,28 +57,37 @@ ni-hprint() {
 ##  Utils
 ########################################################################
 complain()
-# usage: complain ModuleName "Diagnostic Message"
-#
-# Display a message of the form `aglDevEnv.ModuleName: Diagnostic Message',
-# then continue aglDevEnv execution.
+# usage:
+#   complain ModuleName "Diagnostic Message"
+#   complain "Diagnostic Message"
 {
-  echo >&2 "E/$1: $2"
+  if [ "$1" = "_" ]; then
+      shift
+  fi
+  if [ -z "$2" ]; then
+      echo >&2 "E/$1"
+  else
+      echo >&2 "E/$1: $2"
+  fi
+}
+
+die_exit()
+# usage: die_exit ModuleName "Message Saying Why"
+{
+  complain "$@"
+  exit 1
 }
 
 die()
 # usage: die ModuleName "Message Saying Why"
-#
-# Display a diagnostic message, and cause the aglDevEnv to abort; this
-# is the function dispatcher invoked by `require', when the specified
-# "aglDevEnv.ModuleName" file cannot be sourced; it may also be invoked
-# directly from any sourced "aglDevEnv.ModuleName" file, to diagnose
-# any fatal condition.
 {
+  # echo "D/SCRIPT_SOURCED: $SCRIPT_SOURCED"
+  # echo "D/HAM_DIE_SHOULD_RETURN: $HAM_DIE_SHOULD_RETURN"
   if [ ! -z "$SCRIPT_SOURCED" ]; then
       HAM_DIE_SHOULD_RETURN=yes
   fi
   complain "$@"
-  if [ -z $HAM_DIE_SHOULD_RETURN ]; then
+  if [ -z "$HAM_DIE_SHOULD_RETURN" ]; then
     # echo "I/DIE: EXIT"
     exit 1
   else
@@ -360,7 +369,6 @@ toolset_is_imported() {
 }
 
 toolset_check_imported() {
-    HAM_DIE_SHOULD_RETURN=yes
     for ARG in $@
     do
         if [[ -z "`toolset_is_imported "$ARG"`" ]]; then
