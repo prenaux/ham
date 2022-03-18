@@ -25,15 +25,8 @@ case $HAM_OS in
         fi
         ;;
     OSX*)
-        export PHP_HOME="`brew --prefix php@7.4`";
-        if [ ! -e "$PHP_HOME/bin/php" ]; then
-            echo "I/Brew php@7.4 not found, trying to install."
-            ham-brew install php@7.4
-            if [ ! -e "$PHP_HOME/bin/php" ]; then
-                echo "E/Brew php@7.4 install failed."
-                return 1
-            fi
-        fi
+        export PHP_HOME=`ham-brew-installdir php@7.4`
+        ham-brew-install php@7.4 "bin/php" || return 1
         export PATH="${HAM_TOOLSET_DIR}":"${HOME}/.composer/vendor/bin":"${PHP_HOME}/bin":${PATH}
         ;;
     *)
