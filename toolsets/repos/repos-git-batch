@@ -23,7 +23,6 @@ usage() {
     fi
 }
 
-# Check if we're running in concurrent mode
 if [ "$1" == "nocheck" ]; then
     NO_CHECK=1
     shift
@@ -48,12 +47,14 @@ apply_shell_expansion() {
 
 # Fetch the list of repos
 if [[ "$1" == "." ]]; then
+    REPOS_LIST="."
     REPOS_CWD=`repos-list-cwd`
 else
     if [ ! -e "$1" ]; then
         echo "E/Can't find repos list '$1'."
         exit 1
     fi
+    REPOS_LIST="$1"
     REPOS_CWD=$(apply_shell_expansion "$1")
 fi
 shift
@@ -80,6 +81,8 @@ if [ "$1" == "-x" ]; then
     CONCURRENT=1
     shift
 fi
+
+echo "I/Repos list: $REPOS_LIST"
 if [ -z "$CONCURRENT" ]; then
     echo "I/Running sequentially"
 else
