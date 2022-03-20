@@ -14,6 +14,11 @@ usage() {
     fi
 }
 
+INSTALL=install
+if [ "$1" == "reinstall" ]; then
+    INSTALL=reinstall
+fi
+
 PKGNAME="$1"
 CHECKFILE="$2"
 if [ -z "$" -o -z "$2" ]; then
@@ -25,7 +30,7 @@ PKG_HOME=`ham-brew-installdir "$PKGNAME"`
 
 if [ ! -e "$PKG_HOME/$CHECKFILE" ]; then
     echo "I/Brew $PKGNAME not found, trying to install."
-    (set -x; ham-brew reinstall $PKGNAME)
+    (set -x; ham-brew $INSTALL $PKGNAME)
     if [ ! -e "$PKG_HOME/$CHECKFILE" ]; then
         echo "I/Brew $PKGNAME install failed."
         exit 1
