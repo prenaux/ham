@@ -19,9 +19,9 @@ fi
 
 echo "I/Installing packages with scripts..."
 npm install --force -g \
-    eslint@5.x \
+    eslint@8.x \
     gulp@3.x \
-    jsonlint@1.6.x \
+    jsonlint \
     node-pre-gyp \
     heroku \
     esbuild \
@@ -31,7 +31,7 @@ echo "I/Installing regular packages..."
 npm install --force -g --no-bin-links \
     css-loader@0.15.x \
     eslint-plugin-react@7.x \
-    eslint-plugin-promise@4.2.1 \
+    eslint-plugin-promise@6.x \
     extract-text-webpack-plugin@0.8.x \
     file-loader@0.8.x \
     jsx-loader@0.13.x \
