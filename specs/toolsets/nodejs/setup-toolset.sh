@@ -19,17 +19,22 @@ case $HAM_OS in
         export NODE_PATH="$NODEJS_DIR/lib/node_modules"
         ;;
     OSX*)
+        export NODEJS_HOME=`ham-brew-installdir node@16`
+        export PATH="${HAM_TOOLSET_DIR}":"${NODEJS_HOME}/bin":${PATH}
+        ham-brew-install node@16 "bin/node" || return 1
         if [ -z `which node` -o -z `which npm` ]; then
-            echo "W/Couldn't find node, will try to install it with brew."
-            # reinstall and link to make sure that a boched install works
+            # reinstall and link because we likely have a botched install
+            echo "W/Couldn't find node or npm, will try to reinstall it with brew."
             ham-brew reinstall node@16
             ham-brew link --overwrite node@16
         fi
+        # TODO: Maybe this should just be $NODEJS_HOME/lib/node_modules.
+        #       That'll be needed if we need to use different nodejs versions
+        #       at once.
         export NODEJS_GLOBAL_MODULES_DIR="/usr/local/lib/node_modules"
         if [ ! -d "$NODEJS_GLOBAL_MODULES_DIR" ]; then
             export NODEJS_GLOBAL_MODULES_DIR="/opt/homebrew/lib/node_modules"
         fi
-        export PATH=${HAM_TOOLSET_DIR}:${PATH}
         export NODE_PATH=$NODEJS_GLOBAL_MODULES_DIR
         ;;
     LINUX*)
