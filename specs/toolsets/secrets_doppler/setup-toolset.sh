@@ -26,7 +26,7 @@ esac
 VER="--- secrets_doppler ------------
 `doppler --version`"
 if [ $? != 0 ]; then
-    echo "E/Can't get version."
+    echo "E/Can't get Doppler version."
     return 1
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
