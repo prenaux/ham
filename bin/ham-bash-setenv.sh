@@ -44,8 +44,9 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
             echo "W/ham-bash-setenv.sh: Unknown HAM_OS: $HAM_OS"
             ;;
     esac
-    pathenv_add "$HAM_HOME/bin"
     pathenv_add "$HAM_HOME/bin/$HAM_BIN_LOA"
+    # This must be AFTER bin/HAM_BIN_LOA
+    pathenv_add "$HAM_HOME/bin"
     pathenv_add "$WORK/niSDK/bin"
     export PATH_BACKUP=$PATH
 else
