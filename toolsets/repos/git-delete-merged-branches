@@ -1,9 +1,13 @@
 #!/bin/bash
 CURRENT_GIT_BRANCH=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
-if [ "$CURRENT_GIT_BRANCH" != "master" ]; then
-    echo "E/Currently on '$CURRENT_GIT_BRANCH' branch, merged branches can only be deleted from the master branch."
-    echo "E/Do 'git checkout master' first."
-    exit 1
+MAIN_BRANCH_NAME=main
+if [ "$CURRENT_GIT_BRANCH" != "$MAIN_BRANCH_NAME" ]; then
+    MAIN_BRANCH_NAME=master
+    if [ "$CURRENT_GIT_BRANCH" != "$MAIN_BRANCH_NAME" ]; then
+        echo "E/Currently on '$CURRENT_GIT_BRANCH' branch, merged branches can only be deleted from the main or master branch."
+        echo "E/Do 'git checkout $MAIN_BRANCH_NAME' first."
+        exit 1
+    fi
 fi
 if [ "$1" == "noprune" ]; then
     echo "# SKIPPED: git fetch --prune origin"
@@ -18,7 +22,7 @@ if [[ "$1" == "doit_local" || "$1" == "doit_remote" ]]; then
 fi
 
 echo "# Local branches..."
-LOCAL_BRANCHES=$(git branch --merged master | grep -v develop | grep -v master | sed -E "s|^ *origin/||g" | sed -E "s|\*||g")
+LOCAL_BRANCHES=$(git branch --merged $MAIN_BRANCH_NAME | grep -v develop | grep -v $MAIN_BRANCH_NAME | sed -E "s|^ *origin/||g" | sed -E "s|\*||g")
 for branch in $LOCAL_BRANCHES
 do
     if [ "$1" == "doit_local" ]; then
@@ -33,7 +37,7 @@ if [ "$1" == "doit_local" ]; then
 fi
 
 echo "# Remote branches..."
-REMOTE_BRANCHES=$(git branch -r --merged master | grep origin | grep -v develop | grep -v master | sed -E "s|^ *origin/||g" | sed -E "s|\*||g")
+REMOTE_BRANCHES=$(git branch -r --merged $MAIN_BRANCH_NAME | grep origin | grep -v develop | grep -v $MAIN_BRANCH_NAME | sed -E "s|^ *origin/||g" | sed -E "s|\*||g")
 for branch in $REMOTE_BRANCHES
 do
     if [ "$1" == "doit_remote" ]; then
