@@ -31,6 +31,15 @@ case $HAM_OS in
         fi
         export PATH="${POSTGRES_DIR}/bin":${PATH}
         ;;
+    LINUX*)
+        if [ -z "`which psql`" ]; then
+            sudo apt install -y postgresql-client
+            if [ -z "`which psql`" ]; then
+                echo "E/Brew postgresql@10 install failed."
+                return 1
+            fi
+        fi
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
@@ -41,8 +50,8 @@ esac
 export PATH="${HAM_TOOLSET_DIR}":${PATH}
 export POSTGRES_DB_DIR="$WORK/Server/pg"
 
-VER="--- postgres ---------------------
-`postgres --version`"
+VER="--- psql -------------------------
+`psql --version`"
 if [ $? != 0 ]; then
     echo "E/Can't get version."
     return 1
