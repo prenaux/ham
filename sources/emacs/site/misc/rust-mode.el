@@ -73,7 +73,8 @@ When nil, `where' will be aligned with `fn' or `trait'."
   :group 'rust-mode
   :safe #'booleanp)
 
-(defcustom rust-match-angle-brackets t
+;; Pierre: Fix perf issue. Set to nil.
+(defcustom rust-match-angle-brackets nil
   "Whether to enable angle bracket (`<' and `>') matching where appropriate."
   :type 'boolean
   :safe #'booleanp
@@ -274,10 +275,11 @@ See `prettify-symbols-compose-predicate'."
   (setq-local comment-end   "")
   (setq-local open-paren-in-column-0-is-defun-start nil)
 
+  ;; Pierre: Disabled, performance, and annoying...
   ;; Auto indent on }
-  (setq-local electric-indent-chars
-              (cons ?} (and (boundp 'electric-indent-chars)
-                            electric-indent-chars)))
+  ;; (setq-local electric-indent-chars
+              ;; (cons ?} (and (boundp 'electric-indent-chars)
+                            ;; electric-indent-chars)))
 
   ;; Allow paragraph fills for comments
   (setq-local comment-start-skip "\\(?://[/!]*\\|/\\*[*!]?\\)[[:space:]]*")
@@ -289,18 +291,28 @@ See `prettify-symbols-compose-predicate'."
   (setq-local normal-auto-fill-function 'rust-do-auto-fill)
   (setq-local fill-paragraph-function 'rust-fill-paragraph)
   (setq-local fill-forward-paragraph-function 'rust-fill-forward-paragraph)
-  (setq-local adaptive-fill-function 'rust-find-fill-prefix)
-  (setq-local adaptive-fill-first-line-regexp "")
+
+  ;;
+  ;; Pierre: Fix freeze issue. adaptive-fill breaks rust mode in our code,
+  ;; makes Emacs freeze while scrolling through code.
+  ;;
+  ;; (setq-local adaptive-fill-function 'rust-find-fill-prefix)
+  ;; (setq-local adaptive-fill-first-line-regexp "")
+
   (setq-local comment-multi-line t)
   (setq-local comment-line-break-function 'rust-comment-indent-new-line)
+
   (setq-local imenu-generic-expression rust-imenu-generic-expression)
   (setq-local imenu-syntax-alist '((?! . "w"))) ; For macro_rules!
   (setq-local beginning-of-defun-function 'rust-beginning-of-defun)
   (setq-local end-of-defun-function 'rust-end-of-defun)
   (setq-local parse-sexp-lookup-properties t)
-  (setq-local electric-pair-inhibit-predicate
-              'rust-electric-pair-inhibit-predicate-wrap)
-  (setq-local electric-pair-skip-self 'rust-electric-pair-skip-self-wrap)
+
+  ;; Pierre: Disable all eletric stuff, just annoying...
+  ;; (setq-local electric-pair-inhibit-predicate
+              ;; 'rust-electric-pair-inhibit-predicate-wrap)
+  ;; (setq-local electric-pair-skip-self 'rust-electric-pair-skip-self-wrap)
+
   ;; Configure prettify
   (setq prettify-symbols-alist rust-prettify-symbols-alist)
   (setq prettify-symbols-compose-predicate #'rust--prettify-symbols-compose-p)
@@ -622,7 +634,10 @@ value to scopes which are approximately with this range."
       ;; macros at all.
       (or scope 'empty))))
 
-(defun rust-in-macro (&optional start end)
+;; Pierre: Fix perf issue
+(defun rust-in-macro () nil)
+
+(defun rust-in-macro--too-slow (&optional start end)
   "Return non-nil when point is within the scope of a macro.
 
 If START and END are set, minimize the buffer analysis to
