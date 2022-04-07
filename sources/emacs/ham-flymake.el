@@ -333,3 +333,4 @@
 
 (push '(".+\\.js$" ham-flymake-ham-lint-eslint-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
 (push '(".+\\.jsx$" ham-flymake-ham-lint-eslint-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
+(push '(".+\\.mjs$" ham-flymake-ham-lint-eslint-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)

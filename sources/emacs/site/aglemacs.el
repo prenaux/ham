@@ -204,6 +204,8 @@
 (add-to-list 'auto-mode-alist '("\\.jsw\\'" . js-mode))
 (add-to-list 'auto-mode-alist '("\\.jsr\\'" . js-mode))
 (add-to-list 'auto-mode-alist '("\\.jsx$" . js-mode))
+(add-to-list 'auto-mode-alist '("\\.cjs\\'" . js-mode))
+(add-to-list 'auto-mode-alist '("\\.mjs\\'" . js-mode))
 
 (add-hook 'js-mode-hook (lambda ()
   (modify-syntax-entry ?` "\"" js-mode-syntax-table) ;; Handle backquote in JS
