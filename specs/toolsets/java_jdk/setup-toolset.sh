@@ -1,13 +1,13 @@
 #!/bin/bash
 case $HAM_OS in
     NT*)
-        . ham-toolset-import.sh java_jdk18
+        toolset_import_once java_jdk18 || return 1
         ;;
     OSX)
-        . ham-toolset-import.sh java_jdk_11
+        toolset_import_once java_jdk_11 || return 1
         ;;
     LINUX)
-        . ham-toolset-import.sh java_jdk18
+        toolset_import_once java_jdk18 || return 1
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
