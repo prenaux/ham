@@ -9,11 +9,14 @@ case $HAM_OS in
         "$HAM_HOME/bin/nt-x86/pt.exe" "$@"
         ;;
     OSX*)
-        if [ ! -z "$HAMGREP_IGNORE" ]; then
+        if [ -e "$HAMGREP_IGNORE" ]; then
+            echo "I/HAMGREP_IGNORE: $HAMGREP_IGNORE"
             HAMGREP_IGNORE="-p \"$HAMGREP_IGNORE\""
+        else
+            echo "I/NO HAMGREP_IGNORE"
         fi
         set -x
-        "$HAM_HOME/bin/$HAM_BIN_LOA/hamgrep" $HAMGREP_IGNORE "$@"
+        "$HAM_HOME/bin/$HAM_BIN_LOA/hamgrep" -W 300 -U $HAMGREP_IGNORE "$@"
         ;;
     LINUX*)
         "$HAM_HOME/bin/$HAM_BIN_LOA/pt" "$@"
