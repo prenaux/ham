@@ -440,31 +440,30 @@ If the new path's directories does not exist, create them."
  (agl-begin-time-block "Web mode")
 
  (require 'web-mode)
-
- (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.[gj]sp\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.ejs\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.htm?\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.hbs\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.cshtml\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.ftl\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.js$" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
- (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
-
  (setq web-mode-enable-current-element-highlight t)
  (setq web-mode-enable-auto-quoting nil)
+ ;; please close all the tags...
+ (setq web-mode-void-elements '())
+ (setq web-mode-enable-auto-indentation nil)
 
- (set-face-attribute 'web-mode-current-element-highlight-face nil :background "LightYellow2")
- (set-face-attribute 'web-mode-current-column-highlight-face nil :background "LightYellow2")
+ ;; php
+ (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+ (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+ (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
+ ;; html
+ (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+ (add-to-list 'auto-mode-alist '("\\.htm?\\'" . web-mode))
+ ;; ejs
+ (add-to-list 'auto-mode-alist '("\\.ejs\\'" . web-mode))
+ ;; Javascript / JSX, only use web-mode for JS/JSX in Emacs24
+ (GNUEmacs24
+  (add-to-list 'auto-mode-alist '("\\.js$" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
+  (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'"))))
+ ;; Misc
+ (add-to-list 'auto-mode-alist '("\\.ftl\\'" . web-mode))
 
+ ;; Yaml
  (defun pierre-yaml-mode ()
    (interactive)
    (text-mode)
@@ -476,21 +475,17 @@ If the new path's directories does not exist, create them."
  (add-to-list 'auto-mode-alist '("\\.yaml[a-z]*$" . pierre-yaml-mode))
  (add-to-list 'auto-mode-alist '("\\.neon$" . pierre-yaml-mode))
 
+ ;; Haml
  (require 'haml-mode)
  (add-to-list 'auto-mode-alist '("\\.haml$" . haml-mode))
 
+ ;; Saas / Scss
  (require 'scss-mode)
  (add-to-list 'auto-mode-alist '("\\.scss$" . scss-mode))
 
+ ;; Less
  (require 'less-css-mode)
  (add-to-list 'auto-mode-alist '("\\.less$" . less-css-mode))
-
- ;; web-mode please close all the tags...
- (setq web-mode-void-elements '())
- (setq web-mode-enable-auto-indentation nil)
-
- ;; skip warnings
- ;; (setq 'compilation-skip-threshold 2)
 )
 
 ;;;======================================================================

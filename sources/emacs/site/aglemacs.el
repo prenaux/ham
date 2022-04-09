@@ -90,8 +90,13 @@
 (agl-begin-time-block "Font lock (syntax highlighting)")
 (global-font-lock-mode t)
 (setq font-lock-maximum-size 256000)
+
 ;; Improve performance of emacs with long lines
 (setq-default bidi-display-reordering nil)
+
+;; global-so-long-mode is available in Emacs 27+
+(if (boundp 'global-so-long-mode)
+    (global-so-long-mode 1))
 
 ;;;======================================================================
 ;;; C-mode
