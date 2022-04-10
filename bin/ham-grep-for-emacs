@@ -1,0 +1,2 @@
+#!/bin/bash
+ham-grep --no-heading --color never "$@"

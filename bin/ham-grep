@@ -3,26 +3,18 @@ export HAM_NO_VER_CHECK=1
 if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
-HAMGREP_IGNORE=`ham-find-file-up _hamgrep_ignore`
-case $HAM_OS in
-    NT*)
-        "$HAM_HOME/bin/nt-x86/pt.exe" "$@"
-        ;;
-    OSX*)
-        if [ -e "$HAMGREP_IGNORE" ]; then
-            echo "I/HAMGREP_IGNORE: $HAMGREP_IGNORE"
-            HAMGREP_IGNORE="-p \"$HAMGREP_IGNORE\""
-        else
-            echo "I/NO HAMGREP_IGNORE"
-        fi
-        set -x
-        "$HAM_HOME/bin/$HAM_BIN_LOA/hamgrep" -W 300 -U $HAMGREP_IGNORE "$@"
-        ;;
-    LINUX*)
-        "$HAM_HOME/bin/$HAM_BIN_LOA/pt" "$@"
-        ;;
-    *)
-        echo "E/Toolset: Unsupported host OS"
-        return 1
-        ;;
-esac
+CMD=("$HAM_HOME/bin/$HAM_BIN_LOA/rg")
+CMD=("${CMD[@]}" -M 500)
+CMD=("${CMD[@]}" --no-ignore)
+CMD=("${CMD[@]}" --smart-case)
+
+HAMGREP_IGNORE="`ham-find-file-up _hamgrep_ignore`"
+echo "I/NI: $HAMGREP_IGNORE"
+if [[ -e "$HAMGREP_IGNORE" ]]; then
+    echo "I/HAMGREP_IGNORE: $HAMGREP_IGNORE"
+    CMD=("${CMD[@]}" --ignore-file "${HAMGREP_IGNORE}")
+else
+    echo "I/NO HAMGREP_IGNORE"
+fi
+set -x
+"${CMD[@]}" "$@"

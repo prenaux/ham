@@ -1,13 +1,13 @@
 #!/bin/bash
-while [[ $PWD != / ]] ; do
+while [[ "$PWD" != "/" ]] ; do
     FILE="./$1"
     if [ -e "$FILE" ]; then
         RET=`find "$PWD" -maxdepth 1 -name "$@"`
         if [ -e "$RET" ]; then
-            echo $RET
+            echo "$RET"
             break
         fi
     fi
     cd ..
-    # echo "$PWD"
+    # echo "pwd: $PWD"
 done

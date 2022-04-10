@@ -231,11 +231,11 @@
 
  (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
 
- (global-set-key "\C-h\C-k" 'pt-regexp-search-dir)
- (global-set-key "\C-h\C-j" 'pt-regexp-current-dir)
+ (global-set-key "\C-h\C-k" 'ham-grep-regexp-search-dir)
+ (global-set-key "\C-h\C-j" 'ham-grep-regexp-current-dir)
  (global-set-key "\C-h\C-i" 'ni-vcs-grep-search-dir)
  (global-set-key "\C-h\C-u" 'ni-vcs-grep-current-dir)
- (global-set-key "\C-h\C-y" 'pt-work-regexp)
+ (global-set-key "\C-h\C-y" 'ham-grep-work-regexp)
  (global-set-key "\C-h\C-g" 'occur)
 
  (define-key global-map "\C-h\C-\\" 'indent-region)

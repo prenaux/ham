@@ -21,6 +21,7 @@
 (require 'ni-gdb)
 (require 'ham-flymake)
 (require 'ham-fix)
+(require 'ham-grep)
 (require 'go-mode)
 
 (NotBatchMode
@@ -248,44 +249,6 @@ If the new path's directories does not exist, create them."
      )))
 
  (add-hook 'after-save-hook 'ni-backup-current-file-handler)
-)
-
-;;;======================================================================
-;;; Search in files
-;;;======================================================================
-(NotBatchMode
- (require 'pt)
-
- (Windows
-  ;; We use the exe directly one Windows since it doesn't launch scripts too
-  ;; reliably...
-  (setq pt-executable (concat "\"" HAM_HOME "/bin/nt-x86/pt.exe" "\"")))
- (Linux
-  (setq pt-executable (concat "\"" HAM_HOME "/bin/ham-grep"  "\"")))
- (OSX
-  (setq pt-executable (concat "\"" HAM_HOME "/bin/ham-grep"  "\"")))
-
- ;; The remote pt executable assume running on a Linux server with the same
- ;; user name & using the standard ~/Work/ham structure.
- (setq pt-remote-executable (concat "\"/home/" (getenv "USER") "/Work/ham/bin/ham-grep"  "\""))
-
- (setq pt-arguments
-      (list
-       "--smart-case" "-e"
-       "--ignore" "\"node_modules\""
-       "--ignore" "\"*.min.js\""
-       "--ignore" "\"*.min.css\""
-       "--ignore" "\"_*_ModuleDef.*\""
-       "--ignore" "\"_*_JNI.*\""
-       "--ignore" "\"*.idl.inl\""
-       "--ignore" "\"*.idl.xml\""
-       "--ignore" "\"static/build/*\""
-       ))
-
- ;; OSX uses hamgrep which doesn't need the ignore or -e flags
- (OSX
-  (setq pt-arguments (list "--smart-case")))
-
 )
 
 ;;;======================================================================

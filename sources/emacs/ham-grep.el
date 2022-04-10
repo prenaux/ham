@@ -1,13 +1,8 @@
-;;; pt.el --- A front-end for pt, The Platinum Searcher.
+;;; ham-grep.el --- A front-end for ham-grep
 ;;
-;; Copyright (C) 2014 by Bailey Ling
-;; Author: Bailey Ling
-;; URL: https://github.com/bling/pt.el
-;; Filename: pt.el
-;; Description: A front-end for pt, the Platinum Searcher
-;; Created: 2014-04-27
-;; Version: 0.0.3
-;; Keywords: pt ack ag grep search
+;; Copyright (C) 2022 by Pierre Renaux
+;;   Based of https://github.com/bling/pt.el
+;;   Copyright (C) 2014 by Bailey
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -29,17 +24,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; Install:
-;;
-;; Autoloads will be set up automatically if you use package.el.
+;;   (require 'ham-grep)
 ;;
 ;; Usage:
+;;   M-x ham-grep-regexp
+;;   M-x ham-grep-regexp-file-pattern
+;;   M-x projectile-ham-grep
 ;;
-;; M-x pt-regexp
-;; M-x pt-regexp-file-pattern
-;; M-x projectile-pt
-;;
-;;; Code:
-
 (eval-when-compile (require 'cl))
 (require 'compile)
 (require 'grep)
@@ -48,86 +39,88 @@
 (require 's)
 (require 'dash)
 
-(defcustom pt-executable
-  "pt"
-  "Name of the pt executable to use."
+(defcustom ham-grep-executable
+  (concat "\"" HAM_HOME "/bin/ham-grep-for-emacs"  "\"")
+  "Name of the ham-grep executable to use."
   :type 'string
-  :group 'pt)
+  :group 'ham-grep)
 
-(defcustom pt-remote-executable
-  nil
+;; The remote pt executable assume running on a Linux server with the same
+;; user name & using the standard ~/Work/ham structure.
+(defcustom ham-grep-remote-executable
+  (concat "\"/home/" (getenv "USER") "/Work/ham/bin/ham-grep-for-emacs"  "\"")
   "Name of the executable to use when running through a remote/tramp connection."
   :type 'string
-  :group 'pt)
+  :group 'ham-grep)
 
-(defcustom pt-arguments
-  (list "--smart-case" "-e")
-  "Default arguments passed to pt."
+(defcustom ham-grep-arguments
+  (list "")
+  "Default arguments passed to ham-grep."
   :type '(repeat (string))
-  :group 'pt)
+  :group 'ham-grep)
 
-(defvar pt-use-search-in-buffer-name t
-  "If non-nil, use the search string in the pt buffer's name.")
+(defvar ham-grep-use-search-in-buffer-name t
+  "If non-nil, use the search string in the ham-grep buffer's name.")
 
-(defcustom pt-work-subdirs
+(defcustom ham-grep-work-subdirs
   (list "rules" "sources" "scripts")
-  "Default list of sub directories that pt-work-regexp looks for."
+  "Default list of sub directories that ham-grep-work-regexp looks for."
   :type '(repeat (string))
-  :group 'pt)
+  :group 'ham-grep)
 
-(defvar pt-work-regexp-history-dirs nil
-  "History for dirs of pt-work-regexp.")
+(defvar ham-grep-work-regexp-history-dirs nil
+  "History for dirs of ham-grep-work-regexp.")
 
-(define-compilation-mode pt-search-mode "Pt"
+(define-compilation-mode ham-grep-search-mode "Ham-Grep"
   "Platinum searcher results compilation mode"
   (set (make-local-variable 'truncate-lines) t)
   (set (make-local-variable 'compilation-disable-input) t)
-  (let ((symbol 'compilation-pt)
+  (let ((symbol 'compilation-ham-grep)
         (pattern '("^\\([A-Za-z]:\\)?\\([^:\n]+?\\):\\([0-9]+\\):[^0-9]" 2 3)))
     (set (make-local-variable 'compilation-error-regexp-alist) (list symbol))
     (set (make-local-variable 'compilation-error-regexp-alist-alist) (list (cons symbol pattern))))
   (set (make-local-variable 'compilation-error-face) grep-hit-face))
 
-(defun pt-get-executable ()
+(defun ham-grep-get-executable ()
   (if (file-remote-p default-directory)
-    (if pt-remote-executable
-        pt-remote-executable
-      pt-executable)
-    pt-executable))
+    (if ham-grep-remote-executable
+        ham-grep-remote-executable
+      ham-grep-executable)
+    ham-grep-executable))
 
-(defun pt-regexp--run (regexp directory &optional args)
+(defun ham-grep-regexp--run (regexp directory &optional args)
   (let ((default-directory directory)
-        (pt-full-buffer-name (concat "*pt-" regexp "*")))
+        (ham-grep-full-buffer-name (concat "*ham-grep-" regexp "*")))
     (compilation-start
      (mapconcat 'identity
-                (append (list (pt-get-executable))
-                        pt-arguments
+                (append (list (ham-grep-get-executable))
+                        ham-grep-arguments
                         args
-                        '("--nogroup" "--nocolor" "--")
+                        '("--")
                         (list (shell-quote-argument regexp) ".")) " ")
-     'pt-search-mode
+     'ham-grep-search-mode
 
-     (when pt-use-search-in-buffer-name
+     (when ham-grep-use-search-in-buffer-name
        (function (lambda (ignore)
-                   pt-full-buffer-name)))
+                   ham-grep-full-buffer-name)))
 
      (regexp-quote regexp))))
 
 ;;;###autoload
-(defun pt-regexp-search-dir (regexp directory &optional args)
-  "Run a pt search with REGEXP rooted at DIRECTORY."
-  (interactive (list (ni-find-read-regexp "Pt search for: ")
+(defun ham-grep-regexp-search-dir (regexp directory &optional args)
+  "Run a ham-grep search with REGEXP rooted at DIRECTORY."
+  (interactive (list (ni-find-read-regexp "Ham-Grep search for: ")
                      (read-directory-name "Directory: " (ni-find-search-directory))))
-  (pt-regexp--run regexp directory args))
+  (ham-grep-regexp--run regexp directory args))
 
 ;;;###autoload
-(defun pt-regexp-current-dir (regexp directory &optional args)
-  "Run a pt search with REGEXP rooted at DIRECTORY."
-  (interactive (list (ni-find-read-regexp "Pt search for: ")
+(defun ham-grep-regexp-current-dir (regexp directory &optional args)
+  "Run a ham-grep search with REGEXP rooted at DIRECTORY."
+  (interactive (list (ni-find-read-regexp "Ham-Grep search for: ")
                      (read-directory-name "Directory: " default-directory)))
-  (pt-regexp--run regexp directory args))
+  (ham-grep-regexp--run regexp directory args))
 
-(defun pt-work-get-dirs (dir)
+(defun ham-grep-work-get-dirs (dir)
   (-map
    (lambda (d) (concat "\"" d "\""))
    (-filter
@@ -137,54 +130,54 @@
        (cond
         ((string-prefix-p "/" dir) (concat dir "/" d))
         (t (concat (getenv "WORK") "/" dir "/" d))))
-     pt-work-subdirs)
+     ham-grep-work-subdirs)
     )))
 
 ;;;###autoload
-(defun pt-work-regexp (regexp dirs &optional args)
-  "Run a pt-work search with REGEXP rooted at the specified WORK directories."
-  (interactive (list (ni-find-read-regexp "Pt search for: ")
-                     (read-from-minibuffer "Dirs: " (-first-item pt-work-regexp-history-dirs)
-                                           nil nil 'pt-work-regexp-history-dirs)))
+(defun ham-grep-work-regexp (regexp dirs &optional args)
+  "Run a ham-grep-work search with REGEXP rooted at the specified WORK directories."
+  (interactive (list (ni-find-read-regexp "Ham-Grep search for: ")
+                     (read-from-minibuffer "Dirs: " (-first-item ham-grep-work-regexp-history-dirs)
+                                           nil nil 'ham-grep-work-regexp-history-dirs)))
   (let ((dir-args (-flatten
-                   (-map (lambda (x) (pt-work-get-dirs x))
+                   (-map (lambda (x) (ham-grep-work-get-dirs x))
                          (s-split " " dirs))))
-        (pt-full-buffer-name (concat "*pt-work-" regexp "*")))
+        (ham-grep-full-buffer-name (concat "*ham-grep-work-" regexp "*")))
     (compilation-start
      (mapconcat 'identity
-                (append (list (pt-get-executable))
-                        pt-arguments
+                (append (list (ham-grep-get-executable))
+                        ham-grep-arguments
                         args
-                        '("--nogroup" "--nocolor" "--")
+                        '("--")
                         (list (shell-quote-argument regexp))
                         dir-args) " ")
-     'pt-search-mode
-     (when pt-use-search-in-buffer-name
+     'ham-grep-search-mode
+     (when ham-grep-use-search-in-buffer-name
        (function (lambda (ignore)
-                   pt-full-buffer-name)))
+                   ham-grep-full-buffer-name)))
      (regexp-quote regexp))))
 
 ;;;###autoload
-(defun pt-regexp-file-pattern (regexp directory pattern)
-  "Run a pt search with REGEXP rooted at DIRECTORY with FILE-FILTER."
-  (interactive (list (read-from-minibuffer "Pt search for: " (thing-at-point 'symbol))
+(defun ham-grep-regexp-file-pattern (regexp directory pattern)
+  "Run a ham-grep search with REGEXP rooted at DIRECTORY with FILE-FILTER."
+  (interactive (list (read-from-minibuffer "Ham-Grep search for: " (thing-at-point 'symbol))
                      (read-directory-name "Directory: ")
                      (read-from-minibuffer "File pattern: ")))
-  (pt-regexp regexp
+  (ham-grep-regexp regexp
              directory
              (list (concat "--file-search-regexp=" (shell-quote-argument pattern)))))
 
 ;;;###autoload
-(defun projectile-pt (regexp)
-  "Run a pt search with REGEXP rooted at the current projectile project root."
-  (interactive (list (read-from-minibuffer "Pt search for: " (thing-at-point 'symbol))))
+(defun projectile-ham-grep (regexp)
+  "Run a ham-grep search with REGEXP rooted at the current projectile project root."
+  (interactive (list (read-from-minibuffer "Ham-Grep search for: " (thing-at-point 'symbol))))
   (if (fboundp 'projectile-project-root)
-      (pt-regexp regexp
+      (ham-grep-regexp regexp
                  (projectile-project-root)
                  (mapcar (lambda (val) (concat "--ignore=" val))
                          (append projectile-globally-ignored-files
                                  projectile-globally-ignored-directories)))
     (error "Projectile is not available")))
 
-(provide 'pt)
-;;; pt.el ends here
+(provide 'ham-grep)
+;;; ham-grep.el ends here
