@@ -120,10 +120,7 @@
  (require 'golden-ratio-scroll-screen)
  (global-set-key (key "M-'") 'golden-ratio-scroll-screen-up)
  (global-set-key (key "M-;") 'golden-ratio-scroll-screen-down)
- (global-set-key (key "M-.") 'ni-goto-matching-bracket)
  (global-set-key (key "C-.") 'ni-goto-matching-bracket)
- (global-set-key (kbd "M->") 'ni-backward-left-bracket)
- (global-set-key (kbd "M-<") 'ni-forward-right-bracket)
 
 ;;;======================================================================
 ;;; aglemacs.el: mark-multiple, expand-region
@@ -237,5 +234,9 @@
  (global-set-key "\C-h\C-g" 'occur)
 
  (define-key global-map "\C-h\C-\\" 'indent-region)
+
+ (global-set-key (key "M-.") 'dumb-jump-go)
+ (global-set-key (kbd "M-<") 'dumb-jump-quick-look)
+ (global-set-key (key "M-,") 'dumb-jump-back)
 
  )
