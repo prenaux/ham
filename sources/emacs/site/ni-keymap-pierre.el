@@ -233,8 +233,6 @@
 
  (global-set-key "\C-h\C-k" 'ham-grep-regexp-search-dir)
  (global-set-key "\C-h\C-j" 'ham-grep-regexp-current-dir)
- (global-set-key "\C-h\C-i" 'ni-vcs-grep-search-dir)
- (global-set-key "\C-h\C-u" 'ni-vcs-grep-current-dir)
  (global-set-key "\C-h\C-y" 'ham-grep-work-regexp)
  (global-set-key "\C-h\C-g" 'occur)
 

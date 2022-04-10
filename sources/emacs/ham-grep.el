@@ -27,9 +27,9 @@
 ;;   (require 'ham-grep)
 ;;
 ;; Usage:
-;;   M-x ham-grep-regexp
-;;   M-x ham-grep-regexp-file-pattern
-;;   M-x projectile-ham-grep
+;;   M-x ham-grep-regexp-search-dir
+;;   M-x ham-grep-regexp-current-dir
+;;   M-x ham-grep-work-regexp
 ;;
 (eval-when-compile (require 'cl))
 (require 'compile)
@@ -159,28 +159,6 @@
        (function (lambda (ignore)
                    ham-grep-full-buffer-name)))
      (regexp-quote regexp))))
-
-;;;###autoload
-(defun ham-grep-regexp-file-pattern (regexp directory pattern)
-  "Run a ham-grep search with REGEXP rooted at DIRECTORY with FILE-FILTER."
-  (interactive (list (read-from-minibuffer "Ham-Grep search for: " (thing-at-point 'symbol))
-                     (read-directory-name "Directory: ")
-                     (read-from-minibuffer "File pattern: ")))
-  (ham-grep-regexp regexp
-             directory
-             (list (concat "--file-search-regexp=" (shell-quote-argument pattern)))))
-
-;;;###autoload
-(defun projectile-ham-grep (regexp)
-  "Run a ham-grep search with REGEXP rooted at the current projectile project root."
-  (interactive (list (read-from-minibuffer "Ham-Grep search for: " (thing-at-point 'symbol))))
-  (if (fboundp 'projectile-project-root)
-      (ham-grep-regexp regexp
-                 (projectile-project-root)
-                 (mapcar (lambda (val) (concat "--ignore=" val))
-                         (append projectile-globally-ignored-files
-                                 projectile-globally-ignored-directories)))
-    (error "Projectile is not available")))
 
 (provide 'ham-grep)
 ;;; ham-grep.el ends here
