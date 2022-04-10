@@ -45,6 +45,9 @@
   :type 'string
   :group 'ham-grep)
 
+(Windows
+ (setq ham-grep-executable "ham-grep-for-emacs.cmd"))
+
 ;; The remote pt executable assume running on a Linux server with the same
 ;; user name & using the standard ~/Work/ham structure.
 (defcustom ham-grep-remote-executable

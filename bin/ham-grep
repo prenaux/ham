@@ -5,11 +5,11 @@ if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
 
 CMD=("$HAM_HOME/bin/$HAM_BIN_LOA/rg")
 CMD=("${CMD[@]}" -M 500)
+CMD=("${CMD[@]}" --line-number)
 CMD=("${CMD[@]}" --no-ignore)
 CMD=("${CMD[@]}" --smart-case)
 
 HAMGREP_IGNORE="`ham-find-file-up _hamgrep_ignore`"
-echo "I/NI: $HAMGREP_IGNORE"
 if [[ -e "$HAMGREP_IGNORE" ]]; then
     echo "I/HAMGREP_IGNORE: $HAMGREP_IGNORE"
     CMD=("${CMD[@]}" --ignore-file "${HAMGREP_IGNORE}")
