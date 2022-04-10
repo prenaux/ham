@@ -618,7 +618,7 @@ If the new path's directories does not exist, create them."
  (setq dumb-jump-disable-obsolete-warnings t)
  (setq dumb-jump-rg-cmd (concat (getenv "HAM_HOME") "/bin/" (getenv "HAM_BIN_LOA") "/rg"))
  (setq dumb-jump-disable-obsolete-warnings t)
- (setq dumb-jump-prefer-searcher 'rg)
+ (setq dumb-jump-force-searcher 'rg)
  (setq dumb-jump-selector 'ivy)
 )
 

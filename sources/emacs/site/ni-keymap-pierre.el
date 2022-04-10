@@ -235,8 +235,6 @@
 
  (define-key global-map "\C-h\C-\\" 'indent-region)
 
- (global-set-key (key "M-.") 'dumb-jump-go)
- (global-set-key (kbd "M-<") 'dumb-jump-quick-look)
- (global-set-key (key "M-,") 'dumb-jump-back)
+ (global-dumb-jump-mode 1)
 
  )

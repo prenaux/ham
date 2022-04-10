@@ -5,7 +5,7 @@
 ;; Version: 0.5.4
 ;; Package-Requires: ((emacs "24.3") (s "1.11.0") (dash "2.9.0") (popup "0.5.3"))
 ;; Keywords: programming
-
+;;
 ;; Dumb Jump is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 3, or (at your option)
@@ -18,31 +18,15 @@
 ;;
 ;; You should have received a copy of the GNU General Public License
 ;; along with Dumb Jump.  If not, see http://www.gnu.org/licenses.
-
+;;
 ;;; Commentary:
-
+;;
 ;; Dumb Jump is an Emacs "jump to definition" package with support for 50+ programming languages that favors
 ;; "just working" over speed or accuracy.  This means minimal -- and ideally zero -- configuration with absolutely
 ;; no stored indexes (TAGS) or persistent background processes.
 ;;
-;; Dumb Jump provides a xref-based interface for jumping to
-;; definitions. It is based on tools such as grep, the silver searcher
-;; (https://geoff.greer.fm/ag/), ripgrep
-;; (https://github.com/BurntSushi/ripgrep) or git-grep
-;; (https://git-scm.com/docs/git-grep).
-;;
-;; To enable Dumb Jump, add the following to your initialisation file:
-;;
-;;    (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-;;
-;; Now pressing M-. on an identifier should open a buffer at the place
-;; where it is defined, or a list of candidates if uncertain. This
-;; list can be navigated using M-g M-n (next-error) and M-g M-p
-;; (previous-error).
 
 ;;; Code:
-(unless (require 'xref nil :noerror)
-  (require 'etags))
 (require 's)
 (require 'dash)
 (require 'popup)
@@ -57,10 +41,13 @@
 ;;;###autoload
 (defvar dumb-jump-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-M-g") 'dumb-jump-go)
-    (define-key map (kbd "C-M-p") 'dumb-jump-back)
-    (define-key map (kbd "C-M-q") 'dumb-jump-quick-look)
+    (define-key map (kbd "M-.") 'dumb-jump-go)
+    (define-key map (kbd "M->") 'dumb-jump-back)
+    (define-key map (kbd "M-,") 'dumb-jump-quick-look)
     map))
+
+(define-globalized-minor-mode global-dumb-jump-mode dumb-jump-mode
+  (lambda () (dumb-jump-mode 1)))
 
 (defcustom dumb-jump-window
   'current
@@ -1136,6 +1123,33 @@ or most optimal searcher."
            :regex "^\\s*module\\s*type\\s*\\bJJJ\\b"
            :tests ("module type test ="))
 
+    ;; niscript
+    (:type "variable" :supports ("ag" "grep" "rg" "git-grep") :language "niscript"
+           :regex "\\s*\\bJJJ\\s*=[^=\\n]+" :tests ("test = 1234") :not ("if test === 1234"))
+
+    (:type "variable" :supports ("ag" "grep" "rg" "git-grep") :language "niscript"
+           :regex "\\bfunction\\b[^\\(]*\\\(\\s*[^\\)]*\\bJJJ\\b\\s*,?\\s*\\\)?"
+           :tests ("function (test)" "function (test, blah)" "function somefunc(test, blah)" "function(blah, test)")
+           :not ("function (testLen)" "function (test1, blah)" "function somefunc(testFirst, blah)" "function(blah, testLast)"
+                 "function (Lentest)" "function (blahtest, blah)" "function somefunc(Firsttest, blah)" "function(blah, Lasttest)"))
+
+    (:type "function" :supports ("ag" "grep" "rg" "git-grep") :language "niscript"
+           :regex "function\\s*JJJ\\s*\\\("
+           :tests ("function test()" "function test ()"))
+
+    (:type "function" :supports ("ag" "grep" "rg" "git-grep") :language "niscript"
+           :regex "function\\s*.+[.:][:]?JJJ\\s*\\\("
+           :tests ("function MyClass.test()" "function MyClass.test ()"
+                   "function MyClass::test()" "function MyClass::test ()"))
+
+    (:type "function" :supports ("ag" "grep" "rg" "git-grep") :language "niscript"
+           :regex "\\bJJJ\\s*=\\s*function\\s*\\\("
+           :tests ("test = function()"))
+
+    (:type "function" :supports ("ag" "grep" "rg" "git-grep") :language "niscript"
+           :regex "\\b.+\\.JJJ\\s*=\\s*function\\s*\\\("
+           :tests ("MyClass.test = function()"))
+
     ;; lua
     (:type "variable" :supports ("ag" "grep" "rg" "git-grep") :language "lua"
            :regex "\\s*\\bJJJ\\s*=[^=\\n]+" :tests ("test = 1234") :not ("if test === 1234"))
@@ -1606,12 +1620,16 @@ or most optimal searcher."
     (:language "typescript" :ext "ts" :agtype "ts" :rgtype "ts")
     (:language "typescript" :ext "tsx" :agtype "ts" :rgtype "ts")
     (:language "typescript" :ext "vue" :agtype "ts" :rgtype "ts")
+    (:language "niscript" :ext "ni" :agtype nil :rgtype nil)
+    (:language "niscript" :ext "niw" :agtype nil :rgtype nil)
+    (:language "niscript" :ext "nip" :agtype nil :rgtype nil)
+    (:language "niscript" :ext "nim" :agtype nil :rgtype nil)
     (:language "dart" :ext "dart" :agtype nil :rgtype "dart")
     (:language "lua" :ext "lua" :agtype "lua" :rgtype "lua")
     ;; the extension "m" is also used by obj-c so must use matlab-mode
     ;; since obj-c will win by file extension, but here for searcher types
     (:language "matlab" :ext "m" :agtype "matlab" :rgtype "matlab")
-    (:language "nim" :ext "nim" :agtype "nim" :rgtype "nim")
+    ;; (:language "nim" :ext "nim" :agtype "nim" :rgtype "nim")
     (:language "nix" :ext "nix" :agtype "nix" :rgtype "nix")
     (:language "org" :ext "org" :agtype nil :rgtype "org")
     (:language "perl" :ext "pl" :agtype "perl" :rgtype "perl")
@@ -1701,6 +1719,7 @@ or most optimal searcher."
     (:language "javascript" :type "variable" :right "^\\." :left nil)
     (:language "javascript" :type "variable" :right "^;" :left nil)
     (:language "typescript" :type "function" :right "^(" :left nil)
+    (:language "niscript" :type "function" :right "^(" :left nil)
     (:language "perl" :type "function" :right "^(" :left nil)
     (:language "tcl" :type "function" :left "\\[$" :right nil)
     (:language "tcl" :type "function" :left "^\s*$" :right nil)
@@ -1776,7 +1795,7 @@ inaccurate jump).  If nil, jump without confirmation but print a warning."
   :group 'dumb-jump
   :type 'boolean)
 
-(defcustom dumb-jump-disable-obsolete-warnings nil
+(defcustom dumb-jump-disable-obsolete-warnings t
   "If non-nil, don't warn about using the legacy interface."
   :group 'dumb-jump
   :type 'boolean)
@@ -2322,6 +2341,7 @@ current file."
     (:comment ";" :language "commonlisp")
     (:comment "//" :language "javascript")
     (:comment "//" :language "typescript")
+    (:comment "//" :language "niscript")
     (:comment "//" :language "dart")
     (:comment "--" :language "haskell")
     (:comment "--" :language "lua")
@@ -2585,12 +2605,9 @@ Ffrom the ROOT project CONFIG-FILE."
     ;; return the file for test
     thef))
 
-
 (defun dumb-jump-goto-file-line (thefile theline pos)
   "Open THEFILE and go line THELINE"
-  (if (fboundp 'xref-push-marker-stack)
-      (xref-push-marker-stack)
-    (ring-insert find-tag-marker-ring (point-marker)))
+  (ring-insert find-tag-marker-ring (point-marker))
 
   (with-demoted-errors "Error running `dumb-jump-before-jump-hook': %S"
     (run-hooks 'dumb-jump-before-jump-hook))
@@ -2672,7 +2689,7 @@ searcher symbol."
    ((dumb-jump-ag-installed?)
     (dumb-jump-generators-by-searcher 'ag))
    ((dumb-jump-rg-installed?)
-    (dumb-jump-generators-by-searcher 'rg))
+  (dumb-jump-generators-by-searcher 'rg))
    ((eq (dumb-jump-grep-installed?) 'gnu)
     (dumb-jump-generators-by-searcher 'gnu-grep))
    (t
@@ -3044,102 +3061,6 @@ Using ag to search only the files found via git-grep literal symbol search."
   "Minor mode for jumping to variable and function definitions"
   :global t
   :keymap dumb-jump-mode-map)
-
-
-;;; Xref Backend
-(when (featurep 'xref)
-  (unless dumb-jump-disable-obsolete-warnings
-    (dolist (obsolete
-             '(dumb-jump-mode
-               dumb-jump-go
-               dumb-jump-go-prefer-external-other-window
-               dumb-jump-go-prompt
-               dumb-jump-quick-look
-               dumb-jump-go-other-window
-               dumb-jump-go-current-window
-               dumb-jump-go-prefer-external
-               dumb-jump-go-current-window))
-      (make-obsolete
-       obsolete
-       (format "`%s' has been obsoleted by the xref interface."
-               obsolete)
-       "2020-06-26"))
-    (make-obsolete 'dumb-jump-back
-                   "`dumb-jump-back' has been obsoleted by `xref-pop-marker-stack'."
-                   "2020-06-26"))
-
-  (cl-defmethod xref-backend-identifier-at-point ((_backend (eql dumb-jump)))
-    (let ((bounds (bounds-of-thing-at-point 'symbol)))
-      (and bounds (let* ((ident (dumb-jump-get-point-symbol))
-			             (start (car bounds))
-			             (col (- start (point-at-bol)))
-			             (line (dumb-jump-get-point-line))
-			             (ctx (dumb-jump-get-point-context line ident col)))
-		            (propertize ident :dumb-jump-ctx ctx)))))
-
-  (cl-defmethod xref-backend-definitions ((_backend (eql dumb-jump)) prompt)
-    (let* ((info (dumb-jump-get-results prompt))
-           (results (plist-get info :results))
-           (look-for (or prompt (plist-get info :symbol)))
-           (proj-root (plist-get info :root))
-           (issue (plist-get info :issue))
-           (lang (plist-get info :lang))
-           (processed (dumb-jump-process-results
-                       results
-                       (plist-get info :file)
-                       proj-root
-                       (plist-get info :ctx-type)
-                       look-for
-                       nil
-                       nil))
-           (results (plist-get processed :results))
-           (do-var-jump (plist-get processed :do-var-jump))
-           (var-to-jump (plist-get processed :var-to-jump))
-           (match-cur-file-front (plist-get processed :match-cur-file-front)))
-
-      (dumb-jump-debug-message
-       look-for
-       (plist-get info :ctx-type)
-       var-to-jump
-       (pp-to-string match-cur-file-front)
-       (pp-to-string results)
-       match-cur-file-front
-       proj-root
-       (plist-get info :file))
-      (cond ((eq issue 'nogrep)
-             (dumb-jump-message "Please install ag, rg, git grep or grep!"))
-            ((eq issue 'nosymbol)
-             (dumb-jump-message "No symbol under point."))
-            ((s-ends-with? " file" lang)
-             (dumb-jump-message "Could not find rules for '%s'." lang))
-            ((= (length results) 0)
-             (dumb-jump-message "'%s' %s %s declaration not found." look-for (if (s-blank? lang) "with unknown language so" lang) (plist-get info :ctx-type)))
-            (t (mapcar (lambda (res)
-                         (xref-make
-                          (plist-get res :context)
-                          (xref-make-file-location
-                           (expand-file-name (plist-get res :path))
-                           (plist-get res :line)
-                           0)))
-                       (if do-var-jump
-                           (list var-to-jump)
-                         match-cur-file-front))))))
-
-  (cl-defmethod xref-backend-apropos ((_backend (eql dumb-jump)) pattern)
-    (xref-backend-definitions 'dumb-jump pattern))
-
-  (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql dumb-jump)))
-    nil))
-
-;;;###autoload
-(defun dumb-jump-xref-activate ()
-  "Function to activate xref backend.
-Add this function to `xref-backend-functions' to dumb jump to be
-activiated, whenever it finds a project. It is recommended to add
-it to the end, so that it only gets activated when no better
-option is found."
-  (and (dumb-jump-get-project-root default-directory)
-       'dumb-jump))
 
 (provide 'dumb-jump)
 ;;; dumb-jump.el ends here
