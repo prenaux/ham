@@ -42,9 +42,12 @@ case $HAM_OS in
         export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}lib/node_modules"
         export PATH=${HAM_TOOLSET_DIR}:"${NODEJS_DIR}/bin":"${NODEJS_DIR}/lib":${PATH}
         if [ ! -e "$NODEJS_DIR" ]; then
-            toolset_dl nodejs nodejs_${HAM_BIN_LOA}
+            curl "https://nodejs.org/dist/v16.14.2/node-v16.14.2-linux-x64.tar.xz" -o node-v16.14.2-linux-x64.tar.xz
+            #sha-256: e40c6f81bfd078976d85296b5e657be19e06862497741ad82902d0704b34bb1b node-v16.14.2-linux-x64.tar.xz
+            tar xf node-v16.14.2-linux-x64.tar.xz -C "${HAM_TOOLSET_DIR}"
+            mv "${HAM_TOOLSET_DIR}/node-v16.14.2-linux-x64" "${NODEJS_DIR}"
             if [ ! -e "$NODEJS_DIR" ]; then
-                echo "E/osx-x86 folder doesn't exist in the toolset"
+                echo "E/lin-x86 folder doesn't exist in the toolset"
                 return 1
             fi
         fi
