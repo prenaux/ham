@@ -14,6 +14,11 @@ fi
 
 if [ -z `where_inpath avm` -o -z `where_inpath anchor` ]; then
     echo "I/Installing avm&anchor with cargo..."
+    case $HAM_OS in
+        LINUX*)
+            (set -ex ; sudo apt-get -y install pkg-config libssl-dev)
+            ;;
+    esac
     (set -ex ;
      cargo install --git https://github.com/project-serum/anchor avm --locked ;
      avm install $ANCHOR_REQUIRED_VERSION ;
