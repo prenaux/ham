@@ -19,7 +19,8 @@ case $HAM_OS in
         ;;
     LINUX*)
         DOPPLER_DIR=${HAM_TOOLSET_DIR}/$HAM_BIN_LOA
-        if [ -z "`which doppler`" ]; then
+        if [ ! -f "${DOPPLER_DIR}/usr/bin/doppler" ]; then
+            echo "W/doppler not found, installing from deb package..."
             mkdir -p "$DOPPLER_DIR"
             echo "I/Downloading doppler .deb package"
             curl --progress-bar -L --tlsv1.2 --proto "=https" --retry 3 https://github.com/DopplerHQ/cli/releases/download/3.38.0/doppler_3.38.0_linux_amd64.deb -O doppler_3.38.0_linux_amd64.deb
@@ -27,13 +28,13 @@ case $HAM_OS in
             # Assumes dpkg is available
             dpkg -x doppler_3.38.0_linux_amd64.deb ${DOPPLER_DIR}
             rm doppler_3.38.0_linux_amd64.deb
-            # Add to $PATH ensuring they are no duplicate entries
-            pathenv_add "${DOPPLER_DIR}/usr/bin"
-            if [ -z "`which doppler`" ]; then
+            if [ ! -f "${DOPPLER_DIR}/usr/bin/doppler" ]; then
                 echo "E/Can't install doppler."
                 return 1
             fi
         fi
+        # Add to $PATH ensuring they are no duplicate entries
+        pathenv_add "${DOPPLER_DIR}/usr/bin"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
