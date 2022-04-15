@@ -4,13 +4,13 @@
 if [ "$1" = "force" ]; then
     shift
     echo "I/npm-install-global-deps: Forcing the installation of the required node modules."
-elif [ -z "$(where_inpath eslint)" -o \
-       -z "$(where_inpath gulp)" -o \
-       -z "$(where_inpath jsonlint)" -o \
-       -z "$(where_inpath node-pre-gyp)" -o \
-       -z "$(where_inpath heroku)" -o \
-       -z "$(where_inpath esbuild)" -o \
-       -z "$(where_inpath yarn)" ]; then
+elif [ ! -e "${NODEJS_DIR}/bin/eslint" ] || \
+         [ ! -e "${NODEJS_DIR}/bin/gulp" ] || \
+         [ ! -e "${NODEJS_DIR}/bin/jsonlint" ] || \
+         [ ! -e "${NODEJS_DIR}/bin/node-pre-gyp" ] || \
+         [ ! -e "${NODEJS_DIR}/bin/heroku" ] || \
+         [ ! -e "${NODEJS_DIR}/bin/esbuild" ] || \
+         [ ! -e "${NODEJS_DIR}/bin/yarn" ]; then
     echo "I/npm-install-global-deps: Not all required packages are installed"
 else
     echo "I/npm-install-global-deps: All required global packages are installed."
