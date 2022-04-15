@@ -13,7 +13,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/nodejs"
 case $HAM_OS in
     NT*)
         toolset_check_and_dl_ver nodejs nt-x86 v16 || return 1
-        export NODEJS_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
+        export NODEJS_DIR="${HAM_TOOLSET_DIR}/nt-x86"
         export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}/node_modules"
         export PATH=${HAM_TOOLSET_DIR}:"${NODEJS_DIR}":"${NODEJS_DIR}/bin":${PATH}
         export NODE_PATH="$NODEJS_DIR/lib/node_modules"
@@ -38,18 +38,32 @@ case $HAM_OS in
         export NODE_PATH=$NODEJS_GLOBAL_MODULES_DIR
         ;;
     LINUX*)
-        export NODEJS_DIR="${HAM_TOOLSET_DIR}/${HAM_BIN_LOA}/"
-        export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}lib/node_modules"
+        # We use a tag file to mark the version so that upgrades are automatically handled when we update the version number
+        NODEJS_DL_VER=v16.14.2
+        NODEJS_DL_TAG=$( echo ${NODEJS_DL_VER} | tr '.' '_' )
+        export NODEJS_DIR="${HAM_TOOLSET_DIR}/${HAM_BIN_LOA}"
+        export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}/lib/node_modules"
         export PATH=${HAM_TOOLSET_DIR}:"${NODEJS_DIR}/bin":"${NODEJS_DIR}/lib":${PATH}
-        if [ ! -e "$NODEJS_DIR" ]; then
-            curl "https://nodejs.org/dist/v16.14.2/node-v16.14.2-linux-x64.tar.xz" -o node-v16.14.2-linux-x64.tar.xz
-            #sha-256: e40c6f81bfd078976d85296b5e657be19e06862497741ad82902d0704b34bb1b node-v16.14.2-linux-x64.tar.xz
-            tar xf node-v16.14.2-linux-x64.tar.xz -C "${HAM_TOOLSET_DIR}"
-            mv "${HAM_TOOLSET_DIR}/node-v16.14.2-linux-x64" "${NODEJS_DIR}"
-            if [ ! -e "$NODEJS_DIR" ]; then
-                echo "E/lin-x86 folder doesn't exist in the toolset"
+        if [ ! -f "$NODEJS_DIR/$NODEJS_DL_TAG" ]; then
+            echo "W/Couldn't find node, will try to from nodejs.org dist package."
+            NODEJS_DL_FN="node-${NODEJS_DL_VER}-linux-x64.tar.xz"
+            NODEJS_DL_URL="https://nodejs.org/dist/${NODEJS_DL_VER}/${NODEJS_DL_FN}"
+            (set -ex ;
+             rm -Rf "$NODEJS_DIR" ;
+             curl "$NODEJS_DL_URL" -o ${NODEJS_DL_FN} ;
+             tar xf ${NODEJS_DL_FN} -C "${HAM_TOOLSET_DIR}" ;
+             mv "${HAM_TOOLSET_DIR}/node-${NODEJS_DL_VER}-linux-x64" "${NODEJS_DIR}" ;
+             rm ${NODEJS_DL_FN} )
+            if [ ! -f "$NODEJS_DIR/bin/node" ]; then
+                echo "E/'node' not found after unpacking the archive '%{NODEJS_DL_URL}'"
                 return 1
             fi
+            if [ ! -f "$NODEJS_DIR/bin/npm" ]; then
+                echo "E/'npm' not found after unpacking the archive '%{NODEJS_DL_URL}'"
+                return 1
+            fi
+            # Output the tag file
+            echo "$NODEJS_DL_VER" > "$NODEJS_DIR/$NODEJS_DL_TAG"
         fi
         export NODE_PATH=$NODEJS_DIR/lib/node_modules
 	      chmod +x "$NODEJS_DIR/bin/"*
