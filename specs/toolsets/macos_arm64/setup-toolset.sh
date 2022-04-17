@@ -24,11 +24,14 @@ export BUILD_BIN_LOA=$HAM_BIN_LOA
 local dir=$(clang --version | grep InstalledDir)
 export CMD_JSON_COMPILER_PATH=${dir#*' '}/
 
-VER="--- macos_arm64 ---------------------
+VER="--- macos_arm64 ---------------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
 `clang -arch arm64 --version`"
-if [ $? != 0 ]; then
-    echo "E/Can't get version."
-    return 1
+    if [ $? != 0 ]; then
+        echo "E/Can't get version."
+        return 1
+    fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

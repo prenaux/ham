@@ -74,7 +74,9 @@ chmod +x "$NODEJS_BIN_DIR/"*
 # Install any missing global node tools
 npm-install-global-deps
 
-VER="--- nodejs ------------------------
+VER="--- nodejs ------------------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
 `node --version`
 --- npm ---------------------------
 `npm --version`
@@ -82,9 +84,11 @@ VER="--- nodejs ------------------------
 `yarn --version`
 --- esbuild -----------------------
 `esbuild --version`"
-if [ $? != 0 ]; then
-    echo "E/Can't get version."
-    return 1
+    if [ $? != 0 ]; then
+        echo "E/Can't get version."
+        return 1
+    fi
 fi
+
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

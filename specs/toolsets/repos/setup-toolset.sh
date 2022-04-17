@@ -29,23 +29,29 @@ esac
 toolset_check_and_dl_ver repos jars v1 || return 1
 
 # version check
-VER="--- repos ------------------------
+VER="--- repos ------------------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
 --- git ---
 `git --version`"
-if [ $? != 0 ]; then
-    echo "E/Can't get Git version."
-    return 1
+    if [ $? != 0 ]; then
+        echo "E/Can't get Git version."
+        return 1
+    fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
 
 HG_PATH=`where_inpath hg`
 if [ -e "$HG_PATH" ]; then
-    VER="--- mercurial ---
+    VER="--- mercurial ---"
+    if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+        VER="$VER
 `hg --version`"
-    if [ $? != 0 ]; then
-        echo "E/Can't get Mercurial version."
-        return 1
+        if [ $? != 0 ]; then
+            echo "E/Can't get Mercurial version."
+            return 1
+        fi
     fi
 else
     VER="--- mercurial ---

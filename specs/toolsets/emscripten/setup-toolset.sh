@@ -1,11 +1,7 @@
 #!/bin/bash
-
-toolset_import python_36
-if [ $? != 0 ]; then return 1; fi
-toolset_import nodejs
-if [ $? != 0 ]; then return 1; fi
-toolset_import xslt_tools
-if [ $? != 0 ]; then return 1; fi
+toolset_import_once python_36 || return 1
+toolset_import_once nodejs || return 1
+toolset_import_once xslt_tools || return 1
 
 # toolset
 export HAM_TOOLSET=EMSCRIPTEN
@@ -29,11 +25,14 @@ case $HAM_OS in
         ;;
 esac
 
-VER="--- emscripten ------------------------
-`emcc --version`"
-if [ $? != 0 ]; then
-    echo "E/Can't get version."
-    return 1
+VER="--- emscripten ------------------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
+`emcc --version | grep emcc`"
+    if [ $? != 0 ]; then
+        echo "E/Can't get version."
+        return 1
+    fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
