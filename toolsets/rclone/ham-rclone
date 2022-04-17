@@ -1,0 +1,14 @@
+#!/bin/bash
+export HAM_NO_VER_CHECK=1
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+RCONF_PATH=$(ham-find-file-up "rclone.conf")
+if [ -e "$RCONF_PATH" ]; then
+    set -x
+    pwd
+    rclone --config "$RCONF_PATH" "$@"
+else
+    echo "E/No rclone.conf found in any parent folder."
+    exit 1
+fi

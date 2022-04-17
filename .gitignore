@@ -57,24 +57,15 @@ publish
 # Don't put the binary toolsets in the repo...
 toolsets/_dl/
 toolsets/*/nt-x86/
-toolsets/*/_*nt-x86*.7z
 toolsets/*/nt-x64/
-toolsets/*/_*nt-x64*.7z
 toolsets/*/osx-x86/
-toolsets/*/_*osx-x86*.7z
 toolsets/*/osx-x64/
-toolsets/*/_*osx-x64*.7z
 toolsets/*/osx-arm64/
-toolsets/*/_*osx-arm64*.7z
 toolsets/*/lin-x64/
-toolsets/*/_*lin-x64*.7z
 toolsets/*/jars/
-toolsets/*/_*jars*.7z
 toolsets/*/jvm/
-toolsets/*/_*jvm*.7z
 toolsets/*/python/
-toolsets/*/_*python*.7z
-toolsets/cg/docs/
+toolsets/*/dist/
 
 # Don't put pods binaries in the repo
 pods/
