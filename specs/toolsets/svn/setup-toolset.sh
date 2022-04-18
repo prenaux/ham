@@ -5,10 +5,12 @@ export HAM_TOOLSET=SVN
 export HAM_TOOLSET_NAME=svn
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/svn"
 
-export PATH=${HAM_TOOLSET_DIR}:${PATH}
-
 # platform
 case $HAM_OS in
+    NT*)
+        toolset_check_and_dl_ver svn nt-x86 v1_14_1 || return 1
+        pathenv_add "${HAM_TOOLSET_DIR}/nt-x86/bin"
+        ;;
     OSX*)
         ham-brew-install svn "bin/svn"
         ;;
@@ -22,6 +24,8 @@ case $HAM_OS in
         return 1
         ;;
 esac
+
+pathenv_add "${HAM_TOOLSET_DIR}"
 
 # version check
 VER="--- svn --------------------------
