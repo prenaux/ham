@@ -66,6 +66,7 @@ toolsets/*/jars/
 toolsets/*/jvm/
 toolsets/*/python/
 toolsets/*/dist/
+toolsets/*/docs/
 
 # Don't put pods binaries in the repo
 pods/
