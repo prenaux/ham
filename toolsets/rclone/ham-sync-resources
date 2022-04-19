@@ -101,11 +101,35 @@ fi
 
 echo "I/Sync Project: $SYNC_PROJECT"
 
-PARAMS=(--filter-from "$SYNC_DATA_PATH")
-PARAMS=("${PARAMS[@]}" --progress)
+PARAMS=()
+if [[ "$SYNC_COMMAND" != "arch_"* ]]; then
+    PARAMS=("${PARAMS[@]}" --filter-from "$SYNC_DATA_PATH")
+fi
 if [ "$DOIT" != "yes" ]; then
     PARAMS=("${PARAMS[@]}" --dry-run)
 fi
+PARAMS=("${PARAMS[@]}" --progress --stats 2s)
+
+arch_init() {
+    export ARCH_NAME=$1
+    if [ -z "$ARCH_NAME" ]; then
+        echo "E/Archive name not specified."
+        usage
+    fi
+    shift
+    export ARCH_VERTAG=$1
+    if [ -z "$ARCH_VERTAG" ]; then
+        echo "E/Archive version tag not specified."
+        usage
+    fi
+    shift
+    export ARCH_FN="$LOCAL_DIR/_arch_${ARCH_NAME}_${ARCH_VERTAG}.7z"
+    export ARCH_DIR="$LOCAL_DIR/arch-${ARCH_NAME}"
+
+    echo "I/ARCH_FN: $ARCH_FN"
+    echo "I/ARCH_DIR: $ARCH_DIR"
+    echo "I/ARCH_VERTAG: $ARCH_VERTAG"
+}
 
 case "$SYNC_COMMAND" in
     push)
@@ -128,6 +152,46 @@ case "$SYNC_COMMAND" in
         echo "I/Listing files on the remote..."
         (set -x;
          ham-rclone ls "$SYNC_PROJECT:$REMOTE_DIR")
+        ;;
+    arch_make)
+        echo "I/Making archive..."
+        arch_init $1 $2
+        (set -x ; 7z-pack-arch "$ARCH_FN" "$ARCH_DIR" "$ARCH_VERTAG")
+        ;;
+    arch_push)
+        echo "I/Push an archive..."
+        arch_init $1 $2
+        if [ -e "$ARCH_FN" ]; then
+            echo "I/Archive already exist."
+        else
+            echo "I/Making archive..."
+            (set -x ; 7z-pack-arch "$ARCH_FN" "$ARCH_DIR" "$ARCH_VERTAG")
+        fi
+        echo "I/Pushing to server..."
+        BASENAME=`basename "$ARCH_FN"`
+        (set -x; ham-rclone copy "${PARAMS[@]}" "$LOCAL_DIR/$BASENAME" "$SYNC_PROJECT:$REMOTE_DIR")
+        ;;
+    arch_pull)
+        echo "I/Pull an archive..."
+        arch_init $1 $2
+        ARCH_TAG_FN="$ARCH_DIR/arch_tag_${ARCH_VERTAG}"
+        echo "I/ARCH_TAG_FN: $ARCH_TAG_FN"
+        if [ -e "$ARCH_TAG_FN" ]; then
+            echo "I/Archive already downloaded and unpacked, nothing to do."
+        else
+            if [ -e "$ARCH_FN" ]; then
+                echo "I/Archive already downloaded."
+            else
+                echo "I/Getting archive..."
+                BASENAME=`basename "$ARCH_FN"`
+                (set -x; ham-rclone copy "${PARAMS[@]}"  "$SYNC_PROJECT:$REMOTE_DIR/$BASENAME" "$LOCAL_DIR")
+            fi
+            echo "I/Unpacking archive..."
+            (set -x ;
+             rm -Rf "$ARCH_DIR" ;
+             7z-unpack-arch "$ARCH_FN" "$ARCH_DIR" "$ARCH_VERTAG" ;
+             rm "$ARCH_FN")
+        fi
         ;;
     *)
         echo "E/Unknown command '$SYNC_COMMAND'"
