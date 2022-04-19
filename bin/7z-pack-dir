@@ -19,4 +19,13 @@ fi
 
 export ARCH="$1"
 export DIR="$2"
-7z a -mmt=on -mx=9 -ms=on -mhc=on -mtc=off -xr\!*/.git/* -xr\!*/.hg/* -xr\!*.DS_Store "$ARCH" "$DIR"
+
+if [ ! -d "${DIR}" ]; then
+    echo "E/Can't find directory '${DIR}'."
+    exit 1
+fi
+
+TMP_ARCH="${ARCH}._tmp_pack_dir_.7z"
+7z a -mmt=on -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -xr\!*.DS_Store "$TMP_ARCH" "$DIR"
+rm -f "$ARCH"
+mv "$TMP_ARCH" "$ARCH"

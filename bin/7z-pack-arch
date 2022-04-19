@@ -1,0 +1,46 @@
+#!/bin/bash -e
+export HAM_NO_TAG_CHECK=1
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+print_help() {
+    echo "syntax: 7z-pack-arch ARCHIVE DIRECTORY TAG"
+    exit 1
+}
+
+if [[ -z "$1" ]]; then
+    echo "No archive filename specified !"
+    print_help
+fi
+if [[ -z "$2" ]]; then
+    echo "No directory to pack specified !"
+    print_help
+fi
+if [[ -z "$3" ]]; then
+    echo "No archive tag specified !"
+    print_help
+fi
+
+ARCH="$1"
+DIR="$2"
+TAG_NAME="$3"
+TAG_FILE_NAME=arch_tag_${TAG_NAME}
+
+if [ ! -d "${DIR}" ]; then
+    echo "E/Can't find directory '${DIR}'."
+    exit 1
+fi
+
+# Output the tag file
+set -ex
+cd "$DIR"
+# Delete any previous arch_tag file
+rm -f arch_tag_*
+# Generate the new arch_tag file
+echo "${TAG_FILE_NAME}" > "${TAG_FILE_NAME}"
+cd ..
+
+TMP_ARCH="${ARCH}._tmp_pack_arch_.7z"
+7z a -mmt=on -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -xr\!*.DS_Store "$TMP_ARCH" "$DIR" ; echo "RESULT: $?"
+rm -f "$ARCH"
+mv "$TMP_ARCH" "$ARCH"
