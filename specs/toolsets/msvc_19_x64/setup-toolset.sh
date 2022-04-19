@@ -64,7 +64,7 @@ export RUN_DEBUGGER_PARAMS=-debugexe
 ########################################################################
 export WINSDKVER="10.0.18362.0"
 
-export WINSDKDIR="${HAM_TOOLSET_DIR}/nt-x86/winsdk/10/"
+export WINSDKDIR="${HAM_TOOLSET_DIR}/nt-x86/winsdk/10"
 
 export WINSDKDIR_BIN="${WINSDKDIR}/bin/${WINSDKVER}/${HAM_MSVC_ARCH}/"
 if [ ! -e "$WINSDKDIR_BIN/fxc.exe" ]; then
@@ -85,6 +85,17 @@ if [ ! -e "$WINSDKDIR_INCLUDE/um/windows.h" ]; then
 	echo "E/Can't find windows.h in '$WINSDKDIR_INCLUDE/um/windows.h' for $TAG"
 	return 1
 fi
+
+########################################################################
+##  Find Msbuild.exe and setup MSBUILD_EXE
+########################################################################
+export MSBUILD_DIR="${HAM_TOOLSET_DIR}/nt-x86/2019/BuildTools/MSBuild"
+export MSBUILD_EXE="${MSBUILD_DIR}/Current/Bin/MSBuild.exe"
+if [ ! -e "$MSBUILD_EXE" ]; then
+	echo "E/Can't find '$MSBUILD_EXE'"
+	return 1
+fi
+echo "I/Found MSBuild at '$MSBUILD_EXE'"
 
 ########################################################################
 ##  Setup the C++ environment
