@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 export HAM_NO_VER_CHECK=1
 if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
@@ -105,10 +105,15 @@ PARAMS=()
 if [[ "$SYNC_COMMAND" != "arch_"* ]]; then
     PARAMS=("${PARAMS[@]}" --filter-from "$SYNC_DATA_PATH")
 fi
+# PARAMS=("${PARAMS[@]}" --stats-one-line)
+# PARAMS=("${PARAMS[@]}" --checkers=8)
+# PARAMS=("${PARAMS[@]}" --transfers=8)
+PARAMS=("${PARAMS[@]}" --stats 3s)
 if [ "$DOIT" != "yes" ]; then
     PARAMS=("${PARAMS[@]}" --dry-run)
+else
+    PARAMS=("${PARAMS[@]}" --progress)
 fi
-PARAMS=("${PARAMS[@]}" --progress --stats 2s)
 
 arch_init() {
     export ARCH_NAME=$1
@@ -137,7 +142,7 @@ case "$SYNC_COMMAND" in
         (set -x; ham-rclone copy "${PARAMS[@]}" "$LOCAL_DIR" "$SYNC_PROJECT:$REMOTE_DIR")
         ;;
     push_delete)
-        echo "I/Pushing from data to server..."
+        echo "I/Pushing from data to server, and deleting files removed locally from the server..."
         (set -x; ham-rclone sync "${PARAMS[@]}" "$LOCAL_DIR" "$SYNC_PROJECT:$REMOTE_DIR")
         ;;
     pull)
@@ -145,7 +150,7 @@ case "$SYNC_COMMAND" in
         (set -x; ham-rclone copy "${PARAMS[@]}" "$SYNC_PROJECT:$REMOTE_DIR" "$LOCAL_DIR")
         ;;
     pull_delete)
-        echo "I/Pulling from server to local data folder..."
+        echo "I/Pulling from server to local data folder, and deleting local files that have been removed from the server..."
         (set -x; ham-rclone sync "${PARAMS[@]}" "$SYNC_PROJECT:$REMOTE_DIR" "$LOCAL_DIR")
         ;;
     ls)

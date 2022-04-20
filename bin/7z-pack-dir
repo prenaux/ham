@@ -26,6 +26,7 @@ if [ ! -d "${DIR}" ]; then
 fi
 
 TMP_ARCH="${ARCH}._tmp_pack_dir_.7z"
+rm -f "$TMP_ARCH"
 7z a -mmt=on -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -xr\!*.DS_Store "$TMP_ARCH" "$DIR"
 rm -f "$ARCH"
 mv "$TMP_ARCH" "$ARCH"
