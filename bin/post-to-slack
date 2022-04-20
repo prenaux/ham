@@ -10,6 +10,7 @@ function usage {
     echo "	-i    (Optional) The icon of the message: default is 'hamster'"
     echo "	-l    (Optional) The color of the message: good, warning, danger or #hexcolor"
     echo "example:"
+    echo "  # See https://api.slack.com/messaging/webhooks to create a hook url"
     echo "  $SCRIPT_NAME -u \"<slack hook url>\" -m \"this a successful message\" -t \"this is a title\" -c \"channel\" -i \"heavy_check_mark\" -l \"good\""
     echo "  $SCRIPT_NAME -u \"<slack hook url>\" -m \"this an error message\" -t \"this is a title\" -c \"channel\" -i \"x\" -l \"danger\""
     exit 1
