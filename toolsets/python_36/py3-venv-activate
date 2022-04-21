@@ -1,0 +1,17 @@
+#!/bin/bash -e
+. ham-bash-lib.sh
+if [ ! -d "venv" ]; then
+    PY3_VENV_REQUIREMENTS_SHOULD_INSTALL=yes
+    if [ ! -e "py3_requirements.txt" ]; then
+        complain "No venv and no py3_requirements.txt present to initialize it."
+        return 1
+    fi
+    py3-venv "venv"
+fi
+
+source ./venv/bin/activate
+
+if [ "$PY3_VENV_REQUIREMENTS_SHOULD_INSTALL" == "yes" ]; then
+    py3-venv-requirements-install
+    unset PY3_VENV_REQUIREMENTS_SHOULD_INSTALL
+fi

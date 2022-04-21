@@ -1,0 +1,7 @@
+#!/bin/bash
+. ham-bash-lib.sh
+py3-venv-check
+errcheck $? "py3-venv-check failed."
+
+echo "I/Installing py3_requirements.txt"
+(set -x ; pip3 install -r py3_requirements.txt)

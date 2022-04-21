@@ -1,0 +1,8 @@
+#!/bin/bash
+. ham-bash-lib.sh
+py3-venv-check
+errcheck $? "py3-venv-check failed."
+
+echo "I/Generating py3_requirements.txt"
+pip3 freeze > py3_requirements.txt
+echo "I/Done, see py3_requirements.txt"
