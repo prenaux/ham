@@ -463,7 +463,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     if [ "$MACHINE_TYPE" == "x86_64" ]; then
         IS_TRANSLATED=`sysctl -n sysctl.proc_translated 2> /dev/null ; true`
         if [ "$IS_TRANSLATED" == "1" ]; then
-            echo "W/!!! RUNNING UNDER ROSETTA, forcing HAM_BIN_LOA=osx-arm64 !!!"
+            # echo "W/!!! RUNNING UNDER ROSETTA, forcing HAM_BIN_LOA=osx-arm64 !!!"
             export HAM_BIN_LOA=osx-arm64
         else
             export HAM_BIN_LOA=osx-x64
