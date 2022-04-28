@@ -19,7 +19,7 @@ NOTFILE tests ;
 NOTFILE data ;
 NOTFILE shaders ;
 
-AssertVarDefined HAM_TOOLSET_NAME ;
+AssertVarDefined HAM_CPP_TOOLSET_NAME ;
 
 if $(OS) = MACOSX {
   BUILD_BIN_LOA ?= $(BIN_LOA) ;
@@ -41,7 +41,7 @@ else if $(NT) {
 else {
   EXIT "Toolkit: Unknown host platform to set BUILD_BIN_LOA & BUILD_BIN_SUFEXE." ;
 }
-TK_ENV_FILE = toolkit-base-$(HAM_TOOLSET_NAME).ham ;
+TK_ENV_FILE = toolkit-base-$(HAM_CPP_TOOLSET_NAME).ham ;
 Import $(TK_ENV_FILE) : "E/Can't find toolkit's configuration for toolset:" $(TK_ENV_FILE:B:S) ;
 
 #----------------------------------------------------------------------
@@ -231,7 +231,7 @@ AssertVarDefined RUN_EXE_SUFFIX ;
 logVerbose "### BUILD ENV ###" ;
 logVerbose "- Platform : "$(OS)" ($(OSPLAT))" ;
 logVerbose "- LOA      : "$(LIBS_LOA) ;
-logVerbose "- Toolset  : "$(HAM_TOOLSET_NAME) ;
+logVerbose "- Toolset  : "$(HAM_CPP_TOOLSET_NAME) ;
 
 #----------------------------------------------------------------------
 #     BASE STUFF

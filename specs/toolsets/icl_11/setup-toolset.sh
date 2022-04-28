@@ -9,6 +9,8 @@ export HAM_TOOLSET_IS_SETUP_ICL_11=1
 export HAM_TOOLSET=INTELC
 export HAM_TOOLSET_NAME=icl_11
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/icl_11"
+export HAM_CPP_TOOLSET=$HAM_TOOLSET
+export HAM_CPP_TOOLSET_NAME=$HAM_TOOLSET_NAME
 
 # path setup
 case $HAM_OS in

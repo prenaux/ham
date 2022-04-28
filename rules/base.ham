@@ -528,10 +528,10 @@ rule FQuoteDirName {
 #----------------------------------------------------------------------
 #     Toolset
 #----------------------------------------------------------------------
-if ! $(HAM_TOOLSET) {
-  EXIT "F/HAM_TOOLSET not set." ;
+if ! $(HAM_CPP_TOOLSET) {
+  EXIT "F/HAM_CPP_TOOLSET not set." ;
 }
-Import base-$(HAM_TOOLSET).ham ;
+Import base-$(HAM_CPP_TOOLSET).ham ;
 
 #----------------------------------------------------------------------
 #     General defaults; a lot like UNIX
@@ -1258,7 +1258,7 @@ rule MainFromObjects
   # special case for stupid Borland C++, which always generates a
   # .tds file for executables, even when no debug information is needed
   #
-  if $(HAM_TOOLSET) = BORLANDC {
+  if $(HAM_CPP_TOOLSET) = BORLANDC {
     MakeLocate $(_t:S=.tds) : $(LOCATE_TARGET) ;
     Clean  clean : $(_t:S=.tds) ;
   }
@@ -2870,7 +2870,7 @@ HCACHEFILE ?= [ FDirName $(TEMPDIR) _cache.ham ] ;
 #----------------------------------------------------------------------
 #     Include the toolset's base rules
 #----------------------------------------------------------------------
-Import base-$(HAM_TOOLSET)-rules.ham ;
+Import base-$(HAM_CPP_TOOLSET)-rules.ham ;
 
 #----------------------------------------------------------------------
 #     Include the user's Hamfile
