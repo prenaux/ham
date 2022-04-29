@@ -4,6 +4,8 @@
 export HAM_TOOLSET=GCC
 export HAM_TOOLSET_NAME=gcc_470
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/gcc_470"
+export HAM_CPP_TOOLSET=$HAM_TOOLSET
+export HAM_CPP_TOOLSET_NAME=$HAM_TOOLSET_NAME
 
 # path setup
 case $HAM_OS in
