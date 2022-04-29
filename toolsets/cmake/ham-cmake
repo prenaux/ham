@@ -36,7 +36,26 @@ while getopts 'hcg:da:n:p:srd' flag; do
 done
 
 if [ -z "$BUILD_ARCH" ]; then
-  BUILD_ARCH=$(uname -m)-$OSTYPE
+
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    # linux
+    BUILD_ARCH=$(uname -m)-linux-gnu
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    # Mac OSX
+    BUILD_ARCH=$(uname -m)-darwin
+  elif [[ "$OSTYPE" == "cygwin" ]]; then
+    # POSIX compatibility layer and Linux environment emulation for Windows
+    BUILD_ARCH=$(uname -m)-cygwin
+  elif [[ "$OSTYPE" == "msys" ]]; then
+    # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
+    BUILD_ARCH=$(uname -m)-msys
+  elif [[ "$OSTYPE" == "freebsd"* ]]; then
+    BUILD_ARCH=$(uname -m)-freebsd
+    # ...
+  else
+    echo "unknown platform"
+    exit 1;
+  fi
 fi
 
 BUILD_EXT=da
@@ -60,18 +79,22 @@ if [ "$CLEAR_OPT" ]; then
 fi
 
 if [ "$BUILD_ARCH" ]; then
-  TOOLCHAIN_FILE="$HAM_TOOLSET_DIR/toolchains/$BUILD_ARCH.cmake"
+  TOOLCHAIN_FILE="$HAM_HOME/toolsets/cmake/toolchains/$BUILD_ARCH.cmake"
   if [ ! -f "$TOOLCHAIN_FILE" ]; then
     TOOLCHAIN_FILE=""
   fi
 fi
 
 if [ -z "$BUILD_GENERATOR" ]; then
-  BUILD_GENERATOR="Ninja"
-  # BUILD_GENERATOR="Unix Makefiles"
+  # BUILD_GENERATOR="Ninja"
+  BUILD_GENERATOR="Unix Makefiles"
 fi
 
 cmake -H. -G"$BUILD_GENERATOR" -B"$BUILD_DIR" -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN_FILE" -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+if [ -f "$BUILD_DIR/compile_commands.json" ]; then
+  cp "$BUILD_DIR/compile_commands.json" "$PROJECT_DIR/compile_commands.json"
+fi
 
 if [ $BUILD_NAME ]; then
   OPT_TARGET="--target $BUILD_NAME"

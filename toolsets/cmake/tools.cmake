@@ -6,7 +6,7 @@ include(CMakeParseArguments)
 
 function(add_target name)
   get_property(current_project_name GLOBAL PROPERTY PROPERTY_PROJECT_NAME)
-  include(niCMake/${current_project_name}/${name}.cmake)
+  include(sources/${current_project_name}/${name}.cmake)
 endfunction()
 
 macro(get_all_targets_recursive targets dir)
@@ -99,6 +99,20 @@ macro(add_flags)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${arg}")
   endforeach()
 endmacro()
+
+macro(add_project name)
+  message("-- Compiler: ${CMAKE_CXX_COMPILER_ID}")
+  message("-- Build for system ${CMAKE_SYSTEM_NAME}")
+  set_property(GLOBAL PROPERTY PROPERTY_PROJECT_NAME "${PROJECT_NAME}")
+  set(NISDK_OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bin/$ENV{CMAKE_BUILD_ARCH}")
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${NISDK_OUTPUT_DIR})
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${NISDK_OUTPUT_DIR})
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/$ENV{CMAKE_BUILD_ARCH}")
+
+  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)  # enable compile_commands.json
+  set(CMAKE_CXX_STANDARD 14) # using c++ 14
+endmacro()
+
 
 macro(project_init)
   message("-- Compiler: ${CMAKE_CXX_COMPILER_ID}")
@@ -194,9 +208,9 @@ function(add_target_sources)
 
   get_property(current_project_name GLOBAL PROPERTY PROPERTY_PROJECT_NAME)
   if(NOT PARSED_ARGS_DIR)
-    set(basedir ${CMAKE_CURRENT_SOURCE_DIR}/${current_project_name}/sources/${PARSED_ARGS_NAME})
+    set(basedir ${CMAKE_CURRENT_SOURCE_DIR}/sources/${PARSED_ARGS_NAME})
   else()
-    set(basedir ${CMAKE_CURRENT_SOURCE_DIR}/${current_project_name}/${PARSED_ARGS_DIR})
+    set(basedir ${CMAKE_CURRENT_SOURCE_DIR}/${PARSED_ARGS_DIR})
   endif()
 
   foreach(src ${PARSED_ARGS_SRCS})

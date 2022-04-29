@@ -3,6 +3,7 @@ set(CMAKE_SYSTEM_PROCESSOR x86_64)
 set(CMAKE_C_COMPILER_WORKS TRUE)
 set(CMAKE_CXX_COMPILER_WORKS TRUE)
 
+message("Hello there")
 include($ENV{HAM_TOOLSET_DIR}/tools.cmake)
 
 if (WIN32)
