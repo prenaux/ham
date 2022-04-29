@@ -105,9 +105,10 @@ PARAMS=()
 if [[ "$SYNC_COMMAND" != "arch_"* ]]; then
     PARAMS=("${PARAMS[@]}" --filter-from "$SYNC_DATA_PATH")
 fi
-# PARAMS=("${PARAMS[@]}" --stats-one-line)
-# PARAMS=("${PARAMS[@]}" --checkers=8)
-# PARAMS=("${PARAMS[@]}" --transfers=8)
+PARAMS=("${PARAMS[@]}" --stats-one-line)
+PARAMS=("${PARAMS[@]}" -v)
+PARAMS=("${PARAMS[@]}" --checkers=8)
+PARAMS=("${PARAMS[@]}" --transfers=16)
 PARAMS=("${PARAMS[@]}" --stats 3s)
 if [ "$DOIT" != "yes" ]; then
     PARAMS=("${PARAMS[@]}" --dry-run)
