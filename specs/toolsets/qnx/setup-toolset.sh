@@ -8,6 +8,8 @@ if [ $? != 0 ]; then return 1; fi
 export HAM_TOOLSET=QCC
 export HAM_TOOLSET_NAME=qcc_660
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/qnx_660"
+export HAM_CPP_TOOLSET=$HAM_TOOLSET
+export HAM_CPP_TOOLSET_NAME=$HAM_TOOLSET_NAME
 
 # path setup
 case $HAM_OS in

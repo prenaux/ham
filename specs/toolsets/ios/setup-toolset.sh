@@ -7,6 +7,8 @@ if [ $? != 0 ]; then return 1; fi
 export HAM_TOOLSET=IOS
 export HAM_TOOLSET_NAME=ios
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/ios"
+export HAM_CPP_TOOLSET=$HAM_TOOLSET
+export HAM_CPP_TOOLSET_NAME=$HAM_TOOLSET_NAME
 
 # path setup
 case $HAM_OS in
