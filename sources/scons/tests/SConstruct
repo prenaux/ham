@@ -1,3 +1,0 @@
-EnsureSConsVersion(0,14);
-
-Program('HelloScons.c')

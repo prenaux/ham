@@ -1,4 +1,0 @@
-nnoremap <esc> :noh<cr><esc>
-vmap <TAB> >gv
-vmap <S-TAB> <gv
-map K i<Enter><Esc>

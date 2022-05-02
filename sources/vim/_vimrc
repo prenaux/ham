@@ -1,5 +1,0 @@
-map K i<Enter><Esc>
-vmap <TAB> >gv
-vmap <S-TAB> <gv
-set dir=c:\\tmp//,c:\\temp//
-set backupdir=c:\\tmp//,c:\\temp//
