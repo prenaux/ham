@@ -23,10 +23,10 @@ case $HAM_OS in
         ;;
     NT*)
         # TODO: It should probably become a downloadable toolset, right now
-        #       you need to have the niSDK in your WORK folder for this to
+        #       you need to have the niLang in your WORK folder for this to
         #       work
-        NISDK_DIR="${SCRIPT_DIR}/../../../niSDK"
-        . "$NISDK_DIR/bin/ni-bash-setenv.sh" ra
+        NILANG_DIR="${SCRIPT_DIR}/../../../niLang"
+        . "$NILANG_DIR/bin/ni-bash-setenv.sh" ra
         if [ -e "$DIR1/$BIN_LOA/ni_$BUILD$BIN_EXT" ]; then
             export NI_CGC_EXE="$DIR1/$BIN_LOA/nicgc_$BUILD$BIN_EXT"
         elif [ -e "$DIR1/bin/$BIN_LOA/nicgc_$BUILD$BIN_EXT" ]; then

@@ -1,10 +1,10 @@
 #!/bin/bash
-if [[ -z "$NISDK_DIR" ]]; then
-    NISDK_DIR="$WORK/niSDK"
+if [[ -z "$NILANG_DIR" ]]; then
+    NILANG_DIR="$WORK/niLang"
 fi
-SCRIPT_DIR="$NISDK_DIR/bin"
+SCRIPT_DIR="$NILANG_DIR/bin"
 if [[ ! -e "$SCRIPT_DIR/ni" ]]; then
     echo "E/Couldn't find ni at '$SCRIPT_DIR/ni'."
     exit 1
 fi
-"$NISDK_DIR/bin/ni" "$@"
+"$NILANG_DIR/bin/ni" "$@"

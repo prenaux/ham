@@ -1,7 +1,6 @@
 #!/bin/bash
 EXEC_TIME="$(date +%s)"
 PREV_PATH=${PATH}
-
 if [[ -z "$HAM_HOME" ]]; then
     export HAM_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
     echo "W/HAM_HOME not set, set to:" $HAM_HOME

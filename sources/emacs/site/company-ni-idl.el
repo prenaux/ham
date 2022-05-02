@@ -3,7 +3,7 @@
 (require 's)
 (require 'dash)
 
-(ni-add-to-PATH-front (concat (getenv "WORK") "/niSDK/bin"))
+(ni-add-to-PATH-front (concat (getenv "WORK") "/niLang/bin"))
 
 ;; when t filter to ONLY use the idl-query results, this is always set when using
 (setq company-ni-idl-idl-query-only nil)

@@ -30,7 +30,7 @@
          (local-file  (file-relative-name
                        temp-file
                        (file-name-directory buffer-file-name))))
-    (list (concat (getenv "WORK") "/niSDK/bin/ni-flymake") (list "-e" local-file))))
+    (list (concat (getenv "WORK") "/niLang/bin/ni-flymake") (list "-e" local-file))))
 
 (defun aflymake-ni-load ()
   (interactive)

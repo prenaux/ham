@@ -47,7 +47,7 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
     pathenv_add "$HAM_HOME/bin/$HAM_BIN_LOA"
     # This must be AFTER bin/HAM_BIN_LOA
     pathenv_add "$HAM_HOME/bin"
-    pathenv_add "$WORK/niSDK/bin"
+    pathenv_add "$WORK/niLang/bin"
     export PATH_BACKUP=$PATH
 else
     true
