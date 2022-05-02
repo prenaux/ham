@@ -31,9 +31,9 @@ usage() {
     echo "  # Build all in the release build"
     echo "  ham BUILD=ra all"
     echo "  # Build all in the current toolkit, displaying all the commands"
-    echo "  ham -T defaultj -- -dx all"
-    echo "  # Build all in the niLang & niSDK toolkits"
-    echo "  ham -T defaultj -D niLang -D niSDK all"
+    echo "  ham -T default -- -dx all"
+    echo "  # Build all in the niLang & niLang toolkits"
+    echo "  ham -T default -D niLang all"
     echo ""
 
     if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
