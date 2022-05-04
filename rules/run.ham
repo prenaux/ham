@@ -19,7 +19,9 @@ rule runInDebugger_ {
 
 # runInDebugger TARGET : WHAT/EXE : INDIR/EXEDIR : PARAMS ;
 rule runInDebugger {
-  runInDebugger_ Debug_$(<) : $(<) : $(2) : $(3) : $(4) ;
+  local t = Debug_$(<) ;
+  runInDebugger_ $(t) : $(<) : $(2) : $(3) : $(4) ;
+  return $(t) ;
 }
 
 # runInDir_ TARGET : WHAT/EXE : INDIR/EXEDIR : PARAMS
@@ -37,8 +39,10 @@ rule runInDir_ {
 
 # runInDir TARGET : WHAT/EXE : INDIR/EXEDIR : PARAMS ;
 rule runInDir {
-  runInDir_ Run_$(<) : $(<) : $(2) : $(3) : $(4) ;
+  local t = Run_$(<) ;
+  runInDir_ $(t) : $(<) : $(2) : $(3) : $(4) ;
   runInDebugger $(<) : $(2) : $(3) ;
+  return $(t) ;
 }
 
 if $(RUN_IMPORT) {
