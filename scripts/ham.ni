@@ -128,6 +128,10 @@ local module = {
         bashPath = "/bin/bash"
         break;
       }
+      case "linux": {
+        bashPath = "/usr/bin/bash"
+        break;
+      }
       default: {
         throw ::format("Unknown platform '%s', can't find bash's path.",
                        ::lang.getHostOS())
