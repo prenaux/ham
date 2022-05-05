@@ -52,10 +52,10 @@ case $HAM_OS in
         # Test the SDK
         if [ ! -d "$ADR_DIR_SDK" -o ! -d "${ADR_DIR_SDK}/platforms/${ADR_SDK_PLATFORM}" ]; then
             echo "I/Can't find android sdk, installing with brew..."
-            brew install --cask android-sdk android-platform-tools
+            ham-brew install --cask android-sdk android-platform-tools
             # echo "I/Making sure the Android SDK isn't quarantined..."
-            # sudo xattr -r -d com.apple.quarantine /usr/local/Caskroom/android-sdk/
-            # sudo xattr -r -d com.apple.quarantine /usr/local/Caskroom/android-platform-tools/
+            sudo xattr -r -d com.apple.quarantine /usr/local/Caskroom/android-sdk/
+            sudo xattr -r -d com.apple.quarantine /usr/local/Caskroom/android-platform-tools/
             echo "I/Downloading platform ${ADR_SDK_PLATFORM}..."
             touch ~/.android/repositories.cfg
             sdkmanager --update
