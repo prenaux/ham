@@ -14,20 +14,20 @@ case $HAM_OS in
                 export MSVC_IDE_DIR="`unxpath "$PROGRAMFILES\\Microsoft Visual Studio 10.0\\Common7\\IDE"`"
                 export RUN_DEBUGGER="${MSVC_IDE_DIR}/devenv.exe"
                 if [ ! -f "$RUN_DEBUGGER" ]; then
-	            echo "E/Can't find debugger 'devenv.exe' in $RUN_DEBUGGER"
+	                  echo "E/Can't find debugger 'devenv.exe' in $RUN_DEBUGGER"
                 fi
             fi
         fi
         if [ -f "$RUN_DEBUGGER" ]; then
             echo "I/Found VC++ debugger in '$RUN_DEBUGGER'"
         fi
-        "$RUN_DEBUGGER" -debugexe $@
+        "$RUN_DEBUGGER" -debugexe "$@"
         ;;
     OSX*)
-        PATH="/usr/bin:$PATH" lldb -o run -- $@
+        PATH="/usr/bin:$PATH" lldb -o run -- "$@"
         ;;
     LINUX*)
-        gdb -ex run -- $@
+        gdb -ex run --args "$@"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
