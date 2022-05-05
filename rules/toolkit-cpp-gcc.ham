@@ -1,4 +1,4 @@
-STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
+STRICT_ALIASING_FLAGS ?= -fno-strict-aliasing ;
 
 GCC_CC_ARGS +=
   -ffunction-sections
@@ -43,7 +43,15 @@ if $(LINUX) {
     LINKFLAGS_DLL += -dead_strip ;
   }
   LINKLIBS +=
-   -lstdc++ -lpthread -ldl -lm ;
+   -lstdc++ -lpthread -ldl -lm
+   # sudo apt-get install -y libdw-dev
+   -ldw
+  ;
+
+  ### "Debug" (da) build flags ###
+  CLANG_DBG_ARGS ?= -ggdb -O0 $(STRICT_ALIASING_FLAGS) ;
+  ### Optimized (ra) build flags ###
+  CLANG_OPT_ARGS ?= -ggdb -O2 $(STRICT_ALIASING_FLAGS) ;
 }
 
 CCFLAGS   += $(GCC_CC_ARGS) ;
