@@ -26,11 +26,7 @@ case $HAM_OS in
         if [ $(type apt-get 2>/dev/null | wc -l) = 1 ]; then
             echo "### Installing packages required by ham on Linux (apt-get) ###"
             echo "I/Installing apt-get packages"
-            sudo apt-get -y install clang curl ffmpeg freeglut3-dev g++ gcc git htop libcurl4-openssl-dev libdw-dev libsdl2-dev mc mesa-common-dev mesa-utils net-tools ntpdate p7zip-full python3-pip xsltproc
-        elif [ $(type pacman 2>/dev/null | wc -l) = 1 ]; then
-            echo "### Installing packages required by ham on Linux (pacman) ###"
-            echo "I/Installing pacman packages"
-            sudo pacman -S install libxslt p7zip git python-pip lftp
+            sudo apt-get -y install clang curl ffmpeg freeglut3-dev g++ gcc git htop libcurl4-openssl-dev libdw-dev libsdl2-dev libssl-dev libudev-dev mc mesa-common-dev mesa-utils net-tools ntpdate p7zip-full pkg-config python3 python3-pip subversion wget xsltproc
         else
             echo "E/Unsupported LINUX package manager"
             return 1
