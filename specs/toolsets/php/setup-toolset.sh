@@ -29,6 +29,13 @@ case $HAM_OS in
         ham-brew-install php@7.4 "bin/php" || return 1
         export PATH="${HAM_TOOLSET_DIR}":"${HOME}/.composer/vendor/bin":"${PHP_HOME}/bin":${PATH}
         ;;
+    LINUX*)
+        if [ -z `where_inpath php` ]; then
+            echo "W/php not found, trying to install with sudo..."
+            sudo apt install -y php7.4-common php7.4-mysql php7.4-xml php7.4-xmlrpc php7.4-curl php7.4-gd php7.4-imagick php7.4-cli php7.4-dev php7.4-imap php7.4-mbstring php7.4-opcache php7.4-soap php7.4-zip php7.4-intl
+        fi
+        pathenv_add "${HAM_TOOLSET_DIR}"
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1

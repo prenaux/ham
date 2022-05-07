@@ -11,6 +11,11 @@ if [ -z "$PHP_INI" ]; then
                 PHP_INI="./config/osx/php.ini"
             fi
             ;;
+        LINUX*)
+            if [ -e "./config/linux/php.ini" ]; then
+                PHP_INI="./config/linux/php.ini"
+            fi
+            ;;
         *)
             echo "E/Toolset: Unsupported host OS"
             return 1
