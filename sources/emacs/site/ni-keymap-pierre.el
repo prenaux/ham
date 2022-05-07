@@ -117,10 +117,7 @@
 
  (global-set-key (kbd "C-M-j") 'join-line)
 
- (require 'golden-ratio-scroll-screen)
- (global-set-key (key "M-'") 'golden-ratio-scroll-screen-up)
- (global-set-key (key "M-;") 'golden-ratio-scroll-screen-down)
- (global-set-key (key "C-.") 'ni-goto-matching-bracket)
+ (global-set-key (key "M-5") 'ni-goto-matching-bracket)
 
 ;;;======================================================================
 ;;; aglemacs.el: mark-multiple, expand-region
@@ -130,23 +127,12 @@
   (require 'inline-string-rectangle)
   (global-set-key (kbd "C-x r t") 'inline-string-rectangle))
 
- (global-set-key (kbd "C-<") 'mark-previous-like-this)
  (global-set-key (kbd "M-9") 'mark-previous-like-this) ;; M-(
- (global-set-key (kbd "C->") 'mark-next-like-this)
  (global-set-key (kbd "M-0") 'mark-next-like-this) ;; M-(
- (global-set-key (kbd "C-*") 'mark-all-like-this)
  (global-set-key (kbd "M-8") 'mark-all-like-this) ;; M-8
 
  (require 'expand-region)
- (global-set-key (kbd "C-2") 'er/expand-region)
- (global-set-key (kbd "M-@") 'er/expand-region)
-
-;;;======================================================================
-;;; ni-autocomplete-company.el
-;;;======================================================================
- (global-set-key (kbd "C-/") 'company-complete)
- ;; (global-set-key (kbd "C-/") 'company-complete-common)
- ;; (global-set-key (kbd "C-/") 'company-ni-idl-complete)
+ (global-set-key (kbd "M-@") 'er/expand-region) ;; M-S-2
 
 ;;;======================================================================
 ;;; ni-flymake.el
@@ -155,14 +141,6 @@
  (global-set-key (kbd "M-4") 'aflymake-goto-prev-error)
  (global-set-key (kbd "C-h C-c") 'aflymake-mode-or-syntax-check)
  (global-set-key (kbd "C-h C-f") 'ham-fix-current-buffer)
-
-;;;======================================================================
-;;; ni-autocomplete-pabbrev.el
-;;;======================================================================
- (if (boundp 'make-agl-expand)
-     (progn
-       (global-set-key (kbd "C-/") 'make-agl-expand)
-     ))
 
 ;;;======================================================================
 ;;; ni-org.el
