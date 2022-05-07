@@ -18,7 +18,8 @@ case "$HAM_BIN_LOA" in
             sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
             sudo apt-get update
             sudo apt-get install -y docker-ce
-            sudo docker run --rm hello-world
+            sudo chmod 666 /var/run/docker.sock
+            docker run --rm hello-world
             #
             # To uninstall
             #  sudo apt-get remove -y docker-ce && sudo apt-get autoremove
