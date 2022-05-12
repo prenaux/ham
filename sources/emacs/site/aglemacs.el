@@ -47,7 +47,7 @@
  (OSX
   (defun ni-show-in-finder ()
     (interactive)
-    (shell-command (concat "open -R " buffer-file-name)))
+    (shell-command (concat "open -R \"" buffer-file-name "\"")))
 
   (defun ni-open-from-pbpaste ()
     (interactive)
