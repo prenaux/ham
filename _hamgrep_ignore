@@ -1,0 +1,4 @@
+toolsets/*/nt-*/**
+toolsets/*/lin-*/**
+toolsets/*/osx-*/**
+toolsets/*/dist/**
