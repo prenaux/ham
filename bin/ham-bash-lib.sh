@@ -81,11 +81,6 @@ die_exit()
 die()
 # usage: die ModuleName "Message Saying Why"
 {
-  # echo "D/SCRIPT_SOURCED: $SCRIPT_SOURCED"
-  # echo "D/HAM_DIE_SHOULD_RETURN: $HAM_DIE_SHOULD_RETURN"
-  if [ ! -z "$SCRIPT_SOURCED" ]; then
-      HAM_DIE_SHOULD_RETURN=yes
-  fi
   complain "$@"
   if [ -z "$HAM_DIE_SHOULD_RETURN" ]; then
     # echo "I/DIE: EXIT"

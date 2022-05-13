@@ -27,4 +27,4 @@ fi
 
 # Setup the tools that we want by default, just repos/git.
 . hat repos
-errcheck $? ham_env "Can't import toolsets." || return 1
+HAM_DIE_SHOULD_RETURN=$SCRIPT_SOURCED errcheck $? ham_env "Can't import toolsets." || return 1

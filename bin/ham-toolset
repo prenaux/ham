@@ -32,7 +32,7 @@ if [ $# = 0 ] || [ $1 == "." ]; then
         . ham-env-clear
         export HAM_PROJECT_DIR=${FOUND_PROJECT_DIR}
         . "$HAM_PROJECT_DIR/_ham_project"
-        errcheck $? ham-toolset "Can't import _ham_project." || return 1
+        HAM_DIE_SHOULD_RETURN=$SCRIPT_SOURCED errcheck $? ham-toolset "Can't import _ham_project." || return 1
     fi
 else
     . ham-env-clear
@@ -40,8 +40,8 @@ else
         export HAM_PROJECT_DIR=${FOUND_PROJECT_DIR}
     fi
 
-    toolset_import_list "$@"
-    errcheck $? ham-toolset "Can't import toolsets: $ALL_ARGS." || return 1
+    toolset_import_list "$@" || return 1
+    HAM_DIE_SHOULD_RETURN=$SCRIPT_SOURCED errcheck $? ham-toolset "Can't import toolsets: $ALL_ARGS." || return 1
 
     toolset_info
     update_prompt
