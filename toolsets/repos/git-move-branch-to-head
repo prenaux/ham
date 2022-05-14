@@ -1,2 +1,4 @@
 #!/bin/bash -ex
+# check if the branch exists
+git rev-parse --verify $1
 git branch -f $1 HEAD
