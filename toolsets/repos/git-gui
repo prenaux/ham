@@ -1,6 +1,6 @@
 #!/bin/bash -e
 usage() {
-    echo "usage: git-gui DIRECTORY (default to .)"
+    echo "usage: git-gui (tui) DIRECTORY (default to .)"
     echo ""
     echo "  Open the first available Git GUI with the specified directory."
     echo ""
@@ -9,15 +9,32 @@ usage() {
     echo "  When not in SSH session:"
     echo "    fork (https://git-fork.com/)"
     echo "    smerge (https://www.sublimemerge.com/)"
+    echo "    gitk"
     echo "  Command line / TUI:"
     echo "    lazygit"
+    echo ""
+    echo "  Suggested aliases for your bash profile:"
+    echo "    alias gg='git-gui'"
+    echo "    alias lg='git-gui tui'"
     exit 1
 }
 
-DIR=${1:-.}
+if [ "$1" == "tui" ]; then
+  shift
+  FORCE_TUI=yes
+elif [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+  echo "I/In SSH session, picking a TUI git client."
+  FORCE_TUI=yes
+fi
+
+PARAM_DIR=${1:-.}
+DIR=${PARAM_DIR}
 if [ ! -d "$DIR" ]; then
-    echo "E/Can't find directory '$DIR'."
+  DIR="$WORK/$DIR"
+  if [ ! -d "$DIR" ]; then
+    echo "E/Can't find directories '$PARAM_DIR' nor '$DIR'."
     usage
+  fi
 fi
 
 if [ -z "$GIT_GUI" ]; then
@@ -33,9 +50,8 @@ if [ -z "$GIT_GUI" ]; then
 
     # If we didnt a find a windowed GUI or we're in a SSH session try the
     # TUI's
-    if [ -z "$GIT_GUI" ] || [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]
+    if [ "$FORCE_TUI" == "yes" ] || [ -z "$GIT_GUI" ]
     then
-        echo "I/In SSH session, picking a TUI git client."
         if [ `where_inpath lazygit` ]; then
             GIT_GUI=lazygit
         fi
@@ -47,4 +63,6 @@ if [ -z "$GIT_GUI" ] || [ -z `where_inpath "$GIT_GUI"` ]; then
     usage
 fi
 
-(set -x ; "$GIT_GUI" "$DIR")
+(set -x ;
+ cd "$DIR" ;
+ "$GIT_GUI" .)
