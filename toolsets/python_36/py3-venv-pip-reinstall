@@ -2,6 +2,7 @@
 . ham-bash-lib.sh
 py3-venv-check
 errcheck $? "py3-venv-check failed."
+export PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # Update py3_pip_install.txt
 if [ ! -e "py3_pip_install.txt" ]; then

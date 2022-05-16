@@ -2,6 +2,8 @@
 . ham-bash-lib.sh
 py3-venv-check
 errcheck $? "py3-venv-check failed."
+export PIP_DISABLE_PIP_VERSION_CHECK=1
+
 sed -i '' 's/[~=]=/>=/' py3_requirements.txt
 pip install -U -r py3_requirements.txt
 py3-venv-requirements-freeze
