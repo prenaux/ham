@@ -1,24 +1,14 @@
-#!/usr/bin/env node-harmony
-// -*- mode: js -*-
-'use strict';
+#!/usr/bin/env ni
+::Import("lang.ni")
+::Import("fs.ni")
 
-let PATH = require('path');
-let FS = require('fs');
-
-let dirsWithGit = []
-
-{
-  let dirs = FS.readdirSync('./');
-  for (let i in dirs) {
-    let d = dirs[i];
-    let dirWithGit = PATH.join(d, ".git");
-    if (FS.existsSync(dirWithGit)) {
-      dirsWithGit.push(d);
-    }
+local dirs = ::fs.listFiles("./", "*", ::eFileAttrFlags.AllDirectories, false, true)
+foreach (d in dirs) {
+  // ::println("... D:" ::lang.toString(d))
+  local d = "".setdir(d.path).adddirback(".git")
+  if (::fs.dirExists(d)) {
+    d = ::fs.getAbsolutePath(d)
+    // ::println("... git repo:" d)
+    ::println(d)
   }
-}
-
-for (let i in dirsWithGit) {
-  let d = dirsWithGit[i];
-  console.log(d);
 }
