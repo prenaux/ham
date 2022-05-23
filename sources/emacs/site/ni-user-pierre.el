@@ -220,7 +220,8 @@ If the new path's directories does not exist, create them."
                             (string-trim (replace-regexp-in-string "/" "_"
                                            (file-name-directory filePath))
                               "_+" "_+")))
-           (backupFileName (file-name-sans-extension (file-name-nondirectory filePath)))
+           (backupFileName (replace-regexp-in-string "\\." "_"
+             (file-name-sans-extension (file-name-nondirectory filePath))))
            (backupFileExt (file-name-extension filePath))
            (backupFilePath (concat backupRootDir (replace-regexp-in-string "//" "/"
                              (concat backupFileDir "/" backupFileName "--"
