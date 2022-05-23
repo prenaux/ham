@@ -16,6 +16,8 @@
 (if (not (getenv "WORK"))
     (setenv "WORK" (expand-file-name (concat EMACS_DEVENV "/.."))))
 (defconst ENV_WORK (agl-getenv "WORK"))
+(defconst ENV_SHARED_WORK
+  (if (agl-getenv "SHARED_WORK") (agl-getenv "SHARED_WORK") ENV_WORK))
 
 (defconst ENV_DEVENV_EMACS_SCRIPTS (concat ENV_DEVENV "/sources/emacs/site"))
 

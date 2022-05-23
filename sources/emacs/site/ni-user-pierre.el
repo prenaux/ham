@@ -23,6 +23,7 @@
 (require 'ham-fix)
 (require 'ham-grep)
 (require 'go-mode)
+(require 's)
 
 (NotBatchMode
  (require 'ni-sql)
@@ -213,24 +214,24 @@
  (defun ni-backup-file-name (fpath)
    "Return a new file path of a given file path.
 If the new path's directories does not exist, create them."
-   (let* (
-          (backupRootDir (concat ENV_WORK "/_emacs_bak/"))
-          (filePath (replace-regexp-in-string ":" "" fpath)) ; remove ':' from path
-          (backupFilePath
-           (replace-regexp-in-string
-            "//" "/"
-            (concat backupRootDir
-                    (replace-regexp-in-string
-                     "/" "_"
-                     (concat filePath "."
-                             ;; (format-time-string "bak_%Y%m%d_%H%M") ;; Use the current time as save stamp
-                             (ham-hash-file-md5 fpath) ;; Use a MD5 of the buffer as save stamp
-                     )))))
-         )
-     (make-directory (file-name-directory backupFilePath) (file-name-directory backupFilePath))
-     backupFilePath
-   )
- )
+   (let* ((backupRootDir (concat ENV_SHARED_WORK "/_emacs_bak/"))
+           (filePath (replace-regexp-in-string ":" "" (buffer-file-name))) ; remove ':' from path
+           (backupFileDir (concat (replace-regexp-in-string "/" "_" (system-name)) "/"
+                            (string-trim (replace-regexp-in-string "/" "_"
+                                           (file-name-directory filePath))
+                              "_+" "_+")))
+           (backupFileName (file-name-sans-extension (file-name-nondirectory filePath)))
+           (backupFileExt (file-name-extension filePath))
+           (backupFilePath (concat backupRootDir (replace-regexp-in-string "//" "/"
+                             (concat backupFileDir "/" backupFileName "--"
+                               (ham-hash-file-md5 filePath)
+                               (if (s-blank-str? backupFileExt)
+                                 "" (concat "." backupFileExt))
+                               ".txt")))))
+     (make-directory (file-name-directory backupFilePath)
+       (file-name-directory backupFilePath))
+     ;; (message (concat "... BACKUP: " backupFilePath))
+     backupFilePath))
 
  (defun ham-hash-file-md5 (fpath)
    (agl-bash-cmd-to-string (concat "hash_md5 \"" fpath "\"")))
