@@ -1,0 +1,10 @@
+#!/bin/bash -e
+if [ "$1" = "doit" ]; then
+  set -x
+  sqlite3 .svn/wc.db "delete from work_queue"
+  svn cleanup
+else
+  (set -x ; sqlite3 .svn/wc.db "select * from work_queue")
+  echo "# Type 'svn-fix-work-queue doit' to clear the work_queue."
+  echo "# It should fix the \"svn: E155009: Failed to run the WC DB work queue\" error."
+fi
