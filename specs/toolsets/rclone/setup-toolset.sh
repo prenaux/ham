@@ -8,7 +8,8 @@ toolset_check_and_dl_ver rclone dist v1 || return 1
 export RCLONE_DIST_DIR="${HAM_TOOLSET_DIR}/dist"
 
 # path
-export PATH="${HAM_TOOLSET_DIR}":"${RCLONE_DIST_DIR}/$HAM_BIN_LOA/":${PATH}
+pathenv_add "${RCLONE_DIST_DIR}/$HAM_BIN_LOA/"
+pathenv_add "${HAM_TOOLSET_DIR}"
 
 # version
 VER="--- rclone ----------------------------"
