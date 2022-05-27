@@ -1,0 +1,155 @@
+if $(BUILD) = da {
+  # Build with the sanitizer in debug mode
+  ZIGCC_SANITIZE ?= 1 ;
+}
+
+STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
+
+ZIGCC_CC_ARGS +=
+  -ffunction-sections
+  -fdata-sections
+  -fvisibility=hidden
+  -Wno-return-type-c-linkage
+  -Wno-switch
+  -Wno-#pragma-messages
+  -Wno-unused-value
+;
+ZIGCC_CPP_ARGS +=
+  -stdlib=libc++
+  -std=$(C++VERSION)
+  -Wno-c++11-narrowing
+;
+
+LINKFLAGS +=
+  -fvisibility=hidden
+  -ffunction-sections
+  -fdata-sections
+;
+
+if $(FLYMAKE) = 1 {
+  # Happens when we're compiling header files with flymake since the temporary
+  # flymake file is a cpp file.
+  ZIGCC_CC_ARGS +=
+    -Wno-pragma-once-outside-header
+  ;
+}
+
+# TODO: This should be under Lint?
+if $(ZIGCC_ANALYZER) = 1 {
+  ZIGCC_CC_ARGS += -DZIGCC_ANALYZER=1 --analyze ;
+  ECHO "I/Building with zigcc static analyzer" ;
+}
+if $(ZIGCC_SANITIZE) = 1 {
+  ZIGCC_CC_ARGS += -DZIGCC_SANITIZE=1 -fsanitize=address ;
+  ECHO "I/Building with -fsanitize=address" ;
+}
+
+### OSX ###
+if $(TARGET_OS) = MACOSX {
+  ZIGCC_CC_ARGS += -fobjc-arc ;
+  ZIGCC_CC_ARGS += -Wno-deprecated-declarations -Wno-gnu-inline-cpp-without-extern ;
+  # TODO: Remove this, this is actually a very useful warning.
+  ZIGCC_CC_ARGS += -Wno-inconsistent-missing-override ;
+
+  ZIGCC_CC_ARGS += -mmacosx-version-min=$(MACOSX_MINVER) -fno-common ;
+
+  # Strip all symbols in release build
+  #
+  # -dead_strip
+  # Remove functions and data that are unreachable by the entry point or
+  # exported symbols.
+  #
+  # -dead_strip_dylibs
+  #
+  # Remove dylibs that are unreachable by the entry point or exported
+  # symbols. That is, suppresses the generation of load command commands for
+  # dylibs which supplied no symbols during the link. This option should not be
+  # used when linking against a dylib which is required at runtime for some
+  # indirect reason such as the dylib has an important initializer.
+  #
+  # -why_live symbol_name
+  #
+  # Logs a chain of references to symbol_name. Only applicable with
+  # -dead_strip. It can help debug why something that you think should be dead
+  # strip removed is not removed.
+  #
+  if $(BUILD) = ra {
+    LINKFLAGS_EXE += -dead_strip ;
+    LINKFLAGS_DLL += -dead_strip ;
+  }
+  LINKLIBS +=
+  -framework Foundation
+  -framework CoreServices
+  -framework AudioUnit
+  -framework CoreAudio
+  -framework Cocoa
+  -framework IOKit
+  -framework OpenGL
+  -framework AGL
+  -framework Metal
+  -framework MetalKit
+  -framework QuartzCore
+  -framework Security
+  -lstdc++ -lpthread -ldl ;
+}
+else {
+  EXIT "E/Unsupported OS:" $(OS) ;
+}
+
+CCFLAGS  += $(ZIGCC_CC_ARGS) ;
+C++FLAGS += $(ZIGCC_CC_ARGS) $(ZIGCC_CPP_ARGS) ;
+
+if $(FLYMAKE) = 1 {
+  ZIGCC_DBG_ARGS = -O0 $(STRICT_ALIASING_FLAGS) ;
+  # ZIGCC_DBG_ARGS = -ggdb -O0 $(STRICT_ALIASING_FLAGS) ;
+  ZIGCC_OPT_ARGS = $(ZIGCC_DBG_ARGS) ;
+}
+else {
+  ### "Debug" (da) build flags ###
+  ZIGCC_DBG_ARGS = -ggdb -O0 $(STRICT_ALIASING_FLAGS) ;
+  ### Optimized (ra) build flags ###
+  ZIGCC_OPT_ARGS = -ggdb -O2 $(STRICT_ALIASING_FLAGS) ;
+}
+
+### Link flags ###
+if $(ZIGCC_SANITIZE) = 1 {
+  LINKFLAGS += -fsanitize=address ;
+}
+LINKLIBS += ;
+
+rule tkCC++Build
+{
+  local t = $(<) ;
+  local strOpt = "" ;
+  # Set the debug infos generation
+  # Set the optimization flags
+  if $(DEBUG) = 1 {
+    PKGOPTIM += $(ZIGCC_DBG_ARGS) ;
+    strOpt += "(DebugOnly) " ;
+  }
+  # Set debug-only flags
+  else {
+    PKGOPTIM += $(ZIGCC_OPT_ARGS) ;
+    strOpt += "(Optimized) " ;
+  }
+  logVerbose "- CC++Build: " $(strOpt) ;
+}
+
+rule tkC++Exceptions {
+  ObjectC++Flags $(<) : -fexceptions ;
+}
+rule tkNoC++Exceptions {
+  ObjectC++Flags $(<) : -fno-exceptions ;
+  # Needed to disable exception usage in the standard C++ library
+  ObjectDefines $(<) : _HAS_EXCEPTIONS=0 ;
+}
+
+rule tkC++RTTI {
+  ObjectC++Flags $(<) : -frtti ;
+}
+rule tkNoC++RTTI {
+  ObjectC++Flags $(<) : -fno-rtti ;
+}
+
+rule tkCC++Lint {
+}

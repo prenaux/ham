@@ -1,0 +1,90 @@
+if ! $(OSPLAT) {
+  if $(HAM_BIN_LOA) = osx-x64 ||
+     $(HAM_BIN_LOA) = nt-x86 ||
+     $(HAM_BIN_LOA) = lin-x64
+  {
+    OSPLAT = X64 ;
+  }
+  else if $(HAM_BIN_LOA) = osx-arm64 ||
+          $(HAM_BIN_LOA) = nt-arm64 ||
+          $(HAM_BIN_LOA) = lin-arm64
+  {
+    OSPLAT = ARM64 ;
+  }
+  else {
+    EXIT "E/OSPLAT not defined and unsupported HAM_BIN_LOA." ;
+  }
+}
+
+switch $(HAM_TARGET_BIN_LOA) {
+  case nt-x86 : TARGET_OS = NT ; TARGET_OSPLAT = X64 ;
+  case lin-x64 : TARGET_OS = LINUX ; TARGET_OSPLAT = X64 ;
+  case osx-x64 : TARGET_OS = MACOSX ; TARGET_OSPLAT = X64 ;
+  case osx-arm64 : TARGET_OS = MACOSX ; TARGET_OSPLAT = ARM64 ;
+  case * :
+    EXIT "E/HAM_TARGET_BIN_LOA not supported:" $(HAM_TARGET_BIN_LOA) ;
+}
+
+SLASH   ?= / ;
+SUFOBJ  ?= .o ;
+SUFLIB  ?= .a ;
+PREFIXDLL ?= lib ;
+CHMOD   ?= chmod ;
+
+if $(TARGET_OS) = NT {
+  SUFEXE = .exe ;
+  SUFDLL = .dll ;
+  if $(TARGET_OSPLAT) = X64 {
+    ZIGCC_TARGET = x86_64-windows-gnu ;
+  }
+  else if $(TARGET_OSPLAT) = ARM64 {
+    ZIGCC_TARGET = aarch64-windows-gnu ;
+  }
+  else {
+    EXIT "E/TARGET_OSPLAT for $(TARGET_OS) invalid:" $(TARGET_OSPLAT) ;
+  }
+}
+else if $(TARGET_OS) = MACOSX {
+  SUFEXE = "" ;
+  SUFDLL = .dylib ;
+  if $(TARGET_OSPLAT) = X64 {
+    ZIGCC_TARGET = x86_64-macos-none ;
+  }
+  else if $(TARGET_OSPLAT) = ARM64 {
+    ZIGCC_TARGET = aarch64-macos-none ;
+  }
+  else {
+    EXIT "E/TARGET_OSPLAT for $(TARGET_OS) invalid:" $(TARGET_OSPLAT) ;
+  }
+}
+else if $(TARGET_OS) = LINUX {
+  SUFEXE = .$(TARGET_OSPLAT:L) ;
+  SUFDLL = .so ;
+  if $(TARGET_OSPLAT) = X64 {
+    ZIGCC_TARGET = x86_64-linux-gnu ;
+  }
+  else if $(TARGET_OSPLAT) = ARM64 {
+    ZIGCC_TARGET = aarch64-linux-gnu ;
+  }
+  else {
+    EXIT "E/TARGET_OSPLAT for $(TARGET_OS) invalid:" $(TARGET_OSPLAT) ;
+  }
+}
+else {
+  EXIT "E/TARGET_OS unknown:" $(TARGET_OS) ;
+}
+
+C++FLAGS ?= ;
+CCFLAGS  ?= ;
+
+CC   ?= zig cc -target $(ZIGCC_TARGET) ;
+C++  ?= zig c++ -target $(ZIGCC_TARGET) ;
+LINK ?= zig cc -target $(ZIGCC_TARGET) ;
+AR   ?= zig ar -ru -target $(ZIGCC_TARGET) ;
+ZIGCC = 1 ;
+
+LINKFLAGS   ?= "" ;
+LINKLIBS    ?=  ;
+OPTIM       ?= "" ;
+STDHDRS     ?= ;
+UNDEFFLAG   ?= "-u _" ;
