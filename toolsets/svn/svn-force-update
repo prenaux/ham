@@ -1,0 +1,10 @@
+#!/bin/bash
+if [ "$1" = "doit" ]; then
+    set -ex
+    svn cleanup
+    svn-revert-to-head
+    svn update
+else
+    svn status | grep -v '^?'
+    echo "# Type 'svn-force-update doit' to reset the files listed above to the server's version (if any) and then run a full 'svn update'."
+fi
