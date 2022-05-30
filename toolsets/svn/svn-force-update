@@ -2,7 +2,7 @@
 if [ "$1" = "doit" ]; then
     set -ex
     svn cleanup
-    svn-revert-to-head
+    svn-revert-to-head doit
     svn update
 else
     svn status | grep -v '^?'
