@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/bash -e
 usage() {
     echo "usage: git-force-pull (nostash) (nofetch) BRANCH"
     echo ""
     echo "  Fetch and checkout a clean branch from the specified remote."
     echo ""
-    echo "  BRANCH can be 'current_branch' to specify the branch currently checked-out."
+    echo "  BRANCH can be 'current_branch' or '.' to specify the branch currently checked-out."
 
     if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
         # sourced...
@@ -39,34 +39,37 @@ if [ -z "$BRANCH" ]; then
     usage
 fi
 
-set -ex
-if [ "$BRANCH" == "current_branch" ]; then
+if [ "$BRANCH" == "current_branch" ] || [ "$BRANCH" == "." ]; then
     BRANCH=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+    echo "I/Force pulling current branch '$BRANCH'."
 fi
 
 if [ $STASH == 1 ]; then
-    git-stash trydrop git-force-pull
-    git-stash push git-force-pull
-    git checkout $BRANCH
-    git-stash trypop git-force-pull
+  (set -x;
+   git-stash trydrop git-force-pull ;
+   git-stash push git-force-pull ;
+   git checkout $BRANCH ;
+   git-stash trypop git-force-pull)
 else
-    git checkout $BRANCH
+  (set -x ;
+   git checkout $BRANCH)
 fi
 
 if [ "`git branch --list tmp-git-force-pull`" ]; then
-    git branch -D tmp-git-force-pull
+    (set -x ; git branch -D tmp-git-force-pull)
 fi
 
-git checkout -b tmp-git-force-pull
+(set -x ; git checkout -b tmp-git-force-pull)
 if [ $FETCH == 1 ]; then
-    git fetch $ORIGIN +$BRANCH:$BRANCH
+    (set -x ; git fetch $ORIGIN +$BRANCH:$BRANCH)
 fi
 if [ $STASH == 1 ]; then
-    git-stash trydrop git-force-pull
-    git-stash push git-force-pull
-    git checkout $BRANCH
-    git-stash trypop git-force-pull
+    (set -x ;
+     git-stash trydrop git-force-pull ;
+     git-stash push git-force-pull ;
+     git checkout $BRANCH ;
+     git-stash trypop git-force-pull)
 else
-    git checkout $BRANCH
+    (set -x ; git checkout $BRANCH)
 fi
-git branch -D tmp-git-force-pull
+(set -x ; git branch -D tmp-git-force-pull)
