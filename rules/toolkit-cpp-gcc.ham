@@ -46,6 +46,8 @@ if $(LINUX) {
    -lstdc++ -lpthread -ldl -lm
    # sudo apt-get install -y libdw-dev
    -ldw
+   # sudo apt-get install -y libunwind-dev
+   -lunwind
   ;
 
   ### "Debug" (da) build flags ###
