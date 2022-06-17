@@ -72,6 +72,8 @@
 
 ;;; Code:
 
+(require 's)
+
 ;;; Customizable variables
 
 
@@ -134,6 +136,13 @@ MS-Windows."
       :set (lambda (symbol value)
              (set symbol value))
       :group 'markdown-dnd)
+
+(defcustom dnd-save-image-hash t
+    "Add the image's hash to the filename when saved."
+    :type 'boolean
+    :set (lambda (symbol value)
+           (set symbol value))
+    :group 'markdown-dnd)
 
 (defcustom dnd-view-inline nil
     "View inline images on download."
@@ -303,27 +312,26 @@ happened."
   action)
 
 (defun dnd-insert-image-tag (text)
-  (insert (format "![%s](%s)" text text ))
+  (insert (format "![%s](%s)\n"
+            (concat "Added: " (format-time-string "%Y-%m-%dT%T"))
+            (s-chop-prefix (file-name-directory (buffer-file-name)) text)))
   (if dnd-capture-source
-    (insert (format "\n\n\x2ASource: %s; Accessed: %s\x2A" url (current-time-string) ))
+    (insert (format "\n> Source: `%s`; Added: %s\n" url (format-time-string "%Y-%m-%dT%T")))
   )
   (if dnd-view-inline
     (markdown-display-inline-images)
-  )
-  )
+  ))
 
 ;; slahes and spaces in the path are turned to _
 (defun markdown-img-dir-path ()
   (if (not buffer-file-name)
-      (error (concat "ERROR: Couldn't find buffer-file-name "
-                     "for current buffer")))
+    (error (concat "ERROR: Couldn't find buffer-file-name "
+             "for current buffer")))
   (file-name-as-directory
-   (expand-file-name
-    (concat dnd-save-directory
-    (if dnd-save-buffer-name
-    (replace-regexp-in-string "[/ ]+" "_" buffer-file-name)
-    )
-            ))))
+    (expand-file-name
+      (concat dnd-save-directory
+        (if dnd-save-buffer-name
+          (concat (file-name-base buffer-file-name) (format-time-string "/%Y%m")))))))
 
 ;; returns name of dir created
 (defun dnd-try-mkdir (dir)
@@ -338,11 +346,14 @@ happened."
 ;; spaces in the file name are turned to "_"
 (defun cp-file-to-img-dir (fname)
   (dnd-try-mkdir (markdown-img-dir-path))
-  (let* ((fname-base (file-name-nondirectory fname))
+  (let* ((fname-base (file-name-sans-extension (file-name-nondirectory fname)))
+         (fname-ext (file-name-extension fname))
          (new-fname (concat (markdown-img-dir-path)
-                            (replace-regexp-in-string " +"
+                            (replace-regexp-in-string "[ :/\\\.]+"
                                                       "_"
-                                                      fname-base))))
+                                                      fname-base)
+                            (if dnd-save-image-hash (concat "_" (md5 fname)) "")
+                            "." fname-ext)))
     (if (file-exists-p new-fname)
         (delete-file new-fname))
     (if (file-exists-p fname)

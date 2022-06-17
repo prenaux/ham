@@ -885,9 +885,10 @@ BEG and END (region to sort)."
 
 (NotBatchMode
   (require 'markdown-dnd-images)
-  (setq dnd-save-directory "images")
-  (setq dnd-view-inline nil)
-  (setq dnd-capture-source t))
+  (setq markdown-max-image-size '(400 . 400))
+  (setq dnd-save-directory "images/")
+  (setq dnd-view-inline t)
+  (setq dnd-capture-source nil))
 
 ;;;======================================================================
 ;;; Misc
