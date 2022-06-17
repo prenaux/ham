@@ -625,6 +625,16 @@ If the new path's directories does not exist, create them."
 )
 
 ;;;======================================================================
+;;; Fuzzy finder
+;;;======================================================================
+(NotBatchMode
+ (require 'fzf)
+ (setq fzf/executable
+   (concat (getenv "HAM_HOME") "/bin/" (getenv "HAM_BIN_LOA") "/fzf"))
+ (setq fzf/files-source "ripgrep")
+)
+
+;;;======================================================================
 ;;; Keymap
 ;;;======================================================================
 (NotBatchMode

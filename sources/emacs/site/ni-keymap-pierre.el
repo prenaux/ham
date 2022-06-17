@@ -156,14 +156,14 @@
 ;;;======================================================================
 
  ;;;; Open cached file
- (global-set-key (key "C-x C-f") 'ni-file-cache-find-file-at-point)
- (global-set-key (key "C-x f") 'ni-file-cache-find-file)
+ (global-set-key (key "C-x C-f") 'ni-file-cache-find-file)
+ (global-set-key (key "C-x f") 'ni-file-cache-find-file-at-point)
 
- ;;;; Projectile
+ ;;;; Fuzzy search
  ;; open file in project
- (global-set-key (kbd "C-x C-p") 'projectile-find-file)
- ;; open file in another project
- (global-set-key (kbd "C-x p") 'projectile-switch-project)
+ (global-set-key (kbd "C-x C-p") 'fzf-projectile)
+ ;; open file in a directory
+ (global-set-key (kbd "C-x p") 'fzf-directory)
 
  ;; go to file tree window
  (global-set-key (kbd "C-h C-d") 'direx:jump-to-project-file-other-window)
