@@ -880,54 +880,14 @@ BEG and END (region to sort)."
 ;;;======================================================================
 ;;; MarkDown
 ;;;======================================================================
-(autoload 'markdown-mode "markdown-mode"
-  "Major mode for editing Markdown files" t)
-
-;; Override Markdown Mode's image overlays so the image markdown code and the image are both visible!
-(eval-after-load "markdown-mode"
-  '(progn
-     (setq markdown-gfm-use-electric-backquote nil)
-     (setq markdown-max-image-size '(800 . 600))
-     (defun markdown-display-inline-images ()
-       "Add inline image overlays to image links in the buffer.
-This can be toggled with `markdown-toggle-inline-images'
-or \\[markdown-toggle-inline-images]."
-       (interactive)
-       (unless (display-images-p)
-         (error "Cannot show images"))
-       (save-excursion
-         (save-restriction
-           (widen)
-           (goto-char (point-min))
-           (while (re-search-forward markdown-regex-link-inline nil t)
-             (let ((start (match-beginning 0))
-                   (end (match-end 0))
-                   (file (match-string-no-properties 6)))
-               (when (file-exists-p file)
-                 (let* ((abspath (if (file-name-absolute-p file)
-                                     file
-                                   (concat default-directory file)))
-                        (image
-                         (if (and markdown-max-image-size
-                                  (image-type-available-p 'imagemagick))
-                             (create-image
-                              abspath 'imagemagick nil
-                              :max-width (car markdown-max-image-size)
-                              :max-height (cdr markdown-max-image-size))
-                           (create-image abspath))))
-                   (when image
-                     (setq newStart (+ end ))
-                     (setq newEnd (+ end 1))
-                     (let ((ov (make-overlay newStart newEnd)))
-                       (message "%s" newEnd)
-                       (overlay-put ov 'display image)
-                       (overlay-put ov 'face 'default)
-                       (overlay-put ov 'before-string "\n\n")
-                       (push ov markdown-inline-image-overlays))))))))))
-   )
-)
-
+(autoload 'markdown-mode "markdown-mode" "Major mode for editing Markdown files" t)
 (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
+
+(NotBatchMode
+  (require 'markdown-dnd-images)
+  (setq dnd-save-directory "images")
+  (setq dnd-view-inline nil)
+  (setq dnd-capture-source t))
 
 ;;;======================================================================
 ;;; Misc
@@ -1063,82 +1023,6 @@ Version 2017-01-27"
         (progn
           (message "File path copied: 「%s」" -fpath)
           -fpath )))))
-)
-
-;;;======================================================================
-;;; Working drag'n drop on macOS
-;;; Note: The drag'n drop protocol seems to be what's used by Finder
-;;;       and other apps to open files in Emacs
-;;;======================================================================
-(OSX
- ; Upon drag-and-drop to a frame (OSX window): Find the file in the frame,
- ;   with shift: insert filename(s), space-separated;
- ;   with control: insert filename(s) as lines, repeating the beginning of the line;
- ;   with meta: insert file contents
- ; note that the emacs window must be activated (CMD-TAB) for the modifiers to register
- (define-key global-map [M-ns-drag-file] 'ns-insert-file)
- (define-key global-map [S-ns-drag-file] 'ns-insert-filename)
- (define-key global-map [C-ns-drag-file] 'ns-insert-filename-as-lines)
- (define-key global-map [ns-drag-file] 'ns-find-file-in-frame)
- (define-key global-map [M-s-drag-n-drop] 'ns-find-file-in-frame)
- (define-key global-map [C-M-s-drag-n-drop] 'ns-find-file-in-frame)
-
- (defun ns-insert-filename ()
-   "Insert contents of first elWindow of `ns-input-file' at point."
-   (interactive)
-   (let ((f (pop ns-input-file)))
-     (insert f))
-   (if ns-input-file                     ; any more? Separate by " "
-       (insert " ")))
-
- (defun ns-insert-filename-as-lines ()
-   "Insert contents of first elWindow of `ns-input-file' at point,
-as lines repeating any text already on the line before point.."
-   (interactive)
-   (let ((bols (buffer-substring (line-beginning-position) (point))))
-     (let ((f (pop ns-input-file)))
-       (insert f)
-       (insert "\n")
-       (if ns-input-file                     ; any more? Insert bols again
-           (insert bols)))))
-
- (defun ns-find-file-in-frame ()
-   "Do a `find-file' with the `ns-input-file' as argument; staying in frame."
-   (interactive)
-   (let ((ns-pop-up-frames nil))
-     (ns-find-file)))
-
- (defun ns-drag-n-drop-other-frame (event)
-   "ns-drag-n-drop-other-frame override to always open file when dragged on Emacs window."
-   (interactive "e")
-   (ns-drag-n-drop event))
-
- (defun ns-drag-n-drop-as-text (event)
-   "ns-drag-n-drop-other-frame override to always open file when dragged on Emacs window."
-   (interactive "e")
-   (ns-drag-n-drop event))
-
- (defun ns-drag-n-drop-as-text-other-frame (event)
-   "ns-drag-n-drop-other-frame override to always open file when dragged on Emacs window."
-   (interactive "e")
-   (ns-drag-n-drop event))
-
- (defun agl-drag-n-drop (event)
-  ""
-  (interactive "e")
-  (let* ((window (posn-window (event-start event)))
-         (arg (car (cdr (cdr event))))
-         (type (car arg))
-         (operations (car (cdr arg)))
-         (objects (cdr (cdr arg)))
-         (string (mapconcat 'identity objects "\n")))
-    (set-frame-selected-window nil window)
-    (raise-frame)
-    (setq window (selected-window))
-    (find-file string)))
- (global-set-key [drag-n-drop] 'agl-drag-n-drop)
-
- (setq ns-pop-up-frames nil)
 )
 
 ;;;======================================================================
