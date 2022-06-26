@@ -158,6 +158,13 @@ MS-Windows."
            (set symbol value))
     :group 'markdown-dnd)
 
+(defcustom dnd-file-ext-insert-list '("png" "jpg" "jpeg" "pdf")
+    "The list of extensions that get inserted as markdown image tag."
+    :type 'list
+    :set (lambda (symbol value)
+           (set symbol value))
+    :group 'markdown-dnd)
+
 ;; Functions
 
 ;; If images viewed inline, markdown-mode required.
@@ -259,12 +266,18 @@ remote urls of the form file://server-name/file-name will also be
 handled by this function.  An alternative for systems that do not
 support unc file names is `dnd-open-remote-url'. ACTION is
 ignored."
-  (let ((f (cp-file-to-img-dir (dnd-get-local-file-name uri t))))
-    (if (and f (file-readable-p f))
-	(progn
-	  (dnd-insert-image-tag f)
-	  'private)
-      (error "Can not read %s" uri))))
+  (let* ((fname (dnd-get-local-file-name uri t))
+          (fname-ext (file-name-extension fname)))
+    (cond
+      ((member fname-ext dnd-file-ext-insert-list)
+        (let ((f (cp-file-to-img-dir fname)))
+          (if (and f (file-readable-p f))
+	          (progn
+	            (dnd-insert-image-tag f)
+	            'private)
+            (error "Can not read %s" uri))))
+      (t (find-file fname)))
+  ))
 
 (defun dnd-open-remote-url (uri _action)
   "Open a remote file with `find-file' and `url-handler-mode'.
