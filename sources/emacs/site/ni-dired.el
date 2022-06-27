@@ -35,3 +35,21 @@
 (define-key dired-mode-map (kbd "<tab>") #'dired-subtree-toggle)
 (define-key dired-mode-map (kbd "<backspace>") #'dired-subtree-cycle)
 (define-key dired-mode-map (kbd "/") #'dired-narrow)
+
+(defun ni-dired-sort ()
+  "Sort dired dir listing in different ways.
+Prompt for a choice.
+URL `http://xahlee.info/emacs/emacs/dired_sort.html'
+Version: 2018-12-23 2022-04-07"
+  (interactive)
+  (let (xsortBy xarg)
+    (setq xsortBy (completing-read "Sort by:" '( "size" "date" "name" )))
+    (cond
+     ((equal xsortBy "name") (setq xarg "-Al "))
+     ((equal xsortBy "date") (setq xarg "-Al -t"))
+     ((equal xsortBy "size") (setq xarg "-Al -S"))
+     ((equal xsortBy "dir") (setq xarg "-Al --group-directories-first"))
+     (t (error "logic error 09535" )))
+    (dired-sort-other xarg )))
+
+(define-key dired-mode-map (kbd "s") 'ni-dired-sort)
