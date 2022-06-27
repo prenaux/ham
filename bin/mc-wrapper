@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#
+# When midnight command exits cd's in the current directory in mc.
+#
+# alias mc='source mc-wrapper'
+#
+MC_USER=`id | sed 's/[^(]*(//;s/).*//'`
+MC_PWD_FILE="${TMPDIR-/tmp}/mc-$MC_USER/mc.pwd.$$"
+# `--nosubshell` for fast startup
+command mc --nosubshell -P "$MC_PWD_FILE" "$@"
+
+if test -r "$MC_PWD_FILE"; then
+        MC_PWD="`cat "$MC_PWD_FILE"`"
+        if test -n "$MC_PWD" && test -d "$MC_PWD"; then
+                echo "I/Will cd in: $MC_PWD"
+                cd $MC_PWD
+                echo $(pwd)
+        fi
+        unset MC_PWD
+fi
+
+rm -f "$MC_PWD_FILE"
+unset MC_PWD_FILE
+echo $(pwd)
