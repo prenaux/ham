@@ -1,6 +1,41 @@
 #!/bin/bash
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
+# IMPORTANT: Update the tag date when you make any change to the list of
+# packages installed. You can replace the date with the output of `arch_datez`
+TAG="ham-install-os-packages-${HAM_OS}-20220628_104910Z"
+
+TAGFILE="$TEMPDIR/ham-install-os-packages-${HAM_OS}-tag.txt"
+
+# check_tag tagfile tag
+check_tag() {
+  OUTFILE=$1
+  TAG=$2
+  if [ -e "$OUTFILE" ]; then
+    PREVTAG=`cat "$OUTFILE"`
+    CURRTAG="$TAG"
+    if [ "$PREVTAG" == "$CURRTAG" ]; then
+      echo 1
+    else
+      echo 0
+    fi
+  else
+    # Output file doesnt exist
+    echo 0
+  fi
+}
+
+if [[ `check_tag "$TAGFILE" "$TAG"` == 1 ]]; then
+    echo "I/ham-install-os-packages tag up-to-date."
+    if [ "$1" == "nocheck" ]; then
+        echo "I/Installing anyway because of 'nocheck' option."
+    else
+        exit 0
+    fi
+else
+    echo "I/ham-install-os-packages tag outdated, installing os packages..."
+fi
+
 case $HAM_OS in
     NT*)
         echo "### No extra packages need to be installed on Windows ###"
@@ -37,4 +72,9 @@ case $HAM_OS in
         return 1
         ;;
 esac
+
+# Update tag file
+echo "$TAG" > "$TAGFILE"
+echo "I/Updated tagfile: '$TAGFILE'"
+
 echo "I/Done"
