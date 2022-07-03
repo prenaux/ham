@@ -1,0 +1,29 @@
+#!/bin/bash
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+usage() {
+  echo ""
+  echo "usage: ham-run-up EXE PARAMS"
+  echo ""
+  echo "  Search for EXE in the current or any parent directory and run it in the current directory."
+  exit 1
+}
+
+if [ -z "$1" ]; then
+  echo "E/Script or exe to run not specified."
+  usage
+fi
+EXE=$1
+shift
+
+EXE_PATH=$(ham-find-file-up "$EXE")
+if [ -e "$EXE_PATH" ]; then
+    echo "I/Running '$EXE_PATH'"
+    set -x
+    pwd
+    "$EXE_PATH" "$@"
+else
+    echo "E/No '$EXE' found in any parent folder."
+    exit 1
+fi
