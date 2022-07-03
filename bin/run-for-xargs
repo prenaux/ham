@@ -1,0 +1,9 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+   echo "E/Nothing to run specified."
+   exit 255
+fi
+CMD=$1
+shift
+# xargs only exits on error code 255
+$CMD $@ || exit 255
