@@ -23,6 +23,8 @@ if [[ -e "$FOUND_PROJECT_DIR" ]]; then
     echo "I/Found _ham_setup in '${FOUND_PROJECT_DIR}'"
 fi
 
+# echo "D/HAM_NO_VER_CHECK: $HAM_NO_VER_CHECK"
+
 # Check that there is at least one argument...
 if [ $# = 0 ] || [ $1 == "." ]; then
     if [[ -z "$FOUND_PROJECT_DIR" ]]; then
@@ -34,6 +36,10 @@ if [ $# = 0 ] || [ $1 == "." ]; then
         . "$HAM_PROJECT_DIR/_ham_project"
         HAM_DIE_SHOULD_RETURN=$SCRIPT_SOURCED errcheck $? ham-toolset "Can't import _ham_project." || return 1
     fi
+
+    if [ -z "$HAM_NO_VER_CHECK" ]; then
+      toolset_info
+    fi
 else
     . ham-env-clear
     if [[ -e "$FOUND_PROJECT_DIR" ]]; then
@@ -43,6 +49,8 @@ else
     toolset_import_list "$@" || return 1
     HAM_DIE_SHOULD_RETURN=$SCRIPT_SOURCED errcheck $? ham-toolset "Can't import toolsets: $ALL_ARGS." || return 1
 
-    toolset_info
+    if [ -z "$HAM_NO_VER_CHECK" ]; then
+      toolset_info
+    fi
     update_prompt
 fi
