@@ -1,4 +1,10 @@
 #!/bin/bash
+
+# The git pre-push hook is called when deleting a remote branch, we just don't
+# want that. Note that `SKIP_GIT_PRE_PUSH_HOOK` is our convention not a
+# standard git thing, so the pre-push hook has to handle that envvar.
+export SKIP_GIT_PRE_PUSH_HOOK=yes
+
 CURRENT_GIT_BRANCH=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
 MAIN_BRANCH_NAME=main
 if [ "$CURRENT_GIT_BRANCH" != "$MAIN_BRANCH_NAME" ]; then
@@ -14,7 +20,7 @@ if [ "$1" == "noprune" ]; then
     shift
 else
     echo "# git fetch --prune origin"
-    git fetch --prune origin
+    (set -x ; git fetch --prune origin)
 fi
 
 if [[ "$1" == "doit_local" || "$1" == "doit_remote" ]]; then
@@ -27,7 +33,7 @@ for branch in $LOCAL_BRANCHES
 do
     if [ "$1" == "doit_local" ]; then
         echo "I/Deleting local branch '$branch'."
-        git branch -d $branch
+        (set -x ; git branch -d $branch)
     else
         echo "I/Would delete local branch '$branch'."
     fi
@@ -42,7 +48,7 @@ for branch in $REMOTE_BRANCHES
 do
     if [ "$1" == "doit_remote" ]; then
         echo "I/Deleting remote branch '$branch'."
-        git push origin $branch --delete
+        (set -x ; git push origin $branch --delete)
     else
         echo "I/Would delete remote branch '$branch'."
     fi
