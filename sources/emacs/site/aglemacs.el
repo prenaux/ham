@@ -319,6 +319,7 @@
 (add-to-list 'auto-mode-alist '("\\SConstruct$" . python-mode))
 (add-to-list 'auto-mode-alist '("\\SCsub$" . python-mode))
 (add-to-list 'auto-mode-alist '("\\.gd\\'" . python-mode))
+(add-to-list 'auto-mode-alist '("\\BUCK$" . python-mode))
 
 ;; Python Hook, set indent to two spaces...
 (add-hook 'python-mode-hook
