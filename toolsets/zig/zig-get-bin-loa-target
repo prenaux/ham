@@ -1,0 +1,16 @@
+#!/bin/bash -e
+. ham-bash-lib.sh
+BIN_LOA=$1
+if [ -z "$BIN_LOA" ]; then
+  BIN_LOA=${HAM_BIN_LOA}
+fi
+
+case ${BIN_LOA} in
+  nt-x86|nt-x64) echo x86_64-windows-gnu ;;
+  nt-arm64) echo aarch64-windows-gnu ;;
+  osx-x64) echo x86_64-macos-none ;;
+  osx-arm64) echo aarch64-macos-none ;;
+  lin-x64) echo x86_64-linux-gnu ;;
+  lin-arm64) echo aarch64-linux-gnu ;;
+  *) echo unknown-unknown ; exit 1 ;;
+esac
