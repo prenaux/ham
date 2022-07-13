@@ -55,7 +55,6 @@
 # endif
 
 #if defined OS_MACOSX || defined OS_LINUX
-#include <spawn.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #define _exit exit

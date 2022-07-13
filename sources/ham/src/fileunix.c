@@ -53,7 +53,8 @@
 
 # if defined( OS_RHAPSODY ) || \
      defined( OS_MACOSX ) || \
-     defined( OS_NEXT )
+     defined( OS_NEXT ) || \
+     defined( OS_LINUX )
 # include <unistd.h>
 # endif
 

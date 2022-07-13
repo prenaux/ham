@@ -102,6 +102,6 @@ build_ham0
 build_ham_crosscompile osx-x64 ham
 build_ham_crosscompile osx-arm64 ham
 # build_ham_crosscompile nt-x64 ham.exe
-# build_ham_crosscompile lin-x64 ham
+build_ham_crosscompile lin-x64 ham
 
 echo "I/Done."
