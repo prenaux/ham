@@ -47,14 +47,13 @@
 
 # ifdef USE_EXECUNIX
 
-#include <spawn.h>
-
 # ifdef OS_OS2
 # define USE_EXECNT
 # include <process.h>
 # endif
 
 #if defined OS_MACOSX || defined OS_LINUX
+#include <spawn.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #define _exit exit
@@ -451,7 +450,6 @@ execcmd(
   }
 
 # else
-  extern char **environ;
 
 #ifdef _TRACE_EXECCMD
   printf("EXEC-POSIX-SPAWN (serialOutput: %d): %s\n",serialOutput,argv[0]);

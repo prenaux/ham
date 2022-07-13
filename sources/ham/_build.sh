@@ -4,6 +4,8 @@
 HAM_NO_VER_CHECK=1 . hat
 errcheck $? _build_ham "Can't setup toolset"
 
+set -e
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SDIR="${SCRIPT_DIR}/src"
 
@@ -70,6 +72,8 @@ build_ham_cp() {
 }
 
 build_ham0() {
+  ODIR="bin/${HAM_BIN_LOA}"
+
   build_ham ${HAM_BIN_LOA} ham0
 
   echo "I/Run ham0"
@@ -86,22 +90,19 @@ build_ham0() {
 build_ham_crosscompile() {
   BIN_LOA=$1
   EXE_NAME=$2
-  if [ ${HAM_BIN_LOA} = "$1" ]; then
-    echo "I/Skipped ${BIN_LOA} has its the default platform built by ham0."
-  else
-    build_ham ${BIN_LOA} ${EXE_NAME}
-  fi
+  build_ham ${BIN_LOA} ${EXE_NAME}
   build_ham_cp ${BIN_LOA} ${EXE_NAME}
 }
-
-set -e
 
 cd "$SDIR"
 build_jambase
 build_ham0
 build_ham_crosscompile osx-x64 ham
 build_ham_crosscompile osx-arm64 ham
-# build_ham_crosscompile nt-x64 ham.exe
 build_ham_crosscompile lin-x64 ham
+build_ham_crosscompile nt-x86 ham.exe
+
+echo "I/Removing intermediate files."
+rm -Rf "$SDIR/bin/"
 
 echo "I/Done."
