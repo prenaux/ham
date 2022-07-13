@@ -7,19 +7,19 @@
 
 include _rules.ham ;
 
-VERSION = ham-5.0.0 ;
+ECHO "OS:" $(OS) ;
+ECHO "OSPLAT:" $(OSPLAT) ;
 
 CHECK_BASH_RULE = [ Subst [ Bash "ls _build.ham" ] : "%s" ]  ;
-ECHO "BashRule: " $(CHECK_BASH_RULE) ;
+ECHO "BashRule:" $(CHECK_BASH_RULE) ;
 if $(CHECK_BASH_RULE) != "_build.ham" {
-  EXIT "E/ Bash Buildin rule is broken on this platform." ;
+  EXIT "E/Bash builtin rule is broken on this platform." ;
 }
 
 # note that we use the target directory 'bin.unix' to ensure that
 # 'make install' and 'make uninstall' work correctly
 #
-if $(UNIX) { LOCATE_TARGET ?= bin.unix ; }
-else       { LOCATE_TARGET ?= bin.$(OSFULL[1]:L) ; }
+LOCATE_TARGET ?= bin/$(HAM_BIN_LOA) ;
 
 # Leave generated source in current directory; it would be nice to use
 # these lines below to build the source into the platform-specific
@@ -172,7 +172,6 @@ if $(HAM_TOOLSET) = MINGW
 #
 # Distribution making from here on out.
 #
-
 ALLSOURCE =
 	Build.com Build.mpw Jam.html Jambase Jambase.html _build.ham
 	Jamfile.html Porting README RELNOTES builtins.c builtins.h

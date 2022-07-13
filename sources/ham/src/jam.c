@@ -182,8 +182,8 @@ extern char **environ;
 char g_bash_path[2048] = "bash";
 
 #define PRINTF_VER()                            \
-  printf( "Ham %s. %s. %d CPU%s.\n",            \
-          VERSION, OSMINOR,                     \
+  printf( "Ham %s. %s. %s. %d CPU%s.\n",        \
+          VERSION, OSMINOR, OSPLAT,             \
           numProcessors,                        \
           numProcessors > 1 ? "s":"");
 

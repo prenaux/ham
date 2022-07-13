@@ -1,0 +1,93 @@
+#!/bin/bash
+. ham-bash-lib.sh
+
+HAM_NO_VER_CHECK=1 . hat
+errcheck $? _build_ham "Can't setup toolset"
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SDIR="${SCRIPT_DIR}/src"
+
+build_jambase() {
+  ODIR="bin/${HAM_BIN_LOA}"
+
+  echo "I/build_jambase: Create output folder "$ODIR""
+  (set -x ; mkdir -p "$ODIR")
+
+  echo "I/build_jambase: Building jambase.c..."
+  (set -x ;
+   zig cc -o "${ODIR}/mkjambase" mkjambase.c ;
+   "$ODIR/mkjambase" jambase.c Jambase)
+}
+
+build_ham() {
+  BIN_LOA=$1
+  EXE_NAME=$2
+  ODIR="bin/$BIN_LOA"
+  ZIG_TARGET=$(zig-get-bin-loa-target ${BIN_LOA})
+
+  echo "I/build_ham: $BIN_LOA ($ZIG_TARGET): Create output folder "$ODIR""
+  (set -x ; mkdir -p "$ODIR")
+
+  echo "I/build_ham: $BIN_LOA ($ZIG_TARGET): Building ${EXE_NAME}"
+  (set -x ;
+   zig cc -o "${ODIR}/${EXE_NAME}" -g0 -O2 \
+       -target ${ZIG_TARGET} \
+       -Wno-incompatible-pointer-types-discards-qualifiers \
+       -Wno-parentheses -Wno-string-plus-int \
+       buffer.c builtins.c command.c compile.c \
+       execunix.c expand.c \
+       filent.c fileunix.c glob.c hash.c \
+       hdrmacro.c headers.c \
+       jam.c jambase.c jamgram.c \
+       lists.c luagsub.c make.c make1.c \
+       newstr.c option.c parse.c pathunix.c regexp.c \
+       rules.c scan.c search.c sha256.c timestamp.c variable.c hcache.c )
+}
+
+build_ham_cp() {
+  BIN_LOA=$1
+  EXE_NAME=$2
+  ODIR="bin/$BIN_LOA"
+
+  echo "I/build_ham_cp: $BIN_LOA ($ZIG_TARGET): Copying to HAM_HOME/bin"
+  (set -x ;
+   mkdir -p "$HAM_HOME/bin/${BIN_LOA}/" ;
+   cp -f "${ODIR}/${EXE_NAME}" "$HAM_HOME/bin/${BIN_LOA}/${EXE_NAME}")
+}
+
+build_ham0() {
+  build_ham ${HAM_BIN_LOA} ham0
+
+  echo "I/Run ham0"
+  (set -x ;
+   "${ODIR}/ham0")
+
+  case "$HAM_BIN_LOA" in
+    nt-*) EXE_NAME=ham.exe ;;
+    *) EXE_NAME=ham ;;
+  esac
+  build_ham_cp ${HAM_BIN_LOA} ${EXE_NAME}
+}
+
+build_ham_crosscompile() {
+  BIN_LOA=$1
+  EXE_NAME=$2
+  if [ ${HAM_BIN_LOA} = "$1" ]; then
+    echo "I/Skipped ${BIN_LOA} has its the default platform built by ham0."
+  else
+    build_ham ${BIN_LOA} ${EXE_NAME}
+  fi
+  build_ham_cp ${BIN_LOA} ${EXE_NAME}
+}
+
+set -e
+
+cd "$SDIR"
+build_jambase
+build_ham0
+build_ham_crosscompile osx-x64 ham
+build_ham_crosscompile osx-arm64 ham
+# build_ham_crosscompile nt-x64 ham.exe
+# build_ham_crosscompile lin-x64 ham
+
+echo "I/Done."

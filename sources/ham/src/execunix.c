@@ -47,6 +47,8 @@
 
 # ifdef USE_EXECUNIX
 
+#include <spawn.h>
+
 # ifdef OS_OS2
 # define USE_EXECNT
 # include <process.h>
@@ -86,6 +88,7 @@ static struct
   char*   outputFile;
 #ifdef USE_EXECNT
   char* tempFile;
+
 #endif
 } cmdtab[ MAXJOBS ] = {{0}};
 
@@ -449,6 +452,7 @@ execcmd(
   }
 
 # else
+  extern char **environ;
 
 #ifdef _TRACE_EXECCMD
   printf("EXEC-POSIX-SPAWN (serialOutput: %d): %s\n",serialOutput,argv[0]);

@@ -42,7 +42,7 @@
 # if defined( OS_SEQUENT ) || \
      defined( OS_DGUX ) || \
      defined( OS_SCO ) || \
-     defined( OS_ISC ) 
+     defined( OS_ISC )
 # define PORTAR 1
 # endif
 
@@ -54,14 +54,11 @@
 # if defined( OS_RHAPSODY ) || \
      defined( OS_MACOSX ) || \
      defined( OS_NEXT )
-/* need unistd for rhapsody's proper lseek */
-# include <sys/dir.h>
 # include <unistd.h>
-# define STRUCT_DIRENT struct direct 
-# else
-# include <dirent.h>
-# define STRUCT_DIRENT struct dirent 
 # endif
+
+# include <dirent.h>
+# define STRUCT_DIRENT struct dirent
 
 # ifdef OS_COHERENT
 # include <arcoff.h>
@@ -69,7 +66,7 @@
 # endif
 
 # if defined( OS_MVS ) || \
-     defined( OS_INTERIX ) 
+     defined( OS_INTERIX )
 
 #define	ARMAG	"!<arch>\n"
 #define	SARMAG	8
@@ -102,14 +99,14 @@ struct ar_hdr		/* archive file member header - printable ascii */
 # define __AR_BIG__
 # endif
 # include <ar.h>
-# endif	
+# endif
 
 /*
  * file_dirscan() - scan a directory for files
  */
 
 void
-file_dirscan( 
+file_dirscan(
 	const char *dir,
 	scanback func,
 	void *closure )
@@ -278,8 +275,8 @@ file_archscan(
 
 	    *dst = 0;
 
-	    /* Modern (BSD4.4) long names: if the name is "#1/nnnn", 
-	    ** then the actual name is the nnnn bytes after the header.  
+	    /* Modern (BSD4.4) long names: if the name is "#1/nnnn",
+	    ** then the actual name is the nnnn bytes after the header.
 	    */
 
 	    if( !strcmp( lar_name, "#1" ) )
@@ -394,4 +391,3 @@ file_archscan(
 # endif /* AIAMAG - RS6000 AIX */
 
 # endif /* USE_FILEUNIX */
-

@@ -457,6 +457,18 @@
 # define OSPLAT "OSPLAT=390"
 # endif
 
+# if (defined(__AARCH64EL__) && defined(__ARM_ARCH)) || \
+  defined _M_ARM || defined __arm__ || defined _ARM || defined __TARGET_ARCH_ARM
+#  if (defined(__AARCH64EL__) && defined(__ARM_ARCH)) && !defined __CPU_ARM64__
+#    define __CPU_ARM64__
+#  endif
+#  ifdef __CPU_ARM64__
+#    define OSPLAT "OSPLAT=ARM64"
+#  else
+#    define OSPLAT "OSPLAT=ARM32"
+#  endif
+# endif
+
 # ifndef OSPLAT
 # define OSPLAT "UNK"
 # endif
