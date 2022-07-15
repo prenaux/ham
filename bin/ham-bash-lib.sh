@@ -19,8 +19,10 @@ if [[ $OS == Windows* ]]; then
     # On Windows both Emacs & the regular terminal seem to work fine with 8 colors...
     export TERM_NCOLORS=8
 else
-    if [[ -z $TERM_NCOLORS ]]; then
+    if test -t 1; then
+      if [[ -z $TERM_NCOLORS ]]; then
         export TERM_NCOLORS=$(tput colors)
+      fi
     fi
 fi
 
@@ -193,7 +195,7 @@ update_prompt() {
         USERTAG="$USERNAME in $STY"
     fi
 
-    if test $TERM_NCOLORS -ge 8; then
+    if test "$TERM_NCOLORS" -ge 8; then
         PROMPT='\[\033[35m$PROJECT_NAME$TOOLSET_EXTRA\033[0m\] \[\033[32m$(current_git_branch)\033[0m\]\w (\[\033[32m$USERTAG\033[0m\]) \[\033[0;36m$HAM_IMPORTED_TOOLSETS\033[0m\]'
 
         if [ ! -z "$DEVSERVER" ]; then
