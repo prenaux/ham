@@ -17,6 +17,9 @@ usage() {
 }
 
 PKGNAME="$1"
+if [[ "$PKGNAME" == *"tap/"* ]]; then
+  PKGNAME=$(basename "$PKGNAME")
+fi
 
 # M1 mac folder
 if [ -d "/opt/homebrew/opt/" ]; then
