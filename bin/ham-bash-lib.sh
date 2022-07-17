@@ -443,6 +443,19 @@ arch_datez() {
     date -u +"%Y%m%d_%H%M%SZ"
 }
 
+fcd() {
+  local dir;
+  while true; do
+    # exit with ^D
+    dir="$(ls -a1F | grep '[/@]$' | grep -v '^./$' | sed 's/@$//' | fzf --height 40% --reverse --no-multi --preview 'pwd' --preview-window=up,1,border-none --no-info)"
+    if [[ -z "${dir}" ]]; then
+      break
+    elif [[ -d "${dir}" ]]; then
+      cd "${dir}"
+    fi
+  done
+}
+
 ########################################################################
 ##  Environments
 ########################################################################
