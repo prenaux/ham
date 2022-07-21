@@ -74,7 +74,7 @@ case $HAM_OS in
 esac
 
 # Update tag file
-mkdir -p $(dirname "$TAGFILE")
+mkdir -p "$(dirname "$TAGFILE")"
 echo "$TAG" > "$TAGFILE"
 echo "I/Updated tagfile: '$TAGFILE'"
 
