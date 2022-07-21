@@ -7,6 +7,12 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/solana"
 
 export PATH=${HAM_TOOLSET_DIR}:${PATH}
 
+if [ -z "$SOLANA_REQUIRED_VERSION" ]; then
+    complain solana "SOLANA_REQUIRED_VERSION not exported"
+    return 1
+fi
+
+
 # platform
 case $HAM_OS in
     OSX*|LINUX*)
@@ -15,7 +21,7 @@ case $HAM_OS in
         export PATH="$SOLANA_BIN_DIR":"$HAM_TOOLSET_DIR":$PATH
         if [ ! -x "$SOLANA_BIN_DIR/solana" ]; then
             echo "I/Solana command not found, installing..."
-            solana-install v1.9.9 --data-dir "$SOLANA_DATA_DIR"
+            solana-install "$SOLANA_REQUIRED_VERSION" --data-dir "$SOLANA_DATA_DIR"
         fi
         ;;
     *)
