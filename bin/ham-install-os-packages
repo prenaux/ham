@@ -3,7 +3,7 @@
 
 # IMPORTANT: Update the tag date when you make any change to the list of
 # packages installed. You can replace the date with the output of `arch_datez`
-TAG="ham-install-os-packages-${HAM_OS}-20220628_104910Z"
+TAG="ham-install-os-packages-${HAM_OS}-20220721_144530Z"
 
 TAGFILE="$TEMPDIR/ham-install-os-packages-${HAM_OS}-tag.txt"
 
@@ -74,6 +74,7 @@ case $HAM_OS in
 esac
 
 # Update tag file
+mkdir -p $(dirname "$TAGFILE")
 echo "$TAG" > "$TAGFILE"
 echo "I/Updated tagfile: '$TAGFILE'"
 
