@@ -33,6 +33,8 @@ if [[ `check_tag "$TAGFILE" "$TAG"` == 1 ]]; then
         exit 0
     fi
 else
+    echo "I/HAM_HOME: ${HAM_HOME}"
+    echo "I/TAGFILE: ${TAGFILE}"
     echo "I/ham-install-os-packages tag outdated, installing os packages..."
 fi
 

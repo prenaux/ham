@@ -3,7 +3,7 @@
 usage() {
     echo ""
     echo "usage:"
-    echo "  ham-brew-install PACKAGE CHECKFILE"
+    echo "  ham-brew-install (reinstall|update|upgrade|up) PACKAGE CHECKFILE"
     echo ""
     if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
         # sourced...
@@ -16,7 +16,12 @@ usage() {
 
 INSTALL=install
 if [ "$1" == "reinstall" ]; then
-    INSTALL=reinstall
+  INSTALL=reinstall
+  shift
+elif [ "$1" == "upgrade" -o "$1" == "update" -o "$1" == "up" ]; then
+  # 'upgrade' is the brew command to update a package...
+  INSTALL=upgrade
+  shift
 fi
 
 PKGNAME="$1"
@@ -28,11 +33,26 @@ fi
 PKG_HOME=`ham-brew-installdir "$PKGNAME"`
 # echo "I/PKG_HOME: ${PKG_HOME}"
 
+if [ "$INSTALL" == "reinstall" -o "$INSTALL" == "upgrade" ]; then
+  echo "I/Asked for '$INSTALL', updating brew..."
+  (set -x; ham-brew update)
+fi
+
 if [ ! -e "$PKG_HOME/$CHECKFILE" ]; then
-    echo "I/Brew $PKGNAME not found, trying to install."
-    (set -x; ham-brew $INSTALL $PKGNAME)
-    if [ ! -e "$PKG_HOME/$CHECKFILE" ]; then
-        echo "I/Brew $PKGNAME install failed."
-        exit 1
-    fi
+  echo "I/Brew $PKGNAME not found, install..."
+  (set -x; ham-brew $INSTALL $PKGNAME)
+else
+  if [ "$INSTALL" == "install" ]; then
+    # If it's already installed and we're just asking to install, we dont run
+    # brew again.
+    exit 0
+  fi
+
+  echo "I/Brew $PKGNAME already installed, $INSTALL..."
+  (set -x; ham-brew $INSTALL $PKGNAME)
+fi
+
+if [ ! -e "$PKG_HOME/$CHECKFILE" ]; then
+  echo "I/Brew $PKGNAME install failed."
+  exit 1
 fi
