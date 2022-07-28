@@ -29,15 +29,14 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/msvc_19_x64"
 export HAM_CPP_TOOLSET=$HAM_TOOLSET
 export HAM_CPP_TOOLSET_NAME=$HAM_TOOLSET_NAME
 
-export MSVCDIR="${HAM_TOOLSET_DIR}/nt-x86/2019/BuildTools/VC/Tools/MSVC/14.27.29110"
+toolset_check_and_dl_ver msvc_19_x64 nt-x86 19b || return 1
+
+export MSVCDIR="${HAM_TOOLSET_DIR}/nt-x86/2019/BuildTools/VC/Tools/MSVC/14.29.30133"
 export MSVCDIR_BIN="${MSVCDIR}/bin/Host${HAM_MSVC_ARCH}/${HAM_MSVC_ARCH}"
 export MSVC_VER=19
 if [ ! -e "${MSVCDIR_BIN}/cl.exe" ]; then
-    toolset_dl msvc_19_x64 msvc_19_x64_nt-x86_19
-    if [ ! -e "${MSVCDIR_BIN}/cl.exe" ]; then
-        echo "E/Couldn't find cl.exe"
-        return 1
-    fi
+  echo "E/$HAM_TOOLSET_NAME: Couldn't find cl.exe"
+  return 1
 fi
 
 ########################################################################
