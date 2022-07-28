@@ -1,0 +1,2 @@
+#!bash
+rg --files | fzf-run.exe $@
