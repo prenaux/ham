@@ -2,7 +2,7 @@
 toolset_import_once repos || return 1
 case $HAM_OS in
     NT*)
-        toolset_import_once msvc_15_x64 || return 1
+        toolset_import_once msvc_19_x64 || return 1
         ;;
     OSX*)
         if [ "$HAM_BIN_LOA" == "osx-arm64" ]; then
