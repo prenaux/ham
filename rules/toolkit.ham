@@ -475,6 +475,10 @@ rule tkLinkImpLibs {
       }
     }
     VarOnAddToFront LINKLIBS : $(<) : [ FQuote $(l) ] ;
+    if $(DELAY_LOAD_IMPLIBS_DLLS) = 1 {
+      local DELAY_LOAD = $(l:B) ;
+      TargetLinkFlags $(<) : -DELAYLOAD:$(DELAY_LOAD) ;
+    }
   }
 }
 
