@@ -569,7 +569,7 @@ rule tkDefPackage
     }
   }
   else {
-    OBJDIR = [ FDirName $(BASEOBJDIR) $(LIBS_LOA)-$(TK_NAME:L)-$(BUILD) $(PACKAGE) ] ;
+    OBJDIR = [ FDirName $(BASEOBJDIR) $(HAM_CPP_TOOLSET_NAME:L) $(LIBS_LOA)-$(TK_NAME:L)-$(BUILD) $(PACKAGE) ] ;
     PKGBUILD = $(PACKAGE)_$(BUILDEXT) ;
     if $(PKGGROUP) = modules || $(PKGGROUP) = modulelibs || $(PKGGROUP) = dll || $(PKGGROUP) = tooldll {
       if ( $(PKGGROUP) = tooldll ) {
