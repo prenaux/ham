@@ -165,13 +165,27 @@ pathenv_add() {
         return 0
     fi
     DIR=$(unxpath "$1")
-    if [ -d "$DIR" ] &&  [[ ":$PATH:" != *":$DIR:"* ]] ; then
+    if [ -z "$PATH" ]; then
+      PATH=$DIR
+    elif [ -d "$DIR" ] && [[ ":$PATH:" != *":$DIR:"* ]] ; then
         if [ "$2" = "after" ] ; then
             export PATH=$PATH:$DIR
         else
             export PATH=$DIR:$PATH
         fi
     fi
+}
+
+pathenv_remove() {
+    local D=":${PATH}:";
+    [ "${D/:$1:/:}" != "$D" ] && PATH="${D/:$1:/:}";
+    PATH="${PATH/#:/}";
+    export PATH="${PATH/%:/}";
+}
+
+pathenv_remove_add() {
+    pathenv_remove "$1"
+    pathenv_add "$1" "$2"
 }
 
 current_git_branch() {

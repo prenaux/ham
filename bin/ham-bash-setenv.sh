@@ -18,26 +18,27 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
     export PATH=$BASH_START_PATH
     case $HAM_OS in
         NT*)
-            pathenv_add "`unxpath $WINDIR`/System32" after
+            pathenv_remove_add "`unxpath $WINDIR`/System32" after
             pathenv_add "$HAM_HOME/bin/nt"
             ;;
         OSX)
-            pathenv_add /opt/homebrew/bin after
-            pathenv_add /opt/homebrew/sbin after
-            pathenv_add /usr/local/bin after
-            pathenv_add /usr/bin after
-            pathenv_add /bin after
-            pathenv_add /usr/sbin after
-            pathenv_add /sbin after
+            pathenv_remove_add /opt/homebrew/bin after
+            pathenv_remove_add /opt/homebrew/sbin after
+            pathenv_remove_add /usr/local/bin after
+            pathenv_remove_add /usr/bin after
+            pathenv_remove_add /usr/sbin after
+            pathenv_remove_add /bin after
+            pathenv_remove_add /sbin after
+            pathenv_remove_add /Library/Apple/usr/bin after
             pathenv_add "$HAM_HOME/bin/osx"
             ;;
         LINUX)
-            pathenv_add /usr/local/sbin after
-            pathenv_add /usr/local/bin after
-            pathenv_add /usr/sbin after
-            pathenv_add /usr/bin after
-            pathenv_add /sbin after
-            pathenv_add /bin after
+            pathenv_remove_add /usr/local/sbin after
+            pathenv_remove_add /usr/local/bin after
+            pathenv_remove_add /usr/sbin after
+            pathenv_remove_add /usr/bin after
+            pathenv_remove_add /sbin after
+            pathenv_remove_add /bin after
             pathenv_add "$HAM_HOME/bin/linux"
             ;;
         *)
@@ -45,7 +46,8 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
             ;;
     esac
     pathenv_add "$HAM_HOME/bin/$HAM_BIN_LOA"
-    # This must be AFTER bin/HAM_BIN_LOA
+    # This must be called after bin/HAM_BIN_LOA so that they
+    # get before it in the PATH list.
     pathenv_add "$HAM_HOME/bin"
     pathenv_add "$WORK/niLang/bin"
     export PATH_BACKUP=$PATH
