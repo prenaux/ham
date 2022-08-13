@@ -4,6 +4,7 @@ help() {
     echo "  git-stash push|find STASH_NAME"
     echo "  git-stash (try)pop|apply|drop STASH_NAME"
     echo "  git-stash list"
+    echo "  git-stash reflog (name filter)"
     exit 1
 }
 
@@ -11,10 +12,18 @@ help() {
 if [ "$1" == "list" ]; then
     git stash list
     exit 0
+# Reflog command, search the old stashes
+elif [ "$1" == "reflog" ]; then
+    shift
+    if [ -n "$1" ]; then
+        FILTER=--grep="$1"
+    fi
+    git fsck --unreachable | grep commit | cut -d" " -f3 | xargs git log --merges --no-walk $FILTER
+    exit 0
 fi
 
 if [ -z "$1" ]; then
-    echo "E/No stash operation specified, should be push or pop."
+    echo "E/No stash operation specified."
     help
 fi
 OPERATION=$1
