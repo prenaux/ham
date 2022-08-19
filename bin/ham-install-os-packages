@@ -3,7 +3,7 @@
 
 # IMPORTANT: Update the tag date when you make any change to the list of
 # packages installed. You can replace the date with the output of `arch_datez`
-TAG="ham-install-os-packages-${HAM_OS}-20220721_144530Z"
+TAG="ham-install-os-packages-${HAM_OS}-20220819_070850Z"
 
 TAGFILE="$TEMPDIR/ham-install-os-packages-${HAM_OS}-tag.txt"
 
@@ -27,7 +27,7 @@ check_tag() {
 
 if [[ `check_tag "$TAGFILE" "$TAG"` == 1 ]]; then
     echo "I/ham-install-os-packages tag up-to-date."
-    if [ "$1" == "nocheck" ]; then
+    if [ "$1" == "nocheck" ] || [ "$1" == "force" ]; then
         echo "I/Installing anyway because of 'nocheck' option."
     else
         exit 0
@@ -57,7 +57,7 @@ case $HAM_OS in
         # preferences General section. Note that ham needs bash and macOS has
         # deprecated it so this is something you'll want to do even if bash 3
         # is still available on your machine.
-        HOMEBREW_NO_AUTO_UPDATE=1 brew install bash jq yq wget doxygen lftp hstr
+        HOMEBREW_NO_AUTO_UPDATE=1 brew install bash jq yq wget doxygen lftp hstr mc ncdu htop
         ;;
     LINUX)
         if [ $(type apt-get 2>/dev/null | wc -l) = 1 ]; then

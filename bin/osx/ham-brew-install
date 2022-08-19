@@ -33,7 +33,7 @@ fi
 PKG_HOME=`ham-brew-installdir "$PKGNAME"`
 # echo "I/PKG_HOME: ${PKG_HOME}"
 
-if [ "$INSTALL" == "reinstall" -o "$INSTALL" == "upgrade" ]; then
+if [ "$INSTALL" == "upgrade" ]; then
   echo "I/Asked for '$INSTALL', updating brew..."
   (set -x; ham-brew update)
 fi
