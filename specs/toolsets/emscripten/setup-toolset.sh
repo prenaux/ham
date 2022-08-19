@@ -1,5 +1,5 @@
 #!/bin/bash
-toolset_import_once python_36 || return 1
+toolset_import_once python_3 || return 1
 toolset_import_once nodejs || return 1
 toolset_import_once xslt_tools || return 1
 

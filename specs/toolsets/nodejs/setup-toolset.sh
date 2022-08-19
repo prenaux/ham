@@ -2,7 +2,7 @@
 
 # These are needed by gyp to build native nodejs modules
 toolset_import_once default || return 1
-toolset_import_once python_36 || return 1
+toolset_import_once python_3 || return 1
 
 # toolset
 export HAM_TOOLSET=NODEJS
