@@ -82,5 +82,6 @@ RequestHandler.extensions_map['.datagz'] = 'application/octet-stream'
 if __name__ == '__main__':
     PORT = 8123
     with socketserver.TCPServer(("", PORT), RequestHandler) as httpd:
-        print("Listening on port {}. Press Ctrl+C to stop.".format(PORT))
+        print("I/Serving at: http://localhost:{}".format(PORT))
+        print("I/Press Ctrl+C to stop.".format(PORT))
         httpd.serve_forever()
