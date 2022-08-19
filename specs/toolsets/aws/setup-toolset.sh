@@ -1,6 +1,6 @@
 #!/bin/bash
 . ham-toolset-import.sh repos
-. ham-toolset-import.sh python_36
+. ham-toolset-import.sh python_3
 
 # toolset
 export HAM_TOOLSET=AWS
@@ -22,17 +22,10 @@ case $HAM_OS in
         fi
         ;;
     OSX)
-        if [ ! -e "$PYTHON3_BINDIR/eb" ]; then
-            echo "I/eb not found, installing..."
-            pip3 install awsebcli --upgrade --user
-        fi
-        if [ ! -e "$PYTHON3_BINDIR/aws" ]; then
-            echo "I/aws not found, installing..."
-            pip3 install awscli --upgrade --user
-        fi
+        ham-brew-install awscli "bin/aws" || return 1
+        ham-brew-install aws-elasticbeanstalk "bin/eb" || return 1
         ;;
     LINUX)
-        ## Assume eb & aws are already on the path somehow...
         if [ ! -x "$(command -v eb)" ]; then
             echo "I/eb not found, installing..."
             pip3 install awsebcli --upgrade --user
