@@ -10,7 +10,6 @@ rule tkC++Exceptions {
 }
 rule tkNoC++Exceptions {
   Echo "W/tkNoC++Exceptions not defined for this toolset ($(HAM_CPP_TOOLSET))" ;
-  ObjectDefines $(<) : _HAS_EXCEPTIONS=0 ; # Needed to disable exception usage in the standard C++ library
 }
 
 # Used on C++ sources that require rtti handling

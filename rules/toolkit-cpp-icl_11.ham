@@ -131,7 +131,6 @@ rule tkC++Exceptions {
   ObjectOptimFlags $(<) : -EHa ;
 }
 rule tkNoC++Exceptions {
-  ObjectDefines $(<) : _HAS_EXCEPTIONS=0 ; # Needed to disable exception usage in the standard C++ library
 }
 
 rule tkC++RTTI {
