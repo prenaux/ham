@@ -3,6 +3,8 @@ if $(BUILD) = da {
   CLANG_SANITIZE ?= 1 ;
 }
 
+SUFPCH = .h.pch ;
+
 STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
 
 CLANG_CC_ARGS +=
@@ -184,4 +186,102 @@ rule tkNoC++RTTI {
 }
 
 rule tkCC++Lint {
+}
+
+actions tkPchObjectCpp
+{
+  SRC_ABSPATH="`pwd`/$(>)"
+  $(C++) -x c++-header -o $(<) $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "${SRC_ABSPATH}"
+}
+rule tkPchObjectCpp
+{
+  DEPENDS $(<) : $(>) ;
+
+  local objSuf = [ FTargetSuffix $(>) ] ;
+  local obj = $(>:S=$(objSuf)) ;
+  C++FLAGS on $(<) += $(C++FLAGS) $(SUBDIRC++FLAGS) [ VarOnGet C++FLAGS : $(obj) ] ;
+  if $(DEBUG) = 1 {
+    C++FLAGS on $(<) += $(CLANG_DBG_ARGS) ;
+  }
+  else {
+    C++FLAGS on $(<) += $(CLANG_OPT_ARGS) ;
+  }
+  if $(PKGTYPE) = dll {
+    C++FLAGS on $(<) += $(PICFLAGS) ;
+  }
+  CCHDRS on $(<) = [ on $(<) FIncludes $(HDRS) ] ;
+  CCDEFS on $(<) = [ on $(<) FDefines $(DEFINES) ] ;
+}
+rule tkPchObject
+{
+  Clean clean : $(<) ;
+
+  MakeLocate $(<) : $(LOCATE_TARGET) ;
+  SEARCH on $(>) = $(SEARCH_SOURCE) ;
+
+  HDRS on $(<) = $(SEARCH_SOURCE) $(SUBDIRHDRS) $(HDRS) ;
+
+  HDRRULE on $(>) = HdrRule ;
+  HDRSCAN on $(>) = $(HDRPATTERN) ;
+  HDRSEARCH on $(>) = $(SEARCH_SOURCE:E) $(SUBDIRHDRS) $(HDRS) $(STDHDRS) ;
+
+  HDRGRIST on $(>) = $(HDRGRIST) ;
+
+  DEFINES on $(<) += $(DEFINES) ;
+
+  tkPchObjectCpp $(<) : $(>) ;
+}
+
+# tkC++Pch TARGET : <pch>.cpp : [pchdep-sources] : [nopchdep-sources]
+rule tkC++Pch
+{
+  local _src = ;
+  local _extrasrc = ;
+
+  for _i in $(3) {
+    if $(_i) = $(>)
+    { continue ; }
+    # PCH is for C++ only
+    local suf = $(_i:S) ;
+    if $(suf) = .cpp
+    || $(suf) = .cxx
+    || $(suf) = .cc
+    {
+      _src += [ FGristFiles $(_i) ] ;
+    }
+    else {
+      _extrasrc += [ FGristFiles $(_i) ] ;
+    }
+  }
+  for _i in $(4) {
+    if $(_i) = $(>) { continue ; }
+    _extrasrc += [ FGristFiles $(_i) ] ;
+  }
+
+  # ECHO "I/_src:" $(_src) ;
+  # ECHO "I/_extrasrc:" $(_extrasrc) ;
+
+  local _pch = $(>:S=$(SUFPCH)) ;
+  local _pchTarget = [ FDirName $(LOCATE_TARGET) $(>:S=$(SUFPCH)) ] ;
+  local _dir = $(_pchTarget:D) ;
+  local _cpp = [ FGristFiles $(>) ] ;
+  local _hdr = $(>:S=.h) ;
+  local _obj = $(_cpp:S=$(SUFOBJ)) ;
+
+  MakeLocate $(_pch) : $(_dir) ;
+  tkPchObject $(_pchTarget) : $(_cpp) ;
+
+  INCLUDES $(<) : $(_cpp) ;
+  DEPENDS $(<) : $(_obj) ;
+  NotFile $(<) ;
+  NoUpdate $(<) ;
+
+  Clean clean : $(_pchTarget) ;
+  DEPENDS pch : $(<) ;
+
+  ObjectC++Flags $(_src) : -include-pch $(_pchTarget) ;
+  DEPENDS $(_src:S=$(SUFOBJ)) : $(<) $(_pchTarget) ;
+
+  logVerbose "- PCH:" $(_pchTarget) ;
+  return $(PCH) ;
 }
