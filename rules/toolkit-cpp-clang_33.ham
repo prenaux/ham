@@ -233,6 +233,7 @@ rule tkPchObject
 }
 
 # tkC++Pch TARGET : <pch>.cpp : [pchdep-sources] : [nopchdep-sources]
+# cf: https://clang.llvm.org/docs/PCHInternals.html
 rule tkC++Pch
 {
   local _src = ;
