@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 if [ "$1" == "uninstall_brew" ] || [ "$1" == "reinstall_brew" ]; then
   shift
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh)"
@@ -10,7 +10,8 @@ if [ -z "`where_inpath brew`" ]; then
 fi
 
 # We don't want brew to (insanely) update everything every time we want to
-# install a new package... - brew will try to update ALL packages to the
-# latest version by default which is absurdly slow and insane since it can
+# install a new package... - brew will sometime try to update ALL packages to
+# the latest version by default which is absurdly slow and insane since it can
 # silently break your current setup.
-HOMEBREW_NO_AUTO_UPDATE=1 brew "$@"
+(set -x;
+ HOMEBREW_NO_AUTO_UPDATE=1 brew "$@")
