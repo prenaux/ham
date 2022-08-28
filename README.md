@@ -45,11 +45,19 @@ No setup is required, just run ```ham-shell.cmd``` from the ```ham/bin``` direct
 
 ## OSX
 
+Set bash as your default shell:
+```
+chsh -s /bin/bash
+```
+
 Add this to ~/.profile:
 ```bash
 export WORK="$HOME/My Work"
 export HAM_HOME="$WORK/ham"
 export PATH="${PATH}:$HAM_HOME/bin"
+
+export BASH_SILENCE_DEPRECATION_WARNING=1
+export CLICOLOR=1
 ```
 
 So that programs started from the Dock (such as Xcode) have access to $WORK, add this to launchd.conf:
