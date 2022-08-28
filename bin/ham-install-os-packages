@@ -5,7 +5,8 @@
 # packages installed. You can replace the date with the output of `arch_datez`
 TAG="ham-install-os-packages-${HAM_OS}-20220819_070850Z"
 
-TAGFILE="$TEMPDIR/ham-install-os-packages-${HAM_OS}-tag.txt"
+mkdir -p "$TEMPDIR"
+TAGFILE="$TEMPDIR/ham-install-os-packages-${HAM_OS}-${TAG}.txt"
 
 # check_tag tagfile tag
 check_tag() {
