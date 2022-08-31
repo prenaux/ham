@@ -51,7 +51,20 @@ if $(OS) = MACOSX
     $(LINK) $(LINKFLAGS) $(LINKFLAGS_EXE) $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
   }
 }
+else if $(OS) = LINUX {
+
+  actions DllLink bind NEEDLIBS
+  {
+    $(LINK) $(LINKFLAGS) $(LINKFLAGS_DLL) -fvisibility=hidden -shared -o "$(<)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+  }
+  actions Link bind NEEDLIBS
+  {
+    $(LINK) $(LINKFLAGS) $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
+  }
+
+}
 else {
+
   actions DllLink
   {
     $(LINK) $(LINKFLAGS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
@@ -60,4 +73,5 @@ else {
   {
     $(LINK) $(LINKFLAGS) $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
   }
+
 }

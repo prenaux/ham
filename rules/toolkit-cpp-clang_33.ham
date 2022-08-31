@@ -14,8 +14,17 @@ CLANG_CC_ARGS +=
   -Wno-#pragma-messages
   -Wno-unused-value
 ;
+if $(LINUX) {
+  CLANG_CPP_ARGS +=
+    -stdlib=libstdc++
+  ;
+}
+else {
+  CLANG_CPP_ARGS +=
+    -stdlib=libc++
+  ;
+}
 CLANG_CPP_ARGS +=
-  -stdlib=libc++
   -std=$(C++VERSION)
   -Wno-c++11-narrowing
 ;
@@ -44,12 +53,32 @@ if $(CLANG_SANITIZE) = 1 {
   ECHO "I/Building with -fsanitize=address" ;
 }
 
-### OSX ###
-if $(OSX) {
-  CLANG_CC_ARGS += -fobjc-arc ;
-  CLANG_CC_ARGS += -Wno-deprecated-declarations -Wno-gnu-inline-cpp-without-extern ;
+CLANG_CC_ARGS +=
+  -Wno-deprecated-declarations
+  -Wno-gnu-inline-cpp-without-extern
   # TODO: Remove this, this is actually a very useful warning.
-  CLANG_CC_ARGS += -Wno-inconsistent-missing-override ;
+  -Wno-inconsistent-missing-override
+;
+
+if $(LINUX) {
+  CLANG_CC_ARGS +=
+    -fPIC
+    -Wno-address-of-packed-member
+  ;
+  CLANG_CPP_ARGS +=
+    -Wno-conversion-null
+  ;
+
+  LINKLIBS +=
+   -lstdc++ -lpthread -ldl -lm
+   # sudo apt-get install -y libunwind-dev
+   -lunwind
+  ;
+}
+
+### OSX ###
+else if $(OSX) {
+  CLANG_CC_ARGS += -fobjc-arc ;
 
   CLANG_CC_ARGS += -mmacosx-version-min=$(MACOSX_MINVER) -fno-common ;
   if $(OSPLAT) = X64 {
