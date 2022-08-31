@@ -13,11 +13,11 @@
 (defconst ENV_DEVENV (agl-getenv "EMACS_DEVENV"))
 
 ;; If not set "WORK" is the parent folder of EMACS_DEVENV
-(if (not (getenv "WORK"))
+(if (string-empty-p (getenv "WORK"))
     (setenv "WORK" (expand-file-name (concat EMACS_DEVENV "/.."))))
 (defconst ENV_WORK (agl-getenv "WORK"))
 (defconst ENV_SHARED_WORK
-  (if (agl-getenv "SHARED_WORK") (agl-getenv "SHARED_WORK") ENV_WORK))
+  (if (string-empty-p (agl-getenv "SHARED_WORK")) ENV_WORK (agl-getenv "SHARED_WORK")))
 
 (defconst ENV_DEVENV_EMACS_SCRIPTS (concat ENV_DEVENV "/sources/emacs/site"))
 
