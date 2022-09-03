@@ -1,0 +1,34 @@
+#!/bin/bash -e
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+export HAM_NO_VER_CHECK=1
+toolset_import_once nodejs > /dev/null
+
+usage() {
+    echo "usage: ${0##*/} (nostash)"
+    echo ""
+    echo "  'gt branch checkout' with auto restack & auto stashing."
+    exit 1
+}
+
+STASH=1
+if [ "$1" == "nostash" ]; then
+    STASH=0
+    shift
+fi
+
+if [ $STASH == 1 ]; then
+  (set -x;
+   git-stash trypop gt-co-branch ;
+   git-stash push gt-co-branch)
+fi
+
+(set -x ;
+ # Ignore error since we want to reapply the stash if its fails or we cancel it
+ set +e ;
+ gt branch checkout $1 ;
+ gt upstack restack)
+
+if [ $STASH == 1 ]; then
+    (set -x ;
+     git-stash trypop gt-co-branch)
+fi

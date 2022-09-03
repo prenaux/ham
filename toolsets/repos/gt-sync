@@ -1,0 +1,30 @@
+#!/bin/bash -e
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+export HAM_NO_VER_CHECK=1
+toolset_import_once nodejs > /dev/null
+
+usage() {
+    echo "usage: ${0##*/} (nostash)"
+    echo ""
+    echo "  'gt repo sync --restack' with auto stashing."
+    exit 1
+}
+
+STASH=1
+if [ "$1" == "nostash" ]; then
+    STASH=0
+    shift
+fi
+
+if [ $STASH == 1 ]; then
+  (set -x;
+   git-stash trypop gt-sync ;
+   git-stash push gt-sync)
+fi
+
+(set -x; gt repo sync --restack --show-delete-progress --delete --force)
+
+if [ $STASH == 1 ]; then
+    (set -x ;
+     git-stash trypop gt-sync)
+fi

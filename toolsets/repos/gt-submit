@@ -1,0 +1,15 @@
+#!/bin/bash -e
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+export HAM_NO_VER_CHECK=1
+toolset_import_once nodejs > /dev/null
+
+usage() {
+    echo "usage: ${0##*/}"
+    echo ""
+    echo "  'gt submit stack'."
+    exit 1
+}
+
+(set -x;
+ gt-restack ;
+ gt stack submit)

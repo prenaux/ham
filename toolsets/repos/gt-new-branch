@@ -1,0 +1,20 @@
+#!/bin/bash -e
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+export HAM_NO_VER_CHECK=1
+toolset_import_once nodejs > /dev/null
+
+usage() {
+    echo "usage: ${0##*/} BRANCH_NAME"
+    echo ""
+    echo "  Create a branch with 'git-branch' and then track it with 'gt branch track'."
+    exit 1
+}
+
+if [ -z "$1" ]; then
+    echo "E/No BRANCH_NAME specified."
+    usage
+fi
+
+(set -x ;
+ git-branch "$1" ;
+ gt branch track "$1")
