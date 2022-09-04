@@ -117,7 +117,7 @@ shift $((OPTIND-1))
 
 if [[ "$_ARG_TOOLSET" != "" ]]; then
     . "$HAM_HOME/bin/ham-bash-setenv.sh"
-    . ham-toolset $_ARG_TOOLSET
+    HAM_NO_VER_CHECK=1 . ham-toolset $_ARG_TOOLSET
     errcheck $? ham "Can't setup the '$_ARG_TOOLSET' toolset."
 fi
 
