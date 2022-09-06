@@ -6,7 +6,7 @@
 TAG="ham-install-os-packages-${HAM_OS}-20220819_070850Z"
 
 mkdir -p "$TEMPDIR"
-TAGFILE="$TEMPDIR/ham-install-os-packages-${HAM_OS}-${TAG}.txt"
+TAGFILE="$TEMPDIR/ham-install-os-packages-${HAM_OS}-tag.txt"
 
 # check_tag tagfile tag
 check_tag() {
