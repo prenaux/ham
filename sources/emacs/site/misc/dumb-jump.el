@@ -41,9 +41,9 @@
 ;;;###autoload
 (defvar dumb-jump-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "M-.") 'dumb-jump-go)
-    (define-key map (kbd "M->") 'dumb-jump-back)
-    (define-key map (kbd "M-,") 'dumb-jump-quick-look)
+    (define-key map (kbd "M-.") 'dumb-jump-go-local)
+    (define-key map (kbd "M-,") 'dumb-jump-go-global)
+    (define-key map (kbd "M-<") 'dumb-jump-back)
     map))
 
 (define-globalized-minor-mode global-dumb-jump-mode dumb-jump-mode
@@ -120,11 +120,33 @@ or most optimal searcher."
   :group 'dumb-jump
   :type 'string)
 
+(setq dumb-jump-ag-cmd
+  (cond
+    ((file-exists-p "/opt/homebrew/bin/ag")
+      "/opt/homebrew/bin/ag")
+    ((file-exists-p "/usr/local/opt/ag")
+      "/usr/local/opt/ag")
+    ((file-exists-p "/usr/bin/ag")
+      "/usr/bin/ag")
+    (t nil)))
+
 (defcustom dumb-jump-rg-cmd
   "rg"
   "The the path to ripgrep.  By default assumes it is in path.  If not found fallbacks to grep."
   :group 'dumb-jump
   :type 'string)
+
+(setq dumb-jump-rg-cmd
+  (cond
+    ((file-exists-p (concat (getenv "HAM_HOME") "/bin/" (getenv "HAM_BIN_LOA") "/rg"))
+      (concat (getenv "HAM_HOME") "/bin/" (getenv "HAM_BIN_LOA") "/rg"))
+    ((file-exists-p "/opt/homebrew/bin/rg")
+      "/opt/homebrew/bin/rg")
+    ((file-exists-p "/usr/local/opt/rg")
+      "/usr/local/opt/rg")
+    ((file-exists-p "/usr/bin/rg")
+      "/usr/bin/rg")
+    (t nil)))
 
 (defcustom dumb-jump-git-grep-cmd
   "git grep"
@@ -2247,6 +2269,28 @@ of project configuration."
          (results (delete-dups (--map (plist-put it :target look-for) raw-results))))
 
     `(:results ,results :lang ,(if (null lang) "" lang) :symbol ,look-for :ctx-type ,(if (null ctx-type) "" ctx-type) :file ,cur-file :root ,proj-root)))
+
+;;;###autoload
+(defun dumb-jump-go-local ()
+  "Run dumb-jump-go in local mode, always using git-grep which is faster."
+  (interactive)
+  (setq dumb-jump-force-searcher 'git-grep)
+  (dumb-jump-go))
+
+;;;###autoload
+(defun dumb-jump-go-global ()
+  "Run dumb-jump-go in global mode, always using ag/rg which can search in directories outside of the current repo (see .dumbjump files)."
+  (interactive)
+  (cond
+    (dumb-jump-ag-cmd
+      (setq dumb-jump-force-searcher 'ag))
+    (dumb-jump-rg-cmd
+      (setq dumb-jump-force-searcher 'rg))
+    (t
+      (progn
+        (message "Warning: dumb-jump-go-global no ag or rg found, using git-grep for global search which only search locally.")
+        (setq dumb-jump-force-searcher 'git-grep))))
+  (dumb-jump-go))
 
 ;;;###autoload
 (defun dumb-jump-back ()
