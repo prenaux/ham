@@ -44,6 +44,15 @@ build_ham() {
        rules.c scan.c search.c sha256.c timestamp.c variable.c hcache.c )
 }
 
+unquarantine_output() {
+  echo "I/unquarantine_output: $1"
+  case "$HAM_BIN_LOA" in
+    osx-*)
+      (set -x ; sudo xattr -r -d com.apple.quarantine "$1")
+    ;;
+  esac
+}
+
 build_ham_cp() {
   BIN_LOA=$1
   EXE_NAME=$2
@@ -52,7 +61,12 @@ build_ham_cp() {
   echo "I/build_ham_cp: $BIN_LOA ($ZIG_TARGET): Copying to HAM_HOME/bin"
   (set -x ;
    mkdir -p "$HAM_HOME/bin/${BIN_LOA}/" ;
-   cp -f "${ODIR}/${EXE_NAME}" "$HAM_HOME/bin/${BIN_LOA}/${EXE_NAME}")
+   # Delete the destination file explicitly so that macOS doesn't end up hard
+   # killing it.
+   rm -f "$HAM_HOME/bin/${BIN_LOA}/${EXE_NAME}" ;
+   cp "${ODIR}/${EXE_NAME}" "$HAM_HOME/bin/${BIN_LOA}/${EXE_NAME}")
+
+  unquarantine_output "$HAM_HOME/bin/${BIN_LOA}/${EXE_NAME}"
 }
 
 build_ham0() {
