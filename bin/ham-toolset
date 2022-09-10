@@ -19,9 +19,9 @@ usage() {
 
 # find the _ham_project file
 FOUND_PROJECT_DIR="`hat-search-ham-project.sh`"
-if [[ -e "$FOUND_PROJECT_DIR" ]]; then
-    echo "I/Found _ham_setup in '${FOUND_PROJECT_DIR}'"
-fi
+# if [[ -e "$FOUND_PROJECT_DIR" ]]; then
+#   echo "I/Found _ham_project in '${FOUND_PROJECT_DIR}'"
+# fi
 
 # echo "D/HAM_NO_VER_CHECK: $HAM_NO_VER_CHECK"
 
