@@ -34,7 +34,10 @@ export OPENCV30_DIR_X64=${OPENCV31_DIR_X64}
 export OPENCV30_DIR_X86=${OPENCV31_DIR_X86}
 export OPENCV30_DIR_INCLUDE=${OPENCV31_DIR_INCLUDE}
 
-VER="--- opencv31 ------------------------
+VER="--- opencv31 ------------------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
 OPENCV31_DIR_INCLUDE=${OPENCV31_DIR_INCLUDE}"
+fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

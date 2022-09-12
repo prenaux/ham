@@ -36,13 +36,16 @@ export HELM_HOME="$WORK/Server/minikube/helm"
 export MINIKUBE_HOME="$WORK/Server/minikube"
 export PATH="${HAM_TOOLSET_DIR}":${PATH}
 
-VER="--- kubernetes ---------------
+VER="--- kubernetes ---------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
 `gcloud --version | grep 'Google Cloud SDK'`
 `kubectl version | grep 'Client Version:'`
 `minikube version`"
-if [ $? != 0 ]; then
-    echo "E/Can't get version."
-    return 1
+    if [ $? != 0 ]; then
+      echo "E/Can't get version."
+      return 1
+    fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

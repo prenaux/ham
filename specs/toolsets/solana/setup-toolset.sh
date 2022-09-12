@@ -31,11 +31,14 @@ case $HAM_OS in
 esac
 
 # version check
-VER="--- solana -----------------------
+VER="--- solana -----------------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
 `solana --version`"
-if [ $? != 0 ]; then
-    echo "E/Can't get Solana version."
-    return 1
+    if [ $? != 0 ]; then
+      echo "E/Can't get Solana version."
+      return 1
+    fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

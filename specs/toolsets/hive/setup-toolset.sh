@@ -41,12 +41,15 @@ cat <<EOF>> $HOME/.hiverc
 SET hive.metastore.warehouse.dir=${HIVE_DB_DIR}/hive-warehouse;
 EOF
 
-VER="--- hive ---------------------
+VER="--- hive ---------------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
 Hive `basename $(ls $HIVE_HOME/lib/hive-exec*) | sed s~hive-exec-~~ | sed s~.jar~~`"
-# Works but is tediously slow: `hive --version | grep Hive`
-if [ $? != 0 ]; then
-    echo "E/Can't get version."
-    return 1
+    # `hive --version | grep Hive` also works but is tediously slow.
+    if [ $? != 0 ]; then
+      echo "E/Can't get version."
+      return 1
+    fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

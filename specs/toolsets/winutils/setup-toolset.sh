@@ -24,12 +24,15 @@ case $HAM_OS in
         ;;
 esac
 
-VER="--- winutils ------------------------
+VER="--- winutils ------------------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
 Various Windows utilities: Notepad++, Network Monitor, Sysinternals,
 Process Explorer, Depends, Sniffer, CPU-Z, HexEdit, SumatraPDF, ..."
-if [ $? != 0 ]; then
-    echo "E/Can't get version."
-    return 1
+    if [ $? != 0 ]; then
+      echo "E/Can't get version."
+      return 1
+    fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

@@ -122,13 +122,14 @@ export PATH="${ADR_LLVM_TOOLCHAIN_PREFIX}":${PATH}
 
 export ANDROID_HOME=${ADR_DIR_SDK}
 
-VER="$VER
---- adr-clang ------------------
+VER="--- adr-clang ------------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
 `clang --version`"
-if [ $? != 0 ]; then
-    echo "E/Can't get clang version."
-    return 1
+    if [ $? != 0 ]; then
+      echo "E/Can't get clang version."
+      return 1
+    fi
 fi
-
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

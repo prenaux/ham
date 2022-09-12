@@ -42,20 +42,26 @@ case $HAM_OS in
 esac
 export PATH=$HAM_TOOLSET_DIR:${PATH}
 
-VER="--- aws ---------------------------
+VER="--- aws ---------------------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
 `aws --version`"
-if [ $? != 0 ]; then
-    echo "E/Can't get aws-cli version."
-    return 1
+    if [ $? != 0 ]; then
+      echo "E/Can't get aws-cli version."
+      return 1
+    fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
 
-VER="--- aws-eb ------------------------
+VER="--- aws-eb ------------------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
 `aws-eb --version`"
-if [ $? != 0 ]; then
-    echo "E/Can't get aws-eb version."
-    return 1
+    if [ $? != 0 ]; then
+      echo "E/Can't get aws-eb version."
+      return 1
+    fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

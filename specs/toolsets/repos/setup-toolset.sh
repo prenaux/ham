@@ -54,8 +54,11 @@ if [ -e "$HG_PATH" ]; then
         fi
     fi
 else
-    VER="--- mercurial ---
+    VER="--- mercurial ---"
+    if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+      VER="$VER
 W/Mercurial is not installed or not accessible from the PATH !"
+    fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

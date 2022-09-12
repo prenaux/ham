@@ -34,11 +34,14 @@ if [ "$ANCHOR_CURRENT_VERSION" != "anchor-cli $ANCHOR_REQUIRED_VERSION" ]; then
 fi
 
 # version check
-VER="--- web3_anchor ------------------
+VER="--- web3_anchor ------------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
 `anchor --version`"
-if [ $? != 0 ]; then
-    echo "E/Can't get Anchor version."
-    return 1
+    if [ $? != 0 ]; then
+      echo "E/Can't get Anchor version."
+      return 1
+    fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

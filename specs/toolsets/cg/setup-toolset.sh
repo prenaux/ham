@@ -49,11 +49,14 @@ fi
 export PATH="${HAM_TOOLSET_DIR}":${PATH}
 
 # version
-VER="--- cg ------------------------
+VER="--- cg ------------------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
 `cgc -v 2>&1`"
-if [ $? != 0 ]; then
-    echo "E/Can't get cg version."
-    return 1
+    if [ $? != 0 ]; then
+      echo "E/Can't get cg version."
+      return 1
+    fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

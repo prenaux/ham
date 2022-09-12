@@ -31,11 +31,14 @@ case $HAM_OS in
         ;;
 esac
 
-VER="--- icl_11 ------------------------
+VER="--- icl_11 ------------------------"
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
 `icl 2>&1 | grep 'Version' ; true`"
-if [ $? != 0 ]; then
-    echo "E/Can't get version."
-    return 1
+    if [ $? != 0 ]; then
+      echo "E/Can't get version."
+      return 1
+    fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
