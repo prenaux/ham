@@ -1,0 +1,34 @@
+#!/bin/bash
+. "$HAM_HOME/bin/ham-bash-lib.sh"
+
+CURR_DIR=`pwd`
+ROOT_DIR=`upsearch .svn`
+REL_DIR=`realpath --relative-to="$ROOT_DIR" "$CURR_DIR"`
+ROOT_URL=`svn info --show-item repos-root-url`
+CURR_URL="$ROOT_URL/$REL_DIR"
+REV=$1
+REV_NEXT=$((REV+1))
+shift
+
+# echo "I/Root URL: ${ROOT_URL}"
+echo "I/Curr URL: ${CURR_URL}"
+# echo "I/Root Dir: ${ROOT_DIR}"
+echo "I/Curr Dir: ${CURR_DIR}"
+echo "I/Rel Dir: ${REL_DIR}"
+# echo "I/Revert to: ${REV}"
+
+if [ -z "$REV" ]; then
+    echo "E/You must specify a revision number to revert to."
+    exit 1
+else
+    echo "I/Updating to revision $REV"
+    svn log --revision $REV
+    if [ "$1" = "doit" ]; then
+        svn up -r"$REV"
+        echo "# Run 'svn commit' to commit the revert changes."
+    else
+        echo "I/List of changes vs current rev."
+        svn diff -r $REV --summarize
+        echo "# Run 'svn-update-to-rev $REV doit' update to revision $REV."
+    fi
+fi
