@@ -7,7 +7,7 @@ foreach (d in dirs) {
   // ::println("... D:" ::lang.toString(d))
   local d = "".setdir(d.path).adddirback(".git")
   if (::fs.dirExists(d)) {
-    d = ::fs.getAbsolutePath(d)
+    d = ::fs.getAbsolutePath(d.removedirback())
     // ::println("... git repo:" d)
     ::println(d)
   }
