@@ -2,7 +2,7 @@
 usage() {
     echo "usage: ${0##*/} (nostash)"
     echo ""
-    echo "  'gt stack restack' with auto stashing."
+    echo "  'ham-gt stack restack' with auto stashing."
     exit 1
 }
 
@@ -19,7 +19,7 @@ if [ $STASH == 1 ]; then
 fi
 
 (set -x;
- gt stack restack)
+ ham-gt stack restack)
 
 if [ $STASH == 1 ]; then
     (set -x ;

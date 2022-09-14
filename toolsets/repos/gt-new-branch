@@ -1,7 +1,5 @@
 #!/bin/bash -e
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
-export HAM_NO_VER_CHECK=1
-toolset_import_once nodejs > /dev/null
 
 usage() {
     echo "usage: ${0##*/} BRANCH_NAME"
@@ -17,4 +15,4 @@ fi
 
 (set -x ;
  git-branch "$1" ;
- gt branch track "$1")
+ ham-gt branch track "$1")

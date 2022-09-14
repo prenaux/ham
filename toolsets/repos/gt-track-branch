@@ -1,14 +1,12 @@
 #!/bin/bash -e
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
-export HAM_NO_VER_CHECK=1
-toolset_import_once nodejs > /dev/null
 
 usage() {
     echo "usage: ${0##*/} MESSAGE"
     echo ""
-    echo "  'gt branch track'"
+    echo "  'ham-gt branch track'"
     exit 1
 }
 
 (set -x ;
- gt branch track "$@")
+ ham-gt branch track "$@")
