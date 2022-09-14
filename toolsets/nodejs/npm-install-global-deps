@@ -10,7 +10,8 @@ elif [ ! -e "${NODEJS_BIN_DIR}/eslint" ] || \
          [ ! -e "${NODEJS_BIN_DIR}/node-pre-gyp" ] || \
          [ ! -e "${NODEJS_BIN_DIR}/heroku" ] || \
          [ ! -e "${NODEJS_BIN_DIR}/esbuild" ] || \
-         [ ! -e "${NODEJS_BIN_DIR}/yarn" ]; then
+         [ ! -e "${NODEJS_BIN_DIR}/yarn" ] || \
+         [ ! -e "${NODEJS_BIN_DIR}/pm2" ]; then
     echo "I/npm-install-global-deps: Not all required packages are installed"
 else
     echo "I/npm-install-global-deps: All required global packages are installed."
@@ -29,7 +30,8 @@ npm install --force -g \
     node-pre-gyp \
     heroku \
     esbuild \
-    yarn
+    yarn \
+    pm2
 
 echo "I/Installing regular packages..."
 npm install --force -g --no-bin-links \
