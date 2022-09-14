@@ -1,12 +1,10 @@
 #!/bin/bash -e
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
-export HAM_NO_VER_CHECK=1
-toolset_import_once nodejs > /dev/null
 
 usage() {
     echo "usage: ${0##*/} BRANCH_NAME"
     echo ""
-    echo "  'gt upstack onto' Rebase the current branch onto the latest commit of the"
+    echo "  'ham-gt upstack onto' Rebase the current branch onto the latest commit of the"
     echo "  target branch and restack all of its descendants. If no branch is passed in,"
     echo "  opens an interactive selector."
     exit 1
@@ -18,4 +16,4 @@ if [ -z "$1" ]; then
 fi
 
 (set -x ;
- gt upstack onto "$@")
+ ham-gt upstack onto "$@")

@@ -1,12 +1,10 @@
 #!/bin/bash -e
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
-export HAM_NO_VER_CHECK=1
-toolset_import_once nodejs > /dev/null
 
 usage() {
     echo "usage: ${0##*/} (nostash)"
     echo ""
-    echo "  'gt downstack edit' with auto stashing and restacking."
+    echo "  'ham-gt downstack edit' with auto stashing and restacking."
     exit 1
 }
 
@@ -23,8 +21,8 @@ if [ $STASH == 1 ]; then
 fi
 
 (set -x;
- gt downstack edit $@ ;
- gt stack restack)
+ ham-gt downstack edit $@ ;
+ ham-gt stack restack)
 
 if [ $STASH == 1 ]; then
     (set -x ;
