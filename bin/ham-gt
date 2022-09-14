@@ -1,0 +1,5 @@
+#!/bin/bash
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+export HAM_NO_VER_CHECK=1
+toolset_import_once nodejs > /dev/null
+gt "$@"
