@@ -1,0 +1,10 @@
+#!/bin/bash -e
+usage() {
+    echo "usage: ${0##*/}"
+    echo ""
+    echo "  'ham-gt repo init --reset' which will untrack all branches."
+    exit 1
+}
+
+(set -x;
+ ham-gt repo init --reset)

@@ -31,6 +31,7 @@ else
 fi
 
 (set -x ;
+ git push $ORIGIN --force-with-lease ;
  git-move-branch-to-head $BRANCH_NAME ;
  git checkout $BRANCH_NAME ;
  git push $ORIGIN ;
