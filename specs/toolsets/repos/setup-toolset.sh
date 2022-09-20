@@ -42,7 +42,7 @@ fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
 
-HG_PATH=`where_inpath hg`
+HG_PATH=`where_inpath hg || true`
 if [ -e "$HG_PATH" ]; then
     VER="--- mercurial ---"
     if [ "$HAM_NO_VER_CHECK" != "1" ]; then
