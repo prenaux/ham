@@ -115,9 +115,8 @@
  (define-key global-map "\C-h\C-a" 'beginning-of-buffer)
  (define-key global-map "\C-h\C-e" 'end-of-buffer)
 
+ ;; Join line
  (global-set-key (kbd "C-M-j") 'join-line)
-
- (global-set-key (key "M-5") 'ni-goto-matching-bracket)
 
 ;;;======================================================================
 ;;; aglemacs.el: mark-multiple, expand-region
@@ -131,14 +130,18 @@
  (global-set-key (kbd "M-0") 'mark-next-like-this) ;; M-(
  (global-set-key (kbd "M-8") 'mark-all-like-this) ;; M-8
 
+ ;; Goto matching bracket/paren
+ (global-set-key (key "M-1") 'ni-goto-matching-bracket)
+
+ ;; Expand region
  (require 'expand-region)
- (global-set-key (kbd "M-@") 'er/expand-region) ;; M-S-2
+ (global-set-key (kbd "M-!") 'er/expand-region) ;; M-! (M-S-1)
 
 ;;;======================================================================
 ;;; ni-flymake.el
 ;;;======================================================================
  (global-set-key (kbd "M-3") 'aflymake-goto-next-error)
- (global-set-key (kbd "M-4") 'aflymake-goto-prev-error)
+ (global-set-key (kbd "M-#") 'aflymake-goto-prev-error)
  (global-set-key (kbd "C-h C-c") 'aflymake-mode-or-syntax-check)
  (global-set-key (kbd "C-h C-f") 'ham-fix-current-buffer)
 
@@ -187,8 +190,8 @@
  (global-set-key (key "C-h C-b") 'save-all-and-compile)
 
  ;; Previous/Next errors
- (define-key global-map "\M-1" 'next-error)
- (define-key global-map "\M-2" 'previous-error)
+ (define-key global-map "\M-2" 'next-error)
+ (define-key global-map "\M-@" 'previous-error)
 
  ;; Disabled the insert key, remap it to control + insert.
  (define-key global-map [(insert)] nil)
