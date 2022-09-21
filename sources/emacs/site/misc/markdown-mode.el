@@ -9755,8 +9755,9 @@ rows and columns and the column alignment."
                            "\f" ; starts with a literal line-feed
                            "[ \t\f]*$" ; space-only line
                            "\\(?:[ \t]*>\\)+[ \t\f]*$"; empty line in blockquote
-                           "[ \t]*[*+-][ \t]+" ; unordered list item
-                           "[ \t]*\\(?:[0-9]+\\|#\\)\\.[ \t]+" ; ordered list item
+                           ;; XXX: Disabled as it makes it really inefficient to navigate in todo lists.
+                           ;; "[ \t]*[*+-][ \t]+" ; unordered list item
+                           ;; "[ \t]*\\(?:[0-9]+\\|#\\)\\.[ \t]+" ; ordered list item
                            "[ \t]*\\[\\S-*\\]:[ \t]+" ; link ref def
                            "[ \t]*:[ \t]+" ; definition
                            "^|" ; table or Pandoc line block
