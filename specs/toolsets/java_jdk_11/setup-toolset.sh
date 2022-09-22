@@ -8,26 +8,13 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/java_jdk_11"
 # path setup
 case $HAM_OS in
     OSX)
-        if [ "$HAM_BIN_LOA" == "osx-arm64" ]; then
-            export JAVA_HOME="/opt/homebrew/opt/openjdk@11/libexec/openjdk.jdk/Contents/Home/"
-            if [ ! -e "$JAVA_HOME/bin/java" ]; then
-                echo "W/Couldn't find openjdk@11's java, trying to install with brew"
-                ham-brew install openjdk@11
-            fi
-            export PATH="${JAVA_HOME}/bin":${PATH}
-        else
-            if [ ! -d "/usr/local/Cellar/openjdk@11/" ]; then
-                echo "W/Couldn't find openjdk@11's java, trying to install with brew"
-                ham-brew install openjdk@11
-                if [ ! -d "/usr/local/Cellar/openjdk@11/" ]; then
-                    echo "F/Couldn't find openjdk@11's java even after installing"
-                    return 1
-                fi
-            fi
-            JAVA_11_BREW_VER=`ls /usr/local/Cellar/openjdk@11/`
-            echo "I/JAVA_11_BREW_VER: $JAVA_11_BREW_VER"
-            export JAVA_HOME="/usr/local/Cellar/openjdk@11/$JAVA_11_BREW_VER/"
+        BREW_DIR=`ham-brew-installdir . prefix`
+        export JAVA_HOME="$BREW_DIR/opt/openjdk@11/libexec/openjdk.jdk/Contents/Home/"
+        if [ ! -e "$JAVA_HOME/bin/java" ]; then
+          echo "W/Couldn't find openjdk@11's java, trying to install with brew"
+          ham-brew install openjdk@11
         fi
+        export PATH="${JAVA_HOME}/bin":${PATH}
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

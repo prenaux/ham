@@ -26,6 +26,10 @@ case $HAM_OS in
         ;;
     OSX*)
         export PHP_HOME=`ham-brew-installdir php@7.4`
+        # freetds, a dependency of php@7.4, needs brew's curl and for some
+        # reason complains about it and fail the install instead of having it
+        # as a dependency...
+        ham-brew-install curl "bin/curl" || return 1
         ham-brew-install php@7.4 "bin/php" || return 1
         export PATH="${HAM_TOOLSET_DIR}":"${HOME}/.composer/vendor/bin":"${PHP_HOME}/bin":${PATH}
         ;;
