@@ -1,0 +1,95 @@
+#!/bin/bash -e
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+usage() {
+  echo "usage: ham-brew (uninstall_brew) (upgrade_brew) brew_commands"
+  echo ""
+  echo "install commands:"
+  echo "  uninstall_brew  Uninstall brew which will trigger an install from scratch."
+  echo "  upgrade_brew    Check the original brew location instead of downloading from the ham toolsets repository and upgrade all brew packages."
+  exit 1
+}
+
+if [ -z "$1" ]; then
+  usage
+fi
+
+BREW_DIR=`ham-brew-installdir prefix`
+if [ -n "$HAM_LOCAL_HOMEBREW" ]; then
+  export HOMEBREW_PREFIX=$BREW_DIR
+fi
+
+if [ "$1" == "uninstall_brew" ]; then
+  shift
+
+  if [ -n "$HAM_LOCAL_HOMEBREW" ]; then
+    # Local brew uninstall
+    if [ -d "$HAM_LOCAL_HOMEBREW" ]; then
+      rm -Rf "$HOME/Library/Caches/Homebrew/"
+      rm -Rf "$HOME/Library/Logs/Homebrew/"
+      rm -Rf "$HAM_LOCAL_HOMEBREW"
+    fi
+
+  else
+    # Vanilla brew uninstall
+    echo "I/Uninstalling brew with https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh)"
+
+  fi
+fi
+
+case "$HAM_BIN_LOA" in
+  osx-arm64|osx-x64)
+    ;;
+  lin-x64)
+    if [ "$HAM_ENABLE_EXPERIMENTAL_LINUX_BREW" != "1" ]; then
+       echo "E/ham-brew: Linux support is currently experimental. 'export HAM_ENABLE_EXPERIMENTAL_LINUX_BREW=1' to enable it."
+       exit 1
+    fi
+    ;;
+  *)
+    echo "E/ham-brew: Unsupported platform '$HAM_BIN_LOA'."
+    exit 1
+    ;;
+esac
+
+# Check and install brew
+if [ ! -e "$BREW_DIR/bin/brew" ]; then
+  if [ -n "$HAM_LOCAL_HOMEBREW" ]; then
+    # Local brew install
+    echo "W/Can't find brew, installing local brew from github..."
+    (set -x ;
+     rm -Rf "$BREW_DIR" ;
+     mkdir -p "$BREW_DIR" ;
+     curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C "$BREW_DIR")
+  else
+    # Vanilla brew install
+    echo "W/Can't find brew, installing vanilla brew with https://raw.githubusercontent.com/Homebrew/install/master/install.sh"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+  fi
+
+  if [ ! -e "$BREW_DIR/bin/brew" ]; then
+    echo "E/Homebrew install failed."
+    exit 1
+  fi
+fi
+
+if [ "$1" == "upgrade_brew" ]; then
+  shift
+
+  # Update & upgrade
+  (set -ex ;
+   "$BREW_DIR/bin/brew" update ;
+   "$BREW_DIR/bin/brew" tap homebrew/cask ;
+   "$BREW_DIR/bin/brew" upgrade ;
+   ham-install-os-packages)
+
+else
+
+  export HOMEBREW_NO_INSTALL_CLEANUP=1
+  export HOMEBREW_NO_ENV_HINTS=1
+  export HOMEBREW_NO_AUTO_UPDATE=1
+  (set -x; "$BREW_DIR/bin/brew" "$@")
+
+fi

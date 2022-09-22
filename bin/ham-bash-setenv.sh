@@ -30,6 +30,7 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
             pathenv_remove_add /bin after
             pathenv_remove_add /sbin after
             pathenv_remove_add /Library/Apple/usr/bin after
+            pathenv_add "$("$HAM_HOME/bin/ham-brew-installdir" prefix)/bin"
             pathenv_add "$HAM_HOME/bin/osx"
             ;;
         LINUX)
@@ -39,6 +40,7 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
             pathenv_remove_add /usr/bin after
             pathenv_remove_add /sbin after
             pathenv_remove_add /bin after
+            pathenv_add "$("$HAM_HOME/bin/ham-brew-installdir" prefix)/bin"
             pathenv_add "$HAM_HOME/bin/linux"
             ;;
         *)

@@ -258,16 +258,18 @@ rawurlencode() {
 ########################################################################
 ##  Toolsets
 ########################################################################
+
+# dl_file output_file url
 dl_file() {
-    case $HAM_OS in
-        OSX*)
-            if [ ! -x "$(command -v wget)" ]; then
-                echo "I/wget not found, using brew to install it..."
-                brew install wget
-            fi
-            ;;
-    esac
-    wget $@
+  case $HAM_OS in
+    OSX*)
+      if [ ! -x "$(command -v wget)" ]; then
+        echo "I/wget not found, using brew to install it..."
+        ham-brew install wget
+      fi
+      ;;
+  esac
+  wget "$2" -O"$1"
 }
 
 toolset_import() {
@@ -293,7 +295,7 @@ toolset_unquarantine_dir() {
     case $HAM_OS in
         OSX*)
             echo "I/Fixing macOS quarantine..."
-            sudo xattr -r -d com.apple.quarantine "$1"
+            sudo xattr -r -d com.apple.quarantine "$1" || true
             ;;
     esac
 }
@@ -329,13 +331,13 @@ toolset_dl_and_extract() {
         popd
     elif [ ! -e "$DLFILENAME" ]; then
         echo "I/Trying download from ${ARCH_URL}"
-        dl_file $ARCH_URL -O"$DLFILENAME.wget"
+        dl_file "$DLFILENAME.dlfile" "$ARCH_URL"
         if [ $? != 0 ]; then
             echo "E/Download failed !"
             popd
             return 1;
         fi
-        mv "$DLFILENAME.wget" "$DLFILENAME"
+        mv "$DLFILENAME.dlfile" "$DLFILENAME"
         echo "I/Extracting $DLFILENAME"
         7z x -y "$DLFILENAME" | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
         if [ ${PIPESTATUS[0]} != 0 ]; then
@@ -408,6 +410,16 @@ toolset_dl() {
     toolset_dl_cleanup $@
 }
 
+toolset_ver_file_path() {
+    TS_NAME=$1
+    TS_LOA=$2
+    TS_VER=$3
+    TS_DIR="${HAM_HOME}/toolsets/${TS_NAME}/${TS_LOA}"
+    TS_VER_NAME=${TS_NAME}_${TS_LOA}_${TS_VER}
+    TS_VER_FILE_NAME=toolset_${TS_VER_NAME}
+    echo "${TS_DIR}/${TS_VER_FILE_NAME}"
+}
+
 # usage: toolset_check_and_dl_ver name loa version
 # example: toolset_check_and_dl_ver repos nt-x86 v2
 toolset_check_and_dl_ver() {
@@ -456,6 +468,10 @@ arch_date() {
 
 arch_datez() {
     date -u +"%Y%m%d_%H%M%SZ"
+}
+
+ver_date() {
+    date +"v%y_%m_%d"
 }
 
 fcd() {
@@ -538,16 +554,17 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     else
         echo "W/Unknown OS '$UNAME_STR' '$MACHINE_TYPE'"
     fi
+    # export HAM_LOCAL_HOMEBREW="$HAM_HOME/toolsets/_brew/$HAM_BIN_LOA"
 else
     UNAME_STR=`/bin/uname`
     MACHINE_TYPE=`/bin/uname -m`
     if [ "$UNAME_STR" == "Linux" ] && [ "$MACHINE_TYPE" == "x86_64" ]; then
         export HAM_OS=LINUX
         export HAM_BIN_LOA=lin-x64
+        export HAM_LOCAL_HOMEBREW="$HAM_HOME/toolsets/_brew/$HAM_BIN_LOA"
     else
         echo "W/Unknown OS '$UNAME_STR' '$MACHINE_TYPE'"
     fi
-    # exit 1
 fi
 
 if [[ -z $BUILD_BIN_LOA ]]; then

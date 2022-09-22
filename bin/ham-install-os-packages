@@ -27,18 +27,7 @@ case $HAM_OS in
         echo "### Make sure "$HAM_HOME/bin" isn't quarantined ###"
         toolset_unquarantine_dir "$HAM_HOME/bin"
         echo "### Installing packages required by ham on OSX (brew) ###"
-        # Install brew
-        if [ -z `which brew` ]; then
-            echo "I/Brew not installed, installing..."
-            /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-        fi
-        # Install packages
-        # Note: We install bash to get bash 5, you'll want to set
-        # `/usr/local/bin/bash` as the default shell in the Terminal's
-        # preferences General section. Note that ham needs bash and macOS has
-        # deprecated it so this is something you'll want to do even if bash 3
-        # is still available on your machine.
-        HOMEBREW_NO_AUTO_UPDATE=1 brew install bash jq yq wget doxygen lftp hstr mc ncdu htop
+        ham-brew install jq yq wget hstr mc ncdu htop
         ;;
     LINUX)
         if [ $(type apt-get 2>/dev/null | wc -l) = 1 ]; then

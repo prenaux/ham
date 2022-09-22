@@ -1,0 +1,78 @@
+#!/bin/bash -e
+# the help
+usage() {
+    echo ""
+    echo "usage:"
+    echo "  ham-brew-installdir prefix|vanilla_prefix"
+    echo "  ham-brew-installdir PACKAGE (KIND{bin|include|lib})"
+    echo ""
+    echo "  Prints what should be the installation directory of the specified brew package."
+    echo "  Prints nothing if there's no brew install dir."
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        # sourced...
+        return 1
+    else
+        # regular call
+        exit 1
+    fi
+}
+
+PKGNAME="$1"
+if [[ "$PKGNAME" == *"tap/"* ]]; then
+  PKGNAME=$(basename "$PKGNAME")
+fi
+
+function homebrew_get_vanilla_prefix() {
+  case $HAM_BIN_LOA in
+    osx-arm64) echo "/opt/homebrew" ;;
+    osx-x64|osx-x86) echo "/usr/local" ;;
+    lin-*) echo "/home/linuxbrew/.linuxbrew" ;;
+    *) echo "/unsupported_homebrew_platform" ;;
+  esac
+}
+
+function homebrew_get_prefix() {
+  if [ -n "${HAM_LOCAL_HOMEBREW}" ]; then
+    echo "${HAM_LOCAL_HOMEBREW}"
+  else
+    homebrew_get_vanilla_prefix
+  fi
+}
+
+if [ "$1" == "prefix" ]; then
+  KIND=prefix
+  PREFIX=`homebrew_get_prefix`
+elif [ "$1" == "vanilla_prefix" ]; then
+  KIND=prefix
+  PREFIX=`homebrew_get_vanilla_prefix`
+else
+  KIND="${2:-bin}"
+  PREFIX=`homebrew_get_prefix`
+fi
+
+case $KIND in
+  prefix)
+    echo $PREFIX
+    ;;
+  bin)
+    echo "$PREFIX/opt/$PKGNAME"
+    ;;
+  include)
+    if [ -d "$PREFIX/opt/$PKGNAME/include" ]; then
+      echo "$PREFIX/opt/$PKGNAME/include"
+    else
+      echo "$PREFIX/include/$PKGNAME"
+    fi
+    ;;
+  lib)
+    if [ -d "$PREFIX/opt/$PKGNAME/lib" ]; then
+      echo "$PREFIX/opt/$PKGNAME/lib"
+    else
+      echo "$PREFIX/lib"
+    fi
+    ;;
+  *)
+    echo "E/Unknown install kind '$KIND'."
+    exit 1
+    ;;
+esac

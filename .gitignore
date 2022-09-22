@@ -56,6 +56,7 @@ publish
 
 # Don't put the binary toolsets in the repo...
 toolsets/_dl/
+toolsets/_brew/
 toolsets/*/nt-x86/
 toolsets/*/nt-x64/
 toolsets/*/osx-x86/
