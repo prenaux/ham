@@ -20,17 +20,19 @@ if [ -z `where_inpath avm` -o -z `where_inpath anchor` ]; then
             ;;
     esac
     (set -ex ;
+     rustup update ;
      cargo install --git https://github.com/project-serum/anchor avm --locked ;
      avm install $ANCHOR_REQUIRED_VERSION ;
-     avm use $ANCHOR_REQUIRED_VERSION)
+     avm use $ANCHOR_REQUIRED_VERSION) || return 1
 fi
 
 ANCHOR_CURRENT_VERSION=`anchor --version`
 if [ "$ANCHOR_CURRENT_VERSION" != "anchor-cli $ANCHOR_REQUIRED_VERSION" ]; then
     echo "I/Switching to version to Anchor $ANCHOR_REQUIRED_VERSION"
     (set -ex ;
+     rustup update ;
      avm install $ANCHOR_REQUIRED_VERSION ;
-     avm use $ANCHOR_REQUIRED_VERSION)
+     avm use $ANCHOR_REQUIRED_VERSION) || return 1
 fi
 
 # version check
