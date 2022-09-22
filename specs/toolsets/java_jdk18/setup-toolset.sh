@@ -20,12 +20,8 @@ case $HAM_OS in
         ;;
     OSX)
         if [ "$HAM_BIN_LOA" == "osx-arm64" ]; then
-            export JAVA_HOME="/opt/homebrew/opt/openjdk@11/libexec/openjdk.jdk/Contents/Home/"
-            if [ ! -e "$JAVA_HOME/bin/java" ]; then
-                echo "W/Couldn't find openjdk@11's java, trying to install with brew"
-                ham-brew install openjdk@11
-            fi
-            export PATH="${JAVA_HOME}/bin":${PATH}
+            echo "E/Toolset: Unsupported host OS, no Java 1.8 for osx-arm64."
+            return 1
         else
             export JAVA_HOME="${HAM_TOOLSET_DIR}/osx-x64/"
             if [ ! -e "$JAVA_HOME/bin/java" -o ! -e "$JAVA_HOME/bin/javac" ]; then
