@@ -2,17 +2,19 @@
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 usage() {
-    echo "usage: ${0##*/} BRANCH_NAME"
+    echo "usage: ${0##*/} BASE_BRANCH_NAME"
     echo ""
-    echo "  Create a branch with 'git-branch' and then track it with 'gt branch track'."
+    echo "  Create a branch with 'git-branch' and then track it with 'gt branch track'. Prefix the branch name with '$USER-%y-%m-%d'."
+    echo ""
     exit 1
 }
 
 if [ -z "$1" ]; then
-    echo "E/No BRANCH_NAME specified."
+    echo "E/No BASE_BRANCH_NAME specified."
     usage
 fi
 
 (set -x ;
- git-branch "$1" ;
- ham-gt branch track "$1")
+ BRANCH_PREFIX=$(date +"$USER-%y-%m-%d") ;
+ git-branch "$BRANCH_PREFIX-$1" ;
+ ham-gt branch track "$BRANCH_PREFIX-$1")
