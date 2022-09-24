@@ -14,14 +14,14 @@ usage() {
     echo "version:" `"${HAM_CMD}" -v`
     echo ""
     echo "ham launch script:"
-    echo "-h             This help message"
-    echo "-v             Print ham's version"
-    echo "-q             Sets HAM_NO_VER_CHECK=1"
-    echo "-T toolset     Add a toolset to import"
-    echo "               (can be specified multiple times)"
-    echo "-D directory   Add a toolkit to build - the toolkit should be in $WORK"
-    echo "               (can be specified multiple times)"
-    echo "--             Following parameters will be passed to ham directly"
+    echo "  -h             This help message"
+    echo "  -v             Print ham's version"
+    echo "  -q             Sets HAM_NO_VER_CHECK=1"
+    echo "  -T toolset     Add a toolset to import"
+    echo "                 (can be specified multiple times)"
+    echo "  -D directory   Add a toolkit to build - the toolkit should be in $WORK"
+    echo "                 (can be specified multiple times)"
+    echo "  --             Following parameters will be passed to ham directly"
     echo ""
     echo "ham process:"
     "${HAM_CMD}" -? | grep "^[- ]"
@@ -133,8 +133,7 @@ hamIn() {
     if [[ "$CWD" != "$DIR" ]]; then
         pushd "$DIR"
     fi
-    echo "I/Ham Command: $HAM_CMD" $*
-    "$HAM_CMD" $*
+    (set -x ; "$HAM_CMD" $*)
     errcheck $? ham "Build in $DIR failed."
     if [[ "$CWD" != "$DIR" ]]; then
         popd
@@ -150,13 +149,7 @@ else
     export BUILD_HAM_DIR="`ham-search-build-ham.sh`"
     if [[ -z "$BUILD_HAM_DIR" ]]; then
         echo "E/Can't find _build.ham !"
-        if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-        # sourced...
-            return 1
-        else
-        # regular call
-            exit 1
-        fi
+        exit 1
     fi
     hamIn "$BUILD_HAM_DIR" $*
 fi

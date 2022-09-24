@@ -4,6 +4,10 @@ RUN_DIR ?= . ;
 RUN_SYMBOLS_DIR ?= . ;
 RUN_EXE_SUFFIX ?= $(SUFEXE) ;
 
+NOTFILE runnable;
+NOTFILE debuggable;
+DEPENDS runnable : debuggable ;
+
 # runInDebugger_ TARGET : WHAT/EXE : INDIR/EXEDIR : PARAMS
 rule runInDebugger_ {
   if $(3) {
@@ -15,6 +19,7 @@ rule runInDebugger_ {
   RUN_EXE on $(<) = [ FDirName $(RUN_DIR) $(>)$(RUN_EXE_SUFFIX) ] ;
   A10 on $(<) = $(4) ;
   DEPENDS $(<) : $(>) ;
+  DEPENDS debuggable : $(<) ;
 }
 
 # runInDebugger TARGET : WHAT/EXE : INDIR/EXEDIR : PARAMS ;
@@ -35,6 +40,7 @@ rule runInDir_ {
   RUN_EXE on $(<) = [ FDirName $(RUN_DIR) $(>)$(RUN_EXE_SUFFIX) ] ;
   A10 on $(<) = $(4) ;
   DEPENDS $(<) : $(>) ;
+  DEPENDS runnable : $(<) ;
 }
 
 # runInDir TARGET : WHAT/EXE : INDIR/EXEDIR : PARAMS ;

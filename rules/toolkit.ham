@@ -18,6 +18,7 @@ NOTFILE modlibs ;
 NOTFILE tests ;
 NOTFILE data ;
 NOTFILE shaders ;
+DEPENDS all : pass1 build_tools tools modlibs tests data shaders ;
 
 AssertVarDefined HAM_CPP_TOOLSET_NAME ;
 
