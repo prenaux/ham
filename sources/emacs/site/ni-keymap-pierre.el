@@ -130,18 +130,9 @@
  (global-set-key (kbd "M-0") 'mark-next-like-this) ;; M-(
  (global-set-key (kbd "M-8") 'mark-all-like-this) ;; M-8
 
- ;; Goto matching bracket/paren
- (global-set-key (key "M-1") 'ni-goto-matching-bracket)
-
- ;; Expand region
- (require 'expand-region)
- (global-set-key (kbd "M-!") 'er/expand-region) ;; M-! (M-S-1)
-
 ;;;======================================================================
 ;;; ni-flymake.el
 ;;;======================================================================
- (global-set-key (kbd "M-3") 'aflymake-goto-next-error)
- (global-set-key (kbd "M-#") 'aflymake-goto-prev-error)
  (global-set-key (kbd "C-h C-c") 'aflymake-mode-or-syntax-check)
  (global-set-key (kbd "C-h C-f") 'ham-fix-current-buffer)
 
@@ -189,9 +180,20 @@
  ;; Save all then compile with the last compile command used
  (global-set-key (key "C-h C-b") 'save-all-and-compile)
 
+
+ ;; Goto matching bracket/paren
+ (global-set-key (key "M-3") 'ni-goto-matching-bracket)
+ ;; Expand region
+ (require 'expand-region)
+ (global-set-key (kbd "M-#") 'er/expand-region) ;; M-# (M-S-3)
+
  ;; Previous/Next errors
- (define-key global-map "\M-2" 'next-error)
- (define-key global-map "\M-@" 'previous-error)
+ (define-key global-map "\M-1" 'next-error)
+ (define-key global-map "\M-2" 'previous-error)
+
+ ;; Previous/Next flymake errors
+ (global-set-key (kbd "M-!") 'aflymake-goto-next-error) ;; M-! (M-S-1)
+ (global-set-key (kbd "M-@") 'aflymake-goto-prev-error) ;; M-@ (M-S-2)
 
  ;; Disabled the insert key, remap it to control + insert.
  (define-key global-map [(insert)] nil)
