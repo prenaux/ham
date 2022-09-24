@@ -1,30 +1,34 @@
 #!/bin/bash
 . "$HAM_HOME/bin/ham-bash-lib.sh"
+
 TS_DL_DIR="${HAM_HOME}/toolsets/_dl"
 mkdir -p "${TS_DL_DIR}"
-help() {
+
+usage() {
+    echo "usage:"
+    echo "  ham-toolset-build NAME LOA VER"
     echo ""
-    echo "ham-toolset-build NAME LOA VER"
-    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-        # sourced...
-        return 1
-    else
-        # regular call
-        exit 1
-    fi
+    echo "example:"
+    echo "  # Package multiplatform toolset binaries"
+    echo "  ham-toolset-build rclone dist $(ver_date)"
+    echo "  # Package host plawtform toolset binaries"
+    echo "  ham-toolset-build ffmpeg $HAM_BIN_LOA $(ver_date)"
+    exit 1
 }
+
 if [ -z "$1" ]; then
     echo "E/Toolset NAME not specified."
-    help
+    usage
 fi
 if [ -z "$2" ]; then
     echo "E/Toolset LOA not specified."
-    help
+    usage
 fi
 if [ -z "$3" ]; then
     echo "E/Toolset VER not specified."
-    help
+    usage
 fi
+
 TS_NAME=$1
 TS_LOA=$2
 TS_VER=$3
@@ -34,7 +38,7 @@ TS_VER_FILE_NAME=toolset_${TS_VER_NAME}
 
 if [ ! -d "$TS_DIR" ]; then
     echo "Can't find toolset folder: ${TS_DIR}"
-    help
+    usage
 fi
 
 set -ex
