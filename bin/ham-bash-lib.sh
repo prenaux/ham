@@ -471,6 +471,46 @@ fcd() {
   done
 }
 
+#
+# tagfile_status tagfile tag
+#
+# echo's "up-to-date" or "outdated" or "no_tagfile"
+#
+# example usage:
+#   if [[ `tagfile_status "$TAGFILE" "$TAG"` == "up-to-date" ]]; then
+#     echo "I/$TAGFILE is up-to-date."
+#   else
+#     echo "I/$TAGFILE *is not* up-to-date."
+#   endif
+#
+tagfile_status() {
+  TAGFILE=$1
+  TAG=$2
+  if [ -e "$TAGFILE" ]; then
+    PREVTAG=`cat "$TAGFILE"`
+    CURRTAG="$TAG"
+    if [ "$PREVTAG" == "$CURRTAG" ]; then
+      # tagfile is up-to-date
+      echo "up-to-date"
+    else
+      # tagfile is outdated
+      echo "outdated"
+    fi
+  else
+    # tagfile doesn't exist
+    echo "no_tagfile"
+  fi
+}
+
+# tagfile_update tagfile tag
+tagfile_update() {
+  OUTFILE=$1
+  TAG=$2
+  mkdir -p "$(dirname "$OUTFILE")"
+  echo "$TAG" > "$OUTFILE"
+  echo "I/Updated tagfile: '$OUTFILE'"
+}
+
 ########################################################################
 ##  Environments
 ########################################################################

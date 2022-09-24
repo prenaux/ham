@@ -3,31 +3,11 @@
 
 # IMPORTANT: Update the tag date when you make any change to the list of
 # packages installed. You can replace the date with the output of `arch_datez`
-TAG="ham-install-os-packages-${HAM_OS}-20220819_070850Z"
-
-mkdir -p "$TEMPDIR"
+TAG="ham-install-os-packages-${HAM_OS}-v22_09_24"
 TAGFILE="$TEMPDIR/ham-install-os-packages-${HAM_OS}-tag.txt"
 
-# check_tag tagfile tag
-check_tag() {
-  OUTFILE=$1
-  TAG=$2
-  if [ -e "$OUTFILE" ]; then
-    PREVTAG=`cat "$OUTFILE"`
-    CURRTAG="$TAG"
-    if [ "$PREVTAG" == "$CURRTAG" ]; then
-      echo 1
-    else
-      echo 0
-    fi
-  else
-    # Output file doesnt exist
-    echo 0
-  fi
-}
-
-if [[ `check_tag "$TAGFILE" "$TAG"` == 1 ]]; then
-    echo "I/ham-install-os-packages tag up-to-date."
+if [[ `tagfile_status "$TAGFILE" "$TAG"` == "up-to-date" ]]; then
+    echo "I/ham-install-os-packages tagfile is up-to-date."
     if [ "$1" == "nocheck" ] || [ "$1" == "force" ]; then
         echo "I/Installing anyway because of 'nocheck' option."
     else
@@ -36,7 +16,7 @@ if [[ `check_tag "$TAGFILE" "$TAG"` == 1 ]]; then
 else
     echo "I/HAM_HOME: ${HAM_HOME}"
     echo "I/TAGFILE: ${TAGFILE}"
-    echo "I/ham-install-os-packages tag outdated, installing os packages..."
+    echo "I/ham-install-os-packages tagfile is outdated, installing os packages..."
 fi
 
 case $HAM_OS in
@@ -64,7 +44,12 @@ case $HAM_OS in
         if [ $(type apt-get 2>/dev/null | wc -l) = 1 ]; then
             echo "### Installing packages required by ham on Linux (apt-get) ###"
             echo "I/Installing apt-get packages"
-            (set -x ; sudo apt-get -y install clang curl ffmpeg freeglut3-dev g++ gcc git htop jq libcurl4-openssl-dev libdw-dev libunwind-dev libsdl2-dev libssl-dev libudev-dev mc mesa-common-dev mesa-utils net-tools ntpdate p7zip-full pkg-config python3 python3-pip subversion wget xsltproc)
+            (set -x ;
+             # autoremove & update fix "E: Unable to correct problems, you have held broken packages."
+             sudo apt -y autoremove ;
+             sudo apt -y update ;
+             # install all our required packages
+             sudo apt-get -y install build-essential clang curl ffmpeg file freeglut3-dev git g++ gcc git htop jq libcurl4-openssl-dev libdw-dev libunwind-dev libsdl2-dev libssl-dev libudev-dev mc mesa-common-dev mesa-utils net-tools ntpdate p7zip-full procps pkg-config python3 python3-pip subversion wget xsltproc)
         else
             echo "E/Unsupported LINUX package manager"
             return 1
@@ -77,8 +62,6 @@ case $HAM_OS in
 esac
 
 # Update tag file
-mkdir -p "$(dirname "$TAGFILE")"
-echo "$TAG" > "$TAGFILE"
-echo "I/Updated tagfile: '$TAGFILE'"
+tagfile_update "$TAGFILE" "$TAG"
 
 echo "I/Done"
