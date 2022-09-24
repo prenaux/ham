@@ -16,7 +16,6 @@ usage() {
     echo "ham launch script:"
     echo "  -h             This help message"
     echo "  -v             Print ham's version"
-    echo "  -q             Sets HAM_NO_VER_CHECK=1"
     echo "  -T toolset     Add a toolset to import"
     echo "                 (can be specified multiple times)"
     echo "  -D directory   Add a toolkit to build - the toolkit should be in $WORK"
@@ -61,7 +60,7 @@ fi
 
 # process the arguments
 _ARG_DIRECTORIES=()
-while getopts :T:D:vq OPT
+while getopts :T:D:v OPT
 do
     case "$OPT" in
         h)
@@ -69,9 +68,6 @@ do
             ;;
         \?)
             usage
-            ;;
-        q)
-            export HAM_NO_VER_CHECK=1
             ;;
         v)
             "$HAM_CMD" -v
@@ -117,7 +113,8 @@ shift $((OPTIND-1))
 
 if [[ "$_ARG_TOOLSET" != "" ]]; then
     . "$HAM_HOME/bin/ham-bash-setenv.sh"
-    HAM_NO_VER_CHECK=1 . ham-toolset $_ARG_TOOLSET
+    export HAM_NO_VER_CHECK=${HAM_NO_VER_CHECK:-1}
+    . ham-toolset $_ARG_TOOLSET
     errcheck $? ham "Can't setup the '$_ARG_TOOLSET' toolset."
 fi
 
