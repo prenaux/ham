@@ -1,7 +1,19 @@
-GCC_EXE_BASE ?= "" ;
 if ! $(OSPLAT) {
-  EXIT "E/{OSPLAT} not defined." ;
+  EXIT "F/base-GCC: OSPLAT not defined." ;
 }
+if ! $(GCC_CC) {
+  EXIT "F/base-GCC: GCC_CC not defined." ;
+}
+if ! $(GCC_CPP) {
+  EXIT "F/base-GCC: GCC_CPP not defined." ;
+}
+if ! $(GCC_LINK) {
+  EXIT "F/base-GCC: GCC_LINK not defined." ;
+}
+if ! $(GCC_AR) {
+  EXIT "F/base-GCC: GCC_AR not defined." ;
+}
+GCC_DEBUG_FLAG ?= -g ;
 
 SLASH   ?= / ;
 SUFOBJ  ?= .o ;
@@ -21,10 +33,10 @@ else {
 C++FLAGS    ?= ;
 CCFLAGS     ?= ;
 
-CC   ?= $(GCC_EXE_BASE)gcc ;
-C++  ?= $(GCC_EXE_BASE)g++ ;
-LINK ?= $(GCC_EXE_BASE)g++ ;
-AR   ?= $(GCC_EXE_BASE)ar -rcs ;
+CC   ?= $(GCC_CC) ;
+C++  ?= $(GCC_CPP) ;
+LINK ?= $(GCC_LINK) ;
+AR   ?= $(GCC_AR) -ru ;
 
 LINKFLAGS   ?= "" ;
 LINKLIBS    ?=  ;

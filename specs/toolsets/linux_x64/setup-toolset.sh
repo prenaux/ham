@@ -1,5 +1,4 @@
 #!/bin/bash
-
 . ham-toolset-import.sh xslt_tools
 if [ $? != 0 ]; then return 1; fi
 
@@ -15,11 +14,12 @@ esac
 export OSPLAT=X64
 export BUILD_BIN_LOA=$HAM_BIN_LOA
 
-# Clang is the default on Linux, the GCC linker is insane...
-export LINUX_CLANG=${LINUX_CLANG:-1}
+# LINUX_CLANG is disabled by default as we rely on Linux Homebrew's GCC for
+# the thirdparty libraries.
+export LINUX_CLANG=${LINUX_CLANG:-0}
 
-# Use GCC
 if [ "${LINUX_CLANG}" == "0" ]; then
+  # Use GCC
   toolset_import gcc_470
   if [ $? != 0 ]; then return 1; fi
 

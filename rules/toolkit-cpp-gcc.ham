@@ -1,6 +1,7 @@
 STRICT_ALIASING_FLAGS ?= -fno-strict-aliasing ;
 
 GCC_CC_ARGS +=
+  -L$(GLIBC_INCDIR)
   -ffunction-sections
   -fdata-sections
   -fvisibility=hidden
@@ -13,6 +14,7 @@ GCC_CPP_ARGS +=
 ;
 
 LINKFLAGS +=
+  -L$(GLIBC_LIBDIR)
   -fvisibility=hidden
   -ffunction-sections
   -fdata-sections
@@ -45,13 +47,16 @@ if $(LINUX) {
   LINKLIBS +=
    -lstdc++ -lpthread -ldl -lm
    # sudo apt-get install -y libunwind-dev
-   -lunwind
   ;
 
+  # Libunwind
+  GCC_CC_ARGS += -L$(LIBUNWIND_INCDIR) ;
+  LINKFLAGS += [ FDirName $(LIBUNWIND_LIBDIR) libunwind.a ] ;
+
   ### "Debug" (da) build flags ###
-  CLANG_DBG_ARGS ?= -ggdb -O0 $(STRICT_ALIASING_FLAGS) ;
+  CLANG_DBG_ARGS ?= $(GCC_DEBUG_FLAG) -O0 $(STRICT_ALIASING_FLAGS) ;
   ### Optimized (ra) build flags ###
-  CLANG_OPT_ARGS ?= -ggdb -O2 $(STRICT_ALIASING_FLAGS) ;
+  CLANG_OPT_ARGS ?= $(GCC_DEBUG_FLAG) -O2 $(STRICT_ALIASING_FLAGS) ;
 }
 
 CCFLAGS   += $(GCC_CC_ARGS) ;

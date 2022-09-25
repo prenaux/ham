@@ -1,6 +1,6 @@
+GCC_CC   ?= clang ;
+GCC_CPP  ?= clang++ ;
+GCC_LINK ?= clang++ ;
+GCC_AR   ?= ar ;
+CLANG    = 1 ;
 Import base-GCC.ham ;
-
-CC = clang ;
-C++ = clang++ ;
-LINK = clang++ ;
-CLANG = 1 ;
