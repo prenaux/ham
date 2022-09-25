@@ -7,7 +7,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/thrift"
 
 # path setup
 case $HAM_OS in
-    OSX*)
+    LINUX*|OSX*)
         ham-brew-install thrift "bin/thrift" || return 1
         ;;
     LINUX*)
