@@ -1,37 +1,50 @@
 # LOG is defined in base.ham
 
+rule logGetLoc {
+  if ! $(SUBDIR_TOKENS) {
+    return "UNKNOWN_LOC" ;
+  }
+  return [ FDirName $(SUBDIR_TOKENS) ] ;
+}
+
 rule logDebug {
   if $(LOG) <= 0 {
-    ECHO "D/" $(<) ;
+    local _loc = [ logGetLoc ] ;
+    ECHO "D/$(_loc):" $(<) ;
   }
 }
 
 rule logVerbose {
   if $(LOG) <= 1 {
-    ECHO "V/" $(<) ;
+    local _loc = [ logGetLoc ] ;
+    ECHO "V/$(_loc):" $(<) ;
   }
 }
 
 rule logInfo {
   if $(LOG) <= 2 {
-    ECHO "I/" $(<) ;
+    local _loc = [ logGetLoc ] ;
+    ECHO "I/$(_loc):" $(<) ;
   }
 }
 
 rule logWarn {
   if $(LOG) <= 3 {
-    ECHO "W/" $(<) ;
+    local _loc = [ logGetLoc ] ;
+    ECHO "W/$(_loc):" $(<) ;
   }
 }
 
 rule logError {
   if $(LOG) <= 4 {
-    ECHO "E/" $(<) ;
+    local _loc = [ logGetLoc ] ;
+    ECHO "E/$(_loc):" $(<) ;
   }
 }
 
 rule logFatal {
-  EXIT "F/" $(<) ;
+  local _loc = [ logGetLoc ] ;
+  EXIT "F/$(_loc):" $(<) ;
 }
 
 rule logVar {

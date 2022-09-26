@@ -21,3 +21,12 @@ rule AssertVarUndefined {
 rule AssertUnreachable {
   logFatal "ASSERT: code should not be reached:" $(<) ;
 }
+
+rule AssertFExists {
+  local m = [ FDirName $(SUBDIR_TOKENS) ] ;
+  for _s in $(1) {
+    if ! [ FExists $(_s) ] {
+      logFatal "ASSERT: Can't find '$(_s)'." ;
+    }
+  }
+}
