@@ -59,11 +59,11 @@ if [ ! -f "$NODEJS_DIR/$NODEJS_DL_TAG" ]; then
      mv "${HAM_TOOLSET_DIR}/${NODEJS_DL_NAME}" "${NODEJS_DIR}" ;
      rm "${NODEJS_DL_FN}" )
     if [ ! -f "$NODEJS_BIN_DIR/node" ]; then
-        echo "E/'node' not found after unpacking the archive '%{NODEJS_DL_URL}'"
+        echo "E/'node' not found after unpacking the archive '${NODEJS_DL_URL}'."
         return 1
     fi
     if [ ! -f "$NODEJS_BIN_DIR/npm" ]; then
-        echo "E/'npm' not found after unpacking the archive '%{NODEJS_DL_URL}'"
+        echo "E/'npm' not found after unpacking the archive '${NODEJS_DL_URL}'."
         return 1
     fi
     # Output the tag file
