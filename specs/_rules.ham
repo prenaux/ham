@@ -1,0 +1,8 @@
+#----------------------------------------------------------------------
+#     Toolkit definition
+#----------------------------------------------------------------------
+TK_NAME = "ham" ;
+TK_DIR = [ FGetAbsolutePath [ FDirName $(TOP) .. ] ] ;
+TOP_DIR = [ FDirName $(TK_DIR) specs ] ;
+
+Import toolkit.ham ;

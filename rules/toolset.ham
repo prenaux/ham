@@ -1,0 +1,36 @@
+# hamToolsetHdrs MODULENAME
+# hamToolsetHdrs MODULENAME : TOOLKITNAME
+rule hamToolsetHdrs {
+  local tkName = $(2) ;
+  tkName ?= ham ;
+  local toolsetName = $(1) ;
+
+  local d = $(HAM_HDRS_$(toolsetName:U)) ;
+  if ! $(d) {
+    logFatal "hamToolsetHdrs: HAM_HDRS_$(toolsetName:U) no defined." ;
+  }
+  if $(d) != "NONE" {
+    if ! [ FExists $(d) ] {
+      logFatal "hamToolsetHdrs: $(toolsetName), can't find HAM_HDRS_$(toolsetName:U) directory:" $(d) ;
+    }
+    SubDirHdrs $(d) ;
+  }
+
+  local d = [ FDirName $(WORK) $(2) specs toolsets $(toolsetName) include ] ;
+  if [ FExists $(d) ] {
+    SubDirHdrs $(d) ;
+  }
+  else {
+    # logFatal "hamToolsetHdrs: $(toolsetName), can't find include directory:" $(d) ;
+  }
+}
+
+rule hamToolsetDll {
+  hamToolsetHdrs $(1) : $(2) ;
+  tkPkgLinkDll $(1) ;
+}
+
+rule hamToolsetLibs {
+  hamToolsetHdrs $(1) : $(2) ;
+  tkPkgLinkLibs $(1) ;
+}

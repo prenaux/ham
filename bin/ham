@@ -78,7 +78,11 @@ do
             fi
             ;;
         T)
-            _ARG_TOOLSET="$_ARG_TOOLSET $OPTARG"
+            if [ -z "${_ARG_TOOLSET}" ]; then
+              _ARG_TOOLSET="$OPTARG"
+            else
+              _ARG_TOOLSET="$_ARG_TOOLSET $OPTARG"
+            fi
             # echo "_ARG_TOOLSET:" $_ARG_TOOLSET
             ;;
         D)
@@ -114,7 +118,14 @@ shift $((OPTIND-1))
 if [[ "$_ARG_TOOLSET" != "" ]]; then
     . "$HAM_HOME/bin/ham-bash-setenv.sh"
     export HAM_NO_VER_CHECK=${HAM_NO_VER_CHECK:-1}
-    . ham-toolset $_ARG_TOOLSET
+    if [ -f "${_ARG_TOOLSET}" ]; then
+      pushd `dirname "${_ARG_TOOLSET}"`
+      # Specified toolset is a file - should be a _ham_project
+      . ham-toolset "${_ARG_TOOLSET}"
+      popd
+    else
+      . ham-toolset $_ARG_TOOLSET
+    fi
     errcheck $? ham "Can't setup the '$_ARG_TOOLSET' toolset."
 fi
 

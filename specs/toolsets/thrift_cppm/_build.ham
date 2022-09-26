@@ -1,0 +1,79 @@
+if [ SubDirOnce TOP toolsets thrift_cppm ] = 1 { return ; }
+
+tkDefModuleLib thrift_cppm : 1.0.0 ;
+
+SubDirHdrs $(SUBDIR) github-thrift lib cpp src ;
+SubDirHdrs $(SUBDIR) include ;
+SubDirHdrs [ FDirName $(BOOST_CPPM_INCDIR) ] ;
+
+# Copied from github-thrift/lib/cpp/CMakeLists.txt
+SRC =
+
+# src/thrift/
+[ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift ] :
+  TApplicationException.cpp
+  TOutput.cpp
+]
+
+# src/thrift/async/
+[ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift async ] :
+  TAsyncChannel.cpp
+  TAsyncProtocolProcessor.cpp
+  TConcurrentClientSyncInfo.h
+  TConcurrentClientSyncInfo.cpp
+]
+
+# src/thrift/concurrency/
+[ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift concurrency ] :
+  ThreadManager.cpp
+  TimerManager.cpp
+  ThreadFactory.cpp
+  Thread.cpp
+  Monitor.cpp
+  Mutex.cpp
+]
+
+# src/thrift/processor/
+[ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift processor ] :
+  PeekProcessor.cpp
+]
+
+# src/thrift/protocol/
+[ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift protocol ] :
+  TBase64Utils.cpp
+  TDebugProtocol.cpp
+  TJSONProtocol.cpp
+  TMultiplexedProtocol.cpp
+  TProtocol.cpp
+]
+
+# src/thrift/transport/
+[ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift transport ] :
+  TTransportException.cpp
+  TFDTransport.cpp
+  TSimpleFileTransport.cpp
+  THttpTransport.cpp
+  THttpClient.cpp
+  THttpServer.cpp
+  TSocket.cpp
+  TSocketPool.cpp
+  TServerSocket.cpp
+  TTransportUtils.cpp
+  TBufferTransports.cpp
+  SocketCommon.cpp
+]
+
+# src/thrift/server/
+[ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift server ] :
+  TConnectedClient.cpp
+  TServerFramework.cpp
+  TSimpleServer.cpp
+  TThreadPoolServer.cpp
+  TThreadedServer.cpp
+] ;
+
+
+
+AssertFExists $(SRC) ;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) : exc rtti : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;

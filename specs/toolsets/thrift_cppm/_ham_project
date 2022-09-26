@@ -1,0 +1,13 @@
+#!/bin/bash -e
+if [[ -z $HAM_PROJECT_DIR ]]; then
+    echo "E/HAM_PROJECT_DIR not set !"
+    return 1
+fi
+
+if [ ! -d "github-thrift" ]; then
+  (set -x ; git clone --depth 1 https://github.com/apache/thrift.git github-thrift)
+else
+  echo "I/cppm-thrift: github-thrift already cloned"
+fi
+
+toolset_import_list repos boost_cppm default || return 1
