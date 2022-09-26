@@ -1,6 +1,7 @@
 if [ SubDirOnce TOP toolsets thrift_cppm ] = 1 { return ; }
 
 tkDefModuleLib thrift_cppm : 1.0.0 ;
+hamToolsetHdrs boost_cppm ;
 
 SubDirHdrs $(SUBDIR) github-thrift lib cpp src ;
 SubDirHdrs $(SUBDIR) include ;
@@ -19,7 +20,6 @@ SRC =
 [ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift async ] :
   TAsyncChannel.cpp
   TAsyncProtocolProcessor.cpp
-  TConcurrentClientSyncInfo.h
   TConcurrentClientSyncInfo.cpp
 ]
 

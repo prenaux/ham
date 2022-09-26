@@ -10,6 +10,15 @@ case $HAM_OS in
     OSX*)
         ham-brew-install thrift "bin/thrift" || return 1
         ;;
+    LINUX*)
+        if [ ! -e "`where_inpath thrift`" ]; then
+          sudo apt-get -y install thrift-compiler
+          if [ ! -e "`where_inpath thrift`" ]; then
+            echo "E/Can't find thrift after thrift-compiler install."
+            return 1
+          fi
+        fi
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1

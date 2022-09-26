@@ -13,7 +13,7 @@
 #define ARITHMETIC_RIGHT_SHIFT 1
 
 /* Defines automake version */
-#define AUTOMAKE_VERSION 
+#define AUTOMAKE_VERSION
 
 /* Use *.h extension for parser header file */
 #define BISON_USE_PARSER_H_EXTENSION 1
@@ -360,7 +360,9 @@
 #define STDC_HEADERS 1
 
 /* Define to 1 if strerror_r returns char *. */
-/* #undef STRERROR_R_CHAR_P */
+#ifdef __linux__
+#define STRERROR_R_CHAR_P
+#endif
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1
@@ -463,4 +465,3 @@
 
 
 #endif
-
