@@ -1,12 +1,22 @@
 #!/bin/bash -e
-#
-# usage:
-#   ham-cppm-build TOOLSETS
-#
-# example:
-#   ham-cppm-build thrift_cppm
-#
-for toolset in "$@"
-do
-  ham -D "${HAM_HOME}/specs/toolsets/${toolset}" -T "${HAM_HOME}/specs/toolsets/${toolset}/_ham_project" all
-done
+usage() {
+    echo "usage:"
+    echo "  ${0##*/} TOOLSET (HAM_ARGS, default: all)"
+    echo ""
+    echo "example:"
+    echo "  ham-cppm-build thrift_cppm all"
+    exit 1
+}
+
+if [ -z "$1" ]; then
+  usage
+fi
+
+TOOLSET=$1
+shift
+
+if [ -z "$1" ]; then
+  (set -x ; ham -D "${HAM_HOME}/specs/toolsets/${TOOLSET}" -T "${HAM_HOME}/specs/toolsets/${TOOLSET}/_ham_project" all)
+else
+  (set -x ; ham -D "${HAM_HOME}/specs/toolsets/${TOOLSET}" -T "${HAM_HOME}/specs/toolsets/${TOOLSET}/_ham_project" "$@")
+fi

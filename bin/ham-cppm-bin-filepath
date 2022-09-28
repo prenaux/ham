@@ -1,0 +1,64 @@
+#!/bin/bash -e
+usage() {
+    echo "usage:"
+    echo "  ${0##*/} type{exe|dll} name"
+    echo ""
+    echo "example:"
+    echo "  $ ham-cppm-filepath exe foo"
+    echo "  lin-x64/foo.x64"
+    exit 1
+}
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+  usage
+fi
+
+TYPE=$1
+NAME=$2
+
+BIN_LOA=${HAM_TARGET_BIN_LOA:-$HAM_BIN_LOA}
+
+case $TYPE in
+  exe)
+    case $BIN_LOA in
+      osx-*)
+        PREFIX=""
+        SUFFIX=""
+        ;;
+      nt-*)
+        PREFIX=""
+        SUFFIX=".exe"
+        ;;
+      lin-*)
+        PREFIX=""
+        SUFFIX=".x64"
+        ;;
+      *)
+        PREFIX="unknown-exe-"
+        SUFFIX=".unknown-exe"
+        ;;
+    esac
+    ;;
+  dll)
+    case $BIN_LOA in
+      osx-*)
+        PREFIX="lib"
+        SUFFIX=".dylib"
+        ;;
+      nt-*)
+        PREFIX=""
+        SUFFIX=".dll"
+        ;;
+      lin-*)
+        PREFIX="lib"
+        SUFFIX=".so"
+        ;;
+      *)
+        PREFIX="unknown-dll-"
+        SUFFIX=".unknown-dll"
+        ;;
+    esac
+    ;;
+esac
+
+echo ${BIN_LOA}/${PREFIX}${NAME}${SUFFIX}

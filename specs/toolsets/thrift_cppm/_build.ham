@@ -5,7 +5,6 @@ hamToolsetHdrs boost_cppm ;
 
 SubDirHdrs $(SUBDIR) github-thrift lib cpp src ;
 SubDirHdrs $(SUBDIR) include ;
-SubDirHdrs [ FDirName $(BOOST_CPPM_INCDIR) ] ;
 
 # Copied from github-thrift/lib/cpp/CMakeLists.txt
 SRC =
@@ -71,8 +70,6 @@ SRC =
   TThreadPoolServer.cpp
   TThreadedServer.cpp
 ] ;
-
-
 
 AssertFExists $(SRC) ;
 
