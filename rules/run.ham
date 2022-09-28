@@ -1,5 +1,3 @@
-Import assert.ham ;
-
 RUN_DIR ?= . ;
 RUN_SYMBOLS_DIR ?= . ;
 RUN_EXE_SUFFIX ?= $(SUFEXE) ;

@@ -428,6 +428,94 @@ if ( $(FLYMAKE) = 1 ) && ( $(CAN_LINT) = 1 ) {
 }
 
 #----------------------------------------------------------------------
+#     Logging
+#----------------------------------------------------------------------
+rule logGetLoc {
+  if ! $(SUBDIR_TOKENS) {
+    return "UNKNOWN_LOC" ;
+  }
+  return [ FDirName $(SUBDIR_TOKENS) ] ;
+}
+
+rule logDebug {
+  if $(LOG) <= 0 {
+    local _loc = [ logGetLoc ] ;
+    ECHO "D/$(_loc):" $(<) ;
+  }
+}
+
+rule logVerbose {
+  if $(LOG) <= 1 {
+    local _loc = [ logGetLoc ] ;
+    ECHO "V/$(_loc):" $(<) ;
+  }
+}
+
+rule logInfo {
+  if $(LOG) <= 2 {
+    local _loc = [ logGetLoc ] ;
+    ECHO "I/$(_loc):" $(<) ;
+  }
+}
+
+rule logWarn {
+  if $(LOG) <= 3 {
+    local _loc = [ logGetLoc ] ;
+    ECHO "W/$(_loc):" $(<) ;
+  }
+}
+
+rule logError {
+  if $(LOG) <= 4 {
+    local _loc = [ logGetLoc ] ;
+    ECHO "E/$(_loc):" $(<) ;
+  }
+}
+
+rule logFatal {
+  local _loc = [ logGetLoc ] ;
+  EXIT "F/$(_loc):" $(<) ;
+}
+
+rule logVar {
+  logDebug $(<) "=" $($(<)) ;
+}
+
+#----------------------------------------------------------------------
+#     Asserts
+#----------------------------------------------------------------------
+rule AssertEq {
+  if $(<) != $(>) {
+    logFatal "ASSERT:" $(<) "!=" $(>) ;
+  }
+}
+
+rule AssertVarDefined {
+  if ! $($(<)) {
+    logFatal "ASSERT:" $(<) "variable should be defined." ;
+  }
+}
+
+rule AssertVarUndefined {
+  if $($(<)) {
+    logFatal "ASSERT:" $(<) "variable should not be defined." ;
+  }
+}
+
+rule AssertUnreachable {
+  logFatal "ASSERT: code should not be reached:" $(<) ;
+}
+
+rule AssertFExists {
+  local m = [ FDirName $(SUBDIR_TOKENS) ] ;
+  for _s in $(1) {
+    if ! [ FExists $(_s) ] {
+      logFatal "ASSERT: Can't find '$(_s)'." ;
+    }
+  }
+}
+
+#----------------------------------------------------------------------
 #     Import rules
 #----------------------------------------------------------------------
 rule ImportBuildPath {

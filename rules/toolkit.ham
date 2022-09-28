@@ -8,9 +8,6 @@ if ! [ FExists $(TOP_DIR) ] {
   EXIT "E/TOP_DIR doesn't exist:" $(TOP_DIR) ;
 }
 
-Import log.ham ;
-Import assert.ham ;
-
 NOTFILE pass1 ;
 NOTFILE build_tools ;
 NOTFILE tools ;
@@ -1025,4 +1022,4 @@ Import run.ham ;
 #----------------------------------------------------------------------
 #     TOOLSET
 #----------------------------------------------------------------------
-Import toolset.ham ;
+Import ham-toolset.ham ;
