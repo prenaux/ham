@@ -21,13 +21,21 @@ case $HAM_BIN_LOA in
         ;;
 esac
 
+# per-os path setup
+case $HAM_BIN_LOA in
+    osx-*)
+      # Added system sdk path using the xcode command line tool..
+      export MACOS_SDK_PATH=$(xcrun --show-sdk-path)
+      ;;
+esac
+
 # path
 pathenv_add "${HAM_TOOLSET_DIR}/$HAM_BIN_LOA"
 pathenv_add "${HAM_TOOLSET_DIR}"
 
 # cpp compiler
 export HAM_CPP_TOOLSET=ZIGCC
-export HAM_CPP_TOOLSET_NAME=ZIGCC
+export HAM_CPP_TOOLSET_NAME=zigcc
 export BUILD_BIN_LOA=$HAM_BIN_LOA
 
 # version

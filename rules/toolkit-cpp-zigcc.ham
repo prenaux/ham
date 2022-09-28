@@ -15,7 +15,6 @@ ZIGCC_CC_ARGS +=
   -Wno-unused-value
 ;
 ZIGCC_CPP_ARGS +=
-  -stdlib=libc++
   -std=$(C++VERSION)
   -Wno-c++11-narrowing
 ;
@@ -52,6 +51,11 @@ if $(TARGET_OS) = MACOSX {
   ZIGCC_CC_ARGS += -Wno-inconsistent-missing-override ;
 
   ZIGCC_CC_ARGS += -mmacosx-version-min=$(MACOSX_MINVER) -fno-common ;
+
+  ZIGCC_CPP_ARGS +=
+    -std=$(C++VERSION)
+    -Wno-c++11-narrowing
+  ;
 
   # Strip all symbols in release build
   #
@@ -90,10 +94,24 @@ if $(TARGET_OS) = MACOSX {
   -framework MetalKit
   -framework QuartzCore
   -framework Security
-  -lstdc++ -lpthread -ldl ;
+  -lc++ -lpthread -ldl -lunwind ;
+}
+else if $(TARGET_OS) = LINUX {
+
+  ZIGCC_CC_ARGS += -Wno-deprecated-declarations -Wno-gnu-inline-cpp-without-extern ;
+  # TODO: Remove this, this is actually a very useful warning.
+  ZIGCC_CC_ARGS += -Wno-inconsistent-missing-override ;
+
+  if $(BUILD) = ra {
+    LINKFLAGS_EXE += -dead_strip ;
+    LINKFLAGS_DLL += -dead_strip ;
+  }
+  LINKLIBS +=
+    -lstdc++ -lpthread -ldl -lm -lunwind
+  ;
 }
 else {
-  EXIT "E/Unsupported OS:" $(OS) ;
+  logFatal "Unsupported TARGET_OS:" $(TARGET_OS) ;
 }
 
 CCFLAGS  += $(ZIGCC_CC_ARGS) ;

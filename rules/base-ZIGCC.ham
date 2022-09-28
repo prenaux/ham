@@ -80,7 +80,7 @@ CCFLAGS  ?= ;
 CC   ?= zig cc -target $(ZIGCC_TARGET) ;
 C++  ?= zig c++ -target $(ZIGCC_TARGET) ;
 LINK ?= zig cc -target $(ZIGCC_TARGET) ;
-AR   ?= zig ar -ru -target $(ZIGCC_TARGET) ;
+AR   ?= zig ar -rcs ;
 ZIGCC = 1 ;
 
 LINKFLAGS   ?= "" ;
@@ -88,3 +88,15 @@ LINKLIBS    ?=  ;
 OPTIM       ?= "" ;
 STDHDRS     ?= ;
 UNDEFFLAG   ?= "-u _" ;
+
+if $(TARGET_OS) = MACOSX {
+  CLANG_BASE_FLAGS =
+    -isysroot $(MACOS_SDK_PATH)
+    -F$(MACOS_SDK_PATH)/System/Library/Frameworks
+    # -I$(MACOS_SDK_PATH)/usr/include
+    # -L$(MACOS_SDK_PATH)/usr/lib
+  ;
+  CCFLAGS += $(CLANG_BASE_FLAGS) ;
+  # C++FLAGS += $(CLANG_BASE_FLAGS) ;
+  LINKFLAGS += $(CLANG_BASE_FLAGS) ;
+}
