@@ -12,7 +12,7 @@ if $(TARGET_OS) = MACOSX {
 else {
   actions DllLink bind NEEDLIBS
   {
-    $(LINK) $(LINKFLAGS) -fvisibility=hidden -shared -o "$(<)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+    $(LINK) $(LINKFLAGS) $(LINKFLAGS_DLL) -fvisibility=hidden -shared -o "$(<)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
   }
 }
 
