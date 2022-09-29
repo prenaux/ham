@@ -2,4 +2,8 @@
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 export HAM_NO_VER_CHECK=1
 toolset_import_once nodejs > /dev/null
+if [ "$1" == "update_cli" ]; then
+  shift
+  (set -x ; npm install -g @withgraphite/graphite-cli@latest)
+fi
 gt "$@"
