@@ -6487,8 +6487,8 @@ means move forward N blocks."
             (forward-line -1))
           (forward-line))
          ;; List items
-         ((setq bounds (markdown-cur-list-item-bounds))
-          (goto-char (nth 0 bounds)))
+         ;; ((setq bounds (markdown-cur-list-item-bounds))
+          ;; (goto-char (nth 0 bounds)))
          ;; Other
          (t
           (while (and (not (bobp))
@@ -6536,9 +6536,9 @@ means move backward N blocks."
                       (> (length (match-string 3)) 0)) ;; not blank
             (forward-line)))
          ;; List items
-         ((and (markdown-cur-list-item-bounds)
-               (setq bounds (markdown-next-list-item-bounds)))
-          (goto-char (nth 0 bounds)))
+         ;; ((and (markdown-cur-list-item-bounds)
+               ;; (setq bounds (markdown-next-list-item-bounds)))
+          ;; (goto-char (nth 0 bounds)))
          ;; Other
          (t
           (forward-line)
