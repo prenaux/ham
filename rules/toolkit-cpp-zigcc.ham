@@ -1,6 +1,6 @@
 if $(BUILD) = da {
-  # Build with the sanitizer in debug mode
-  ZIGCC_SANITIZE ?= 1 ;
+  # XXX: Disabled because zigcc doesn't support ASAN atm :(
+  # ZIGCC_SANITIZE ?= 1 ;
 }
 
 STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
