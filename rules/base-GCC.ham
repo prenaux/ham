@@ -24,7 +24,7 @@ CCFLAGS     ?= ;
 CC   ?= $(GCC_EXE_BASE)gcc ;
 C++  ?= $(GCC_EXE_BASE)g++ ;
 LINK ?= $(GCC_EXE_BASE)g++ ;
-AR   ?= $(GCC_EXE_BASE)ar -ru ;
+AR   ?= $(GCC_EXE_BASE)ar -rcs ;
 
 LINKFLAGS   ?= "" ;
 LINKLIBS    ?=  ;

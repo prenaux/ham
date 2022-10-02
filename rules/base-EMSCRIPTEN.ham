@@ -13,7 +13,7 @@ C++FLAGS = $(CCFLAGS) ;
 CC   = emcc ;
 C++  = em++ ;
 LINK = em++ ;
-AR   = emar ru ;
+AR   = emar -rcs ;
 
 LINKFLAGS   ?= "" ;
 LINKLIBS    ?=  ;

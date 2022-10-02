@@ -633,7 +633,7 @@ SUFDLLOBJ ?= $(SUFOBJ) ;
 SUFDLL    ?= $(SUFLIB) ;
 
 C++VERSION ?= c++14 ;
-AR      ?= ar ru ;
+AR      ?= ar -rcs ;
 AS      ?= as ;
 ASFLAGS     ?= ;
 YASM    ?= nasm ;
@@ -2311,7 +2311,7 @@ rule FSubDirAbsName {
 #
 actions updated together piecemeal Archive
 {
-  "$(AR)" "$(<)" "$(>)"
+  $(AR) "$(<)" "$(>)"
 }
 
 actions As
