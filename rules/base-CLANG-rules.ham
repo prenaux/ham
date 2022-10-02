@@ -52,6 +52,7 @@ if $(OS) = MACOSX
   }
 }
 else if $(OS) = LINUX {
+  LINKFLAGS += -fuse-ld=lld -Wl,--gdb-index ;
 
   actions DllLink bind NEEDLIBS
   {

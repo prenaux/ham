@@ -3,7 +3,7 @@
 
 # IMPORTANT: Update the tag date when you make any change to the list of
 # packages installed. You can replace the date with the output of `arch_datez`
-TAG="ham-install-os-packages-${HAM_OS}-v22_09_24"
+TAG="ham-install-os-packages-${HAM_OS}-v22_10_02"
 TAGFILE="$TEMPDIR/ham-install-os-packages-${HAM_OS}-tag.txt"
 
 if [[ `tagfile_status "$TAGFILE" "$TAG"` == "up-to-date" ]]; then
@@ -38,7 +38,7 @@ case $HAM_OS in
              sudo apt -y autoremove ;
              sudo apt -y update ;
              # install all our required packages
-             sudo apt-get -y install build-essential clang curl ffmpeg file freeglut3-dev git g++ gcc git htop jq libcurl4-openssl-dev libdw-dev libunwind-dev libsdl2-dev libssl-dev libudev-dev mc mesa-common-dev mesa-utils net-tools ntpdate p7zip-full procps pkg-config python3 python3-pip subversion wget xsltproc)
+             sudo apt-get -y install build-essential clang lld curl ffmpeg file freeglut3-dev git g++ gcc git htop jq libcurl4-openssl-dev libdw-dev libunwind-dev libsdl2-dev libssl-dev libudev-dev mc mesa-common-dev mesa-utils net-tools ntpdate p7zip-full procps pkg-config python3 python3-pip subversion wget xsltproc)
         else
             echo "E/Unsupported LINUX package manager"
             return 1
