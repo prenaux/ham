@@ -27,10 +27,10 @@ rule hamToolsetHdrs {
 
 rule hamToolsetDll {
   hamToolsetHdrs $(1) : $(2) ;
-  tkPkgLinkDll $(1) ;
+  tkPkgLinkDll $(1) : $(2) ;
 }
 
 rule hamToolsetLibs {
   hamToolsetHdrs $(1) : $(2) ;
-  tkPkgLinkLibs $(1) ;
+  tkPkgLinkLibs $(1) : $(2) ;
 }

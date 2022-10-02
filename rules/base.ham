@@ -506,11 +506,14 @@ rule AssertUnreachable {
   logFatal "ASSERT: code should not be reached:" $(<) ;
 }
 
+# AssertFExists CONTEXT_NAME : FILES ;
 rule AssertFExists {
-  local m = [ FDirName $(SUBDIR_TOKENS) ] ;
-  for _s in $(1) {
+  if ! $(1) {
+    logFatal "AssertFExists: CONTEXT_NAME not specified." ;
+  }
+  for _s in $(2) {
     if ! [ FExists $(_s) ] {
-      logFatal "ASSERT: Can't find '$(_s)'." ;
+      logFatal "ASSERT: $(1): Can't find '$(_s)'." ;
     }
   }
 }

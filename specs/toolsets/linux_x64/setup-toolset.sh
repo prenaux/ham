@@ -15,8 +15,8 @@ esac
 export OSPLAT=X64
 export BUILD_BIN_LOA=$HAM_BIN_LOA
 
-# No clang by default, still experimental.
-LINUX_CLANG=${LINUX_CLANG:-0}
+# Clang is the default on Linux, the GCC linker is insane...
+export LINUX_CLANG=${LINUX_CLANG:-1}
 
 # Use GCC
 if [ "${LINUX_CLANG}" == "0" ]; then
