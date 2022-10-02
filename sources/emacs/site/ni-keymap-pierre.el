@@ -188,12 +188,24 @@
  (global-set-key (kbd "M-#") 'er/expand-region) ;; M-# (M-S-3)
 
  ;; Previous/Next errors
- (define-key global-map "\M-1" 'next-error)
- (define-key global-map "\M-2" 'previous-error)
+ (defun pierre-next-error ()
+   (interactive)
+   (if (and (boundp 'aflymake-mode) aflymake-mode)
+     (aflymake-goto-next-error)
+     (next-error)))
+
+ (defun pierre-prev-error ()
+   (interactive)
+   (if (and (boundp 'aflymake-mode) aflymake-mode)
+     (aflymake-goto-prev-error)
+     (previous-error)))
+
+ (define-key global-map "\M-1" 'pierre-next-error)
+ (define-key global-map "\M-2" 'pierre-prev-error)
 
  ;; Previous/Next flymake errors
- (global-set-key (kbd "M-!") 'aflymake-goto-next-error) ;; M-! (M-S-1)
- (global-set-key (kbd "M-@") 'aflymake-goto-prev-error) ;; M-@ (M-S-2)
+ (global-set-key (kbd "M-!") 'next-error) ;; M-! (M-S-1)
+ (global-set-key (kbd "M-@") 'previous-error) ;; M-@ (M-S-2)
 
  ;; Disabled the insert key, remap it to control + insert.
  (define-key global-map [(insert)] nil)
