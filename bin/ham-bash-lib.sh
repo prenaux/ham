@@ -269,7 +269,7 @@ dl_file() {
       fi
       ;;
   esac
-  wget "$2" -O"$1"
+  (set -x ; wget "$2" -O"$1")
 }
 
 toolset_import() {
