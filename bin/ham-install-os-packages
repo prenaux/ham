@@ -3,7 +3,7 @@
 
 # IMPORTANT: Update the tag date when you make any change to the list of
 # packages installed. You can replace the date with the output of `arch_datez`
-TAG="ham-install-os-packages-${HAM_OS}-v22_10_02"
+TAG="ham-install-os-packages-${HAM_OS}-v22_10_04"
 TAGFILE="$TEMPDIR/ham-install-os-packages-${HAM_OS}-tag.txt"
 
 if [[ `tagfile_status "$TAGFILE" "$TAG"` == "up-to-date" ]]; then
@@ -27,7 +27,8 @@ case $HAM_OS in
         echo "### Make sure "$HAM_HOME/bin" isn't quarantined ###"
         toolset_unquarantine_dir "$HAM_HOME/bin"
         echo "### Installing packages required by ham on OSX (brew) ###"
-        ham-brew install jq yq wget hstr mc ncdu htop
+        # coreutils is mainly for 'realpath' atm
+        ham-brew install jq yq wget hstr mc ncdu htop coreutils
         ;;
     LINUX)
         if [ $(type apt-get 2>/dev/null | wc -l) = 1 ]; then
