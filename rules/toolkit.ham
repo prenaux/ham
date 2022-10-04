@@ -471,6 +471,7 @@ rule tkLinkLibs {
   }
 }
 
+# tkLinkLibs TARGET : DLL : DIR : EXT ;
 rule tkLinkImpLibs {
   if $(PKGTYPE) != library {
     local l = [ tkFindImportedLib $(>) : $(3) : $(4) ] ;
@@ -492,7 +493,7 @@ rule tkPkgLinkLibs {
   tkLinkLibs $(PKGTARGET) : $(<) : $(>) ;
 }
 
-# tkDepDll TARGET : MODULENAME : DIR
+# tkDepDll TARGET : MODULENAME : DLLDIR
 rule tkDepDll {
   local dir = $(3) ;
   dir ?= $(TK_DIR_DLL) ;
@@ -504,14 +505,14 @@ rule tkDepDll {
   }
 }
 
-# tkLinkDll TARGET : MODULENAME : DIR
+# tkLinkDll TARGET : MODULENAME : DLLDIR : LIBDIR
 rule tkLinkDll {
   if $(NO_DLL) {
     tkLinkLibs $(<) : $(>) ;
   }
   else {
     if $(DLLIMPLIB) = 1 {
-      tkLinkImpLibs $(<) : $(>)_$(BUILDEXT) : : .dll.lib ;
+      tkLinkImpLibs $(<) : $(>)_$(BUILDEXT) : $(4) : .dll.lib ;
     }
     else {
       local dir = $(3) ;
@@ -534,7 +535,7 @@ rule tkPkgDepDll {
 }
 
 rule tkPkgLinkDll {
-  tkLinkDll $(PKGTARGET) : $(<) ;
+  tkLinkDll $(PKGTARGET) : $(<) : : $(2) ;
 }
 
 # tkDefPackage name : version : type : output/final directory : customsuffix ;
