@@ -8,23 +8,31 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/python_3"
 # path setup
 case $HAM_OS in
     NT*)
+        PYINSTALL_VERDIR=Python310
+        PYINSTALL_VERSION=3.10.7
+        PYINSTALL_EXE_NAME=python-${PYINSTALL_VERSION}-amd64.exe
         # Look for python in default install destination...
-        export PYTHON3_DIR="$HOME/AppData/Local/Programs/Python/Python36"
-        if [ ! -e "$PYTHON3_DIR" ]; then
-            echo "I/Downloading Python 3.6..."
-            dl_file https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe -O"$TMP/python-3.6.8-amd64.exe"
-            errcheck $? python_36 "E/Can't download python 3"
-            echo "I/Installing Python 3.6..."
-            "$TMP/python-3.6.8-amd64.exe" -quiet
-            errcheck $? python_36 "E/Can't install python 3"
-            rm "$TMP/python-3.6.8-amd64.exe"
+        export PYTHON3_DIR="$HOME/AppData/Local/Programs/Python/$PYINSTALL_VERDIR"
+        if [ ! -e "$PYTHON3_DIR" ] || [ ! -e "$PYTHON3_DIR/python.exe" ]; then
+            echo "I/Downloading Python ${PYINSTALL_VERSION}..."
+            dl_file "$TEMPDIR/$PYINSTALL_EXE_NAME" https://www.python.org/ftp/python/$PYINSTALL_VERSION/$PYINSTALL_EXE_NAME
+            errcheck $? python_3 "E/Can't download python 3" || return 1
+            echo "I/Installing Python ${PYINSTALL_VERSION}..."
+            (set -x ; "$TEMPDIR/$PYINSTALL_EXE_NAME" -quiet InstallAllUsers=0 Include_launcher=0)
+            errcheck $? python_3 "E/Can't install python 3" || return 1
+            if [ ! -e "${PYTHON3_DIR}/python.exe" ]; then
+              echo "W/Can't find exe after install, repairing..."
+              (set -x ; "$TEMPDIR/$PYINSTALL_EXE_NAME" -repair -quiet)
+              errcheck $? python_3 "E/Can't repair python 3" || return 1
+            fi
+            rm -f "$TEMPDIR/$PYINSTALL_EXE_NAME"
         fi
         pathenv_add ${PYTHON3_DIR}/Scripts
         pathenv_add ${PYTHON3_DIR}/DLLs
         pathenv_add ${PYTHON3_DIR}
         # I have no word for how insane the python 'path handling' works on
         # Windows... but we have to deal with it anyway...
-        export PYTHON3_BINDIR="$HOME/AppData/Roaming/Python/Python36/Scripts/"
+        export PYTHON3_BINDIR="$HOME/AppData/Roaming/Python/$PYINSTALL_VERDIR/Scripts/"
         pathenv_add "$PYTHON3_BINDIR"
         ;;
 
