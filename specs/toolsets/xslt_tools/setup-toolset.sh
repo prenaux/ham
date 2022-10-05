@@ -1,5 +1,9 @@
 #!/bin/bash
-toolset_import_once java_jdk || return 1
+
+# Import the default JDK if we don't have a Java already available
+if [ ! -d "$JAVA_HOME" ] || [ -z "`where_inpath java`"]; then
+  toolset_import_once java_jdk || return 1
+fi
 
 # toolset
 export HAM_TOOLSET=XSLT_TOOLS
