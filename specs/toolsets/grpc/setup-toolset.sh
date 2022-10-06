@@ -10,9 +10,10 @@ case $HAM_OS in
     OSX*)
         # Separated for clarity and easier error tracking
 
-        # Protobuf, could move to it's own toolset
-        ham-brew-install protobuf "bin/protoc" || return 1
-        PREFIX=`ham-brew-installdir protobuf prefix`
+        # Protobuf, could move to it's own toolset.
+        # XXX: protobuf@3 because protobuf install a buffy version of protobuf that breaks protoc-gen-js
+        ham-brew-install protobuf@3 "bin/protoc" || return 1
+        PREFIX=`ham-brew-installdir protobuf@3 prefix`
         export PROTOBUF_BINDIR="${PREFIX}/opt/protobuf"
         export PROTOBUF_INCDIR="${PREFIX}/include/google/protobuf"
         export PROTOBUF_LIBDIR="${PREFIX}/lib"
@@ -29,6 +30,7 @@ case $HAM_OS in
 
         # protoc-gen-grpc-web for client side Javascript
         ham-brew-install protoc-gen-grpc-web "bin/protoc-gen-grpc-web" || return 1
+        export PROTOC_GEN_GRPC_WEB_EXE="`ham-brew-installdir protoc-gen-grpc-web bin`/bin/protoc-gen-grpc-web"
 
         # envoy, to proxy http2 -> http1 for client side Javascript. Might be
         # better as its own toolset but since the only know use case atm is
