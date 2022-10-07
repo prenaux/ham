@@ -2508,11 +2508,23 @@ rule FDirNameFiles {
   return $(t) ;
 }
 
+# MakeLocateFiles TARGET : BASE_DIR : OBJDIR : FILES
+rule MakeLocateFiles {
+  local fd = [ FDirName $(3) $(>) ] ;
+  MakeLocate $(<) : [ FDirName $(3) $(>) ] ;
+  for _f in $(4) {
+    local d = $(_f:D) ;
+    if $(d) {
+      MakeLocate $(<) : [ FDirName $(3) $(>) $(d) ] ;
+    }
+  }
+}
+
 # SrcSubDir PACKAGE : d1 .. dn : OBJDIR : SRC
 rule SrcSubDir
 {
   SubDirHdrs $(SUBDIR) $(>) ;
-  MakeLocate ObjDir_$(<) : [ FDirName $(3) $(>) ] ;
+  MakeLocateFiles ObjDir_$(<) : $(2) : $(3) : $(4) ;
   NotFile ObjDir_$(<) ;
   NoUpdate ObjDir_$(<) ;
   Depends $(<) : ObjDir_$(<) ;
@@ -2532,7 +2544,7 @@ rule SrcSubDirGlob
 # SrcSubDir PACKAGE : d1 .. dn : OBJDIR : SRC
 rule SrcSubDirNoHdrs
 {
-  MakeLocate ObjDir_$(<) : [ FDirName $(3) $(>) ] ;
+  MakeLocateFiles ObjDir_$(<) : $(2) : $(3) : $(4) ;
   NotFile ObjDir_$(<) ;
   NoUpdate ObjDir_$(<) ;
   Depends $(<) : ObjDir_$(<) ;
