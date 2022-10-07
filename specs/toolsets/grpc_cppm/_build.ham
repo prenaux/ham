@@ -1,8 +1,7 @@
 if [ SubDirOnce TOP toolsets grpc_cppm ] = 1 { return ; }
 
-
 ### protobuf_cppm #######################################################
-tkDefModuleLib protobuf_cppm : 1.0.0 ;
+tkDefLib protobuf_cppm : 1.0.0 ;
 
 HDR = ;
 SRC = ;
@@ -191,8 +190,7 @@ SRC = [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc third_party cares cares ]
   src/lib/ares_writev.c
 ] ;
 
-AssertFExists grpc_cppm_dep_ares : $(HDR) ;
-AssertFExists grpc_cppm_dep_ares : $(SRC) ;
+AssertFExists grpc_cppm_dep_ares : $(HDR) $(SRC) ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) :  : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 ObjectHdrs $(BUILD_SRC) : $(HDR) ;
@@ -518,8 +516,7 @@ SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc ] :
   src/core/ext/upbdefs-generated/xds/type/v3/typed_struct.upbdefs.c
 ] ;
 
-AssertFExists grpc_cppm_dep_upb_gen : $(HDR) ;
-AssertFExists grpc_cppm_dep_upb_gen : $(SRC) ;
+AssertFExists grpc_cppm_dep_upb_gen : $(HDR) $(SRC) ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) :  : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 ObjectHdrs $(BUILD_SRC) : $(HDR) ;
@@ -789,8 +786,7 @@ SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc ] :
   src/core/lib/uri/uri_parser.cc
 ] ;
 
-AssertFExists grpc_cppm_dep_core_lib : $(HDR) ;
-AssertFExists grpc_cppm_dep_core_lib : $(SRC) ;
+AssertFExists grpc_cppm_dep_core_lib : $(HDR) $(SRC) ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) :  : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 ObjectHdrs $(BUILD_SRC) : $(HDR) ;
@@ -853,8 +849,7 @@ SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc ] :
   src/core/lib/profiling/stap_timers.cc
 ] ;
 
-AssertFExists grpc_cppm_dep_gpr : $(HDR) ;
-AssertFExists grpc_cppm_dep_gpr : $(SRC) ;
+AssertFExists grpc_cppm_dep_gpr : $(HDR) $(SRC) ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) :  : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 ObjectHdrs $(BUILD_SRC) : $(HDR) ;
@@ -885,8 +880,7 @@ SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc third_party zlib ] :
   # gzwrite.c
 ] ;
 
-AssertFExists grpc_cppm_dep_zlib : $(HDR) ;
-AssertFExists grpc_cppm_dep_zlib : $(SRC) ;
+AssertFExists grpc_cppm_dep_zlib : $(HDR) $(SRC) ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) :  : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 ObjectHdrs $(BUILD_SRC) : $(HDR) ;
@@ -922,14 +916,14 @@ SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc third_party abseil-cpp a
 
 SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc third_party abseil-cpp absl debugging ] :
   stacktrace.cc
-  # symbolize.cc
-  # internal/examine_stack.cc
-  # internal/address_is_readable.cc
-  # internal/elf_mem_image.cc
-  # internal/vdso_support.cc
-  # internal/demangle.cc
-  # leak_check.cc
-  # internal/stack_consumption.cc
+  symbolize.cc
+  internal/examine_stack.cc
+  internal/address_is_readable.cc
+  internal/elf_mem_image.cc
+  internal/vdso_support.cc
+  internal/demangle.cc
+  leak_check.cc
+  internal/stack_consumption.cc
 ] ;
 
 SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc third_party abseil-cpp absl hash ] :
@@ -1016,6 +1010,7 @@ SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc third_party abseil-cpp a
 ] ;
 
 SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc third_party abseil-cpp absl synchronization ] :
+  internal/graphcycles.cc
   barrier.cc
   blocking_counter.cc
   internal/create_thread_identity.cc
@@ -1031,23 +1026,34 @@ SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc third_party abseil-cpp a
   bad_variant_access.cc
 ] ;
 
-AssertFExists grpc_cppm_dep_abseil_cpp : $(HDR) ;
-AssertFExists grpc_cppm_dep_abseil_cpp : $(SRC) ;
+
+SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc third_party abseil-cpp absl numeric ] :
+  int128.cc
+] ;
+
+AssertFExists grpc_cppm_dep_abseil_cpp : $(HDR) $(SRC) ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) :  : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 ObjectHdrs $(BUILD_SRC) : $(HDR) ;
 
-### grpc_cppm ###########################################################
-tkDefModuleLib grpc_cppm : 1.0.0 ;
-tkPkgLinkLibs grpc_cppm_dep_ares ;
-tkPkgLinkLibs grpc_cppm_dep_core_lib ;
-tkPkgLinkLibs grpc_cppm_dep_upb_gen ;
-tkPkgLinkLibs grpc_cppm_dep_gpr ;
-tkPkgLinkLibs grpc_cppm_dep_zlib ;
-tkPkgLinkLibs grpc_cppm_dep_abseil_cpp ;
-TargetLinkLibs $(PKGTARGET) : -L$(OPENSSL_LIBDIR) -lcrypto -lssl ;
+### grpc_cppm_dep_grpc ###########################################################
+tkDefLib grpc_cppm_dep_grpc : 1.0.0 ;
 
-HDR = [ FDirName $(OPENSSL_INCDIR) ] ;
+HDR =
+  [ FDirName $(OPENSSL_INCDIR) ]
+  [ FDirName $(SUBDIR) github-grpc third_party cares config_darwin ]
+  [ FDirName $(SUBDIR) github-grpc third_party cares cares include ]
+  [ FDirName $(SUBDIR) github-grpc third_party cares ]
+  [ FDirName $(SUBDIR) github-grpc include ]
+  [ FDirName $(SUBDIR) github-grpc ]
+  # [ FDirName $(SUBDIR) github-grpc third_party protobuf src ]
+  [ FDirName $(SUBDIR) github-grpc third_party abseil-cpp ]
+  [ FDirName $(SUBDIR) github-grpc third_party upb ]
+  [ FDirName $(SUBDIR) github-grpc src core ext upb-generated ]
+  [ FDirName $(SUBDIR) github-grpc src core ext upbdefs-generated ]
+  # [ FDirName $(SUBDIR) github-grpc third_party re2 ]
+  [ FDirName $(SUBDIR) github-grpc third_party xxhash ]
+;
 SRC = ;
 
 # include(cmake/address_sorting.cmake)
@@ -1259,23 +1265,21 @@ SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc ] :
 
 ] ;
 
-AssertFExists grpc_cppm : $(HDR) ;
-# ECHO "... grpc_cppm SRC:" $(SRC) ;
-AssertFExists grpc_cppm : $(SRC) ;
+AssertFExists grpc_cppm_dep_grpc : $(HDR) $(SRC) ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) :  : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 ObjectHdrs $(BUILD_SRC) : $(HDR) ;
 
 ### grpcpp_cppm #########################################################
-tkDefModuleLib grpcpp_cppm : 1.0.0 ;
+tkDefModuleLib grpc_cppm : 1.0.0 ;
+TargetLinkLibs $(PKGTARGET) : -L$(OPENSSL_LIBDIR) -lcrypto -lssl ;
 tkPkgLinkLibs grpc_cppm_dep_ares ;
 tkPkgLinkLibs grpc_cppm_dep_core_lib ;
 tkPkgLinkLibs grpc_cppm_dep_upb_gen ;
 tkPkgLinkLibs grpc_cppm_dep_gpr ;
 tkPkgLinkLibs grpc_cppm_dep_zlib ;
 tkPkgLinkLibs grpc_cppm_dep_abseil_cpp ;
-tkPkgLinkLibs grpc_cppm ;
-TargetLinkLibs $(PKGTARGET) : -L$(OPENSSL_LIBDIR) -lcrypto -lssl ;
+tkPkgLinkLibs grpc_cppm_dep_grpc ;
 
 HDR =
   [ FDirName $(SUBDIR) github-grpc third_party abseil-cpp ]
@@ -1394,8 +1398,7 @@ SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc src core ext transport b
   wire_writer.cc
 ] ;
 
-AssertFExists grpcpp_cppm : $(HDR) ;
-AssertFExists grpcpp_cppm : $(SRC) ;
+AssertFExists grpc_cppm : $(HDR) $(SRC) ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) :  : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 ObjectHdrs $(BUILD_SRC) : $(HDR) ;

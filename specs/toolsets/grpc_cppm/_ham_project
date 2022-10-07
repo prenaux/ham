@@ -14,7 +14,4 @@ else
   echo "I/cppm-grpc: github-grpc already cloned"
 fi
 
-pwd
-
-
 toolset_import_list repos openssl default || return 1
