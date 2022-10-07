@@ -471,7 +471,7 @@ rule tkLinkLibs {
   }
 }
 
-# tkLinkLibs TARGET : DLL : DIR : EXT ;
+# tkLinkImpLibs TARGET : DLL : DIR : EXT ;
 rule tkLinkImpLibs {
   if $(PKGTYPE) != library {
     local l = [ tkFindImportedLib $(>) : $(3) : $(4) ] ;
