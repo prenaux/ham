@@ -511,6 +511,9 @@ rule AssertFExists {
   if ! $(1) {
     logFatal "AssertFExists: CONTEXT_NAME not specified." ;
   }
+  if ! $(2) {
+    logFatal "AssertFExists: FILE not specified." ;
+  }
   for _s in $(2) {
     if ! [ FExists $(_s) ] {
       logFatal "ASSERT: $(1): Can't find '$(_s)'." ;
