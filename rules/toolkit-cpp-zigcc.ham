@@ -16,7 +16,7 @@ ZIGCC_CC_ARGS +=
 ;
 ZIGCC_CPP_ARGS +=
   -std=$(C++VERSION)
-  -Wno-c++11-narrowing
+  -Werror=c++11-narrowing
 ;
 
 LINKFLAGS +=
@@ -54,7 +54,7 @@ if $(TARGET_OS) = MACOSX {
 
   ZIGCC_CPP_ARGS +=
     -std=$(C++VERSION)
-    -Wno-c++11-narrowing
+    -Werror=c++11-narrowing
   ;
 
   # Strip all symbols in release build

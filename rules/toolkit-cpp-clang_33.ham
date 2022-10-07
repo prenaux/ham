@@ -26,7 +26,7 @@ else {
 }
 CLANG_CPP_ARGS +=
   -std=$(C++VERSION)
-  -Wno-c++11-narrowing
+  -Werror=c++11-narrowing
 ;
 
 LINKFLAGS +=
