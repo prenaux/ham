@@ -8,7 +8,7 @@ SOURCES = \
 	filent.c fileunix.c glob.c hash.c \
 	hdrmacro.c headers.c jam.c jambase.c jamgram.c lists.c luagsub.c make.c make1.c \
 	newstr.c option.c parse.c pathunix.c regexp.c \
-	rules.c scan.c search.c timestamp.c variable.c hcache.c
+	rules.c scan.c search.c sha256.c timestamp.c variable.c hcache.c
 
 # the bootstrap "ham0" build tool
 #

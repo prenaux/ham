@@ -153,7 +153,7 @@ Library libjam.a :
     buffer.c builtins.c command.c compile.c $(code) expand.c
     glob.c hash.c headers.c lists.c luagsub.c make.c make1.c
     newstr.c option.c parse.c regexp.c rules.c scan.c
-    search.c timestamp.c variable.c hcache.c
+    search.c sha256.c timestamp.c variable.c hcache.c
     hdrmacro.c
 ;
 
@@ -184,8 +184,8 @@ ALLSOURCE =
 	lists.c lists.h make.c make.h make1.c mkjambase.c newstr.c newstr.h
 	option.c option.h parse.c parse.h patchlevel.h pathmac.c pathsys.h
 	pathunix.c regexp.c regexp.h rules.c rules.h scan.c
-	scan.h search.c search.h timestamp.c timestamp.h variable.c
-    hcache.c hcache.h
+	scan.h search.c search.h sha256.c timestamp.c timestamp.h variable.c
+  hcache.c hcache.h
 	variable.h yyacc
 	hdrmacro.c
 	INSTALL

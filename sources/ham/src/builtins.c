@@ -45,6 +45,7 @@
 # include "hdrmacro.h"
 # include "buffer.h"
 # include "execcmd.h"
+# include "sha256.h"
 
 #if defined OS_NT
 #include <sys/stat.h>
@@ -84,6 +85,9 @@ LIST *builtin_strafter( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_strafteri( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_sort( PARSE *parse, LOL *args, int *jmp );
 LIST *builtin_sorti( PARSE *parse, LOL *args, int *jmp );
+LIST *builtin_sha256( PARSE *parse, LOL *args, int *jmp );
+LIST *builtin_sha256_128( PARSE *parse, LOL *args, int *jmp );
+LIST *builtin_sha256_64( PARSE *parse, LOL *args, int *jmp );
 
 int glob( const char *s, const char *c );
 
@@ -204,6 +208,18 @@ load_builtins()
   bindrule( "SortI" )->procedure =
       bindrule( "SORTI" )->procedure =
       parse_make( builtin_sorti, P0, P0, P0, C0, C0, 0 );
+
+  bindrule( "Sha256" )->procedure =
+      bindrule( "SHA256" )->procedure =
+      parse_make( builtin_sha256, P0, P0, P0, C0, C0, 0 );
+
+  bindrule( "Sha256_128" )->procedure =
+      bindrule( "SHA256_128" )->procedure =
+      parse_make( builtin_sha256_128, P0, P0, P0, C0, C0, 0 );
+
+  bindrule( "Sha256_64" )->procedure =
+      bindrule( "SHA256_64" )->procedure =
+      parse_make( builtin_sha256_64, P0, P0, P0, C0, C0, 0 );
 }
 
 /*
@@ -814,12 +830,12 @@ builtin_split(
 #include <windows.h>
 #pragma comment(lib,"kernel32.lib")
 static int _GetAbsolutePath(const char* input, BUFFER* buff) {
-  TCHAR buffer[_MAX_PATH] = {0};
-  TCHAR* bufferFile;
+  char buffer[_MAX_PATH] = {0};
+  char* bufferFile;
   // reset the output buffer so that its empty if _GetAbsolutPath fails
   buffer_reset(buff);
   if (GetFullPathNameA(input,_MAX_PATH,buffer,&bufferFile)) {
-    buffer_addstring(buff,buffer,_tcslen(buffer));
+    buffer_addstring(buff,buffer,strlen(buffer));
     buffer_addchar(buff,0);
     return 1;
   }
@@ -1016,4 +1032,36 @@ LIST *builtin_sort( PARSE *parse, LOL *args, int *jmp ) {
 
 LIST *builtin_sorti( PARSE *parse, LOL *args, int *jmp ) {
   return builtin_sort_ex(parse, args, jmp, builtin_sort_caseinsensitive);
+}
+
+LIST *
+builtin_sha256_ex(
+    PARSE *parse,
+    LOL *args,
+    int *jmp,
+    int keyLen)
+{
+  LIST* input  = lol_get( args, 0 );
+  LIST* result = L0;
+  char  token[256];
+  char  hexDigest[65] = {0};
+
+  for ( ; input; input = input->next ) {
+    const int len = strlen(input->string);
+    sha256_easy_hash_hex(input->string, len, hexDigest);
+    hexDigest[keyLen] = 0;
+    result = list_new( result, hexDigest, 0 );
+  }
+
+  return  result;
+}
+
+LIST *builtin_sha256( PARSE *parse, LOL *args, int *jmp ) {
+  return builtin_sha256_ex(parse, args, jmp, 64);
+}
+LIST *builtin_sha256_128( PARSE *parse, LOL *args, int *jmp ) {
+  return builtin_sha256_ex(parse, args, jmp, 32);
+}
+LIST *builtin_sha256_64( PARSE *parse, LOL *args, int *jmp ) {
+  return builtin_sha256_ex(parse, args, jmp, 16);
 }

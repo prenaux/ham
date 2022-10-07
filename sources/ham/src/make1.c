@@ -13,21 +13,21 @@
  *
  * External routines:
  *
- *	make1() - execute commands to update a TARGET and all its dependents
+ *  make1() - execute commands to update a TARGET and all its dependents
  *
  * Internal routines, the recursive/asynchronous command executors:
  *
- *	make1a() - recursively traverse target tree, calling make1b()
- *	make1b() - dependents of target built, now build target with make1c()
- *	make1c() - launch target's next command, call make1b() when done
- *	make1d() - handle command execution completion and call back make1c()
+ *  make1a() - recursively traverse target tree, calling make1b()
+ *  make1b() - dependents of target built, now build target with make1c()
+ *  make1c() - launch target's next command, call make1b() when done
+ *  make1d() - handle command execution completion and call back make1c()
  *
  * Internal support routines:
  *
- *	make1cmds() - turn ACTIONS into CMDs, grouping, splitting, etc
- *	make1list() - turn a list of targets into a LIST, for $(<) and $(>)
- * 	make1settings() - for vars that get bound, build up replacement lists
- * 	make1bind() - bind targets that weren't bound in dependency analysis
+ *  make1cmds() - turn ACTIONS into CMDs, grouping, splitting, etc
+ *  make1list() - turn a list of targets into a LIST, for $(<) and $(>)
+ *  make1settings() - for vars that get bound, build up replacement lists
+ *  make1bind() - bind targets that weren't bound in dependency analysis
  *
  * 04/16/94 (seiwald) - Split from make.c.
  * 04/21/94 (seiwald) - Handle empty "updated" actions.
@@ -80,10 +80,10 @@ static void make1bind( TARGET *t, int warn );
 /* Ugly static - it's too hard to carry it through the callbacks. */
 
 static struct {
-	int	failed;
-	int	skipped;
-	int	total;
-	int	made;
+  int failed;
+  int skipped;
+  int total;
+  int made;
 } counts[1] ;
 
 static int _final_text_addcount = 0;
@@ -113,7 +113,7 @@ static int intr = 0;
 int
 make1( TARGET *t )
 {
-	memset( (char *)counts, 0, sizeof( *counts ) );
+  memset( (char *)counts, 0, sizeof( *counts ) );
 
     exec_init();
     {
@@ -126,21 +126,21 @@ make1( TARGET *t )
     }
     exec_done();
 
-	/* Talk about it */
-	if( DEBUG_MAKE && counts->failed )
-	    printf( "...failed updating %d target(s)...\n", counts->failed );
+  /* Talk about it */
+  if( DEBUG_MAKE && counts->failed )
+      printf( "...failed updating %d target(s)...\n", counts->failed );
 
-	if( DEBUG_MAKE && counts->skipped )
-	    printf( "...skipped %d target(s)...\n", counts->skipped );
+  if( DEBUG_MAKE && counts->skipped )
+      printf( "...skipped %d target(s)...\n", counts->skipped );
 
-	if( DEBUG_MAKE && counts->made )
-	    printf( "...updated %d target(s)...\n", counts->made );
+  if( DEBUG_MAKE && counts->made )
+      printf( "...updated %d target(s)...\n", counts->made );
 
   if (_final_text_addcount > 0) {
     fputs(buffer_ptr(&_final_text), stdout);
   }
 
-	return counts->total != counts->made;
+  return counts->total != counts->made;
 }
 
 /*
@@ -149,17 +149,17 @@ make1( TARGET *t )
 
 static void
 make1a(
-	TARGET	*t,
-	TARGET	*parent )
+  TARGET  *t,
+  TARGET  *parent )
 {
-	TARGETS	*c;
+  TARGETS *c;
 
-	/* If the parent is the first to try to build this target */
-	/* or this target is in the make1c() quagmire, arrange for the */
-	/* parent to be notified when this target is built. */
+  /* If the parent is the first to try to build this target */
+  /* or this target is in the make1c() quagmire, arrange for the */
+  /* parent to be notified when this target is built. */
 
-	if( parent )
-	    switch( t->progress )
+  if( parent )
+      switch( t->progress )
         {
         case T_MAKE_INIT:
         case T_MAKE_ACTIVE:
@@ -168,31 +168,31 @@ make1a(
             parent->asynccnt++;
         }
 
-	if( t->progress != T_MAKE_INIT )
-	    return;
+  if( t->progress != T_MAKE_INIT )
+      return;
 
-	/* Asynccnt counts the dependents preventing this target from */
-	/* proceeding to make1b() for actual building.  We start off with */
-	/* a count of 1 to prevent anything from happening until we can */
-	/* call all dependents.  This 1 is accounted for when we call */
-	/* make1b() ourselves, below. */
+  /* Asynccnt counts the dependents preventing this target from */
+  /* proceeding to make1b() for actual building.  We start off with */
+  /* a count of 1 to prevent anything from happening until we can */
+  /* call all dependents.  This 1 is accounted for when we call */
+  /* make1b() ourselves, below. */
 
-	t->asynccnt = 1;
+  t->asynccnt = 1;
 
-	/* Recurse on our dependents, manipulating progress to guard */
-	/* against circular dependency. */
+  /* Recurse on our dependents, manipulating progress to guard */
+  /* against circular dependency. */
 
-	t->progress = T_MAKE_ONSTACK;
+  t->progress = T_MAKE_ONSTACK;
 
-	for( c = t->depends; c && !intr; c = c->next )
-		make1a( c->target, t );
+  for( c = t->depends; c && !intr; c = c->next )
+    make1a( c->target, t );
 
-	t->progress = T_MAKE_ACTIVE;
+  t->progress = T_MAKE_ACTIVE;
 
-	/* Now that all dependents have bumped asynccnt, we now allow */
-	/* decrement our reference to asynccnt. */
+  /* Now that all dependents have bumped asynccnt, we now allow */
+  /* decrement our reference to asynccnt. */
 
-	make1b( t );
+  make1b( t );
 }
 
 /*
@@ -202,37 +202,37 @@ make1a(
 static void
 make1b( TARGET *t )
 {
-	TARGETS	*c;
-	const char *failed = "dependents";
+  TARGETS *c;
+  const char *failed = "dependents";
 
-	/* If any dependents are still outstanding, wait until they */
-	/* call make1b() to signal their completion. */
+  /* If any dependents are still outstanding, wait until they */
+  /* call make1b() to signal their completion. */
 
-	if( --t->asynccnt )
-	    return;
+  if( --t->asynccnt )
+      return;
 
-	/* Now ready to build target 't'... if dependents built ok. */
+  /* Now ready to build target 't'... if dependents built ok. */
 
-	/* Collect status from dependents */
+  /* Collect status from dependents */
 
-	for( c = t->depends; c; c = c->next )
-		if( c->target->status > t->status )
+  for( c = t->depends; c; c = c->next )
+    if( c->target->status > t->status )
         {
             failed = c->target->name;
             t->status = c->target->status;
         }
 
-	/* If actions on deps have failed, bail. */
-	/* Otherwise, execute all actions to make target */
+  /* If actions on deps have failed, bail. */
+  /* Otherwise, execute all actions to make target */
 
-	if( t->status == EXEC_CMD_FAIL && t->actions )
-	{
-	    ++counts->skipped;
-	    printf( "...skipped %s for lack of %s...\n", t->name, failed );
-	}
+  if( t->status == EXEC_CMD_FAIL && t->actions )
+  {
+      ++counts->skipped;
+      printf( "...skipped %s for lack of %s...\n", t->name, failed );
+  }
 
-	if( t->status == EXEC_CMD_OK )
-	    switch( t->fate )
+  if( t->status == EXEC_CMD_OK )
+      switch( t->fate )
         {
         case T_FATE_INIT:
         case T_FATE_MAKING:
@@ -278,13 +278,13 @@ make1b( TARGET *t )
             break;
         }
 
-	/* Call make1c() to begin the execution of the chain of commands */
-	/* needed to build target.  If we're not going to build target */
-	/* (because of dependency failures or because no commands need to */
-	/* be run) the chain will be empty and make1c() will directly */
-	/* signal the completion of target. */
+  /* Call make1c() to begin the execution of the chain of commands */
+  /* needed to build target.  If we're not going to build target */
+  /* (because of dependency failures or because no commands need to */
+  /* be run) the chain will be empty and make1c() will directly */
+  /* signal the completion of target. */
 
-	make1c( t );
+  make1c( t );
 }
 
 /*
@@ -294,19 +294,19 @@ make1b( TARGET *t )
 static void
 make1c( TARGET *t )
 {
-	CMD	*cmd = (CMD *)t->cmds;
+  CMD *cmd = (CMD *)t->cmds;
 
-	/* If there are (more) commands to run to build this target */
-	/* (and we haven't hit an error running earlier comands) we */
-	/* launch the command with execcmd(). */
+  /* If there are (more) commands to run to build this target */
+  /* (and we haven't hit an error running earlier comands) we */
+  /* launch the command with execcmd(). */
 
-	/* If there are no more commands to run, we collect the status */
-	/* from all the actions then report our completion to all the */
-	/* parents. */
+  /* If there are no more commands to run, we collect the status */
+  /* from all the actions then report our completion to all the */
+  /* parents. */
 
-	if( cmd && t->status == EXEC_CMD_OK )
-	{
-	    if( DEBUG_MAKE )
+  if( cmd && t->status == EXEC_CMD_OK )
+  {
+      if( DEBUG_MAKE )
             if( DEBUG_MAKEQ || ! ( cmd->rule->flags & RULE_QUIETLY ) )
             {
                 printf( "%s ", cmd->rule->name );
@@ -314,40 +314,40 @@ make1c( TARGET *t )
                 printf( "\n" );
             }
 
-	    if( DEBUG_EXEC )
+      if( DEBUG_EXEC )
             printf( "%s\n", cmd->buf );
 
-	    if( globs.cmdout )
+      if( globs.cmdout )
             fprintf( globs.cmdout, "%s", cmd->buf );
 
-	    if ( globs.noexec )
-	    {
+      if ( globs.noexec )
+      {
             make1d( t, EXEC_CMD_OK, 0 );
-	    }
-	    else
-	    {
+      }
+      else
+      {
             fflush( stdout );
             execcmd( cmd->buf, make1d, t, NULL, 0 );
-	    }
-	}
-	else
-	{
-	    TARGETS	*c;
-	    ACTIONS	*actions;
+      }
+  }
+  else
+  {
+      TARGETS *c;
+      ACTIONS *actions;
 
-	    /* Collect status from actions, and distribute it as well */
+      /* Collect status from actions, and distribute it as well */
 
-	    for( actions = t->actions; actions; actions = actions->next )
+      for( actions = t->actions; actions; actions = actions->next )
             if( actions->action->status > t->status )
                 t->status = actions->action->status;
 
-	    for( actions = t->actions; actions; actions = actions->next )
+      for( actions = t->actions; actions; actions = actions->next )
             if( t->status > actions->action->status )
                 actions->action->status = t->status;
 
-	    /* Tally success/failure for those we tried to update. */
+      /* Tally success/failure for those we tried to update. */
 
-	    if( t->progress == T_MAKE_RUNNING )
+      if( t->progress == T_MAKE_RUNNING )
             switch( t->status )
             {
             case EXEC_CMD_OK:
@@ -358,13 +358,13 @@ make1c( TARGET *t )
             break;
           }
 
-	    /* Tell parents dependent has been built */
+      /* Tell parents dependent has been built */
 
-	    t->progress = T_MAKE_DONE;
+      t->progress = T_MAKE_DONE;
 
-	    for( c = t->parents; c; c = c->next )
+      for( c = t->parents; c; c = c->next )
             make1b( c->target );
-	}
+  }
 }
 
 /*
@@ -373,66 +373,66 @@ make1c( TARGET *t )
 
 static void
 make1d(
-	void* closure,
-	int	status,
+  void* closure,
+  int status,
     const char* output)
 {
-	TARGET	*t = (TARGET *)closure;
-	CMD	*cmd = (CMD *)t->cmds;
+  TARGET  *t = (TARGET *)closure;
+  CMD *cmd = (CMD *)t->cmds;
 
-	/* Execcmd() has completed.  All we need to do is fiddle with the */
-	/* status and signal our completion so make1c() can run the next */
-	/* command.  On interrupts, we bail heavily. */
+  /* Execcmd() has completed.  All we need to do is fiddle with the */
+  /* status and signal our completion so make1c() can run the next */
+  /* command.  On interrupts, we bail heavily. */
 
-	if( status == EXEC_CMD_FAIL && ( cmd->rule->flags & RULE_IGNORE ) )
-	    status = EXEC_CMD_OK;
+  if( status == EXEC_CMD_FAIL && ( cmd->rule->flags & RULE_IGNORE ) )
+      status = EXEC_CMD_OK;
 
-	/* On interrupt, set intr so _everything_ fails */
+  /* On interrupt, set intr so _everything_ fails */
 
-	if( status == EXEC_CMD_INTR )
-	    ++intr;
+  if( status == EXEC_CMD_INTR )
+      ++intr;
 
-	if( DEBUG_MAKE )
-	{
-	    if ( DEBUG_MAKEQ || ! ( cmd->rule->flags & RULE_QUIETLY ) ) {
-			printf( "# %s ", cmd->rule->name );
+  if( DEBUG_MAKE )
+  {
+      if ( DEBUG_MAKEQ || ! ( cmd->rule->flags & RULE_QUIETLY ) ) {
+      printf( "# %s ", cmd->rule->name );
             list_print( lol_get( &cmd->args, 0 ) );
             printf( "\n" );
-	    }
-	}
+      }
+  }
 
-	if ( DEBUG_EXEC || (status == EXEC_CMD_FAIL && DEBUG_MAKE) )
-	{
-	    printf( "%s\n", cmd->buf );
-	}
+  if ( DEBUG_EXEC || (status == EXEC_CMD_FAIL && DEBUG_MAKE) )
+  {
+      printf( "%s\n", cmd->buf );
+  }
 
-	/* Print the output now, if there was any */
-	if ( output )
-	{
-		FILE		*fp;
-		size_t		n;
-		char		buf[4096];
+  /* Print the output now, if there was any */
+  if ( output )
+  {
+    FILE    *fp;
+    size_t    n;
+    char    buf[4096];
 
-		fp = fopen( output, "r" );
-		if (fp)
-		{
-			n = fread(buf, sizeof(char), sizeof buf, fp);
-//			if (verifyIsRealOutput (buf, n))
-			{
-				fwrite(buf, sizeof(char), n, stdout);
-				n = fread(buf, sizeof(char), sizeof buf, fp);
-				while (n > 0)
-				{
-					fwrite(buf, sizeof(char), n, stdout);
-					n = fread(buf, sizeof(char), sizeof buf, fp);
-				}
-			}
-			fclose(fp);
-		}
-	}
+    fp = fopen( output, "r" );
+    if (fp)
+    {
+      n = fread(buf, sizeof(char), sizeof buf, fp);
+//      if (verifyIsRealOutput (buf, n))
+      {
+        fwrite(buf, sizeof(char), n, stdout);
+        n = fread(buf, sizeof(char), sizeof buf, fp);
+        while (n > 0)
+        {
+          fwrite(buf, sizeof(char), n, stdout);
+          n = fread(buf, sizeof(char), sizeof buf, fp);
+        }
+      }
+      fclose(fp);
+    }
+  }
 
-	if( status == EXEC_CMD_FAIL && DEBUG_MAKE )
-	{
+  if( status == EXEC_CMD_FAIL && DEBUG_MAKE )
+  {
     printf( "...failed %s ", cmd->rule->name );
     list_print( lol_get( &cmd->args, 0 ) );
     printf( "...\n" );
@@ -452,29 +452,29 @@ make1d(
     if (globs.quitquick) {
       ++intr;
     }
-	}
+  }
 
-	/* If the command was interrupted or failed and the target */
-	/* is not "precious", remove the targets. */
-	/* Precious == 'actions updated' -- the target maintains state. */
+  /* If the command was interrupted or failed and the target */
+  /* is not "precious", remove the targets. */
+  /* Precious == 'actions updated' -- the target maintains state. */
 
-	if( status != EXEC_CMD_OK && !( cmd->rule->flags & RULE_UPDATED ) )
-	{
-	    LIST *targets = lol_get( &cmd->args, 0 );
+  if( status != EXEC_CMD_OK && !( cmd->rule->flags & RULE_UPDATED ) )
+  {
+      LIST *targets = lol_get( &cmd->args, 0 );
 
-	    for( ; targets; targets = list_next( targets ) )
+      for( ; targets; targets = list_next( targets ) )
             if( !unlink( targets->string ) )
                 printf( "...removing %s\n", targets->string );
-	}
+  }
 
-	/* Free this command and call make1c() to move onto next command. */
+  /* Free this command and call make1c() to move onto next command. */
 
-	t->status = status;
-	t->cmds = (char *)cmd_next( cmd );
+  t->status = status;
+  t->cmds = (char *)cmd_next( cmd );
 
-	cmd_free( cmd );
+  cmd_free( cmd );
 
-	make1c( t );
+  make1c( t );
 }
 
 /*
@@ -490,37 +490,37 @@ make1d(
 static CMD *
 make1cmds( ACTIONS *a0 )
 {
-	CMD *cmds = 0;
+  CMD *cmds = 0;
 
-	/* Step through actions */
-	/* Actions may be shared with other targets or grouped with */
-	/* RULE_TOGETHER, so actions already seen are skipped. */
+  /* Step through actions */
+  /* Actions may be shared with other targets or grouped with */
+  /* RULE_TOGETHER, so actions already seen are skipped. */
 
-	for( ; a0; a0 = a0->next )
-	{
-	    RULE    *rule = a0->action->rule;
-	    SETTINGS *boundvars;
-	    LIST    *nt, *ns;
-	    ACTIONS *a1;
-	    CMD	    *cmd;
-	    int	    start, chunk, length, maxline;
+  for( ; a0; a0 = a0->next )
+  {
+      RULE    *rule = a0->action->rule;
+      SETTINGS *boundvars;
+      LIST    *nt, *ns;
+      ACTIONS *a1;
+      CMD     *cmd;
+      int     start, chunk, length, maxline;
 
-	    /* Only do rules with commands to execute. */
-	    /* If this action has already been executed, use saved status */
+      /* Only do rules with commands to execute. */
+      /* If this action has already been executed, use saved status */
 
-	    if( !rule->actions || a0->action->running )
+      if( !rule->actions || a0->action->running )
             continue;
 
-	    a0->action->running = 1;
+      a0->action->running = 1;
 
-	    /* Make LISTS of targets and sources */
-	    /* If `execute together` has been specified for this rule, tack */
-	    /* on sources from each instance of this rule for this target. */
+      /* Make LISTS of targets and sources */
+      /* If `execute together` has been specified for this rule, tack */
+      /* on sources from each instance of this rule for this target. */
 
-	    nt = make1list( L0, a0->action->targets, 0 );
-	    ns = make1list( L0, a0->action->sources, rule->flags );
+      nt = make1list( L0, a0->action->targets, 0 );
+      ns = make1list( L0, a0->action->sources, rule->flags );
 
-	    if( rule->flags & RULE_TOGETHER )
+      if( rule->flags & RULE_TOGETHER )
             for( a1 = a0->next; a1; a1 = a1->next )
                 if( a1->action->rule == rule && !a1->action->running )
                 {
@@ -528,47 +528,47 @@ make1cmds( ACTIONS *a0 )
                     a1->action->running = 1;
                 }
 
-	    /* If doing only updated (or existing) sources, but none have */
-	    /* been updated (or exist), skip this action. */
+      /* If doing only updated (or existing) sources, but none have */
+      /* been updated (or exist), skip this action. */
 
-	    if( !ns && ( rule->flags & ( RULE_UPDATED | RULE_EXISTING ) ) )
-	    {
+      if( !ns && ( rule->flags & ( RULE_UPDATED | RULE_EXISTING ) ) )
+      {
             list_free( nt );
             continue;
-	    }
+      }
 
-	    /* If we had 'actions xxx bind vars' we bind the vars now */
+      /* If we had 'actions xxx bind vars' we bind the vars now */
 
-	    boundvars = make1settings( rule->bindlist );
-	    pushsettings( boundvars );
+      boundvars = make1settings( rule->bindlist );
+      pushsettings( boundvars );
 
-	    /*
-	     * Build command, starting with all source args.
-	     *
-	     * If cmd_new returns 0, it's because the resulting command
-	     * length is > MAXLINE.  In this case, we'll slowly reduce
-	     * the number of source arguments presented until it does
-	     * fit.  This only applies to actions that allow PIECEMEAL
-	     * commands.
-	     *
-	     * While reducing slowly takes a bit of compute time to get
-	     * things just right, it's worth it to get as close to MAXLINE
-	     * as possible, because launching the commands we're executing
-	     * is likely to be much more compute intensive!
-	     *
-	     * Note we loop through at least once, for sourceless actions.
-	     *
-	     * Max line length is the action specific maxline or, if not
-	     * given or bigger than MAXLINE, MAXLINE.
-	     */
+      /*
+       * Build command, starting with all source args.
+       *
+       * If cmd_new returns 0, it's because the resulting command
+       * length is > MAXLINE.  In this case, we'll slowly reduce
+       * the number of source arguments presented until it does
+       * fit.  This only applies to actions that allow PIECEMEAL
+       * commands.
+       *
+       * While reducing slowly takes a bit of compute time to get
+       * things just right, it's worth it to get as close to MAXLINE
+       * as possible, because launching the commands we're executing
+       * is likely to be much more compute intensive!
+       *
+       * Note we loop through at least once, for sourceless actions.
+       *
+       * Max line length is the action specific maxline or, if not
+       * given or bigger than MAXLINE, MAXLINE.
+       */
 
-	    start = 0;
-	    chunk = length = list_length( ns );
-	    maxline = rule->flags / RULE_MAXLINE;
-	    maxline = maxline && maxline < MAXLINE ? maxline : MAXLINE;
+      start = 0;
+      chunk = length = list_length( ns );
+      maxline = rule->flags / RULE_MAXLINE;
+      maxline = maxline && maxline < MAXLINE ? maxline : MAXLINE;
 
-	    do
-	    {
+      do
+      {
             /* Build cmd: cmd_new consumes its lists. */
 
             CMD *cmd = cmd_new( rule,
@@ -599,22 +599,22 @@ make1cmds( ACTIONS *a0 )
                         rule->name, maxline );
                 exit( EXITBAD );
             }
-	    }
-	    while( start < length );
+      }
+      while( start < length );
 
-	    /* These were always copied when used. */
+      /* These were always copied when used. */
 
-	    list_free( nt );
-	    list_free( ns );
+      list_free( nt );
+      list_free( ns );
 
-	    /* Free the variables whose values were bound by */
-	    /* 'actions xxx bind vars' */
+      /* Free the variables whose values were bound by */
+      /* 'actions xxx bind vars' */
 
-	    popsettings( boundvars );
-	    freesettings( boundvars );
-	}
+      popsettings( boundvars );
+      freesettings( boundvars );
+  }
 
-	return cmds;
+  return cmds;
 }
 
 /*
@@ -623,9 +623,9 @@ make1cmds( ACTIONS *a0 )
 
 static LIST *
 make1list(
-	LIST	*l,
-	TARGETS	*targets,
-	int	flags )
+  LIST  *l,
+  TARGETS *targets,
+  int flags )
 {
     for( ; targets; targets = targets->next )
     {
@@ -674,15 +674,15 @@ make1list(
 static SETTINGS *
 make1settings( LIST *vars )
 {
-	SETTINGS *settings = 0;
+  SETTINGS *settings = 0;
 
-	for( ; vars; vars = list_next( vars ) )
-	{
-	    LIST *l = var_get( vars->string );
-	    LIST *nl = 0;
+  for( ; vars; vars = list_next( vars ) )
+  {
+      LIST *l = var_get( vars->string );
+      LIST *nl = 0;
 
-	    for( ; l; l = list_next( l ) )
-	    {
+      for( ; l; l = list_next( l ) )
+      {
             TARGET *t = bindtarget( l->string );
 
             /* Make sure the target is bound, warning if it is not in the */
@@ -694,14 +694,14 @@ make1settings( LIST *vars )
             /* Build new list */
 
             nl = list_new( nl, t->boundname, 1 );
-	    }
+      }
 
-	    /* Add to settings chain */
+      /* Add to settings chain */
 
-	    settings = addsettings( settings, 0, vars->string, nl );
-	}
+      settings = addsettings( settings, 0, vars->string, nl );
+  }
 
-	return settings;
+  return settings;
 }
 
 /*
@@ -713,22 +713,29 @@ make1settings( LIST *vars )
 
 static void
 make1bind(
-	TARGET	*t,
-	int	warn )
+  TARGET  *t,
+  int warn )
 {
-	if( t->flags & T_FLAG_NOTFILE )
-	    return;
+  if( t->flags & T_FLAG_NOTFILE )
+      return;
 
-	/* Sources to 'actions existing' are never in the dependency */
-	/* graph (if they were, they'd get built and 'existing' would */
-	/* be superfluous, so throttle warning message about independent */
-	/* targets. */
+  /* Sources to 'actions existing' are never in the dependency */
+  /* graph (if they were, they'd get built and 'existing' would */
+  /* be superfluous, so throttle warning message about independent */
+  /* targets. */
 
-	if( warn )
-	    printf( "warning: using independent target %s\n", t->name );
+  if( warn ) {
+    fputs("warning: using independent target", stdout);
+    fputs(t->name, stdout);
+    fputs("\n", stdout);
+    puts("  Anything that depends on it *will not be updated* when it changes or is");
+    puts("  modified. This also implies that your outputs will only be built if they");
+    puts("  do not already exist. Hint: You're probably missing a DEPENDS or equivalent.");
+    fputs("\n", stdout);
+  }
 
-	pushsettings( t->settings );
-	t->boundname = search( t->name, &t->time );
-	t->binding = t->time ? T_BIND_EXISTS : T_BIND_MISSING;
-	popsettings( t->settings );
+  pushsettings( t->settings );
+  t->boundname = search( t->name, &t->time );
+  t->binding = t->time ? T_BIND_EXISTS : T_BIND_MISSING;
+  popsettings( t->settings );
 }

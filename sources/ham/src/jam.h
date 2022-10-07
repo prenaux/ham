@@ -77,7 +77,7 @@
  * Windows NT
  */
 
-# ifdef NT
+# if defined NT || defined WINNT
 
 # include <fcntl.h>
 # include <stdlib.h>
