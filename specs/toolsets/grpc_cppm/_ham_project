@@ -1,0 +1,20 @@
+#!/bin/bash -e
+if [[ -z $HAM_PROJECT_DIR ]]; then
+    echo "E/HAM_PROJECT_DIR not set !"
+    return 1
+fi
+
+if [ ! -d "github-grpc" ]; then
+  (set -x ;
+   git clone --recurse-submodules -b v1.49.1 --depth 1 --shallow-submodules https://github.com/grpc/grpc github-grpc ;
+   mv github-grpc/src/core/ext/upbdefs-generated/envoy/config/cluster/v3/cluster.upbdefs.c github-grpc/src/core/ext/upbdefs-generated/envoy/config/cluster/v3/cluster_2.upbdefs.c ;
+   mv github-grpc/src/core/ext/upbdefs-generated/envoy/config/core/v3/extension.upbdefs.c github-grpc/src/core/ext/upbdefs-generated/envoy/config/core/v3/extension_2.upbdefs.c
+  )
+else
+  echo "I/cppm-grpc: github-grpc already cloned"
+fi
+
+pwd
+
+
+toolset_import_list repos openssl default || return 1
