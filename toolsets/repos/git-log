@@ -1,4 +1,41 @@
 #!/bin/bash
+usage() {
+  echo "usage: git-log (current_branch|.) (origin|.)"
+  echo ""
+  echo "examples:"
+  echo "  # Print all branches' commit graph"
+  echo "  git-log"
+  echo "  # Print the current branches' commit graph"
+  echo "  git-log ."
+  echo "  git-log current_branch"
+  echo "  # Print the current branches' commit and the origin's commits graph"
+  echo "  git-log . ."
+  echo "  git-log current_branch origin"
+  exit 1
+}
+
 # Print a complete git log with a graph
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
-git log --graph --abbrev-commit --decorate --format=format:'%C(bold red)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n'' %C(bold blue)%s%C(reset) %C(yellow)- %an%C(reset)' --all
+
+BRANCH=$1
+if [ "$BRANCH" == "current_branch" ] || [ "$BRANCH" == "." ]; then
+    BRANCH=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+    echo "I/Current branch '$BRANCH'."
+fi
+
+if [ -z "$BRANCH" ]; then
+  git log --all --decorate --oneline --graph
+else
+  shift
+  ORIGIN="$1"
+  if [ "$ORIGIN" == "origin" ] || [ "$ORIGIN" == "." ]; then
+    ORIGIN=origin
+    echo "I/Default origin '$ORIGIN'."
+  fi
+  if [ -z "$ORIGIN" ]; then
+    git log --decorate --oneline --graph --first-parent $BRANCH "$@"
+  else
+    shift
+    git log --decorate --oneline --graph --first-parent $BRANCH $ORIGIN/$BRANCH "$@"
+  fi
+fi
