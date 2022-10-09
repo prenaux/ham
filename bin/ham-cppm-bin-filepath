@@ -1,7 +1,7 @@
 #!/bin/bash -e
 usage() {
     echo "usage:"
-    echo "  ${0##*/} type{exe|dll} name"
+    echo "  ${0##*/} type{exe|dll|lib} name"
     echo ""
     echo "example:"
     echo "  $ ham-cppm-filepath exe foo"
@@ -17,7 +17,6 @@ TYPE=$1
 NAME=$2
 
 BIN_LOA=${HAM_TARGET_BIN_LOA:-$HAM_BIN_LOA}
-
 case $TYPE in
   exe)
     case $BIN_LOA in
@@ -38,6 +37,7 @@ case $TYPE in
         SUFFIX=".unknown-exe"
         ;;
     esac
+    echo ${BIN_LOA}/${PREFIX}${NAME}${SUFFIX}
     ;;
   dll)
     case $BIN_LOA in
@@ -58,7 +58,35 @@ case $TYPE in
         SUFFIX=".unknown-dll"
         ;;
     esac
+    echo ${BIN_LOA}/${PREFIX}${NAME}${SUFFIX}
+    ;;
+  lib)
+    case $BIN_LOA in
+      osx-*)
+        LINKER=clang
+        PREFIX="lib"
+        SUFFIX=".a"
+        ;;
+      nt-*)
+        LINKER=msvc
+        PREFIX=""
+        SUFFIX=".lib"
+        ;;
+      lin-*)
+        LINKER=gcc
+        PREFIX="lib"
+        SUFFIX=".a"
+        ;;
+      *)
+        LINKER=unknown
+        PREFIX="unknown-dll-"
+        SUFFIX=".unknown-dll"
+        ;;
+    esac
+    echo ${LINKER}-${BIN_LOA}/${PREFIX}${NAME}${SUFFIX}
+    ;;
+  *)
+    echo "E/Unknown type '$TYPE'."
+    exit 1
     ;;
 esac
-
-echo ${BIN_LOA}/${PREFIX}${NAME}${SUFFIX}
