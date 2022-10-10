@@ -22,7 +22,7 @@ usage() {
     echo ""
     echo "filter:"
     echo "  all            List all targets."
-    echo "  no_file        List targets that don't look like a file."
+    echo "  no_file        List targets that don't look like a file. (default)"
     echo "  run            List all targets that look like they can be ran."
     echo "  debug          List all targets that look like they can be debugged."
     echo "  test           List all targets that look like a test."
@@ -53,13 +53,6 @@ usage() {
 HAM_CMD="$HAM_HOME/bin/$HAM_BIN_LOA/ham"
 if [[ ! -e "$HAM_CMD" ]]; then
     echo "E/Can't find ham executable '$HAM_CMD'."
-    echo ""
-    usage
-fi
-
-# Check that there is at least one argument...
-if [ $# = 0 ]; then
-    echo "E/No argument specified"
     echo ""
     usage
 fi
@@ -133,7 +126,7 @@ if [ -z "$TARGETS" ]; then
 fi
 
 # Filter
-FILTER=$1
+FILTER=${1:-no_file}
 if [ -z "$FILTER" ]; then
   echo "E/filter not specified."
   usage
@@ -155,7 +148,10 @@ fi
 # pierre: We need to wrap the ham call this way otherwise the grep filtering
 # fails. I dont know why...
 ham_call() {
-  "${HAM_CMD}" $*
+  (
+    # set -x ;
+    "${HAM_CMD}" $*
+  )
 }
 
 ham_show_targets_in() {
@@ -167,7 +163,7 @@ ham_show_targets_in() {
     fi
 
     HAM_ARGS=(-n -dm)
-    if [ "$ONLY_TARGETS_THAT_NEED_TO_BE_BUILT" = "yes" ]; then
+    if [ "$ONLY_TARGETS_THAT_NEED_TO_BE_BUILT" != "yes" ]; then
       HAM_ARGS=(-a ${HAM_ARGS[@]})
     fi
 
