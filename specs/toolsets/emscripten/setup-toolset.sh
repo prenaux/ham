@@ -7,6 +7,8 @@ toolset_import_once xslt_tools || return 1
 export HAM_TOOLSET=EMSCRIPTEN
 export HAM_TOOLSET_NAME=emscripten
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/emscripten"
+export HAM_CPP_TOOLSET=$HAM_TOOLSET
+export HAM_CPP_TOOLSET_NAME=$HAM_TOOLSET_NAME
 
 # path setup
 case $HAM_OS in

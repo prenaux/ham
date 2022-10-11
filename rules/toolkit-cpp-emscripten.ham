@@ -45,7 +45,7 @@ C++FLAGS += $(JSCC_WARN_ARGS) ;
 SUFPCH = .h.gch ;
 
 C++FLAGS +=
-  --memory-init-file 0
+  # --memory-init-file 0
   -std=$(C++VERSION)
 ;
 
