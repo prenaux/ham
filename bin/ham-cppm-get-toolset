@@ -1,0 +1,64 @@
+#!/bin/bash -e
+usage() {
+    echo "usage:"
+    echo "  ${0##*/} BUILD_TARGET"
+    echo ""
+    echo "description:"
+    echo "  Prints the name of the C/C++ toolset to use for the specified BUILD_TARGET."
+    echo ""
+    echo "example:"
+    echo "  $ ham-cppm-get-toolset osx-x64"
+    echo "  macos_x64"
+    echo "  $ ham-cppm-get-toolset web-js"
+    echo "  emscripten"
+    exit 1
+}
+
+if [ -z "$1" ]; then
+  echo "E/BUILD_TARGET not specified."
+  usage
+fi
+BUILD_TARGET=$1
+
+TOOLSET_NAME=""
+case "$BUILD_TARGET" in
+  osx-x64)
+    TOOLSET_NAME=macos_x64
+    ;;
+  osx-arm64)
+    TOOLSET_NAME=macos_arm64
+    ;;
+  nt-x86)
+    TOOLSET_NAME=msvc_19_x86
+    ;;
+  nt-x64)
+    TOOLSET_NAME=msvc_19_x64
+    ;;
+  lin-x64)
+    TOOLSET_NAME=linux_x64
+    ;;
+  zigcc-osx-x64)
+    TOOLSET_NAME=zig_macos_x64
+    ;;
+  zigcc-osx-arm64)
+    TOOLSET_NAME=zig_macos_arm64
+    ;;
+  zigcc-nt-x64)
+    TOOLSET_NAME=zig_windows_x64
+    ;;
+  zigcc-lin-x64)
+    TOOLSET_NAME=zig_linux_x64
+    ;;
+  web-js)
+    TOOLSET_NAME=emscripten
+    ;;
+  *)
+    ;;
+esac
+
+if [ -z "$TOOLSET_NAME" ]; then
+  echo "E/Unknown build target '$BUILD_TARGET'."
+  exit 1
+fi
+
+echo $TOOLSET_NAME
