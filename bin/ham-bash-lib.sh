@@ -488,6 +488,43 @@ fcd() {
 }
 
 #
+# fhh (print)
+#
+# Note: Can't be in an external script because each bash script as an
+# independant (empty) history by default.
+#
+fhh() {
+  if [ -z "$HISTFILE" ]; then
+    echo "E/No history file defined."
+  else
+    CMD=$(
+      history |
+        # get the history item, skip the first column which is the timestamp
+        awk '{$1="";print substr($0,2)}' |
+        # exclude the fhh command itself
+        grep -v '^fhh$' |
+        # invert the list so that we get the most recent above the prompt
+        tac |
+        # remove duplicate entries
+        awk '!/./ || !seen[$0]++' |
+        # run fzf
+        fzf --expect=tab)
+    KEY=`echo "${CMD}" | head -1`
+    CMD=`echo "${CMD}" | tail -1`
+    # echo "I/KEY: $KEY"
+    # echo "I/COMMAND: $CMD"
+    if [ "$1" == "print" ] || [ -n "$KEY" ]; then
+      # echo "I/Print"
+      echo "${CMD}"
+    else
+      # echo "I/Execute"
+      history -s $CMD
+      eval "${CMD}"
+    fi
+  fi
+}
+
+#
 # tagfile_status tagfile tag
 #
 # echo's "up-to-date" or "outdated" or "no_tagfile"
