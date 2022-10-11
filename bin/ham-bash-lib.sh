@@ -96,10 +96,19 @@ die()
 
 errcheck()
 {
-	if [ $1 != 0 ]
-	then
-		die $2 "$3 (errcode $1)"
-	fi
+  if [ $1 != 0 ]
+  then
+    die $2 "$3 (errcode $1)"
+  fi
+}
+
+retcheck()
+{
+  if [ "$1" != "0" ]; then
+    shift
+    complain "$@"
+    return 1
+  fi
 }
 
 nativedir()
@@ -626,7 +635,7 @@ if [[ -z $HAM_NUM_JOBS ]]; then
     elif [[ -f /proc/cpuinfo ]]; then
         export HAM_NUM_JOBS=$(grep -c processor /proc/cpuinfo)
     elif [[ "$OSTYPE" == "darwin"* ]]; then
-	      export HAM_NUM_JOBS=$(sysctl -n machdep.cpu.thread_count)
+        export HAM_NUM_JOBS=$(sysctl -n machdep.cpu.thread_count)
     else
         export HAM_NUM_JOBS=2
     fi
