@@ -76,8 +76,12 @@ elif [ "$1" == restart ]; then
         exit 1
     fi
 
-    echo "I/'$APP_NAME' restarting cmd '$@'"
-    pm2 restart --update-env --name "$APP_NAME" "$@"
+    if [[ $((pm2 info "$APP_NAME" || echo 'status|stopped') | grep status) =~ 'online' ]]; then
+        echo "I/'$APP_NAME' already started and online, stopping it first."
+        pm2 stop "$APP_NAME"
+    fi
+    echo "I/'$APP_NAME' starting cmd '$@'"
+    pm2 start --update-env --name "$APP_NAME" "$@"
 else
     set -e
     pm2 "$@"
