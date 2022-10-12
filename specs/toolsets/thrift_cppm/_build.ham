@@ -53,24 +53,52 @@ SRC =
   TSimpleFileTransport.cpp
   THttpTransport.cpp
   THttpClient.cpp
-  THttpServer.cpp
   TSocket.cpp
   TSocketPool.cpp
-  TServerSocket.cpp
   TTransportUtils.cpp
   TBufferTransports.cpp
   SocketCommon.cpp
-]
-
-# src/thrift/server/
-[ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift server ] :
-  TConnectedClient.cpp
-  TServerFramework.cpp
-  TSimpleServer.cpp
-  TThreadPoolServer.cpp
-  TThreadedServer.cpp
 ] ;
+
+# SSL
+if $(OSPLAT) != JS {
+  # SSL src/thrift/transport/
+  SRC += [ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift transport ] :
+    TSSLSocket.cpp
+  ] ;
+}
+
+# Server
+if $(OSPLAT) != JS {
+
+  # src/thrift/server/
+  SRC += [ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift server ] :
+    TConnectedClient.cpp
+    TServerFramework.cpp
+    TSimpleServer.cpp
+    TThreadPoolServer.cpp
+    TThreadedServer.cpp
+  ] ;
+
+  # src/thrift/transport/
+  SRC += [ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift transport ] :
+    THttpServer.cpp
+    TServerSocket.cpp
+  ] ;
+
+  # SSL src/thrift/transport/
+  SRC += [ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift transport ] :
+    TSSLServerSocket.cpp
+    TWebSocketServer.cpp
+  ] ;
+
+}
 
 AssertFExists $(SRC) ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc rtti : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+
+if $(OS) = MACOSX {
+  LINKLIBS on $(PKGTARGET) += -L$(OPENSSL_LIBDIR) -lcrypto -lssl ;
+  ObjectHdrs $(BUILD_SRC) : [ FDirName $(OPENSSL_INCDIR) ] ;
+}

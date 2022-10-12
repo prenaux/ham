@@ -1,10 +1,12 @@
-/* config.h.  Generated from config.hin by configure.  */
-/* config.hin.  Generated from configure.ac by autoheader.  */
+#pragma once
+#ifndef __CONFIG_H_340AACBD_5C0F_CB49_9AA1_175A1D182B4A__
+#define __CONFIG_H_340AACBD_5C0F_CB49_9AA1_175A1D182B4A__
 
-
-#ifndef CONFIG_H
-#define CONFIG_H
-
+#ifdef __EMSCRIPTEN__
+#define TSOCKET_NO_INTERRUPT_LISTENER
+#define TSOCKET_WEBSOCKET_EMULATION
+#define THRIFT_NO_SERVER
+#endif
 
 /* Define if the AI_ADDRCONFIG symbol is unavailable */
 /* #undef AI_ADDRCONFIG */
@@ -248,7 +250,9 @@
 #define HAVE_SYS_PARAM_H 1
 
 /* Define to 1 if you have the <sys/poll.h> header file. */
+#if !defined __EMSCRIPTEN__
 #define HAVE_SYS_POLL_H 1
+#endif
 
 /* Define to 1 if you have the <sys/resource.h> header file. */
 #define HAVE_SYS_RESOURCE_H 1
@@ -463,5 +467,4 @@
    code using `volatile' can become incorrect without. Disable with care. */
 /* #undef volatile */
 
-
-#endif
+#endif // __CONFIG_H_340AACBD_5C0F_CB49_9AA1_175A1D182B4A__
