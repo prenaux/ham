@@ -10,6 +10,9 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/emscripten"
 export HAM_CPP_TOOLSET=$HAM_TOOLSET
 export HAM_CPP_TOOLSET_NAME=$HAM_TOOLSET_NAME
 
+# explicitly set HAM_TARGET_BIN_LOA
+export HAM_TARGET_BIN_LOA=web-js
+
 # path setup
 case $HAM_OS in
     OSX*)

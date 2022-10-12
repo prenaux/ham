@@ -17,6 +17,7 @@ TYPE=$1
 NAME=$2
 
 BIN_LOA=${HAM_TARGET_BIN_LOA:-$HAM_BIN_LOA}
+FILE_PATH=none
 case $TYPE in
   exe)
     case $BIN_LOA in
@@ -32,13 +33,18 @@ case $TYPE in
         PREFIX=""
         SUFFIX=".x64"
         ;;
+      lin-*)
+        PREFIX=""
+        SUFFIX=".html"
+        ;;
       *)
         PREFIX="unknown-exe-"
         SUFFIX=".unknown-exe"
         ;;
     esac
-    echo ${BIN_LOA}/${PREFIX}${NAME}${SUFFIX}
+    FILE_PATH=${BIN_LOA}/${PREFIX}${NAME}${SUFFIX}
     ;;
+
   dll)
     case $BIN_LOA in
       osx-*)
@@ -53,13 +59,18 @@ case $TYPE in
         PREFIX="lib"
         SUFFIX=".so"
         ;;
+      web-js)
+        PREFIX=""
+        SUFFIX=".no-dll-platform"
+        ;;
       *)
         PREFIX="unknown-dll-"
         SUFFIX=".unknown-dll"
         ;;
     esac
-    echo ${BIN_LOA}/${PREFIX}${NAME}${SUFFIX}
+    FILE_PATH=${BIN_LOA}/${PREFIX}${NAME}${SUFFIX}
     ;;
+
   lib)
     case $BIN_LOA in
       osx-*)
@@ -77,16 +88,24 @@ case $TYPE in
         PREFIX="lib"
         SUFFIX=".a"
         ;;
+      web-js)
+        LINKER=em
+        PREFIX=""
+        SUFFIX=".a"
+        ;;
       *)
         LINKER=unknown
-        PREFIX="unknown-dll-"
-        SUFFIX=".unknown-dll"
+        PREFIX="unknown-lib-"
+        SUFFIX=".unknown-lib"
         ;;
     esac
-    echo ${LINKER}-${BIN_LOA}/${PREFIX}${NAME}${SUFFIX}
+    FILE_PATH=${LINKER}-${BIN_LOA}/${PREFIX}${NAME}${SUFFIX}
     ;;
+
   *)
     echo "E/Unknown type '$TYPE'."
     exit 1
     ;;
 esac
+
+echo "$FILE_PATH"

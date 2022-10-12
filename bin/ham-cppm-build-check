@@ -1,0 +1,99 @@
+#!/bin/bash -e
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+usage() {
+    echo "usage:"
+    echo "  ${0##*/} TOOLSET HDR(path.h|noheader) (nolib) (nodll)"
+    echo ""
+    echo "example:"
+    echo "  ham-cppm-build thrift_cppm all"
+    exit 1
+}
+
+# Build settings
+BUILD=${BUILD:-ra}
+BIN_LOA=${HAM_TARGET_BIN_LOA:-$HAM_BIN_LOA}
+
+# Parameters check
+TOOLSET=$1
+if [ -z "$TOOLSET" ]; then
+  echo "E/No TOOLSET specified"
+  usage
+fi
+shift
+
+HDR_CHECK_PATH=$1
+if [ -z "$HDR_CHECK_PATH" ]; then
+  echo "E/No HDR_CHECK_PATH specified"
+  usage
+fi
+shift
+
+LIB_CHECK_PATH=
+if [ "$1" == "nolib" ]; then
+  shift
+  LIB_CHECK_PATH=nolib
+else
+  LIB_CHECK_PATH="${HAM_HOME}/libs/`ham-cppm-bin-filepath lib ${TOOLSET}_${BUILD}`"
+fi
+
+DLL_CHECK_PATH=
+if [ "$1" == "nodll" ]; then
+  shift
+  DLL_CHECK_PATH=nodll
+else
+  DLL_CHECK_PATH="${HAM_HOME}/bin/`ham-cppm-bin-filepath dll ${TOOLSET}_${BUILD}`"
+fi
+
+# Platform specific skips
+# echo "... BIN_LOA: $BIN_LOA"
+case $BIN_LOA in
+  # No DLL_CHECK_PATH targets
+  web-js)
+    DLL_CHECK_PATH=nodll
+    ;;
+esac
+
+# check_file PATH nodll|noheader|nolib
+function check_file() {
+  NOPE=$2
+  PATH=$1
+  # echo "... check_file: $NOPE :: $PATH"
+
+  if [ "$NOPE" == "$PATH" ]; then
+    # Nocheck
+    echo "ok-nocheck"
+  elif [ -e "$PATH" ]; then
+    # File exists
+    echo "ok-exists"
+  else
+    # File doesnt exists
+    echo "notfound"
+  fi
+}
+
+# check_file $HDR_CHECK_PATH noheader
+# check_file $LIB_CHECK_PATH nolib
+# check_file $DLL_CHECK_PATH nodll
+
+if [ "$(check_file $HDR_CHECK_PATH noheader)" == "notfound" ] ||
+     [ "$(check_file $LIB_CHECK_PATH nolib)" == "notfound" ] ||
+     [ "$(check_file $DLL_CHECK_PATH nodll)" == "notfound" ]; then
+  (set -x ; HAM_NO_VER_CHECK=1 ham-cppm-build $TOOLSET)
+
+  if [ "$(check_file $HDR_CHECK_PATH noheader)" == "notfound" ]; then
+    echo "E/Can't find build artifact header '$HDR_CHECK_PATH'."
+    exit 1
+  fi
+
+  if [ "$(check_file $LIB_CHECK_PATH nolib)" == "notfound" ]; then
+    echo "E/Can't find build artifact lib '$LIB_CHECK_PATH'."
+    exit 1
+  fi
+
+  if [ "$(check_file $DLL_CHECK_PATH nodll)" == "notfound" ]; then
+    echo "E/Can't find build artifact dll '$DLL_CHECK_PATH'."
+    exit 1
+  fi
+fi

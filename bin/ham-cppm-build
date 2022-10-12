@@ -1,4 +1,7 @@
 #!/bin/bash -e
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
 usage() {
     echo "usage:"
     echo "  ${0##*/} TOOLSET (HAM_ARGS, default: all)"

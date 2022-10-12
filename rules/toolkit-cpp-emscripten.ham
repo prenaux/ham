@@ -19,6 +19,7 @@ JSCC_WARN_ARGS =
 -Wno-unused-value
 -Wno-unused-variable
 -Wno-unused-function
+-Wno-deprecated-builtins
 -Werror=return-stack-address
 ;
 if $(LOA_LINKER) = clang || $(LOA_LINKER) = em {
@@ -50,7 +51,7 @@ C++FLAGS +=
 ;
 
 EMSCRIPTEN_COMPILATION_SETTINGS =
-  -s DISABLE_EXCEPTION_CATCHING=1
+  # -s DISABLE_EXCEPTION_CATCHING=1
 ;
 
 if $(CLANG_ANALYZER) = 1 {
@@ -110,7 +111,14 @@ rule tkCC++Build
 }
 
 rule tkC++Exceptions {
-  ObjectC++Flags $(<) : -fexceptions ;
+  # See https://emscripten.org/docs/porting/exceptions.html
+  ObjectC++Flags $(<) :
+    -fexceptions
+    -s DISABLE_EXCEPTION_CATCHING=0
+    -sNO_DISABLE_EXCEPTION_CATCHING=1
+    # This is more performant than NO_DISABLE_EXCEPTION_CATCHING
+    # -sEXCEPTION_CATCHING_ALLOWED=[main]
+  ;
 }
 rule tkNoC++Exceptions {
   ObjectC++Flags $(<) : -fno-exceptions ;
