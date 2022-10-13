@@ -411,10 +411,6 @@ If the new path's directories does not exist, create them."
  (setq web-mode-void-elements '())
  (setq web-mode-enable-auto-indentation nil)
 
- ;; php
- (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
  ;; html
  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
  (add-to-list 'auto-mode-alist '("\\.htm?\\'" . web-mode))
@@ -451,6 +447,16 @@ If the new path's directories does not exist, create them."
  ;; Less
  (require 'less-css-mode)
  (add-to-list 'auto-mode-alist '("\\.less$" . less-css-mode))
+
+ ;; php web-mode
+ (add-to-list 'auto-mode-alist '("\\.phtml\\'" . php-mode))
+ (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . php-mode))
+ (add-to-list 'auto-mode-alist '("\\.blade\\.php\\'" . php-mode))
+
+ ;; php-mode
+ (add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site/php-mode"))
+ (autoload 'php-mode "php-mode" nil t)
+ (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
 )
 
 ;;;======================================================================
