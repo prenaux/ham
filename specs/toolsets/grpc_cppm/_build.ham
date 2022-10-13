@@ -122,6 +122,107 @@ AssertFExists protobuf_cppm : $(SRC) ;
 BUILD_SRC = [ tkBuildPackage $(SRC) :  : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 ObjectHdrs $(BUILD_SRC) : $(HDR) ;
 
+### protoc_cppm #######################################################
+tkDefLib protoc_cppm : 1.0.0 ;
+
+HDR = ;
+SRC = ;
+
+# include(cmake/protobuf.cmake)
+HDR += [ FDirName $(SUBDIR) github-grpc third_party protobuf src ] ;
+
+SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc third_party protobuf src google protobuf compiler ] :
+  code_generator.cc
+  command_line_interface.cc
+  cpp/enum.cc
+  cpp/enum_field.cc
+  cpp/extension.cc
+  cpp/field.cc
+  cpp/file.cc
+  cpp/generator.cc
+  cpp/helpers.cc
+  cpp/map_field.cc
+  cpp/message.cc
+  cpp/message_field.cc
+  cpp/padding_optimizer.cc
+  cpp/parse_function_generator.cc
+  cpp/primitive_field.cc
+  cpp/service.cc
+  cpp/string_field.cc
+  csharp/csharp_doc_comment.cc
+  csharp/csharp_enum.cc
+  csharp/csharp_enum_field.cc
+  csharp/csharp_field_base.cc
+  csharp/csharp_generator.cc
+  csharp/csharp_helpers.cc
+  csharp/csharp_map_field.cc
+  csharp/csharp_message.cc
+  csharp/csharp_message_field.cc
+  csharp/csharp_primitive_field.cc
+  csharp/csharp_reflection_class.cc
+  csharp/csharp_repeated_enum_field.cc
+  csharp/csharp_repeated_message_field.cc
+  csharp/csharp_repeated_primitive_field.cc
+  csharp/csharp_source_generator_base.cc
+  csharp/csharp_wrapper_field.cc
+  java/context.cc
+  java/doc_comment.cc
+  java/enum.cc
+  java/enum_field.cc
+  java/enum_field_lite.cc
+  java/enum_lite.cc
+  java/extension.cc
+  java/extension_lite.cc
+  java/field.cc
+  java/file.cc
+  java/generator.cc
+  java/generator_factory.cc
+  java/helpers.cc
+  java/kotlin_generator.cc
+  java/map_field.cc
+  java/map_field_lite.cc
+  java/message.cc
+  java/message_builder.cc
+  java/message_builder_lite.cc
+  java/message_field.cc
+  java/message_field_lite.cc
+  java/message_lite.cc
+  java/name_resolver.cc
+  java/primitive_field.cc
+  java/primitive_field_lite.cc
+  java/service.cc
+  java/shared_code_generator.cc
+  java/string_field.cc
+  java/string_field_lite.cc
+  objectivec/objectivec_enum.cc
+  objectivec/objectivec_enum_field.cc
+  objectivec/objectivec_extension.cc
+  objectivec/objectivec_field.cc
+  objectivec/objectivec_file.cc
+  objectivec/objectivec_generator.cc
+  objectivec/objectivec_helpers.cc
+  objectivec/objectivec_map_field.cc
+  objectivec/objectivec_message.cc
+  objectivec/objectivec_message_field.cc
+  objectivec/objectivec_oneof.cc
+  objectivec/objectivec_primitive_field.cc
+  php/php_generator.cc
+  plugin.cc
+  plugin.pb.cc
+  python/generator.cc
+  python/helpers.cc
+  python/pyi_generator.cc
+  ruby/ruby_generator.cc
+  subprocess.cc
+  zip_writer.cc
+] ;
+
+# ECHO "... protoc_cppm SRC:" $(SRC) ;
+AssertFExists protoc_cppm : $(SRC) ;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) :  : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+ObjectHdrs $(BUILD_SRC) : $(HDR) ;
+
 ### grpc_cppm_dep_ares ##################################################
 tkDefLib grpc_cppm_dep_ares : 1.0.0 ;
 
@@ -1399,6 +1500,94 @@ SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc src core ext transport b
 ] ;
 
 AssertFExists grpc_cppm : $(HDR) $(SRC) ;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) :  : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+ObjectHdrs $(BUILD_SRC) : $(HDR) ;
+
+### grpc_cpp_plugin #######################################################
+tkDefTool grpc_cpp_plugin : 1.0.0 ;
+tkPkgLinkLibs protobuf_cppm ;
+tkPkgLinkLibs protoc_cppm ;
+
+HDR =
+  [ FDirName $(SUBDIR) github-grpc include ]
+  [ FDirName $(SUBDIR) github-grpc ]
+  [ FDirName $(SUBDIR) github-grpc third_party protobuf src ]
+;
+SRC = ;
+
+SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc src compiler ] :
+  cpp_generator.cc
+  cpp_plugin.cc
+] ;
+
+AssertFExists grpc_cpp_plugin : $(HDR) $(SRC) ;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) :  : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+ObjectHdrs $(BUILD_SRC) : $(HDR) ;
+
+### grpc_php_plugin #######################################################
+tkDefTool grpc_php_plugin : 1.0.0 ;
+tkPkgLinkLibs protobuf_cppm ;
+tkPkgLinkLibs protoc_cppm ;
+
+HDR =
+  [ FDirName $(SUBDIR) github-grpc include ]
+  [ FDirName $(SUBDIR) github-grpc ]
+  [ FDirName $(SUBDIR) github-grpc third_party protobuf src ]
+;
+SRC = ;
+
+SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc src compiler ] :
+  php_generator.cc
+  php_plugin.cc
+] ;
+
+AssertFExists grpc_php_plugin : $(HDR) $(SRC) ;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) :  : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+ObjectHdrs $(BUILD_SRC) : $(HDR) ;
+
+### grpc_node_plugin #######################################################
+tkDefTool grpc_node_plugin : 1.0.0 ;
+tkPkgLinkLibs protobuf_cppm ;
+tkPkgLinkLibs protoc_cppm ;
+
+HDR =
+  [ FDirName $(SUBDIR) github-grpc include ]
+  [ FDirName $(SUBDIR) github-grpc ]
+  [ FDirName $(SUBDIR) github-grpc third_party protobuf src ]
+;
+SRC = ;
+
+SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc src compiler ] :
+  node_generator.cc
+  node_plugin.cc
+] ;
+
+AssertFExists grpc_node_plugin : $(HDR) $(SRC) ;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) :  : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+ObjectHdrs $(BUILD_SRC) : $(HDR) ;
+
+### grpc_python_plugin #######################################################
+tkDefTool grpc_python_plugin : 1.0.0 ;
+tkPkgLinkLibs protobuf_cppm ;
+tkPkgLinkLibs protoc_cppm ;
+
+HDR =
+  [ FDirName $(SUBDIR) github-grpc include ]
+  [ FDirName $(SUBDIR) github-grpc ]
+  [ FDirName $(SUBDIR) github-grpc third_party protobuf src ]
+;
+SRC = ;
+
+SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc src compiler ] :
+  python_generator.cc
+  python_plugin.cc
+] ;
+
+AssertFExists grpc_python_plugin : $(HDR) $(SRC) ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) :  : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 ObjectHdrs $(BUILD_SRC) : $(HDR) ;
