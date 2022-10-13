@@ -1,0 +1,12 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+  echo "E/Extension not specified."
+  echo "usage: php_install_extension extension"
+  exit 1
+fi
+if pecl list | grep "$1" >/dev/null 2>&1; then
+  echo "I/php_install_extension: '$1' already installed."
+else
+  echo "I/php_install_extension: '$1' not installed, using pecl to install..."
+  (set -x ; MAKEFLAGS="-j $HAM_NUM_JOBS" pecl install "$1")
+fi
