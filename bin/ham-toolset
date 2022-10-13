@@ -43,8 +43,10 @@ else
     else
       . ham-env-clear
       export HAM_PROJECT_DIR=${FOUND_PROJECT_DIR}
+      pushd "$HAM_PROJECT_DIR"
       . "$HAM_PROJECT_DIR/_ham_project"
       HAM_DIE_SHOULD_RETURN=$SCRIPT_SOURCED errcheck $? ham-toolset "Can't import _ham_project." || return 1
+      popd
     fi
 
     if [ -z "$HAM_NO_VER_CHECK" ]; then
