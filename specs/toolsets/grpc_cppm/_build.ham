@@ -1,5 +1,10 @@
 if [ SubDirOnce TOP toolsets grpc_cppm ] = 1 { return ; }
 
+# XXX: Should be in some specific Link_grpc_cppm rule...
+if $(LINUX) {
+  LINKLIBS += -lresolv ;
+}
+
 ### protobuf_cppm #######################################################
 tkDefLib protobuf_cppm : 1.0.0 ;
 
@@ -1025,6 +1030,11 @@ SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc third_party abseil-cpp a
   internal/demangle.cc
   leak_check.cc
   internal/stack_consumption.cc
+] ;
+
+SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc third_party abseil-cpp absl profiling ] :
+  internal/exponential_biased.cc
+  internal/periodic_sampler.cc
 ] ;
 
 SRC += [ tkPkgSrcSubDirLstNoHdrs [ FDirName github-grpc third_party abseil-cpp absl hash ] :

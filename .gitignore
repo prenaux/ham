@@ -94,9 +94,11 @@ bin/*/*_ra.dylib
 bin/*/*_ra.dll
 bin/*/*_ra.so
 bin/*/*_ra.exe
+bin/*/*_ra.x64
 bin/*/*_ra
 bin/*/*_da.dylib
 bin/*/*_da.dll
 bin/*/*_da.so
 bin/*/*_da.exe
+bin/*/*_da.x64
 bin/*/*_da
