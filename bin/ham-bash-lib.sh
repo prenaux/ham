@@ -219,8 +219,11 @@ update_prompt() {
         USERTAG="$USERNAME in $STY"
     fi
 
+    BIN_LOA=${HAM_TARGET_BIN_LOA:-${HAM_BIN_LOA}}
+    BUILD=${BUILD:-ra}
+
     if test "$TERM_NCOLORS" -ge 8; then
-        PROMPT='\[\033[35m$PROJECT_NAME$TOOLSET_EXTRA\033[0m\] \[\033[32m$(current_git_branch)\033[0m\]\w (\[\033[32m$USERTAG\033[0m\]) \[\033[0;36m$HAM_IMPORTED_TOOLSETS\033[0m\]'
+        PROMPT='\[\033[35m$PROJECT_NAME$TOOLSET_EXTRA\033[0m\] \[\033[32m$(current_git_branch)\033[0m\]\w (\e[38;5;95m$USERTAG\e[0m,\e[38;5;95m$BIN_LOA\e[0m,\e[38;5;95m$BUILD\e[0m) \[\033[0;36m$HAM_IMPORTED_TOOLSETS\033[0m\]'
 
         if [ ! -z "$DEVSERVER" ]; then
             PROMPT="$PROMPT, \[\033[32m$DEVSERVER\033[0m\]"
@@ -230,7 +233,7 @@ update_prompt() {
             PROMPT="\[\033[${HOSTNAME_COLOR:-37}m${HOSTNAME_LABEL}\033[0m\] $PROMPT"
         fi
     else
-        PROMPT='# $PROJECT_NAME$TOOLSET_EXTRA \[$(current_git_branch)\]\w ($USERTAG) $HAM_IMPORTED_TOOLSETS'
+        PROMPT='# $PROJECT_NAME$TOOLSET_EXTRA \[$(current_git_branch)\]\w ($USERTAG,$BIN_LOA,$BUILD) $HAM_IMPORTED_TOOLSETS'
     fi
 
     export PS1="
