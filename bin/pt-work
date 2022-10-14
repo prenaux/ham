@@ -52,13 +52,15 @@ fi
 
 # process the arguments
 _ARG_DIRECTORIES=()
-while getopts D:vh OPT
+while getopts "D:vh" OPT
 do
     case "$OPT" in
         h)
             usage
             ;;
         \?)
+            echo "E/Invalid option"
+            echo ""
             usage
             ;;
         D)

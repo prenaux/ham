@@ -59,9 +59,13 @@ do
     CMD=
     case "$OPT" in
         h)
+            echo "I/help"
+            echo ""
             usage
             ;;
         \?)
+            echo "E/Invalid option"
+            echo ""
             usage
             ;;
         s)

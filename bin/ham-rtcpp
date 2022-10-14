@@ -6,4 +6,4 @@ fi
 . "$HAM_HOME/bin/ham-bash-lib.sh"
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 export HAM_NO_VER_CHECK=1
-"$HAM_HOME/bin/ham" $*
+(set -x ; "$HAM_HOME/bin/ham" $*)

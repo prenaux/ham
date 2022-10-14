@@ -60,13 +60,17 @@ fi
 
 # process the arguments
 _ARG_DIRECTORIES=()
-while getopts :T:D:v OPT
+while getopts "T:D:vh" OPT
 do
     case "$OPT" in
         h)
+            echo "I/help"
+            echo ""
             usage
             ;;
         \?)
+            echo "E/Invalid option"
+            echo ""
             usage
             ;;
         v)
@@ -111,6 +115,10 @@ do
             fi
             _ARG_DIRECTORIES+=("$_ARG_DIRECTORY")
             ;;
+        *)
+            echo "E/Unknown option '$OPT'"
+            usage
+            ;;
     esac
 done
 shift $((OPTIND-1))
@@ -129,7 +137,7 @@ if [[ "$_ARG_TOOLSET" != "" ]]; then
     errcheck $? ham "Can't setup the '$_ARG_TOOLSET' toolset."
 fi
 
-if [[ -z $HAM_TOOLSET ]]; then
+if [[ -z "$HAM_TOOLSET" ]]; then
     echo "E/No toolset set, you can set one with the -T flag or '. ham-toolset' ..."
     usage
 fi

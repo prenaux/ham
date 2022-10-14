@@ -63,13 +63,17 @@ ONLY_TARGETS_THAT_NEED_TO_BE_BUILT=no
 # process the arguments
 TARGETS=()
 _ARG_DIRECTORIES=()
-while getopts :T:D:vbt: OPT
+while getopts "T:D:vbt:" OPT
 do
     case "$OPT" in
         h)
+            echo "I/help"
+            echo ""
             usage
             ;;
         \?)
+            echo "E/Invalid option"
+            echo ""
             usage
             ;;
         b)
