@@ -105,4 +105,7 @@ build_ham_crosscompile nt-x86 ham.exe
 echo "I/Removing intermediate files."
 rm -Rf "$SDIR/bin/"
 
+# XXX: Add a proper "clean" target that delete zig's internal cache which
+# prevents it from recompiling when it should.
+echo "W/!!! zig cc's cache is not accurate and doesn't always rebuild when it should !!!"
 echo "I/Done."
