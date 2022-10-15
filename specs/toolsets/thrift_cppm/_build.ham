@@ -94,7 +94,7 @@ if $(OSPLAT) != JS {
 
 }
 
-AssertFExists $(SRC) ;
+AssertFExists thrift_cppm : $(SRC) ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc rtti : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 
