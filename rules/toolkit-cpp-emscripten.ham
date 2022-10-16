@@ -20,6 +20,7 @@ JSCC_WARN_ARGS =
 -Wno-unused-variable
 -Wno-unused-function
 -Wno-deprecated-builtins
+-Wno-deprecated-declarations
 -Werror=return-stack-address
 ;
 if $(LOA_LINKER) = clang || $(LOA_LINKER) = em {
