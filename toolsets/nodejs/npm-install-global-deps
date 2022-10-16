@@ -8,7 +8,6 @@ elif [ ! -e "${NODEJS_BIN_DIR}/eslint" ] || \
          [ ! -e "${NODEJS_BIN_DIR}/gulp" ] || \
          [ ! -e "${NODEJS_BIN_DIR}/jsonlint" ] || \
          [ ! -e "${NODEJS_BIN_DIR}/node-pre-gyp" ] || \
-         [ ! -e "${NODEJS_BIN_DIR}/heroku" ] || \
          [ ! -e "${NODEJS_BIN_DIR}/esbuild" ] || \
          [ ! -e "${NODEJS_BIN_DIR}/yarn" ] || \
          [ ! -e "${NODEJS_BIN_DIR}/pm2" ] || \
@@ -30,7 +29,6 @@ npm install --force -g \
     gulp@3.x \
     jsonlint \
     node-pre-gyp \
-    heroku \
     esbuild \
     yarn \
     pm2 \
