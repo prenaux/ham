@@ -635,7 +635,7 @@ DLLIMPLIB ?= ;
 SUFDLLOBJ ?= $(SUFOBJ) ;
 SUFDLL    ?= $(SUFLIB) ;
 
-C++VERSION ?= c++14 ;
+C++VERSION ?= c++17 ;
 AR      ?= ar -rcs ;
 AS      ?= as ;
 ASFLAGS     ?= ;
