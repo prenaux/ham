@@ -84,7 +84,14 @@ case $TYPE in
         SUFFIX=".lib"
         ;;
       lin-*)
-        LINKER=gcc
+        case "$HAM_CPP_TOOLSET" in
+          gcc*)
+            LINKER=gcc
+            ;;
+          *)
+            LINKER=clang
+            ;;
+        esac
         PREFIX="lib"
         SUFFIX=".a"
         ;;
