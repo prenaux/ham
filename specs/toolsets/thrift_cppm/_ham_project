@@ -5,7 +5,7 @@ if [[ -z $HAM_PROJECT_DIR ]]; then
 fi
 
 if [ ! -d "github-thrift" ]; then
-  (set -x ; git clone --depth 1 git@github.com:bytecollider/thrift.git github-thrift)
+  (set -x ; git clone --depth 1 https://github.com/bytecollider/thrift.git github-thrift)
 else
   echo "I/cppm-thrift: github-thrift already cloned"
 fi
