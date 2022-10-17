@@ -273,15 +273,7 @@ rawurlencode() {
 
 # dl_file output_file url
 dl_file() {
-  case $HAM_OS in
-    OSX*)
-      if [ ! -x "$(command -v wget)" ]; then
-        echo "I/wget not found, using brew to install it..."
-        ham-brew install wget
-      fi
-      ;;
-  esac
-  (set -x ; wget "$2" -O"$1")
+    ham-dl-file "$1" "$2"
 }
 
 toolset_import() {

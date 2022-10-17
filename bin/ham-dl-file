@@ -1,0 +1,31 @@
+#!/bin/bash -e
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+usage() {
+  echo "usage: ham-dl-file OUTFILE URL"
+  exit 1
+}
+
+OUTFILE="$1"
+if [ -z "$1" ]; then
+  echo "E/OUTFILE not specified."
+  usage
+fi
+
+URL="$2"
+if [ -z "$2" ]; then
+  echo "E/URL not specified."
+  usage
+fi
+
+# Use wget instead of curl because it can resume partial downloads
+case $HAM_OS in
+  OSX*)
+    if [ ! -x "$(command -v wget)" ]; then
+      echo "I/wget not found, using brew to install it..."
+      ham-brew install wget
+    fi
+    ;;
+esac
+(set -x ; wget "$2" -O"$1")
