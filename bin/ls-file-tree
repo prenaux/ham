@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 #####################################################
 # Unix/Linux Folder Tree v2.9                       #
@@ -28,7 +28,11 @@
 # WTFPL ~ https://centerkey.com/tree ~ Dem Pilafian #
 #####################################################
 
-test -n "$1" && cd "$1"  # if parameter exists, use as base folder
+# if parameter exists, use as base folder
+if [ -n "$1" ]; then
+  cd "$1"
+  shift
+fi
 pwd
 
-find . | sort | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/" | grep -v "^\\.$"
+find . "$@" | sort | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/" | grep -v "^\\.$"
