@@ -9,7 +9,7 @@
 (defun tpl-cpp-guards ()
   (interactive)
   (let ((GUARD (replace-regexp-in-string
-                        "\\."
+                        "[\\.-]"
                         "_"
                         (upcase (concat "__" (buffer-name) "_" (agl-uuid3) "__"))
                          )))
