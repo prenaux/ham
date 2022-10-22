@@ -24,11 +24,7 @@ case $HAM_OS in
         "$RUN_DEBUGGER" -debugexe "$@"
         ;;
     OSX*)
-        if [ "$HAM_GDB_DONT_RUN" == "1" ]; then
-          PATH="/usr/bin:$PATH" lldb -- "$@"
-        else
-          PATH="/usr/bin:$PATH" lldb -o run -- "$@"
-        fi
+        PATH="/usr/bin:$PATH" lldb -- "$@"
         ;;
     LINUX*)
         if [ "$HAM_GDB_DONT_RUN" == "1" ]; then
