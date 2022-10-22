@@ -1,5 +1,10 @@
 if [ SubDirOnce TOP toolsets thrift_cppm ] = 1 { return ; }
 
+### niThrift ############################################################
+SubDirHdrs $(WORK) niLang sources niLang src API ;
+SubDirHdrs $(WORK) niLang sources niCURL src API ;
+
+### thrift_cppm #########################################################
 tkDefModuleLib thrift_cppm : 1.0.0 ;
 hamToolsetHdrs boost_cppm ;
 
