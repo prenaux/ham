@@ -1,23 +1,30 @@
-#!/bin/bash
-. ham-bash-lib.sh
-. ham-toolset msvc_19_x86
+#!/bin/bash -e
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+HAM_NO_VER_CHECK=1 . "$SCRIPT_DIR/../../_env.sh"
+HAM_NO_VER_CHECK=1 . ham-toolset msvc_19_x86
 errcheck $? build-ham-nt-x86 "Can't setup msvc_19_x86 toolset"
 
 cd src
-echo == Requires the VC DevEnv
-mkdir -p bin.ntx86
-echo == Building jambase.c...
-cl -nologo mkjambase.c
 
-echo == Building Ham
-rm -f ham0 # Make sure any unix ham0 is cleaned up
-./mkjambase.exe jambase.c jambase
-nmake -f builds/win32-visualc.mk
-errcheck $? build-ham-nt-x86 "Ham build failed"
+echo "I/Create output ntx86 folder"
+(set -x ;
+ mkdir -p bin.ntx86)
 
-cp bin.ntx86/ham.exe "${HAM_HOME}/bin/nt-x86/ham.exe"
-errcheck $? build-ham-nt-x86 "Ham copy failed"
+echo "I/Building jambase.c..."
+(set -x ;
+ "${MSVCDIR_BIN}/cl.exe" -nologo mkjambase.c ;
+ ./mkjambase.exe jambase.c Jambase)
 
-echo == Cleaning up temporary build files
-rm -f *.obj *.lib *.exe ham ham0 *.pdb
-rm -Rf bin.ntx86/
+echo "I/Building Ham"
+(set -x ;
+ # Make sure any unix ham0 is cleaned up
+ rm -f ham0 ;
+ nmake -f builds/win32-visualc.mk ;
+ cp bin.ntx86/ham.exe "${HAM_HOME}/bin/nt-x86/ham.exe")
+
+echo "I/Cleaning up temporary build files"
+(set -x ;
+ rm -f *.obj *.lib *.exe ham ham0 *.pdb ;
+ rm -Rf bin.ntx86/)
+
+echo "I/Done."
