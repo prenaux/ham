@@ -1,6 +1,3 @@
-Import log.ham ;
-Import assert.ham ;
-
 ECHO "===============================" ;
 ECHO "=== Ham Libraries UnitTests ===" ;
 ECHO "===============================" ;

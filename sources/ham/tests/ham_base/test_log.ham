@@ -1,5 +1,3 @@
-Import log.ham ;
-
 logDebug "Hello logDebug" ;
 logInfo "Hello logInfo" ;
 logWarn "Hello logWarn" ;

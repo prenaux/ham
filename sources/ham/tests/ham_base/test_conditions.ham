@@ -1,5 +1,3 @@
-Import assert.ham ;
-
 ALPHA = 0 ;
 if $(ALPHA) {
   ECHO "... ALPHA0" ;
