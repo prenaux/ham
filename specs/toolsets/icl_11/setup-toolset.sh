@@ -1,8 +1,5 @@
 #!/bin/bash
-
-# dependencies
-toolset_import msvc_10_x86
-if [ $? != 0 ]; then return 1; fi
+toolset_import_once msvc_10_x86 || return 1
 
 # toolset
 export HAM_TOOLSET_IS_SETUP_ICL_11=1

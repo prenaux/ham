@@ -1,7 +1,5 @@
 #!/bin/bash
-
-toolset_import python_27
-if [ $? != 0 ]; then return 1; fi
+toolset_import_once python_27 || return 1
 
 # toolset
 export HAM_TOOLSET=SCONS

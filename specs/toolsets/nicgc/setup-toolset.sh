@@ -5,8 +5,7 @@ case $HAM_OS in
     NT*)
         ;;
     OSX*)
-        . ham-toolset-import.sh wine
-        if [ $? != 0 ]; then return 1; fi
+        toolset_import wine || return 1
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

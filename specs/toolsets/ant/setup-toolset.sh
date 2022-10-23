@@ -1,6 +1,5 @@
 #!/bin/bash
-. ham-toolset-import.sh java_jdk
-if [ $? != 0 ]; then return 1; fi
+toolset_import_once java_jdk || return 1
 
 # toolset
 export HAM_TOOLSET=ANT

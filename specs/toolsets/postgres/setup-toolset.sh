@@ -1,5 +1,7 @@
 #!/bin/bash
-. ham-toolset-import.sh python_3 # for postgres_pass/postgres_connect/pgpass.py
+
+# for postgres_pass/postgres_connect/pgpass.py
+toolset_import_once python_3 || return 1
 
 # toolset
 export HAM_TOOLSET=POSTGRES

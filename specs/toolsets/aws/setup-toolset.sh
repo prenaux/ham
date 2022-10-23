@@ -1,6 +1,6 @@
 #!/bin/bash
-. ham-toolset-import.sh repos
-. ham-toolset-import.sh python_3
+toolset_import_once repos || return 1
+toolset_import_once python_3 || return 1
 
 # toolset
 export HAM_TOOLSET=AWS

@@ -1,8 +1,5 @@
 #!/bin/bash
-
-# import dependencies
-toolset_import xslt_tools
-if [ $? != 0 ]; then return 1; fi
+toolset_import_once xslt_tools || return 1
 
 # toolset
 export HAM_TOOLSET=QCC

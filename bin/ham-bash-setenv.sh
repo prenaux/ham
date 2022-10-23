@@ -19,7 +19,7 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
     case $HAM_OS in
         NT*)
             pathenv_remove_add "`unxpath $WINDIR`/System32" after
-            pathenv_add "$HAM_HOME/bin/nt"
+            pathenv_add "$HAM_HOME/bin/nt-x86"
             ;;
         OSX)
             pathenv_remove_add /opt/homebrew/bin after

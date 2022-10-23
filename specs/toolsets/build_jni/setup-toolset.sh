@@ -1,6 +1,6 @@
 #!/bin/bash
-. ham-toolset-import.sh xslt_tools
-. ham-toolset-import.sh java_jdk
+toolset_import_once xslt_tools || return 1
+toolset_import_once java_jdk || return 1
 export BUILD_JNI=1
 
 VER="--- build_jni ------------------------"

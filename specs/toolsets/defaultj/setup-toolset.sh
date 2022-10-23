@@ -1,15 +1,14 @@
 #!/bin/bash
-
-. ham-toolset-import.sh repos
-. ham-toolset-import.sh build_jni
+toolset_import_once repos || return 1
+toolset_import_once build_jni || return 1
 
 # path setup
 case $HAM_OS in
     NT*)
-        . ham-toolset-import.sh default
+        toolset_import default || return 1
         ;;
     OSX*)
-        . ham-toolset-import.sh default
+        toolset_import default || return 1
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

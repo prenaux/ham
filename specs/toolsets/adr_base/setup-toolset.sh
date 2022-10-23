@@ -1,12 +1,7 @@
 #!/bin/bash
-
-# import dependencies
-toolset_import xslt_tools
-if [ $? != 0 ]; then return 1; fi
-toolset_import build_jni
-if [ $? != 0 ]; then return 1; fi
-toolset_import ant
-if [ $? != 0 ]; then return 1; fi
+toolset_import_once xslt_tools || return 1
+toolset_import_once build_jni || return 1
+toolset_import_once ant || return 1
 
 # Supported Android Platforms
 # 42: Android 4.2, 4.2.2    17    JELLY_BEAN_MR1

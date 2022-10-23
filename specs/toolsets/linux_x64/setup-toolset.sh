@@ -1,7 +1,5 @@
 #!/bin/bash
-
-. ham-toolset-import.sh xslt_tools
-if [ $? != 0 ]; then return 1; fi
+toolset_import_once xslt_tools || return 1
 
 case $HAM_OS in
     LINUX)
@@ -20,8 +18,7 @@ export LINUX_CLANG=${LINUX_CLANG:-1}
 
 # Use GCC
 if [ "${LINUX_CLANG}" == "0" ]; then
-  toolset_import gcc_470
-  if [ $? != 0 ]; then return 1; fi
+  toolset_import gcc_470 || return 1
 
   VER="--- linux_x64 -----------------------
 Using GCC"

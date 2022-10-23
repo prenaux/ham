@@ -22,7 +22,7 @@ case $HAM_OS in
         ;;
     LINUX)
         # We only support jdk18 on Linux atm...
-        toolset_import java_jdk18
+        toolset_import java_jdk18 || return 1
         return 0
         ;;
     *)

@@ -1,7 +1,5 @@
 #!/bin/bash
-
-toolset_import hadoop
-if [ $? != 0 ]; then return 1; fi
+toolset_import hadoop || return 1
 
 # toolset
 export HAM_TOOLSET=HIVE

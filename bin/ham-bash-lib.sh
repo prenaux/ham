@@ -277,22 +277,27 @@ dl_file() {
 }
 
 toolset_import() {
-    export PATH=$PATH
-    . ham-toolset-import.sh $1
-    if [ $? != 0 ]; then
-        return 1
+    ALREADY_IMPORTED=`ni-hget HAM_IMPORTS_TOOLSETS $1`
+    if [[ "$ALREADY_IMPORTED" = "1" ]]; then
+        echo "W/toolset_import: toolset already imported '$1', skipped."
+    else
+        . ham-toolset-do-import.sh $1
     fi
 }
 
 toolset_import_once() {
     ALREADY_IMPORTED=`ni-hget HAM_IMPORTS_TOOLSETS $1`
-    if [[ $ALREADY_IMPORTED = "1" ]]; then
-        if [ "$2" != "silent" ]; then
-            echo "I/Already imported '$1'."
-        fi
-    else
-        . ham-toolset-import.sh $1
+    if [[ $ALREADY_IMPORTED != "1" ]]; then
+        . ham-toolset-do-import.sh $1
     fi
+}
+
+toolset_import_force() {
+    . ham-toolset-do-import.sh force $1
+}
+
+toolset_import_strict() {
+    . ham-toolset-do-import.sh $1
 }
 
 toolset_unquarantine_dir() {
@@ -374,11 +379,17 @@ toolset_info() {
     echo "==================================================="
 }
 
+# This is meant to be used in _ham_project, do not use in setup-toolset.sh.
 toolset_import_list() {
     for ARG in $@
     do
-        . ham-toolset-import.sh $ARG || return 1
+      ALREADY_IMPORTED=`ni-hget HAM_IMPORTS_TOOLSETS $ARG`
+      if [[ "$ALREADY_IMPORTED" = "1" ]]; then
+        echo "W/toolset_import_list: toolset already imported '$ARG', skipped."
+      else
+        . ham-toolset-do-import.sh $ARG || return 1
         export HAM_IMPORTED_TOOLSET=$ARG
+      fi
     done
 }
 
