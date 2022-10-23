@@ -43,16 +43,32 @@ fi
 # path
 export PATH="${HAM_TOOLSET_DIR}":${PATH}
 
+echo "I/xsltproc..."
+xsltproc --version || true
+
+echo "I/xslt_tools-saxon..."
+xslt_tools-saxon || true
+
 # version
-VER="--- xslt_tools_1 ----------------------"
+VER="--- xslt_tools ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
     VER="$VER
 --- xsltproc ---
-`xsltproc --version | grep xsltproc`
---- saxon ------
-`xslt_tools-saxon 2>&1 | grep Saxon`"
+`xsltproc --version | grep xsltproc`"
     if [ $? != 0 ]; then
         echo "E/Can't get xsltproc version."
+        return 1
+    fi
+fi
+export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
+$VER"
+
+if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+    VER="$VER
+--- saxon ------
+`xslt_tools-saxon -version`"
+    if [ $? != 0 ]; then
+        echo "E/Can't get xslt_tools-saxon version."
         return 1
     fi
 fi
