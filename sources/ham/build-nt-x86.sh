@@ -1,7 +1,7 @@
 #!/bin/bash
 . ham-bash-lib.sh
-. ham-toolset msvc_10_x86
-errcheck $? build-ham-nt-x86 "Can't setup VC10"
+. ham-toolset msvc_19_x86
+errcheck $? build-ham-nt-x86 "Can't setup msvc_19_x86 toolset"
 
 cd src
 echo == Requires the VC DevEnv
