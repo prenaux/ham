@@ -86,6 +86,7 @@ static struct
   char*   outputFile;
 #ifdef USE_EXECNT
   char* tempFile;
+
 #endif
 } cmdtab[ MAXJOBS ] = {{0}};
 

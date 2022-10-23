@@ -51,7 +51,7 @@
 #include <sys/stat.h>
 #endif
 
-#if defined OS_MACOSX
+#if defined OS_MACOSX || defined OS_LINUX
 #include <unistd.h>
 #endif
 #include <time.h>
