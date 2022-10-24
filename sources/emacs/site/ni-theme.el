@@ -52,6 +52,10 @@
    (if aTerminalTheme (load-theme aTerminalTheme t)))
   (set-cursor-color "#cc0000"))
 
+(defun ni-theme-load-one (aTheme)
+  (ni-theme-disable-all)
+  (ni-theme-load aTheme aTheme))
+
 (defun ni-theme-set-light-mode ()
   (interactive)
   (set '--dark-mode-state "light")
