@@ -214,7 +214,7 @@
  (defun ni-backup-file-name (fpath)
    "Return a new file path of a given file path.
 If the new path's directories does not exist, create them."
-   (let* ((backupRootDir (concat ENV_SHARED_WORK "/_emacs_bak/"))
+   (let* ((backupRootDir (file-name-as-directory ENV_EMACS_BAK_DIR))
            (filePath (replace-regexp-in-string ":" "" (buffer-file-name))) ; remove ':' from path
            (backupFileDir (concat (replace-regexp-in-string "/" "_" (system-name)) "/"
                             (string-trim (replace-regexp-in-string "/" "_"

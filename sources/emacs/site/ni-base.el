@@ -227,8 +227,10 @@ See the docstrings of `defalias' and `make-obsolete' for more details."
 (if (string-empty-p (getenv "WORK"))
     (setenv "WORK" (expand-file-name (concat EMACS_DEVENV "/.."))))
 (defconst ENV_WORK (agl-getenv "WORK"))
-(defconst ENV_SHARED_WORK
-  (if (string-empty-p (agl-getenv "SHARED_WORK")) ENV_WORK (agl-getenv "SHARED_WORK")))
+(defconst ENV_EMACS_BAK_DIR
+  (if (string-empty-p (agl-getenv "EMACS_BAK_DIR"))
+    (concat (file-name-as-directory ENV_WORK) "_emacs_bak")
+    (agl-getenv "EMACS_BAK_DIR")))
 
 ;; Fix a bug with some version of emacs...
 (setq warning-suppress-types nil)
