@@ -11,15 +11,14 @@ case $HAM_OS in
         echo "E/Toolset: Unsupported host OS, you shouldn't need wine on Windows."
         ;;
     OSX*)
-        # We use Wine 4 because Wine 5 uses 5x more disk space than Wine 4
-        export WINE_USR_DIR="${HAM_TOOLSET_DIR}/osx-x64/wine_4/usr"
+        export WINE_USR_DIR="${HAM_TOOLSET_DIR}/osx-x64/wine_7"
         if [ ! -e "$WINE_USR_DIR/bin/wine64" ]; then
-            toolset_check_and_dl_ver wine osx-x64 v4|| return 1
+            toolset_check_and_dl_ver wine osx-x64 v7_0 || return 1
         fi
         export WINE_PREFIX_DIR="${HAM_TOOLSET_DIR}/osx-x64/wine-prefix"
         export WINEPREFIX="$WINE_PREFIX_DIR"
         export WINEARCH=win64
-        # Should be done in the script launcher of the executable
+        # Should be done in the script launcher of the executable, remove all the debug output
         # export WINEDEBUG=-all
         # Commented because it leads to "warning: setlocale: LC_ALL: cannot
         # change locale (en_EN.UTF-8): No such file or directory"
@@ -38,7 +37,9 @@ export PATH="${HAM_TOOLSET_DIR}":${PATH}
 VER="--- wine ------------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
     VER="$VER
-Wine: $WINE_USR_DIR"
+`$WINE_USR_DIR/bin/wine64 --version`
+Wine: $WINE_USR_DIR
+Wine Prefix: $WINEPREFIX"
     if [ $? != 0 ]; then
       echo "E/Can't get nicgc version."
       return 1
