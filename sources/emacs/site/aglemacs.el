@@ -1105,3 +1105,116 @@ This command does not push text to `kill-ring'."
     See `sort-regexp-fields'."
   (interactive "*P\nr")
   (sort-regexp-fields reverse "\\w+" "\\&" beg end))
+
+;;;======================================================================
+;;; Transpose arguments
+;;;======================================================================
+
+;;; Transpose arguments in c-like mode. Credits: https://emacs.stackexchange.com/a/47934/2671
+(defun ni-c-forward-to-argsep ()
+  "Move to the end of the current c function argument.
+Returns point."
+  (interactive)
+  (while
+    (progn
+      (comment-forward most-positive-fixnum)
+      (looking-at "[^,)]"))
+    (condition-case ex (forward-sexp)
+      ('scan-error (if (looking-at "[<>]") ;; likely c++ template
+                       (forward-char)
+                     (throw ex))))
+    )
+  (point)
+  )
+
+(defun ni-c-backward-to-argsep ()
+  "Move to the beginning of the current c function argument.
+Returns point."
+  (interactive)
+  (let ((pt (point)) cur)
+    (up-list -1) ;; try to quit first balanced expression
+    (while (looking-at "<") ;; c++ template opening bracket
+      (up-list -1))
+    (forward-char)
+    (while
+      (progn
+        (setq cur (point))
+        (> pt (ni-c-forward-to-argsep))
+        )
+      (forward-char)
+      )
+    (goto-char cur))
+  )
+(defun ni-c-transpose-args-direction (is_forward)
+  "Transpose two arguments of a c-function.
+The first arg is the one with point in it."
+  (interactive)
+  (let*
+    (
+      ;; only different to pt when not 'is_forward'
+      (pt-original (point))
+      (pt
+        (progn
+          (when (not is_forward)
+            (goto-char (- (ni-c-backward-to-argsep) 1))
+            (unless (looking-at ",")
+              (goto-char pt-original)
+              (user-error "Argument separator not found"))
+            )
+          (point))
+        )
+      (b (ni-c-backward-to-argsep))
+      (sep
+        (progn (goto-char pt)
+          (ni-c-forward-to-argsep)))
+      (e
+        (progn
+          (unless (looking-at ",")
+            (goto-char pt-original)
+            (user-error "Argument separator not found"))
+          (forward-char)
+          (ni-c-forward-to-argsep))
+        )
+      (ws-first
+        (buffer-substring-no-properties
+          (goto-char b)
+          (progn (skip-chars-forward "[[:space:]\n]")
+            (point))
+          )
+        )
+      (first (buffer-substring-no-properties (point) sep))
+      (ws-second
+        (buffer-substring-no-properties
+          (goto-char (1+ sep))
+          (progn (skip-chars-forward "[[:space:]\n]")
+            (point))
+          )
+        )
+      (second (buffer-substring-no-properties (point) e))
+      )
+    (delete-region b e)
+    (insert ws-first second "," ws-second first)
+
+    ;; Correct the cursor location to be on the same character.
+    (if is_forward
+      (goto-char
+        (+
+          ;; word start.
+          (- (point) (length first))
+          ;; Apply initial offset within the word.
+          (- pt b (length ws-first))
+          )
+        )
+      (goto-char
+        (+
+          b (length ws-first)
+          ;; Apply initial offset within the word.
+          (- pt-original (+ pt 1 (length ws-second)))
+          )
+        )
+      )
+    )
+  )
+
+(defun ni-c-transpose-args-forward () (interactive) (ni-c-transpose-args-direction t))
+(defun ni-c-transpose-args-backward () (interactive) (ni-c-transpose-args-direction nil))
