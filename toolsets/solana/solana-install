@@ -13,7 +13,6 @@
 # install solana-install. It just does platform detection, downloads the installer
 # and runs it.
 SOLANA_RELEASE=v1.9.9
-SOLANA_INSTALL_INIT_ARGS=v1.9.9
 SOLANA_DOWNLOAD_ROOT=https://release.solana.com
 
 { # this ensures the entire script is downloaded #
@@ -104,10 +103,15 @@ main() {
       fi
     fi
 
+    if [ -z "$1" ]; then
+      echo "E/You specify a solana version to install."
+      exit 1
+    fi
+
+    printf 'Installing Solana '%s' with Solana installer '%s'...\n' "$1" "$release" 1>&2
+
     download_url="$SOLANA_DOWNLOAD_ROOT/$release/solana-install-init-$TARGET"
     solana_install_init="$temp_dir/solana-install-init"
-
-    printf 'downloading Solana %s installer\n' "$release" 1>&2
 
     ensure mkdir -p "$temp_dir"
     ensure downloader "$download_url" "$solana_install_init"
@@ -119,12 +123,7 @@ main() {
     fi
 
     set -x
-    if [ -z "$1" ]; then
-      #shellcheck disable=SC2086
-      ignore "$solana_install_init" $SOLANA_INSTALL_INIT_ARGS
-    else
-      ignore "$solana_install_init" "$@"
-    fi
+    ignore "$solana_install_init" "$@"
     retval=$?
 
     ignore rm "$solana_install_init"

@@ -12,11 +12,10 @@ if [ -z "$SOLANA_REQUIRED_VERSION" ]; then
     return 1
 fi
 
-
 # platform
 case $HAM_OS in
     OSX*|LINUX*)
-        export SOLANA_DATA_DIR=$HAM_TOOLSET_DIR/$HAM_BIN_LOA
+        export SOLANA_DATA_DIR=$HAM_TOOLSET_DIR/$HAM_BIN_LOA/$SOLANA_REQUIRED_VERSION
         export SOLANA_BIN_DIR=$SOLANA_DATA_DIR/active_release/bin
         export PATH="$SOLANA_BIN_DIR":"$HAM_TOOLSET_DIR":$PATH
         if [ ! -x "$SOLANA_BIN_DIR/solana" ]; then
