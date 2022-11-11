@@ -40,6 +40,18 @@ usage() {
     exit 1
 }
 
+do_pm2_start() {
+  local APP_NAME=$1
+  shift
+  local START_CMD=$1
+  shift
+  if [ -z "$1" ]; then
+    (set -x; pm2 start --update-env --name "$APP_NAME" "$START_CMD")
+  else
+    (set -x; pm2 start --update-env --name "$APP_NAME" "$START_CMD" -- "$@")
+  fi
+}
+
 if [ -z "$1" ]; then
     usage
 elif [ "$1" == source ]; then
@@ -52,36 +64,40 @@ elif [ "$1" == start-once ]; then
         exit 1
     fi
     shift
-    if [ -z "$1" ]; then
+    START_CMD="$1"
+    if [ -z "$START_CMD" ]; then
         echo "E/start-once: START_CMD not specified."
         exit 1
     fi
+    shift
 
     if [[ $((pm2 info "$APP_NAME" || echo 'status|stopped') | grep status) =~ 'online' ]]; then
         echo "I/'$APP_NAME' already started and online."
     else
-        echo "I/'$APP_NAME' not online, starting cmd '$@'"
-        pm2 start --update-env --name "$APP_NAME" "$@"
+        echo "I/'$APP_NAME' not online, starting cmd: $START_CMD $@"
+        do_pm2_start "$APP_NAME" "$START_CMD" "$@"
     fi
 elif [ "$1" == restart ]; then
     shift
     APP_NAME="$1"
     if [ -z "$APP_NAME" ]; then
-        echo "E/start-once: APP_NAME not specified."
+        echo "E/restart: APP_NAME not specified."
         exit 1
     fi
     shift
-    if [ -z "$1" ]; then
-        echo "E/start-once: START_CMD not specified."
+    START_CMD="$1"
+    if [ -z "$START_CMD" ]; then
+        echo "E/restart: START_CMD not specified."
         exit 1
     fi
+    shift
 
     if [[ $((pm2 info "$APP_NAME" || echo 'status|stopped') | grep status) =~ 'online' ]]; then
         echo "I/'$APP_NAME' already started and online, stopping it first."
         pm2 stop "$APP_NAME"
     fi
-    echo "I/'$APP_NAME' starting cmd '$@'"
-    pm2 start --update-env --name "$APP_NAME" "$@"
+    echo "I/'$APP_NAME' starting cmd: $START_CMD $@"
+    do_pm2_start "$APP_NAME" "$START_CMD" "$@"
 else
     set -e
     pm2 "$@"
