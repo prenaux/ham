@@ -16,6 +16,12 @@
 
 (set '--dark-mode-state "initial")
 (add-to-list 'custom-theme-load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/themes"))
+(add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/themes"))
+
+;; modus-theme customization (https://github.com/protesilaos/modus-themes)
+(setq modus-themes-italic-constructs nil
+      modus-themes-bold-constructs nil
+      modus-themes-region '(bg-only no-extend))
 
 ;;
 ;; Default theme for light & dark mode in gui & terminal.
@@ -31,10 +37,12 @@
 
 (defun ni-theme-disable-all ()
   ;; light themes
+  (disable-theme 'modus-operandi)
   (disable-theme 'solarized-light)
   (disable-theme 'flatui)
   (disable-theme 'leuven)
   ;; dark themes
+  (disable-theme 'modus-vivendi)
   (disable-theme 'solarized-dark)
   (disable-theme 'wombat)
   (disable-theme 'vscode-dark-plus))
