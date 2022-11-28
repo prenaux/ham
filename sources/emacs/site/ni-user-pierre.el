@@ -634,6 +634,12 @@ If the new path's directories does not exist, create them."
  (setq fzf/executable
    (concat (getenv "HAM_HOME") "/bin/" (getenv "HAM_BIN_LOA") "/fzf"))
  (setq fzf/files-source "ripgrep")
+
+  (defun fzf-ni-find-search-directory ()
+    "Starts a fzf session in ni-find-search-directory."
+    (interactive)
+    (fzf/start (ni-find-search-directory) (fzf/get-files-source)))
+
 )
 
 ;;;======================================================================

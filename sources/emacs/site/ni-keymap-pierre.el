@@ -155,7 +155,7 @@
 
  ;;;; Fuzzy search
  ;; open file in project
- (global-set-key (kbd "C-x C-p") 'fzf-projectile)
+ (global-set-key (kbd "C-x C-p") 'fzf-ni-find-search-directory)
  ;; open file in a directory
  (global-set-key (kbd "C-x p") 'fzf-directory)
 

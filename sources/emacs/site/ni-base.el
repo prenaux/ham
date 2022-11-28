@@ -364,17 +364,18 @@ and their terminal equivalents.")
 (defvar ni-regexp-history-search nil
   "History of regexp searches.")
 
-(defun ni-find-search-directory ()
+(defun ni-find-search-directory (&optional aStartDir)
   "Return GIT_ROOT if this file is a part of a git repo,
 else return default-directory"
-  (let ((curdir default-directory)
+  (let ((curdir (or aStartDir default-directory))
         (max 20)
         (found nil))
     (while (and (not found) (> max 0))
       (progn
         (if (or (file-directory-p (concat curdir ".git"))
                 (file-directory-p (concat curdir ".hg"))
-                (file-regular-p (concat curdir "_ham_project")))
+                (file-regular-p (concat curdir "_ham_project"))
+                (file-regular-p (concat curdir "TARGETS")))
             (progn
               (setq found t))
           (progn
