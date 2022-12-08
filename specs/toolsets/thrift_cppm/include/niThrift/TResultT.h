@@ -42,6 +42,32 @@ public:
     return !!_result.__isset.exc;
   }
 
+  inline const auto &GetException() const {
+    niPanicAssert(HasException());
+    return _result.exc;
+  }
+};
+
+template <typename T>
+struct TVoidResultT {
+private:
+  T _result = {};
+
+public:
+  inline TVoidResultT() {}
+
+  inline TVoidResultT(::apache::thrift::protocol::TProtocol* iproto) {
+    this->Read(iproto);
+  }
+
+  inline void Read(::apache::thrift::protocol::TProtocol* iproto) {
+    _result.read(iproto);
+  }
+
+  inline tBool HasException() const {
+    return !!_result.__isset.exc;
+  }
+
   inline const auto& GetException() const {
     niPanicAssert(HasException());
     return _result.exc;

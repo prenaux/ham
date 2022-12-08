@@ -85,6 +85,10 @@ public:
     return _writeProtocol->GetLastSentSeqId();
   }
 
+  TCLIENT* __stdcall GetClient() const {
+    return _client.get();
+  }
+
   virtual tBool __stdcall Connect() niOverride {
     try {
       _readerTransport = std::make_shared<TNiFileReaderTransport>(nullptr);

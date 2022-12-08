@@ -94,7 +94,7 @@ public:
       ni::CreateFileDynamicMemory(128, "TCurlWriterTransport_writeBuffer"));
 
     // Get the message handler, bail if no one can hear us scream...
-    Nonnull<iMessageHandler> mh = niCheckNonnullSilent(mh, _msgHandler, ;);
+    Nonnull<iMessageHandler> mh = niCheckNonnull(mh, _msgHandler, ;);
 
     // rewind to the begining since we're gonna read the data...
     postData->SeekSet(0);
