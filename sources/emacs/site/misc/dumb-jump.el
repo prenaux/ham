@@ -1637,6 +1637,7 @@ or most optimal searcher."
     (:language "javascript" :ext "js" :agtype "js" :rgtype "js")
     (:language "javascript" :ext "jsx" :agtype "js" :rgtype "js")
     (:language "javascript" :ext "vue" :agtype "js" :rgtype "js")
+    (:language "javascript" :ext "mjs" :agtype "js" :rgtype "js")
     (:language "javascript" :ext "html" :agtype "html" :rgtype "html")
     (:language "javascript" :ext "css" :agtype "css" :rgtype "css")
     (:language "typescript" :ext "ts" :agtype "ts" :rgtype "ts")
