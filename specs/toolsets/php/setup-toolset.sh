@@ -10,6 +10,8 @@ echo "W/ The php toolset is deprecated and will be removed in the near future. "
 echo "W/ Use php_8 instead."
 echo "W/======================================================================="
 
+export HAM_PHP_VERSION=7.4
+
 # path setup
 case $HAM_OS in
     NT*)
@@ -37,6 +39,7 @@ case $HAM_OS in
         ham-brew-install curl "bin/curl" || return 1
         ham-brew-install php@7.4 "bin/php" || return 1
         export PATH="${HAM_TOOLSET_DIR}":"${HOME}/.composer/vendor/bin":"${PHP_HOME}/bin":${PATH}
+        export HAM_PHP_EXE_PATH="$PHP_HOME/bin/php"
         ;;
     LINUX*)
         if [ -z `where_inpath php` ]; then
@@ -44,6 +47,7 @@ case $HAM_OS in
             (set -x ; sudo apt-get install -y php7.4-common php7.4-mysql php7.4-xml php7.4-xmlrpc php7.4-curl php7.4-gd php7.4-imagick php7.4-cli php7.4-dev php7.4-imap php7.4-mbstring php7.4-opcache php7.4-pgsql php7.4-soap php7.4-sqlite3 php7.4-zip php7.4-intl)
         fi
         pathenv_add "${HAM_TOOLSET_DIR}"
+        export HAM_PHP_EXE_PATH="/usr/bin/php$HAM_PHP_VERSION"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
