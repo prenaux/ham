@@ -23,7 +23,11 @@ case $HAM_OS in
         export HAM_PHP_VERSION=8.1
         if [ -z `where_inpath php$HAM_PHP_VERSION` ]; then
             echo "W/php $HAM_PHP_VERSION not found, trying to install with sudo..."
-            (set -x ; sudo apt-get install -y php$HAM_PHP_VERSION-common php$HAM_PHP_VERSION-mysql php$HAM_PHP_VERSION-xml php$HAM_PHP_VERSION-xmlrpc php$HAM_PHP_VERSION-curl php$HAM_PHP_VERSION-gd php$HAM_PHP_VERSION-imagick php$HAM_PHP_VERSION-cli php$HAM_PHP_VERSION-dev php$HAM_PHP_VERSION-imap php$HAM_PHP_VERSION-mbstring php$HAM_PHP_VERSION-opcache php$HAM_PHP_VERSION-pgsql php$HAM_PHP_VERSION-soap php$HAM_PHP_VERSION-sqlite3 php$HAM_PHP_VERSION-zip php$HAM_PHP_VERSION-intl)
+            (set -x ;
+             sudo apt -y update ;
+             sudo add-apt-repository -y ppa:ondrej/php ;
+             sudo apt -y update ;
+             sudo apt-get install -y php$HAM_PHP_VERSION-common php$HAM_PHP_VERSION-mysql php$HAM_PHP_VERSION-xml php$HAM_PHP_VERSION-xmlrpc php$HAM_PHP_VERSION-curl php$HAM_PHP_VERSION-gd php$HAM_PHP_VERSION-imagick php$HAM_PHP_VERSION-cli php$HAM_PHP_VERSION-dev php$HAM_PHP_VERSION-imap php$HAM_PHP_VERSION-mbstring php$HAM_PHP_VERSION-opcache php$HAM_PHP_VERSION-pgsql php$HAM_PHP_VERSION-soap php$HAM_PHP_VERSION-sqlite3 php$HAM_PHP_VERSION-zip php$HAM_PHP_VERSION-intl)
         fi
         export HAM_PHP_EXE_PATH="/usr/bin/php$HAM_PHP_VERSION"
         ;;
