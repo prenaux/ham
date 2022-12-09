@@ -5,6 +5,11 @@ export HAM_TOOLSET=PHP
 export HAM_TOOLSET_NAME=php
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/php"
 
+echo "W/======================================================================="
+echo "W/ The php toolset is deprecated and will be removed in the near future. "
+echo "W/ Use php_8 instead."
+echo "W/======================================================================="
+
 # path setup
 case $HAM_OS in
     NT*)
