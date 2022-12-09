@@ -10,6 +10,12 @@ case $HAM_OS in
     OSX*)
         ham-brew-install nginx "bin/nginx"
         ;;
+    LINUX*)
+        if [ -z `where_inpath nginx` ]; then
+          sudo apt -y update
+          sudo apt install -y nginx
+        fi
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
