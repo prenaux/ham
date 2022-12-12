@@ -29,10 +29,8 @@ public:
   TCurlWriterTransport(const char* aURL, iMessageHandler* apMessageHandler)
       : _url(aURL)
       , _headers(ni::tStringCVec::Create())
-      , _curl(
-          ni::MakeNonnull((iCURL*)niCreateInstance(niCURL, CURL, niVarNull, niVarNull)))
-      , _writeBuffer(ni::MakeNonnull(
-          ni::CreateFileDynamicMemory(128, "TCurlWriterTransport_writeBuffer")))
+      , _curl((iCURL*)niCreateInstance(niCURL, CURL, niVarNull, niVarNull))
+      , _writeBuffer(ni::CreateFileDynamicMemory(128, "TCurlWriterTransport_writeBuffer"))
       , _msgHandler(apMessageHandler)
   {
 #ifdef USE_CHUNKED
@@ -90,8 +88,7 @@ public:
     ni::Nonnull<ni::iFile> postData = _writeBuffer;
 
     // Create a new write buffer for the next call
-    _writeBuffer = ni::MakeNonnull(
-      ni::CreateFileDynamicMemory(128, "TCurlWriterTransport_writeBuffer"));
+    _writeBuffer = ni::Nonnull{ni::CreateFileDynamicMemory(128, "TCurlWriterTransport_writeBuffer")};
 
     // Get the message handler, bail if no one can hear us scream...
     Nonnull<iMessageHandler> mh = niCheckNonnull(mh, _msgHandler, ;);
