@@ -18,6 +18,7 @@ case $HAM_OS in
         pathenv_add "${PHP_HOME}/bin"
         pathenv_add "${HOME}/.composer/vendor/bin"
         export HAM_PHP_EXE_PATH="$PHP_HOME/bin/php"
+        export HAM_PHP_FPM_EXE_PATH="$PHP_HOME/sbin/php-fpm"
         ;;
     LINUX*)
         export HAM_PHP_VERSION=8.1
@@ -27,9 +28,10 @@ case $HAM_OS in
              sudo apt -y update ;
              sudo add-apt-repository -y ppa:ondrej/php ;
              sudo apt -y update ;
-             sudo apt-get install -y php$HAM_PHP_VERSION-common php$HAM_PHP_VERSION-mysql php$HAM_PHP_VERSION-xml php$HAM_PHP_VERSION-xmlrpc php$HAM_PHP_VERSION-curl php$HAM_PHP_VERSION-gd php$HAM_PHP_VERSION-imagick php$HAM_PHP_VERSION-cli php$HAM_PHP_VERSION-dev php$HAM_PHP_VERSION-imap php$HAM_PHP_VERSION-mbstring php$HAM_PHP_VERSION-opcache php$HAM_PHP_VERSION-pgsql php$HAM_PHP_VERSION-soap php$HAM_PHP_VERSION-sqlite3 php$HAM_PHP_VERSION-zip php$HAM_PHP_VERSION-intl)
+             sudo apt-get install -y php$HAM_PHP_VERSION-common php$HAM_PHP_VERSION-mysql php$HAM_PHP_VERSION-xml php$HAM_PHP_VERSION-xmlrpc php$HAM_PHP_VERSION-curl php$HAM_PHP_VERSION-gd php$HAM_PHP_VERSION-imagick php$HAM_PHP_VERSION-cli php$HAM_PHP_VERSION-dev php$HAM_PHP_VERSION-imap php$HAM_PHP_VERSION-mbstring php$HAM_PHP_VERSION-opcache php$HAM_PHP_VERSION-pgsql php$HAM_PHP_VERSION-soap php$HAM_PHP_VERSION-sqlite3 php$HAM_PHP_VERSION-zip php$HAM_PHP_VERSION-intl php$HAM_PHP_VERSION-fpm)
         fi
         export HAM_PHP_EXE_PATH="/usr/bin/php$HAM_PHP_VERSION"
+        export HAM_PHP_FPM_EXE_PATH="/usr/sbin/php-fpm$HAM_PHP_VERSION"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
