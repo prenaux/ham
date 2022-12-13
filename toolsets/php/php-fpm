@@ -1,0 +1,10 @@
+#!/bin/bash -e
+if [ -z "$HAM_PHP_VERSION" ]; then
+  echo "E/HAM_PHP_VERSION not defined."
+  exit 1
+fi
+if [ -z "$HAM_PHP_FPM_EXE_PATH" ]; then
+  echo "E/HAM_PHP_FPM_EXE_PATH not defined."
+  exit 1
+fi
+"${HAM_PHP_FPM_EXE_PATH}" "$@"
