@@ -40,14 +40,16 @@ case $HAM_OS in
         ham-brew-install php@7.4 "bin/php" || return 1
         export PATH="${HAM_TOOLSET_DIR}":"${HOME}/.composer/vendor/bin":"${PHP_HOME}/bin":${PATH}
         export HAM_PHP_EXE_PATH="$PHP_HOME/bin/php"
+        export HAM_PHP_FPM_EXE_PATH="$PHP_HOME/sbin/php-fpm"
         ;;
     LINUX*)
         if [ -z `where_inpath php` ]; then
             echo "W/php 7.4 not found, trying to install with sudo..."
-            (set -x ; sudo apt-get install -y php7.4-common php7.4-mysql php7.4-xml php7.4-xmlrpc php7.4-curl php7.4-gd php7.4-imagick php7.4-cli php7.4-dev php7.4-imap php7.4-mbstring php7.4-opcache php7.4-pgsql php7.4-soap php7.4-sqlite3 php7.4-zip php7.4-intl)
+            (set -x ; sudo apt-get install -y php7.4-common php7.4-mysql php7.4-xml php7.4-xmlrpc php7.4-curl php7.4-gd php7.4-imagick php7.4-cli php7.4-dev php7.4-imap php7.4-mbstring php7.4-opcache php7.4-pgsql php7.4-soap php7.4-sqlite3 php7.4-zip php7.4-intl php7.4-fpm)
         fi
         pathenv_add "${HAM_TOOLSET_DIR}"
         export HAM_PHP_EXE_PATH="/usr/bin/php$HAM_PHP_VERSION"
+        export HAM_PHP_FPM_EXE_PATH="/usr/sbin/php-fpm$HAM_PHP_VERSION"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
