@@ -194,6 +194,7 @@
 (add-to-list 'auto-mode-alist '("\\.cni\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.ixx\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.cppm\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.cpp2\\'" . c++-mode))
 
 (setq auto-mode-alist
       (cons '("\\.m$" . objc-mode) auto-mode-alist))
