@@ -3,12 +3,17 @@
 ::Import("fs.ni")
 
 local dirs = ::fs.listFiles("./", "*", ::eFileAttrFlags.AllDirectories, false, true)
+local r = []
 foreach (d in dirs) {
   // ::println("... D:" ::lang.toString(d))
   local d = "".setdir(d.path).adddirback(".git")
   if (::fs.dirExists(d)) {
     d = ::fs.getAbsolutePath(d.removedirback())
     // ::println("... git repo:" d)
-    ::println(d)
+    r.Add(d)
   }
+}
+r.sort(#(a,b) => a.tolower() <=> b.tolower())
+foreach (d in r) {
+  ::println(d)
 }
