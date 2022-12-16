@@ -1694,8 +1694,13 @@ rule FTargetSuffix
     case .s : return $(SUFOBJ) ;
     case .rc : return $(SUFOBJ) ;
     case .cni : return $(SUFOBJ) ;
+    case * : return [ UserFTargetSuffix $(<) ] ;
   }
   return $(<:S) ;
+}
+
+rule UserFTargetSuffix {
+  EXIT "UserFTargetSuffix not defined for:" $(<) ;
 }
 
 rule FTarget
