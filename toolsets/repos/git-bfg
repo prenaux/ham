@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/bin/bash -e
 export HAM_NO_VER_CHECK=1
 . "$HAM_HOME/bin/ham-toolset" java_jdk18 > /dev/null
-java -jar "${HAM_HOME}/toolsets/repos/jars/bfg-1.12.3.jar" $@
+toolset_check_and_dl_ver repos jars v1 || return 1
+(set -x ;
+ java -jar "${HAM_HOME}/toolsets/repos/jars/bfg-1.12.3.jar" $@)

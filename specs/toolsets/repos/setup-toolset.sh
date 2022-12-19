@@ -25,9 +25,6 @@ case $HAM_OS in
         ;;
 esac
 
-# jars
-toolset_check_and_dl_ver repos jars v1 || return 1
-
 # version check
 VER="--- repos ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
