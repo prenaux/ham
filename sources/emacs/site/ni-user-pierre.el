@@ -651,6 +651,45 @@ If the new path's directories does not exist, create them."
 )
 
 ;;;======================================================================
+;;; Pierre utils
+;;;======================================================================
+(NotBatchMode
+  (defun pierre-list-modified-buffers ()
+    "Show a list of all modified and unsaved buffers in a separate buffer."
+    (interactive)
+    (let ((modified-buffers))
+      (dolist (buffer (buffer-list))
+        (when (and (buffer-modified-p buffer)
+                (not (buffer-base-buffer buffer))
+                (buffer-file-name buffer))
+          (push (buffer-name buffer) modified-buffers)))
+      (if modified-buffers
+        (with-current-buffer (get-buffer-create "*Modified Buffers*")
+          (erase-buffer)
+          (dolist (buf modified-buffers)
+            (insert (propertize buf 'font-lock-face '(:underline t)
+                      'mouse-face 'highlight
+                      'keymap (let ((map (make-sparse-keymap)))
+                                (define-key map [mouse-1]
+                                  `(lambda ()
+                                     (interactive)
+                                     (switch-to-buffer ,buf)))
+                                (define-key map "o"
+                                  `(lambda ()
+                                     (interactive)
+                                     (switch-to-buffer-other-window ,buf)))
+                                (define-key map (kbd "C-o")
+                                  `(lambda ()
+                                     (interactive)
+                                     (switch-to-buffer ,buf)))
+                                map)))
+            (insert "\n"))
+          (goto-char (point-min))
+          (pop-to-buffer (current-buffer)))
+        (message "No modified buffers"))))
+  )
+
+;;;======================================================================
 ;;; Keymap
 ;;;======================================================================
 (NotBatchMode
