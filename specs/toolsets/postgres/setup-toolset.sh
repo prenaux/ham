@@ -22,15 +22,8 @@ case $HAM_OS in
         export PATH="${POSTGRES_DIR}/bin":${PATH}
         ;;
     OSX*)
-        export POSTGRES_DIR="`brew --prefix postgresql@10`"
-        if [ ! -e "$POSTGRES_DIR/bin/postgres" ]; then
-            echo "I/Brew postgresql@10 not found, trying to install."
-            ham-brew install postgresql@10
-            if [ ! -e "$POSTGRES_DIR/bin/postgres" ]; then
-                echo "E/Brew postgresql@10 install failed."
-                return 1
-            fi
-        fi
+        ham-brew-install postgresql@10 "bin/postgres"
+        export POSTGRES_DIR="`ham-brew-installdir postgresql@10`"
         export PATH="${POSTGRES_DIR}/bin":${PATH}
         ;;
     LINUX*)
