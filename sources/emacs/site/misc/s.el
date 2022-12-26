@@ -681,6 +681,29 @@ suffix."
   (declare (pure t) (side-effect-free t))
   (concat prefix s (or suffix prefix)))
 
+(defun s-before (haystack needle &optional default)
+  "Return the substring of HAYSTACK that comes before NEEDLE.
+Return nil if NEEDLE is not found in HAYSTACK."
+  (let ((pos (string-match needle haystack)))
+    (if pos
+        (substring haystack 0 pos)
+      default)))
+
+(defun s-after (haystack needle &optional default)
+  "Return the substring of HAYSTACK that comes after NEEDLE.
+Return nil if NEEDLE is not found in HAYSTACK."
+  (let ((pos (string-match needle haystack)))
+    (if pos
+        (substring haystack (+ pos (length needle)))
+      default)))
+
+;; (s-before "hello::world" "::")  ; returns "hello"
+;; (s-after "hello::world" "::")   ; returns "world"
+;; (s-before "hello::world" "<gni>")  ; returns nil
+;; (s-after "hello::world" "<gni>")   ; returns nil
+;; (s-before "hello::world" "<gni>" "zebefore")  ; returns "zebefore"
+;; (s-after "hello::world" "<gni>" "zeafter")   ; returns "zeafter"
+
 
 ;;; Aliases
 
