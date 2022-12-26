@@ -232,4 +232,11 @@
 
  (global-dumb-jump-mode 1)
 
+ ;; Disable C-MouseWheel to zoom text. Note that you can use
+ ;; Super/Cmd/Window-0,-,+ to change the font size in a buffer.
+ (global-set-key (kbd "<C-mouse-4>") nil)
+ (global-set-key (kbd "<C-mouse-5>") nil)
+ (global-set-key (kbd "C-<wheel-down>") nil)
+ (global-set-key (kbd "C-<wheel-up>") nil)
+
  )
