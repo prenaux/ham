@@ -283,17 +283,39 @@ See the docstrings of `defalias' and `make-obsolete' for more details."
 ;;; OS Environment
 ;;;======================================================================
 
+(defun ni-print-list (aName aList)
+  (message (concat "====== " aName " ======"))
+  (dolist (item aList)
+    (message item))
+  t)
+
 (defun ni-add-to-PATH-front (aValue)
   (setenv
    "PATH"
    (concat aValue ENV_SEP
-           (getenv "PATH"))))
+           (getenv "PATH")))
+  (add-to-list 'exec-path aValue))
 
 (defun ni-add-to-PATH-back (aValue)
   (setenv
    "PATH"
    (concat (getenv "PATH") ENV_SEP
-           aValue)))
+           aValue))
+  (add-to-list 'exec-path aValue t))
+
+(defun ni-update-exec-path-from-PATH () ""
+  (interactive)
+  (let ((path-string (getenv "PATH")))
+    (dolist (dir (split-string path-string ":"))
+      (if (not (member dir exec-path))
+        (add-to-list 'exec-path dir))))
+  exec-path)
+
+;;
+;; (setq exec-path '())
+;; (ni-print-list "exec-path" exec-path)
+;; (ni-update-exec-path-from-PATH)
+;;
 
 (Windows
  (defconst ENV_SEP ";")
