@@ -223,10 +223,13 @@
 
  (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
 
- (global-set-key "\C-h\C-k" 'ham-grep-regexp-search-dir)
+ (global-set-key "\C-h\C-k" 'ni-counsel-rg-at-point)
+ (global-set-key "\C-h\C-l" 'ni-counsel-rg-at-point-in-dir)
  (global-set-key "\C-h\C-j" 'ham-grep-regexp-current-dir)
  (global-set-key "\C-h\C-y" 'ham-grep-work-regexp)
- (global-set-key "\C-h\C-g" 'occur)
+
+ (global-set-key "\C-h\C-f" (lambda () (interactive) (ni-counsel-rg-dumb-jump "djfunt")))
+ (global-set-key "\C-h\C-g" (lambda () (interactive) (ni-counsel-rg-dumb-jump "djany")))
 
  (define-key global-map "\C-h\C-\\" 'indent-region)
 

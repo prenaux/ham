@@ -4,6 +4,7 @@
 
 (require 'counsel)
 (require 'ivy)
+(require 'wgrep)
 (diminish 'ivy-mode)
 
 (ivy-mode 1)
@@ -47,3 +48,51 @@
 ;; C-f always open counsel-find-file when in an ivy minibuffer, this is a
 ;; useful fallback
 (define-key ivy-minibuffer-map (kbd "C-f") 'ni-ivy-quit-and-counsel-find-file)
+
+;;;======================================================================
+;;; Counsel
+;;;======================================================================
+
+;;
+;; You can specify certain file types or pattern by prepending the search with -.
+;; ex:
+;;   rg: -g Make* -- install
+;;   rg: --type cpp -- apCanvas
+;;
+;; To replace the matches found by counsel press M-q in the minibuffer.
+;;
+(defun ni-counsel-rg-at-point ()
+  "Run `counsel-rg' with the text at point as the default search string."
+  (interactive)
+  (let ((search-string (thing-at-point 'symbol)))
+    (counsel-rg search-string (ni-find-search-directory))))
+
+(defun ni-counsel-rg-at-point-in-dir ()
+  "Run `counsel-rg' with the text at point as the default search string."
+  (interactive)
+  (let ((search-string (thing-at-point 'symbol))
+        (search-directory (read-directory-name "Enter directory: ")))
+    (counsel-rg search-string search-directory)))
+
+(defun ni-counsel-thing-at-point-or-read-string ()
+  (let ((symbol (thing-at-point 'symbol)))
+    (if (s-blank-str? symbol)
+        (read-string "Enter string: ")
+      symbol)))
+
+(defun ni-counsel-rg-dumb-jump (&optional ctx-type)
+  "Run `counsel-rg' with the text at point as the default search string."
+  (interactive)
+  (let* ( (minibuffer-prompt-end 0)
+          (look-for (ni-counsel-thing-at-point-or-read-string))
+          (lang (dumb-jump-get-language buffer-file-name))
+          (rg-types (dumb-jump-get-rg-type-by-language lang))
+          (search-string (concat "::" ctx-type "::" lang "::" look-for)))
+    (counsel-rg
+      search-string
+      (ni-find-search-directory)
+      (concat "-U --pcre2 "
+        (mapconcat (lambda (s) (concat "--type " s " ")) rg-types " "))
+      "rg-dj: "
+      )
+    ))

@@ -3006,11 +3006,52 @@ NEEDLE is the search string."
                          (replace-match needle t t extra-args 1)
                        (concat extra-args " " needle)))))
 
+(defun counsel--grep-dumb-jump-regex (lang-and-look-for ctx-type)
+  ""
+  (let* ( (lang (s-before lang-and-look-for "::" "c++"))
+          (look-for (s-after lang-and-look-for "::" lang-and-look-for))
+          (regexes
+            (if (string= ctx-type "funtype")
+              (append
+                (dumb-jump-get-contextual-regexes lang "function" 'rg)
+                (dumb-jump-get-contextual-regexes lang "type" 'rg))
+              (dumb-jump-get-contextual-regexes lang ctx-type 'rg)))
+          (filled-regexes (dumb-jump-populate-regexes look-for regexes 'rg))
+          (search-term (s-join "|" filled-regexes)))
+    ;; (message (concat
+               ;; "... lang-and-look-for: " lang-and-look-for
+               ;; ", lang: " lang
+               ;; ", search-term: " look-for "->" search-term))
+    search-term))
+
 (defun counsel--grep-regex (str)
-  (counsel--elisp-to-pcre
-   (setq ivy--old-re
-         (funcall (ivy-state-re-builder ivy-last) str))
-   counsel--regex-look-around))
+  ""
+  ;; (let ((str "::match::hamster-fou"))
+  (cond
+    ((s-starts-with? "::raw::" str)
+      (s-chop-prefix "::raw::" str))
+    ((s-starts-with? "::match::" str)
+      (concat "\\b" (s-chop-prefix "::match::" str) "\\b"))
+    ;; any dump-jump pattern, function, type and variables
+    ((s-starts-with? "::djany::" str)
+      (counsel--grep-dumb-jump-regex (s-chop-prefix "::djany::" str) ""))
+    ;; dumb-jump, functions & types only
+    ((s-starts-with? "::djfunt::" str)
+      (counsel--grep-dumb-jump-regex (s-chop-prefix "::djfunt::" str) "funtype"))
+    ;; dumb-jump, functions only
+    ((s-starts-with? "::djfunc::" str)
+      (counsel--grep-dumb-jump-regex (s-chop-prefix "::djfunc::" str) "function"))
+    ;; dumb-jump, types only
+    ((s-starts-with? "::djtype::" str)
+      (counsel--grep-dumb-jump-regex (s-chop-prefix "::djtype::" str) "type"))
+    ;; dumb-jump, variables only
+    ((s-starts-with? "::djvar::" str)
+      (counsel--grep-dumb-jump-regex (s-chop-prefix "::djvar::" str) "variable"))
+    (t
+      (counsel--elisp-to-pcre
+      (setq ivy--old-re
+        (funcall (ivy-state-re-builder ivy-last) str))
+      counsel--regex-look-around))))
 
 (defun counsel--ag-extra-switches (regex)
   "Get additional switches needed for look-arounds."
