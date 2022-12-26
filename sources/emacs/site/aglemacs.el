@@ -940,39 +940,15 @@ BEG and END (region to sort)."
 ;;; mark-multiple & expand-region
 ;;;======================================================================
 (NotBatchMode
- (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/mark-multiple.el"))
-
- (require 'mark-more-like-this)
-
- (defun mark-next-like-this (arg)
-   "Find and mark the next part of the buffer matching the currently active region
-With negative ARG, delete the last one instead.
-With zero ARG, skip the last one and mark next."
-   (interactive "p")
-   (unless (or (region-active-p)
-               mm/master)
-     (er/mark-symbol)
-     (error "Nothing marked, marked symbol."))
-   (if (< arg 0)
-       (mm/remove-mirror (mm/furthest-mirror-after-master)))
-   (if (>= arg 0)
-       (progn
-         (when (null mm/master)
-           (mm/create-master (region-beginning) (region-end)))
-
-         (save-excursion
-           (goto-char (mm/last-overlay-end))
-           (if (= arg 0)
-               (mm/remove-mirror (mm/furthest-mirror-after-master)))
-           (let ((case-fold-search nil)
-                 (master-str (mm/master-substring)))
-             (if (search-forward master-str nil t)
-                 (mm/add-mirror (- (point) (length master-str)) (point))
-               (error "no more found \"%s\" forward"
-                      (substring-no-properties master-str))))))))
+ (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/multiple-cursors.el"))
+ (require 'multiple-cursors)
 
  (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/expand-region.el"))
  (require 'expand-region)
+
+ (setq mc/always-run-for-all t)
+ (setq mc/always-repeat-command t)
+
 )
 
 ;;;======================================================================

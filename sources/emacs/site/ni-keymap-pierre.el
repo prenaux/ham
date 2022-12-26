@@ -121,14 +121,20 @@
 ;;;======================================================================
 ;;; aglemacs.el: mark-multiple, expand-region
 ;;;======================================================================
- (GNUEmacs24
-  ;; Emacs 25+ already does inline rectangle replace
-  (require 'inline-string-rectangle)
-  (global-set-key (kbd "C-x r t") 'inline-string-rectangle))
+(GNUEmacs24
+ ;; Emacs 25+ already does inline rectangle replace
+ (require 'inline-string-rectangle)
+ (global-set-key (kbd "C-x r t") 'inline-string-rectangle))
 
- (global-set-key (kbd "M-9") 'mark-previous-like-this) ;; M-(
- (global-set-key (kbd "M-0") 'mark-next-like-this) ;; M-(
- (global-set-key (kbd "M-8") 'mark-all-like-this) ;; M-8
+ (global-set-key (kbd "M-9") 'mc/mark-previous-like-this-symbol) ;; M-9, M-(
+ (global-set-key (kbd "M-(") 'mc/mark-previous-like-this) ;; M-9, M-(
+ (global-set-key (kbd "M-0") 'mc/mark-next-like-this-symbol) ;; M-0, M-)
+ (global-set-key (kbd "M-)") 'mc/mark-next-like-this) ;; M-0, M-)
+ (global-set-key (kbd "M-8") 'mc/edit-ends-of-lines) ;; M-8, M-*
+ (global-set-key (kbd "M-*") 'mc/mark-all-dwim) ;; M-8, M-*
+
+ (global-unset-key (kbd "M-<down-mouse-1>"))
+ (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
 
 ;;;======================================================================
 ;;; ni-flymake.el
