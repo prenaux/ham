@@ -44,8 +44,6 @@
  (global-set-key [(meta left)] 'backward-word)
  (global-set-key [(control right)] 'forward-word)
  (global-set-key [(control left)] 'backward-word)
- (global-set-key '[(meta up)] 'backward-paragraph)
- (global-set-key '[(meta down)] 'forward-paragraph)
  (global-set-key '[(control up)] 'backward-paragraph)
  (global-set-key '[(control down)] 'forward-paragraph)
  (global-set-key (key "ESC <up>") 'backward-paragraph)
@@ -58,6 +56,8 @@
  ;; Forward/Backward word under point
  (global-set-key (key "M-p") 'agl-search-word-backward)
  (global-set-key (key "M-n") 'agl-search-word-forward)
+ (global-set-key '[(meta up)] 'agl-search-word-backward)
+ (global-set-key '[(meta down)] 'agl-search-word-forward)
 
  (global-set-key (key "C-h C-r") 'revert-buffer)
 
@@ -96,16 +96,21 @@
  ;; extended expand
  (global-set-key [(meta /)] (make-agl-expand))
 
+ ;; ni-comment-dwim
+ (global-set-key (kbd "C-;") 'ni-comment-dwim)
+ (global-set-key (kbd "M-;") 'ni-comment-dwim)
  ;; shift-down comments the current line and goes down
  (define-key global-map [(shift down)] 'agl-comment-and-go-down)
  (define-key global-map (kbd "M-+") 'agl-comment-and-go-down)
  ;; shift-up uncomments the current line and goes up
  (define-key global-map [(shift up)] 'agl-uncomment-and-go-up)
  (define-key global-map (kbd "M-_") 'agl-uncomment-and-go-up)
+
  ;; inc number under cursor
  (define-key global-map (kbd "M-=") 'agl-increment-number-at-point)
  ;; dec number under cursor
  (define-key global-map (kbd "M--") 'agl-decrement-number-at-point)
+
  ;; UUID generation
  (global-set-key (kbd "C-M-g")   'agl-uuid1-to-buffer)
  (global-set-key (kbd "C-M-S-g") 'agl-uuid2-to-buffer)
@@ -130,8 +135,8 @@
  (global-set-key (kbd "M-(") 'mc/mark-previous-like-this) ;; M-9, M-(
  (global-set-key (kbd "M-0") 'mc/mark-next-like-this-symbol) ;; M-0, M-)
  (global-set-key (kbd "M-)") 'mc/mark-next-like-this) ;; M-0, M-)
- (global-set-key (kbd "M-8") 'mc/edit-ends-of-lines) ;; M-8, M-*
- (global-set-key (kbd "M-*") 'mc/mark-all-dwim) ;; M-8, M-*
+ (global-set-key (kbd "M-8") 'mc/mark-all-symbols-like-this) ;; M-8, M-*
+ (global-set-key (kbd "M-*") 'mc/edit-ends-of-lines) ;; M-8, M-*
 
  (global-unset-key (kbd "M-<down-mouse-1>"))
  (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)

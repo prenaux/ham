@@ -434,11 +434,19 @@ BEG and END (region to sort)."
   (end-of-line)
   (next-line 1)
   (back-to-indentation))
+
 (defun agl-uncomment-and-go-up ()
   "Uncomments the current line and goes to the previous one" (interactive)
   (condition-case nil (uncomment-region (point-at-bol) (point-at-eol)) (error nil))
   (back-to-indentation)
   (next-line -1))
+
+(defun ni-comment-dwim ()
+  "Like 'comment-dwim' when there's a region otherwise comment down."
+  (interactive)
+  (if (region-active-p)
+    (comment-dwim nil)
+    (agl-comment-and-go-down)))
 
 (defun agl-increment-number-at-point (&optional amount)
   "Increment the number under point by `amount'"

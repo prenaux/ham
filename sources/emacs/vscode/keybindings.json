@@ -1,0 +1,162 @@
+//
+// Keybindings for VSCode that reproduce ni-keymap-pierre.el as closely as possible
+//
+// Extensions needed:
+//   - Awesome Emacs Keymap (tuttieee.emacs-mcx)
+//   - EditorConfig for VS Code (EditorConfig.EditorConfig)
+//
+// To Edit the Keybindings:
+//   Cmd+Shift+P: Keyboard Shortcuts (JSON)
+//
+// Place your key bindings in this file to override the defaults
+//
+[
+  {
+    "key": "ctrl+up",
+    "command": "emacs-mcx.backwardParagraph",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !suggestWidgetVisible"
+  },
+  {
+    "key": "alt+up",
+    "command": "emacs-mcx.backwardParagraph",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !suggestWidgetVisible"
+  },
+  {
+    "key": "ctrl+down",
+    "command": "emacs-mcx.forwardParagraph",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !suggestWidgetVisible"
+  },
+  {
+    "key": "alt+down",
+    "command": "emacs-mcx.forwardParagraph",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !suggestWidgetVisible"
+  },
+  {
+    "key": "alt+;",
+    "command": "-editor.action.blockComment",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !editorReadonly"
+  },
+  {
+    "key": "ctrl+right",
+    "command": "emacs-mcx.forwardWord",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "alt+right",
+    "command": "emacs-mcx.forwardWord",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "ctrl+backspace",
+    "command": "emacs-mcx.backwardKillWord",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !editorReadonly"
+  },
+  {
+    "key": "alt+backspace",
+    "command": "emacs-mcx.backwardKillWord",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !editorReadonly"
+  },
+  {
+    "key": "alt+left",
+    "command": "emacs-mcx.backwardWord",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "ctrl+left",
+    "command": "emacs-mcx.backwardWord",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "alt+0",
+    "command": "emacs-mcx.addSelectionToNextFindMatch",
+    "when": "editorFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "alt+9",
+    "command": "emacs-mcx.addSelectionToPreviousFindMatch",
+    "when": "editorFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "alt+up",
+    "command": "editor.action.previousSelectionMatchFindAction",
+    "when": "editorFocus"
+  },
+  {
+    "key": "alt+down",
+    "command": "editor.action.nextSelectionMatchFindAction",
+    "when": "editorFocus"
+  },
+  {
+    "key": "alt+p",
+    "command": "editor.action.previousSelectionMatchFindAction",
+    "when": "editorFocus"
+  },
+  {
+    "key": "alt+n",
+    "command": "editor.action.nextSelectionMatchFindAction",
+    "when": "editorFocus"
+  },
+  {
+    "key": "ctrl+h ctrl+d",
+    "command": "revealInExplorer"
+  },
+  {
+    "key": "alt+9",
+    "command": "editor.action.addSelectionToPreviousFindMatch"
+  },
+  {
+    "key": "shift+alt+3",
+    "command": "editor.action.smartSelect.expand",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "alt+3",
+    "command": "editor.action.jumpToBracket",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+cmd+\\",
+    "command": "-editor.action.jumpToBracket",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+alt+8",
+    "command": "editor.action.insertCursorAtEndOfEachLineSelected",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+alt+i",
+    "command": "-editor.action.insertCursorAtEndOfEachLineSelected",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "alt+8",
+    "command": "editor.action.selectHighlights",
+    "when": "editorFocus"
+  },
+  {
+    "key": "shift+cmd+l",
+    "command": "-editor.action.selectHighlights",
+    "when": "editorFocus"
+  },
+  {
+    "key": "shift+alt+0",
+    "command": "editor.action.insertCursorBelow",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "alt+cmd+down",
+    "command": "-editor.action.insertCursorBelow",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+alt+9",
+    "command": "editor.action.insertCursorAbove",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "alt+cmd+up",
+    "command": "-editor.action.insertCursorAbove",
+    "when": "editorTextFocus"
+  }
+]
