@@ -82,7 +82,7 @@
  (global-set-key (kbd "C--") 'agl-decrease-font-size)
 
  ;; Goto line
- (global-set-key (key "C-l") 'goto-line-with-feedback)
+ (global-set-key (key "C-l") 'goto-line-preview)
  ;; Remap recenter-top-bottom (which is mapped to Ctrl-l by default) to Ctrl-Shift-L
  (global-set-key (key "C-S-l") 'recenter-top-bottom)
 

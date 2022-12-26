@@ -387,15 +387,20 @@ If the new path's directories does not exist, create them."
 ;;;======================================================================
 (NotBatchMode
  (agl-begin-time-block "Jump to line")
+ (require 'goto-line-preview)
 
- (defun goto-line-with-feedback ()
-   "Show line numbers temporarily, while prompting for the line number input"
-   (interactive)
-   (unwind-protect
-       (progn
-         (linum-mode 1)
-         (goto-line (read-number "Goto line: ")))
-     (linum-mode -1)))
+ ;; (setq goto-line-preview-before-hook '())
+ ;; (setq goto-line-preview-after-hook '())
+
+ (add-hook 'goto-line-preview-before-hook
+   (lambda ()
+     (setq --goto-line-linum-mode-was-active (bound-and-true-p linum-mode))
+     (linum-mode 1)))
+
+ (add-hook 'goto-line-preview-after-hook
+   (lambda ()
+     (if (not --goto-line-linum-mode-was-active)
+       (linum-mode -1))))
 )
 
 ;;;======================================================================
