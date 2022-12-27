@@ -614,6 +614,24 @@ That is, if `this-command' is not one of
   (when (fancy-dabbrev--is-fancy-dabbrev-command last-command)
     (fancy-dabbrev--insert-expansion fancy-dabbrev--entered-abbrev)))
 
+;;
+;; Pierre: This should do the basic to hook tab & shift-tab to
+;; fancy-dabbrev-expand. This is lifted from pabbrev, that mode also keep
+;; track of the previous binding to tab and call it, I assume when there's no
+;; expansion, which is probably ideal but its a fair bit of code I dont
+;; understand and this is all I need for now.
+;;
+;; https://github.com/jrosdahl/fancy-dabbrev/issues/20
+(defvar fancy-dabbrev-mode-map
+  (let ((map (make-sparse-keymap)))
+    ;; \t works in tty but gets overridden by the [tab] binding elsewhere.
+    (define-key map "\t" 'fancy-dabbrev-expand-or-indent)
+    ;; This is not needed since function-key-map remaps a `tab' into a \t.
+    ;; (define-key map (kbd "TAB") 'fancy-dabbrev-expand)
+    (define-key map (kbd "<backtab>") 'fancy-dabbrev-backward)
+    map)
+  "Keymap for fancy-dabbrev-minor-mode.")
+
 ;;;###autoload
 (define-minor-mode fancy-dabbrev-mode
   "Toggle `fancy-dabbrev-mode'.
@@ -624,6 +642,7 @@ the mode if ARG is omitted or nil.
 
 When `fancy-dabbrev-mode' is enabled, fancy-dabbrev's preview
 functionality is activated."
+  :keymap fancy-dabbrev-mode-map
   :lighter " FD"
   :init-value nil
   (if fancy-dabbrev-mode
