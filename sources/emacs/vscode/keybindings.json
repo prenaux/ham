@@ -158,5 +158,35 @@
     "key": "alt+cmd+up",
     "command": "-editor.action.insertCursorAbove",
     "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+h ctrl+a",
+    "command": "emacs-mcx.beginningOfBuffer",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "shift+alt+,",
+    "command": "-emacs-mcx.beginningOfBuffer",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "ctrl+h ctrl+e",
+    "command": "emacs-mcx.endOfBuffer",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "shift+alt+.",
+    "command": "-emacs-mcx.endOfBuffer",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "ctrl+home",
+    "command": "emacs-mcx.beginningOfBuffer",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "ctrl+end",
+    "command": "emacs-mcx.endOfBuffer",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
   }
 ]
