@@ -67,12 +67,11 @@
   (let ((search-string (thing-at-point 'symbol)))
     (counsel-rg search-string (ni-find-search-directory))))
 
-(defun ni-counsel-rg-at-point-in-dir ()
+(defun ni-counsel-rg-at-point-in-dir (regexp directory)
   "Run `counsel-rg' with the text at point as the default search string."
-  (interactive)
-  (let ((search-string (thing-at-point 'symbol))
-        (search-directory (read-directory-name "Enter directory: ")))
-    (counsel-rg search-string search-directory)))
+  (interactive (list (ni-find-read-regexp "Counsel search for: ")
+                     (read-directory-name "Directory: " default-directory)))
+    (counsel-rg regexp directory))
 
 (defun ni-counsel-thing-at-point-or-read-string ()
   (let ((symbol (thing-at-point 'symbol)))
