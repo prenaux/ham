@@ -923,13 +923,6 @@ BEG and END (region to sort)."
 (NotBatchMode
  (agl-begin-time-block "Misc")
 
- (defun make-agl-expand ()
-   (make-hippie-expand-function
-    '(agl-try-complete-with-calc-result
-      try-expand-dabbrev-visible
-      try-expand-dabbrev
-      try-expand-dabbrev-all-buffers) t))
-
  ;; kill current buffer without confirmation
  (defun kill-current-buffer ()
    "Kill the current buffer, without confirmation."

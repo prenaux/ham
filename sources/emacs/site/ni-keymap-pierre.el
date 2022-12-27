@@ -94,7 +94,7 @@
  (global-set-key "\C-h\C-h" 'qrr)
 
  ;; extended expand
- (global-set-key [(meta /)] (make-agl-expand))
+ (global-set-key [(meta /)] 'ni-expand)
 
  ;; ni-comment-dwim
  (global-set-key (kbd "C-;") 'ni-comment-dwim)

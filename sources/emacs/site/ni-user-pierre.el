@@ -470,22 +470,27 @@ If the new path's directories does not exist, create them."
 (NotBatchMode
  (agl-begin-time-block "auto-complete")
 
- ;; pabbrev by default
- (require 'ni-autocomplete-pabbrev)
+ (require 'fancy-dabbrev)
+ (require 'diminish)
+ (diminish 'fancy-dabbrev-mode)
 
- ;; company-mode only when Ctrl+/ is pressed
- ;; Note: Disabled because its just not very useful and just makes things
- ;; slower and sometimes break macros when its triggered
- ;; (require 'ni-autocomplete-company)
- ;; (setq company-ni-idl-merge-dabbrev  nil)
+ ;; Enable fancy-dabbrev previews everywhere.
+ (global-fancy-dabbrev-mode)
 
- ;; put the following in your .emacs if you want company to show up automatically without pressing Ctrl+/
- ;; (setq company-idle-delay-default 0.15)
- ;; (setq company-ni-idl-merge-dabbrev  t)
+ ;; Let dabbrev searches ignore case and expansions preserve case:
+ (setq dabbrev-case-distinction nil)
+ (setq dabbrev-case-fold-search t)
+ (setq dabbrev-case-replace nil)
 
- ;; you'll want this in your .emacs you can also call it by hand when you want
- ;; if it takes too long for you to have at every emacs startup
- ;; (ni-idl-build-cache)
+ ;; Hooked in fancy-dabbrev-minor-mode
+ ;; (global-set-key (kbd "TAB") 'fancy-dabbrev-expand-or-indent)
+ ;; (global-set-key (kbd "<backtab>") 'fancy-dabbrev-backward)
+
+ (defun ni-expand (&optional arg)
+  "ni-expand-or-indent"
+  (interactive)
+  (unless (agl-try-complete-with-calc-result arg)
+    (fancy-dabbrev-expand)))
 )
 
 ;;;======================================================================
