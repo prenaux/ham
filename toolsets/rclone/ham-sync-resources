@@ -76,7 +76,13 @@ else
 fi
 
 # Local & destination folders
-BASE_LOCAL_DIR="`pwd`/data"
+BASE_LOCAL_DIR="`pwd`/src"
+if [[ -e "$BASE_LOCAL_DIR/_sync_data" ]]; then
+  BASE_LOCAL_DIR="`pwd`/src"
+else
+  BASE_LOCAL_DIR="`pwd`/data"
+fi
+
 if [ "$SYNC_DIR" == "." ]; then
     LOCAL_DIR="${BASE_LOCAL_DIR}"
 else
@@ -106,10 +112,10 @@ if [[ "$SYNC_COMMAND" != "arch_"* ]]; then
     PARAMS=("${PARAMS[@]}" --filter-from "$SYNC_DATA_PATH")
 fi
 PARAMS=("${PARAMS[@]}" --stats-one-line)
-PARAMS=("${PARAMS[@]}" -v)
 PARAMS=("${PARAMS[@]}" --checkers=24)
 PARAMS=("${PARAMS[@]}" --transfers=16)
-PARAMS=("${PARAMS[@]}" --stats 3s)
+PARAMS=("${PARAMS[@]}" --stats 60s)
+PARAMS=("${PARAMS[@]}" -v)
 if [ "$DOIT" != "yes" ]; then
     PARAMS=("${PARAMS[@]}" --dry-run)
 else
