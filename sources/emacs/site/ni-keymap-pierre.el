@@ -94,7 +94,9 @@
  (global-set-key "\C-h\C-h" 'qrr)
 
  ;; extended expand
- (global-set-key [(meta /)] 'ni-expand)
+ (global-set-key (kbd "M-/") 'fancy-dabbrev-expand-or-indent)
+ (global-set-key (kbd "M-?") 'fancy-dabbrev-backward)
+ (global-set-key (kbd "M-+") (make-ni-expand))
 
  ;; ni-comment-dwim
  (global-set-key (kbd "C-;") 'ni-comment-dwim)

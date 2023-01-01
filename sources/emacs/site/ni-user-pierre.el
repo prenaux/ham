@@ -486,11 +486,12 @@ If the new path's directories does not exist, create them."
  ;; (global-set-key (kbd "TAB") 'fancy-dabbrev-expand-or-indent)
  ;; (global-set-key (kbd "<backtab>") 'fancy-dabbrev-backward)
 
- (defun ni-expand (&optional arg)
-  "ni-expand-or-indent"
-  (interactive)
-  (unless (agl-try-complete-with-calc-result arg)
-    (fancy-dabbrev-expand)))
+ (defun make-ni-expand ()
+   (make-hippie-expand-function
+    '(agl-try-complete-with-calc-result
+      try-expand-dabbrev-visible
+      try-expand-dabbrev
+      try-expand-dabbrev-all-buffers) t))
 )
 
 ;;;======================================================================
