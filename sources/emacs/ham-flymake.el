@@ -154,6 +154,7 @@
  (push '(".+\\.hxx$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
  (push '(".+\\.ixx$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
  (push '(".+\\.cppm$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
+ (push '(".+\\.cpp2$" ham-flymake-cpp-make-init) aflymake-allowed-file-name-masks)
 
 ;;**********************************************************************
 ;; Flymake - Java & Scala
