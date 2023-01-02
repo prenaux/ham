@@ -188,5 +188,10 @@
     "key": "ctrl+end",
     "command": "emacs-mcx.endOfBuffer",
     "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "ctrl+alt+\\",
+    "command": "editor.action.formatSelection",
+    "when": "editorHasDocumentSelectionFormattingProvider && editorTextFocus && !editorReadonly"
   }
 ]
