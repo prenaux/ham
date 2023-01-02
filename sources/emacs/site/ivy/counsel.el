@@ -3288,6 +3288,11 @@ Note: don't use single quotes for the regexp."
                   t))
         (delq t files)))))
 
+(defcustom counsel-rg-search-dirs
+  '("." (concat ENV_WORK "/niLang"))
+  "Extra list of directories to search in'."
+  :type '(repeat string))
+
 ;;;###autoload
 (defun counsel-rg (&optional initial-input initial-directory extra-rg-args rg-prompt)
   "Grep for a string in the current directory using `rg'.
@@ -3300,16 +3305,21 @@ Example input with inclusion and exclusion file patterns:
     require i -- -g*.el"
   (interactive)
   (let ((counsel-ag-base-command
-         (if (listp counsel-rg-base-command)
-             (append counsel-rg-base-command (counsel--rg-targets))
-           (concat counsel-rg-base-command " "
-                   (mapconcat #'shell-quote-argument (counsel--rg-targets) " "))))
+         (append (if (listp counsel-rg-base-command)
+                   (append counsel-rg-base-command (counsel--rg-targets))
+                   (concat
+                     counsel-rg-base-command " "
+                     (mapconcat #'shell-quote-argument (counsel--rg-targets) " ")))
+           (mapcar #'shell-quote-argument
+             (seq-filter (lambda (x) (not (string= x initial-directory)))
+               (mapcar #'eval counsel-rg-search-dirs)))))
         (counsel--grep-tool-look-around
          (let ((rg (car (if (listp counsel-rg-base-command) counsel-rg-base-command
                           (split-string counsel-rg-base-command))))
                (switch "--pcre2"))
            (and (eq 0 (call-process rg nil nil nil switch "--pcre2-version"))
                 switch))))
+    ;; (message "... counsel-ag-base-command: %s :: %s :: %s" initial-directory counsel-ag-base-command extra-rg-args)
     (counsel-ag initial-input initial-directory extra-rg-args rg-prompt
                 :caller 'counsel-rg)))
 

@@ -477,14 +477,11 @@ If the new path's directories does not exist, create them."
  ;; Enable fancy-dabbrev previews everywhere.
  (global-fancy-dabbrev-mode)
 
- ;; Let dabbrev searches ignore case and expansions preserve case:
- (setq dabbrev-case-distinction nil)
- (setq dabbrev-case-fold-search t)
- (setq dabbrev-case-replace nil)
-
- ;; Hooked in fancy-dabbrev-minor-mode
- ;; (global-set-key (kbd "TAB") 'fancy-dabbrev-expand-or-indent)
- ;; (global-set-key (kbd "<backtab>") 'fancy-dabbrev-backward)
+ ;; (setq dabbrev-case-distinction t)
+ ;; (setq dabbrev-case-fold-search t)
+ ;; (setq dabbrev-case-replace nil)
+ ;; (setq fancy-dabbrev-preview-delay nil)
+ (setq fancy-dabbrev-expansion-on-preview-only t)
 
  (defun make-ni-expand ()
    (make-hippie-expand-function
@@ -492,6 +489,7 @@ If the new path's directories does not exist, create them."
       try-expand-dabbrev-visible
       try-expand-dabbrev
       try-expand-dabbrev-all-buffers) t))
+
 )
 
 ;;;======================================================================
@@ -635,22 +633,6 @@ If the new path's directories does not exist, create them."
  ;; (setq dumb-jump-debug t)
  (setq dumb-jump-disable-obsolete-warnings t)
  (setq dumb-jump-selector 'ivy)
-)
-
-;;;======================================================================
-;;; Fuzzy finder
-;;;======================================================================
-(NotBatchMode
- (require 'fzf)
- (setq fzf/executable
-   (concat (getenv "HAM_HOME") "/bin/" (getenv "HAM_BIN_LOA") "/fzf"))
- (setq fzf/files-source "ripgrep")
-
-  (defun fzf-ni-find-search-directory ()
-    "Starts a fzf session in ni-find-search-directory."
-    (interactive)
-    (fzf/start (ni-find-search-directory) (fzf/get-files-source)))
-
 )
 
 ;;;======================================================================

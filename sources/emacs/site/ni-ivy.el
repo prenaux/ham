@@ -73,25 +73,55 @@
                      (read-directory-name "Directory: " default-directory)))
     (counsel-rg regexp directory))
 
+(defun ni-counsel-fzf-at-point ()
+  "Run `counsel-fzf' with the text at point as the default search string."
+  (interactive)
+  (let ((search-string (thing-at-point 'symbol)))
+    (counsel-fzf search-string (ni-find-search-directory))))
+
+(defun ni-counsel-fzf-at-point-in-dir (regexp directory)
+  "Run `counsel-fzf' with the text at point as the default search string."
+  (interactive (list (ni-find-read-regexp "Counsel search for: ")
+                     (read-directory-name "Directory: " default-directory)))
+    (counsel-fzf regexp directory))
+
 (defun ni-counsel-thing-at-point-or-read-string ()
   (let ((symbol (thing-at-point 'symbol)))
     (if (s-blank-str? symbol)
         (read-string "Enter string: ")
       symbol)))
 
-(defun ni-counsel-rg-dumb-jump (&optional ctx-type)
+(defun ni-counsel-escape-search-string (string)
+  (replace-regexp-in-string "+" "\\\\+" string))
+
+(defun ni-counsel-rg-match (search-dirs file-patterns)
   "Run `counsel-rg' with the text at point as the default search string."
   (interactive)
-  (let* ( (minibuffer-prompt-end 0)
+  (let* ( (counsel-rg-search-dirs (if search-dirs search-dirs '(".")))
+          (look-for (ni-counsel-thing-at-point-or-read-string))
+          (search-string (concat "\\b" (ni-counsel-escape-search-string look-for) "\\b")))
+    (counsel-rg
+      search-string
+      (ni-find-search-directory)
+      (concat
+        (if file-patterns (mapconcat (lambda (s) (concat "-g " s " ")) file-patterns " ")))
+      "rg-match: ")
+    ))
+
+(defun ni-counsel-rg-dj (search-dirs ctx-type file-patterns)
+  "Run `counsel-rg' with the text at point as the default search string."
+  (interactive)
+  (let* ( (counsel-rg-search-dirs (if search-dirs search-dirs '(".")))
           (look-for (ni-counsel-thing-at-point-or-read-string))
           (lang (dumb-jump-get-language buffer-file-name))
-          (rg-types (dumb-jump-get-rg-type-by-language lang))
-          (search-string (concat "::" ctx-type "::" lang "::" look-for)))
+          ;; this list doesnt work well with cpp2 and any non standard extension, so we use an explicit list instead
+          ;; (rg-types (dumb-jump-get-rg-type-by-language lang))
+          (search-string (concat "::" ctx-type "::" lang "::" (ni-counsel-escape-search-string look-for))))
     (counsel-rg
       search-string
       (ni-find-search-directory)
       (concat "-U --pcre2 "
-        (mapconcat (lambda (s) (concat "--type " s " ")) rg-types " "))
-      "rg-dj: "
-      )
+        ;; (mapconcat (lambda (s) (concat "--type " s " ")) rg-types " ")
+        (if file-patterns (mapconcat (lambda (s) (concat "-g " s " ")) file-patterns " ")))
+      "rg-dj: ")
     ))

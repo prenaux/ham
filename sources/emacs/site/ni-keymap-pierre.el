@@ -93,10 +93,8 @@
  ;; Search and replace in the current buffer
  (global-set-key "\C-h\C-h" 'qrr)
 
- ;; extended expand
- (global-set-key (kbd "M-/") 'fancy-dabbrev-expand-or-indent)
- (global-set-key (kbd "M-?") 'fancy-dabbrev-backward)
- (global-set-key (kbd "M-+") (make-ni-expand))
+ ;; extended expand, tab & shift-tab expand are handled in fancy-dabbrev
+ (global-set-key (kbd "M-/") (make-ni-expand))
 
  ;; ni-comment-dwim
  (global-set-key (kbd "C-;") 'ni-comment-dwim)
@@ -137,7 +135,7 @@
  (global-set-key (kbd "M-(") 'mc/mark-previous-like-this) ;; M-9, M-(
  (global-set-key (kbd "M-0") 'mc/mark-next-like-this-symbol) ;; M-0, M-)
  (global-set-key (kbd "M-)") 'mc/mark-next-like-this) ;; M-0, M-)
- (global-set-key (kbd "M-8") 'mc/mark-all-symbols-like-this) ;; M-8, M-*
+ (global-set-key (kbd "M-8") 'mc/mark-all-like-this) ;; M-8, M-*
  (global-set-key (kbd "M-*") 'mc/edit-ends-of-lines) ;; M-8, M-*
 
  (global-unset-key (kbd "M-<down-mouse-1>"))
@@ -168,9 +166,9 @@
 
  ;;;; Fuzzy search
  ;; open file in project
- (global-set-key (kbd "C-x C-p") 'fzf-ni-find-search-directory)
+ (global-set-key (kbd "C-x C-p") 'ni-counsel-fzf-at-point)
  ;; open file in a directory
- (global-set-key (kbd "C-x p") 'fzf-directory)
+ (global-set-key (kbd "C-x p") 'ni-counsel-fzf-at-point-in-dir)
 
  ;; go to file tree window
  (global-set-key (kbd "C-h C-d") 'direx:jump-to-project-file-other-window)
@@ -236,17 +234,87 @@
 
  (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
 
- (global-set-key "\C-h\C-k" 'ni-counsel-rg-at-point)
- (global-set-key "\C-h\C-l" 'ni-counsel-rg-at-point-in-dir)
- (global-set-key "\C-h\C-j" 'ham-grep-regexp-current-dir)
- (global-set-key "\C-h\C-y" 'ham-grep-work-regexp)
+ (setq pierre-search-file-patterns
+   '( ;; ham
+      "*.ham"
+      ;; C/C++
+      "*.c" "*.cc" "*.cpp" "*.cpp2" "*.cni" "*.inl" "*.h" "*.hh" "*.hpp" ;; "cxx" "hxx"
+      ;; ObjC/C++
+      "*.m" "*.mm"
+      ;; niScript
+      "*.ni" "*.nip" "*.niw"
+      ;; java / kotlin / scala / clojurs
+      "*.java" "*.kt" "*.scala" "*.cj"
+      ;; bash
+      "*.sh"
+      ;; python
+      "*.py"
+      ;; elisp
+      "*.el"
+      ;; Rust
+      "*.rs"
+      ;; Haskell
+      "*.hs"
+      ;; Web
+      "*.js" ".mjs" ".cjs" "*.css" "*.html"
+      ;; Text / Markdown
+      "*.txt" "*.md"
+      ;; Erlang
+      "*.erl"
+      ;; Ruby
+      "*.rb"
+      ;; Asciidoc
+      "*.adoc"
+      ;; Configs/Structure
+      "*.json" "*.xml" "*.toml" "*.yml" "*.yaml"
+      ;; Makefiles
+      "Makefile"
+      ;; exclude
+      "!*.min.*"
+      "!**/_idl/**"
+      "!_*_JNI.cpp"
+      "!_*_ModuleDef.cpp"))
 
- (global-set-key "\C-h\C-f" (lambda () (interactive) (ni-counsel-rg-dumb-jump "djfunt")))
- (global-set-key "\C-h\C-g" (lambda () (interactive) (ni-counsel-rg-dumb-jump "djany")))
+ (setq pierre-search-all-dirs
+   '("."
+      (concat ENV_WORK "/niLang/")
+      (concat ENV_WORK "/ham/")
+      (concat ENV_WORK "/Vlk/")
+      (concat ENV_WORK "/Playground/")))
+
+
+ ;; counsel-rg starting in current directory, prompt for it
+ (global-set-key "\C-h\C-j" (lambda () (interactive)
+                              (list (read-directory-name "Directory: " default-directory))
+                              (ni-counsel-rg-match
+                                '(default-directory) nil)))
+
+ ;; ham-grep starting in current directory, prompt for it
+ (global-set-key "\C-hj" 'ham-grep-regexp-current-dir)
+
+ ;; counsel-rg in the Work directories
+ (global-set-key "\C-h\C-k" (lambda () (interactive)
+                              (ni-counsel-rg-match
+                                pierre-search-all-dirs nil)))
+ ;; ham-grep in the Work directories
+ (global-set-key "\C-hk" 'ham-grep-work-regexp)
+
+ ;; counsel-rg-match in current project
+ (global-set-key (kbd "M-.") (lambda () (interactive)
+                               (ni-counsel-rg-match
+                                 nil pierre-search-file-patterns)))
+ ;; counsel-rg-match in current project and all work directories
+ (global-set-key (kbd "M->") (lambda () (interactive)
+                               (ni-counsel-rg-match
+                                 pierre-search-all-dirs
+                                 pierre-search-file-patterns)))
+
+ (global-set-key "\C-h\C-f" (lambda () (interactive)
+                               (ni-counsel-rg-dj nil "djfunt" pierre-search-file-patterns)))
+ (global-set-key "\C-h\C-g" (lambda () (interactive)
+                               (ni-counsel-rg-dj pierre-search-all-dirs "djfunt" pierre-search-file-patterns)))
 
  (define-key global-map "\C-h\C-\\" 'indent-region)
-
- (global-dumb-jump-mode 1)
 
  ;; Disable C-MouseWheel to zoom text. Note that you can use
  ;; Super/Cmd/Window-0,-,+ to change the font size in a buffer.
