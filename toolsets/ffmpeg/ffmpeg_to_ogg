@@ -6,4 +6,4 @@ if [ -z "$DST" ]; then
     DST="${SRC%.*}.ogg"
 fi
 set -ex
-ffmpeg -i "$SRC" -c:a libvorbis -q:a 5 "$DST"
+ffmpeg -i "$SRC" -vn -c:a libvorbis -q:a 5 "$DST"

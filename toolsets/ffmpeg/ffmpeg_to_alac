@@ -3,7 +3,7 @@
 SRC="$1"
 DST="$2"
 if [ -z "$DST" ]; then
-    DST="${SRC%.*}.wav"
+    DST="${SRC%.*}.m4a"
 fi
 set -ex
-ffmpeg -i "$SRC" -vn -acodec pcm_s16le -ar 44100 "$DST"
+ffmpeg -i "$SRC" -vn -acodec alac "$DST"

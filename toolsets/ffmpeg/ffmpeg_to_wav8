@@ -6,4 +6,4 @@ if [ -z "$DST" ]; then
     DST="${SRC%.*}_wav8.wav"
 fi
 set -ex
-ffmpeg -i "$SRC" -acodec pcm_u8 -ar 22050 "$DST"
+ffmpeg -i "$SRC" -vn -acodec pcm_u8 -ar 22050 "$DST"

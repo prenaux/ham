@@ -6,4 +6,4 @@ if [ -z "$DST" ]; then
     DST="${SRC%.*}.opus"
 fi
 set -ex
-ffmpeg -i "$SRC" -c:a libopus -vbr on -compression_level 8 "$DST"
+ffmpeg -i "$SRC" -vn -c:a libopus -vbr on -compression_level 8 "$DST"
