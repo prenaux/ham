@@ -507,8 +507,8 @@ rule tkDepDll {
 
 # tkLinkDll TARGET : MODULENAME : DLLDIR : LIBDIR
 rule tkLinkDll {
-  if $(NO_DLL) {
-    tkLinkLibs $(<) : $(>) ;
+  if $(NO_DLL) = 1 {
+    tkLinkLibs $(<) : $(>) : $(4) ;
   }
   else {
     if $(DLLIMPLIB) = 1 {
