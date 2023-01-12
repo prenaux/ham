@@ -30,9 +30,9 @@
 ;; disabled cleanly when switching between them, you want that to avoid any
 ;; color issue.
 ;;
-(defvar ni-theme-light-mode 'flatui)
+(defvar ni-theme-light-mode nil)
 (defvar ni-theme-light-terminal-mode 'solarized-light)
-(defvar ni-theme-dark-mode 'vscode-dark-plus)
+(defvar ni-theme-dark-mode 'wombat)
 (defvar ni-theme-dark-terminal-mode 'solarized-dark)
 
 (defun ni-theme-disable-all ()
