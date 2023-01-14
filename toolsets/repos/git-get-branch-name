@@ -1,0 +1,62 @@
+#!/bin/bash
+usage() {
+  echo "usage: ${0##*/} (ORIGIN:)branch"
+  echo ""
+  echo "  Get or detect the name of a branch."
+  echo "  "
+  echo "  Detectable branch name:"
+  echo "    main-branch|main_branch|master-branch|master_branch"
+  echo "      Name of the main branch, usually main or master."
+  echo "    current-branch|current_branch|."
+  echo "      Name of the current branch."
+  echo ""
+  echo "  The 'ORIGIN:' prefix is useful to specifiy an origin and expand a detected"
+  echo "  branch name behind it. For example:"
+  echo "    $ ${0##*/} origin:main-branch"
+  echo "    > 'origin/main'"
+  echo "    $ ${0##*/} upstream:current-branch"
+  echo "    > 'upstream/my-current-work'"
+  echo "  "
+  echo "  Note: Use git-get-checked-branch-name to check if a branch name exists."
+  exit 1
+}
+
+if [ -z "$1" ]; then
+  usage
+fi
+
+BRANCH=$1
+if [[ $BRANCH == *":"* ]]; then
+  ORIGIN=`echo "$BRANCH" | cut -d ":" -f 1`
+  BRANCH=`echo "$BRANCH" | cut -d ":" -f 2`
+fi
+
+output_and_done() {
+  if [ -n "$ORIGIN" ]; then
+    echo $ORIGIN/$1
+  else
+    echo $1
+  fi
+  exit 0
+}
+
+case "$BRANCH" in
+  main-branch|main_branch|master-branch|master_branch)
+    if [ `git rev-parse --verify main 2>/dev/null` ]
+    then
+      output_and_done main
+    fi
+    if [ `git rev-parse --verify master 2>/dev/null` ]
+    then
+      output_and_done master
+    fi
+    echo "cant_find_main_branch"
+    ;;
+  current-branch|current_branch|.)
+    CURRENT_BRANCH=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+    output_and_done "$CURRENT_BRANCH"
+    ;;
+  *)
+    output_and_done "$BRANCH"
+    ;;
+esac

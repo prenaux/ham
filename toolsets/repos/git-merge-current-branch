@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 usage() {
@@ -14,27 +14,30 @@ if [ -z "$1" ]; then
     echo "E/No branch name specified."
     usage
 fi
-BRANCH_NAME=$1
-shift
 
-if [ -n "$2" ]; then
-  ORIGIN=$2
-  shift
-else
-  ORIGIN=origin
+BRANCH_NAME=`git-check-branch-or-commit "$1"`
+if [ $? == 1 ]; then
+  echo "E/Can't find branch '$1'."
+  usage
 fi
 
-echo "I/Fetching and rebasing on '$ORIGIN/$BRANCH_NAME'"
-(set -x ;
+ORIGIN_BRANCH_NAME=`git-check-branch-or-commit "${2:-origin}:${BRANCH_NAME}"`
+if [ $? == 1 ]; then
+  echo "E/Can't get origin branch name '${2:-origin}:${BRANCH_NAME}'."
+  usage
+fi
+
+echo "I/Fetching and rebasing on '$ORIGIN_BRANCH_NAME'"
+(set -ex ;
  git fetch --all ;
- git-rebase $ORIGIN/$BRANCH_NAME)
+ git-rebase $ORIGIN_BRANCH_NAME)
 
 echo "I/Moving '$BRANCH_NAME' to HEAD"
-(set -x ;
+(set -ex ;
  git push $ORIGIN --force-with-lease ;
- git-move-branch-to-head $BRANCH_NAME)
+ git-move-branch $BRANCH_NAME)
 
 echo "I/Checking out '$BRANCH_NAME' and pushing to '$ORIGIN'"
-(set -x ;
+(set -ex ;
  git checkout $BRANCH_NAME ;
  git push $ORIGIN)

@@ -1,6 +1,6 @@
 #!/bin/bash
 help() {
-    echo "usage: git-branch branch_name"
+    echo "usage: git-new-branch branch_name"
     echo ""
     echo "  Creates a new branch, makes it active, make sure there's a remote"
     echo "  tracking branch on origin for it and push the initial version."

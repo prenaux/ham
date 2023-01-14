@@ -1,0 +1,21 @@
+#!/bin/bash
+usage() {
+  echo "usage: ${0##*/} branch|commit_id"
+  echo ""
+  echo "  'git-get-branch-name' then check that the branch name or commit exist in the current repo."
+  echo ""
+  exit 1
+}
+if [ -z "$1" ]; then
+  usage
+fi
+
+BRANCH_NAME=`git-get-branch-name "$1"`
+if [ `git rev-parse --verify "$BRANCH_NAME" 2>/dev/null` ]
+then
+  echo "$BRANCH_NAME"
+  exit 0
+else
+  echo "E/Can't find branch: '$BRANCH_NAME'"
+  exit 1
+fi
