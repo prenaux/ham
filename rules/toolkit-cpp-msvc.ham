@@ -254,7 +254,6 @@ if $(WINDOWS) = 1 {
   {
     if $(EMBEDDED) != 1 {
       ObjectOptimFlags $(<) : -EHa ;
-      ObjectDefines $(<) : _HAS_EXCEPTIONS=1 ;
       logVerbose "- C++ Exceptions" ;
     }
     else {

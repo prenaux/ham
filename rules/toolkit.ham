@@ -820,7 +820,6 @@ rule tkBuildPackage
         # Require exceptions
       case exc :
         _exc = 1 ;
-        tkC++Exceptions $(_exsrc) $(_src) $(_nopchsrc) ;
         # Can lint
       case lint :
         if $(LINT) = 1 {
@@ -850,7 +849,6 @@ rule tkBuildPackage
         # Enable RTTI
       case rtti :
         _rtti = 1 ;
-        tkC++RTTI $(_exsrc) $(_src) $(_nopchsrc) ;
         # Console application
       case console :
         _console = 1 ;
@@ -872,17 +870,30 @@ rule tkBuildPackage
   }
 
   local _allsrc = $(_exsrc) $(_src) $(_nopchsrc) ;
+
   if $(_unicode) = 1 {
     ObjectDefines $(_allsrc)  : _UNICODE UNICODE ;
   }
   else {
     ObjectDefines $(_allsrc) : _UTF8 ;
   }
+
   if $(_exc) = 0 {
     tkNoC++Exceptions $(_allsrc) ;
+    ObjectDefines $(_allsrc)  : _CPP_NO_EXCEPTIONS CPP2_NO_EXCEPTIONS ;
   }
+  else {
+    tkC++Exceptions $(_allsrc) ;
+    ObjectDefines $(_allsrc)  : _CPP_EXCEPTIONS ;
+  }
+
   if $(_rtti) = 0 {
     tkNoC++RTTI $(_allsrc) ;
+    ObjectDefines $(_allsrc)  : _CPP_NO_RTTI CPP2_NO_RTTI ;
+  }
+  else {
+    tkC++RTTI $(_allsrc) ;
+    ObjectDefines $(_allsrc)  : _CPP_RTTI ;
   }
 
   logVerbose "- Build options of '$(PKGTARGET)' :" $(>) ;
