@@ -1,6 +1,10 @@
 if ! $(TK_NAME) {
   EXIT "E/TK_NAME not set." ;
 }
+if ! $(TK_NONCE) {
+  EXIT "W/TK_NONCE not set please set it in your _rules.ham, defaulted to 0. TK_NONCE is an arbitrary string that is added of every build target. It provides a way to force a rebuild of everything when it's changed. A good value is a incrementing number or commit hash that is updated when core must rebuild interface change." ;
+}
+TK_NONCE ?= 0 ;
 if ! [ FExists $(TK_DIR) ] {
   EXIT "E/TK_DIR doesn't exist:" $(TK_DIR) ;
 }
@@ -202,6 +206,8 @@ logVar TK_DIR_LIBS ;
 MakeLocate tkdir : $(TK_DIR_LIBS) ;
 
 TK_DIR_JARS ?= [ FDirName $(TK_DIR) libs jars ] ;
+
+TK_DIR_OBJS ?= [ FDirName $(BASEOBJDIR) $(TK_NAME:L)-$(TK_NONCE:L) ] ;
 
 if $(NO_DLL) = 1 {
   SUFDLL = $(SUFLIB) ;
@@ -563,7 +569,7 @@ rule tkDefPackage
   PKGTARGET_JS = ;
   PKGTARGET_WASM = ;
   if $(PKGGROUP) = jar || $(PKGGROUP) = apk {
-    OBJDIR = [ FDirName $(BASEOBJDIR) jvm-$(TK_NAME:L) $(PACKAGE) ] ;
+    OBJDIR = [ FDirName $(TK_DIR_OBJS) jvm $(PACKAGE) ] ;
     PKGBUILD = $(PACKAGE) ;
     PKGTARGET = $(PKGBUILD:S=.jar) ;
     PKGTYPE = jar ;
@@ -575,7 +581,16 @@ rule tkDefPackage
     }
   }
   else {
-    OBJDIR = [ FDirName $(BASEOBJDIR) $(HAM_CPP_TOOLSET_NAME:L) $(LIBS_LOA)-$(TK_NAME:L)-$(BUILD) $(PACKAGE) ] ;
+    # Use the C++ toolset name rather than the linker name so that multiple
+    # compilers can be used safely on the same platform.
+    local LINKER_OS = $(HAM_CPP_TOOLSET_NAME:L) ;
+    if $(LINKER_OS) != $(LOA_OS) {
+      LINKER_OS = $(LOA_OS)-$(LINKER_OS) ;
+    }
+    OBJDIR = [ FDirName
+      $(TK_DIR_OBJS)
+      $(LINKER_OS)-$(LOA_ARCH)-$(BUILD)
+      $(PACKAGE) ] ;
     PKGBUILD = $(PACKAGE)_$(BUILDEXT) ;
     if $(PKGGROUP) = modules || $(PKGGROUP) = modulelibs || $(PKGGROUP) = dll || $(PKGGROUP) = tooldll {
       if ( $(PKGGROUP) = tooldll ) {
