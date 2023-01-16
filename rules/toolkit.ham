@@ -2,7 +2,7 @@ if ! $(TK_NAME) {
   EXIT "E/TK_NAME not set." ;
 }
 if ! $(TK_NONCE) {
-  EXIT "W/TK_NONCE not set please set it in your _rules.ham, defaulted to 0. TK_NONCE is an arbitrary string that is added of every build target. It provides a way to force a rebuild of everything when it's changed. A good value is a incrementing number or commit hash that is updated when core must rebuild interface change." ;
+  ECHO "W/TK_NONCE not set please set it in your _rules.ham, defaulted to 0. TK_NONCE is an arbitrary string that is added of every build target. It provides a way to force a rebuild of everything when it's changed. A good value is a incrementing number or commit hash that is updated when core must rebuild interface change." ;
 }
 TK_NONCE ?= 0 ;
 if ! [ FExists $(TK_DIR) ] {
