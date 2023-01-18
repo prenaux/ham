@@ -647,6 +647,18 @@ If the new path's directories does not exist, create them."
 ;;; Pierre utils
 ;;;======================================================================
 (NotBatchMode
+  ;; git-auto-commit-mode
+  ;;
+  ;; Add as header in file:
+  ;; -*- eval: (git-auto-commit-mode 1); gac-automatically-push-p: t; -*-
+  ;;
+  ;; Add in the .dir-locals.el of a directory:
+  ;; ((nil . ((eval git-auto-commit-mode 1)
+  ;;          (gac-automatically-push-p . t)
+  ;;          (gac-automatically-add-new-files-p . t))))
+  ;;
+  (require 'git-auto-commit-mode)
+
   (defun pierre-list-modified-buffers ()
     "Show a list of all modified and unsaved buffers in a separate buffer."
     (interactive)
