@@ -193,6 +193,11 @@
    (interactive)
    (stop-using-minibuffer)
    (other-window 1))
+
+ ;; Show terminal colors in compilation buffer
+ (GNUEmacsMin28
+    (require 'ansi-color)
+    (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter))
 )
 
 ;;;======================================================================
