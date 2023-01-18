@@ -1,6 +1,6 @@
-;;; company-ispell.el --- company-mode completion back-end using Ispell
+;;; company-ispell.el --- company-mode completion backend using Ispell
 
-;; Copyright (C) 2009-2011  Free Software Foundation, Inc.
+;; Copyright (C) 2009-2011, 2013-2016, 2018, 2021  Free Software Foundation, Inc.
 
 ;; Author: Nikolaj Schumacher
 
@@ -17,7 +17,7 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+;; along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ;;; Commentary:
@@ -30,7 +30,7 @@
 (require 'ispell)
 
 (defgroup company-ispell nil
-  "Completion back-end using Ispell."
+  "Completion backend using Ispell."
   :group 'company)
 
 (defcustom company-ispell-dictionary nil
@@ -41,27 +41,41 @@ If nil, use `ispell-complete-word-dict'."
 
 (defvar company-ispell-available 'unknown)
 
+(defalias 'company-ispell--lookup-words
+  (if (fboundp 'ispell-lookup-words)
+      'ispell-lookup-words
+    'lookup-words))
+
 (defun company-ispell-available ()
   (when (eq company-ispell-available 'unknown)
     (condition-case err
         (progn
-          (lookup-words "WHATEVER")
+          (company-ispell--lookup-words "WHATEVER")
           (setq company-ispell-available t))
       (error
-       (message "Company: ispell-look-command not found")
+       (message "Company-Ispell: %s" (error-message-string err))
        (setq company-ispell-available nil))))
   company-ispell-available)
 
 ;;;###autoload
 (defun company-ispell (command &optional arg &rest ignored)
-  "`company-mode' completion back-end using Ispell."
+  "`company-mode' completion backend using Ispell."
   (interactive (list 'interactive))
   (cl-case command
     (interactive (company-begin-backend 'company-ispell))
     (prefix (when (company-ispell-available)
               (company-grab-word)))
-    (candidates (lookup-words arg (or company-ispell-dictionary
-                                      ispell-complete-word-dict)))
+    (candidates
+     (let ((words (company-ispell--lookup-words
+                   arg
+                   (or company-ispell-dictionary ispell-complete-word-dict)))
+           (completion-ignore-case t))
+       (if (string= arg "")
+           ;; Small optimization.
+           words
+         ;; Work around issue #284.
+         (all-completions arg words))))
+    (kind 'text)
     (sorted t)
     (ignore-case 'keep-prefix)))
 

@@ -1,6 +1,6 @@
-;;; company-elisp.el --- company-mode completion back-end for Emacs Lisp -*- lexical-binding: t -*-
+;;; company-elisp.el --- company-mode completion backend for Emacs Lisp -*- lexical-binding: t -*-
 
-;; Copyright (C) 2009, 2011-2013  Free Software Foundation, Inc.
+;; Copyright (C) 2009-2015, 2017, 2020  Free Software Foundation, Inc.
 
 ;; Author: Nikolaj Schumacher
 
@@ -17,11 +17,12 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+;; along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ;;; Commentary:
 ;;
+;; In newer versions of Emacs, company-capf is used instead.
 
 ;;; Code:
 
@@ -31,12 +32,12 @@
 (require 'find-func)
 
 (defgroup company-elisp nil
-  "Completion back-end for Emacs Lisp."
+  "Completion backend for Emacs Lisp."
   :group 'company)
 
 (defcustom company-elisp-detect-function-context t
   "If enabled, offer Lisp functions only in appropriate contexts.
-Functions are offered for completion only after ' and \(."
+Functions are offered for completion only after \\=' and \(."
   :type '(choice (const :tag "Off" nil)
                  (const :tag "On" t)))
 
@@ -192,8 +193,8 @@ first in the candidates list."
          (match-string 0 doc))))
 
 ;;;###autoload
-(defun company-elisp (command &optional arg &rest ignored)
-  "`company-mode' completion back-end for Emacs Lisp."
+(defun company-elisp (command &optional arg &rest _ignored)
+  "`company-mode' completion backend for Emacs Lisp."
   (interactive (list 'interactive))
   (cl-case command
     (interactive (company-begin-backend 'company-elisp))

@@ -1,6 +1,6 @@
-;;; company-nxml.el --- company-mode completion back-end for nxml-mode
+;;; company-nxml.el --- company-mode completion backend for nxml-mode
 
-;; Copyright (C) 2009-2011, 2013  Free Software Foundation, Inc.
+;; Copyright (C) 2009-2011, 2013-2015, 2017-2018  Free Software Foundation, Inc.
 
 ;; Author: Nikolaj Schumacher
 
@@ -17,11 +17,12 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+;; along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ;;; Commentary:
 ;;
+;; In Emacs >= 26, company-capf is used instead.
 
 ;;; Code:
 
@@ -103,7 +104,7 @@
     (prefix (and (derived-mode-p 'nxml-mode)
                  rng-validate-mode
                  (and (memq (char-after) '(?' ?\" ?\  ?\t ?\n)) ;; outside word
-                      (looking-back company-nxml-in-attribute-value-regexp)
+                      (looking-back company-nxml-in-attribute-value-regexp nil)
                       (or (match-string-no-properties 4)
                           (match-string-no-properties 5)
                           ""))))
@@ -121,7 +122,7 @@
 
 ;;;###autoload
 (defun company-nxml (command &optional arg &rest ignored)
-  "`company-mode' completion back-end for `nxml-mode'."
+  "`company-mode' completion backend for `nxml-mode'."
   (interactive (list 'interactive))
   (cl-case command
     (interactive (company-begin-backend 'company-nxml))

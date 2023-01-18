@@ -1,6 +1,6 @@
-;;; company-abbrev.el --- company-mode completion back-end for abbrev
+;;; company-abbrev.el --- company-mode completion backend for abbrev
 
-;; Copyright (C) 2009-2011  Free Software Foundation, Inc.
+;; Copyright (C) 2009-2011, 2013-2015, 2021  Free Software Foundation, Inc.
 
 ;; Author: Nikolaj Schumacher
 
@@ -17,7 +17,7 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+;; along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ;;; Commentary:
@@ -35,7 +35,7 @@
 
 ;;;###autoload
 (defun company-abbrev (command &optional arg &rest ignored)
-  "`company-mode' completion back-end for abbrev."
+  "`company-mode' completion backend for abbrev."
   (interactive (list 'interactive))
   (cl-case command
     (interactive (company-begin-backend 'company-abbrev
@@ -44,8 +44,9 @@
     (candidates (nconc
                  (delete "" (all-completions arg global-abbrev-table))
                  (delete "" (all-completions arg local-abbrev-table))))
+    (kind 'snippet)
     (meta (abbrev-expansion arg))
-    (require-match t)))
+    (post-completion (expand-abbrev))))
 
 (provide 'company-abbrev)
 ;;; company-abbrev.el ends here

@@ -1,6 +1,6 @@
-;;; company-dabbrev-code.el --- dabbrev-like company-mode back-end for code  -*- lexical-binding: t -*-
+;;; company-dabbrev-code.el --- dabbrev-like company-mode backend for code  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2009, 2011, 2014  Free Software Foundation, Inc.
+;; Copyright (C) 2009-2011, 2013-2016, 2021  Free Software Foundation, Inc.
 
 ;; Author: Nikolaj Schumacher
 
@@ -17,7 +17,7 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+;; along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ;;; Commentary:
@@ -30,7 +30,7 @@
 (require 'cl-lib)
 
 (defgroup company-dabbrev-code nil
-  "dabbrev-like completion back-end for code."
+  "dabbrev-like completion backend for code."
   :group 'company)
 
 (defcustom company-dabbrev-code-modes
@@ -40,17 +40,17 @@
   "Modes that use `company-dabbrev-code'.
 In all these modes (and their derivatives) `company-dabbrev-code' will
 complete only symbols, not text in comments or strings.  In other modes
-`company-dabbrev-code' will pass control to other back-ends
+`company-dabbrev-code' will pass control to other backends
 \(e.g. `company-dabbrev'\).  Value t means complete in all modes."
-  :type '(choice (repeat (symbol :tag "Major mode"))
-                 (const tag "All modes" t)))
+  :type '(choice (repeat :tag "Some modes" (symbol :tag "Major mode"))
+                 (const :tag "All modes" t)))
 
 (defcustom company-dabbrev-code-other-buffers t
   "Determines whether `company-dabbrev-code' should search other buffers.
-If `all', search all other buffers.  If t, search buffers with the same
-major mode.  If `code', search all buffers with major modes in
-`company-dabbrev-code-modes', or derived from one of them.
-See also `company-dabbrev-code-time-limit'."
+If `all', search all other buffers, except the ignored ones.  If t, search
+buffers with the same major mode.  If `code', search all buffers with major
+modes in `company-dabbrev-code-modes', or derived from one of them.  See
+also `company-dabbrev-code-time-limit'."
   :type '(choice (const :tag "Off" nil)
                  (const :tag "Same major mode" t)
                  (const :tag "Code major modes" code)
@@ -66,19 +66,19 @@ See also `company-dabbrev-code-time-limit'."
   :type 'boolean)
 
 (defcustom company-dabbrev-code-ignore-case nil
-  "Non-nil to ignore case in completion candidates."
+  "Non-nil to ignore case when collecting completion candidates."
   :type 'boolean)
 
-(defsubst company-dabbrev-code--make-regexp (prefix)
+(defun company-dabbrev-code--make-regexp (prefix)
   (concat "\\_<" (if (equal prefix "")
                      "\\([a-zA-Z]\\|\\s_\\)"
                    (regexp-quote prefix))
           "\\(\\sw\\|\\s_\\)*\\_>"))
 
 ;;;###autoload
-(defun company-dabbrev-code (command &optional arg &rest ignored)
-  "dabbrev-like `company-mode' back-end for code.
-The back-end looks for all symbols in the current buffer that aren't in
+(defun company-dabbrev-code (command &optional arg &rest _ignored)
+  "dabbrev-like `company-mode' backend for code.
+The backend looks for all symbols in the current buffer that aren't in
 comments or strings."
   (interactive (list 'interactive))
   (cl-case command
@@ -96,7 +96,8 @@ comments or strings."
                      (`t (list major-mode))
                      (`code company-dabbrev-code-modes)
                      (`all `all))
-                   t)))
+                   (not company-dabbrev-code-everywhere))))
+    (kind 'text)
     (ignore-case company-dabbrev-code-ignore-case)
     (duplicates t)))
 
