@@ -470,18 +470,9 @@ If the new path's directories does not exist, create them."
 (NotBatchMode
  (agl-begin-time-block "auto-complete")
 
- (require 'fancy-dabbrev)
- (require 'diminish)
- (diminish 'fancy-dabbrev-mode)
-
- ;; Enable fancy-dabbrev previews everywhere.
- (global-fancy-dabbrev-mode)
-
- ;; (setq dabbrev-case-distinction t)
- ;; (setq dabbrev-case-fold-search t)
- ;; (setq dabbrev-case-replace nil)
- ;; (setq fancy-dabbrev-preview-delay nil)
- (setq fancy-dabbrev-expansion-on-preview-only t)
+ ;; (require 'ni-autocomplete-company)
+ ;; (require 'ni-autocomplete-pabbrev)
+ (require 'ni-autocomplete-pabbrev)
 
  (defun make-ni-expand ()
    (make-hippie-expand-function
