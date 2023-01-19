@@ -476,7 +476,7 @@ If the new path's directories does not exist, create them."
  (agl-begin-time-block "auto-complete")
 
  ;; (require 'ni-autocomplete-company)
- ;; (require 'ni-autocomplete-pabbrev)
+ ;; (require 'ni-autocomplete-fancy-dabbrev)
  (require 'ni-autocomplete-pabbrev)
 
  (defun make-ni-expand ()
