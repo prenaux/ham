@@ -3,7 +3,7 @@ if $(WINDOWS) = 1 {
 }
 SUFPCH = .pch ;
 
-CC_ADD_FLAGS = -Zm200 -Zc:forScope -W4 ;
+CC_ADD_FLAGS = -Zm200 -Zc:forScope -W4 -std:$(C++VERSION) ;
 
 # sometimes usefull
 if $(MSVC_SHOW_INCLUDES) = 1 {
