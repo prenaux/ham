@@ -555,7 +555,7 @@ If the new path's directories does not exist, create them."
  (require 'git)
  (require 'git-blame)
 
-  (GNUEmacsMin26
+ (GNUEmacsMin26
    (add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site/magit"))
    (require 'magit))
 
@@ -565,6 +565,8 @@ If the new path's directories does not exist, create them."
 ;;; Ivy & Swiper
 ;;;======================================================================
 (NotBatchMode
+ (agl-begin-time-block "Ivy")
+
  (require 'ni-ivy)
 
  (require 'swiper)
@@ -585,28 +587,11 @@ If the new path's directories does not exist, create them."
 )
 
 ;;;======================================================================
-;;; Projectile
-;;;======================================================================
-(NotBatchMode
- (require 'projectile)
-
- ;; We don't enable projectile-mode, we only use projectile for "open file in
- ;; project" and projectile-mode makes opening files really slow in large
- ;; projects.
- ;; (projectile-mode +1)
-
- (setq projectile-completion-system 'ivy)
-
- ;; Prevent projectile from automatically creating projects when visiting
- ;; files. For example, navigating to the definition of a function from a
- ;; dependency will add the dependency directory as a project.
- (setq projectile-track-known-projects-automatically nil)
-)
-
-;;;======================================================================
 ;;; Back button mode
 ;;;======================================================================
 (NotBatchMode
+ (agl-begin-time-block "back-button")
+
  (require 'smartrep)
  (require 'back-button)
  (back-button-mode 1)
@@ -617,6 +602,8 @@ If the new path's directories does not exist, create them."
 ;;; Editorconfig
 ;;;======================================================================
 (NotBatchMode
+ (agl-begin-time-block "editorconfig")
+
  (require 'editorconfig)
  (editorconfig-mode 1)
  (diminish 'editorconfig-mode))
@@ -625,6 +612,8 @@ If the new path's directories does not exist, create them."
 ;;; Dumbjump
 ;;;======================================================================
 (NotBatchMode
+ (agl-begin-time-block "dumb-jump")
+
  (require 'dumb-jump)
  ;; (setq dumb-jump-debug t)
  (setq dumb-jump-disable-obsolete-warnings t)
@@ -635,6 +624,8 @@ If the new path's directories does not exist, create them."
 ;;; Ace Window
 ;;;======================================================================
 (NotBatchMode
+ (agl-begin-time-block "ace-window")
+
  (require 'ace-window)
  (global-set-key (kbd "M-o") 'ace-window)
 )
@@ -643,6 +634,8 @@ If the new path's directories does not exist, create them."
 ;;; Pierre utils
 ;;;======================================================================
 (NotBatchMode
+ (agl-begin-time-block "git-auto-commit-mode")
+
   ;; git-auto-commit-mode
   ;;
   ;; Add as header in file:
@@ -694,5 +687,6 @@ If the new path's directories does not exist, create them."
 ;;; Keymap
 ;;;======================================================================
 (NotBatchMode
+ (agl-begin-time-block "pierre-keymap")
  (require 'ni-keymap-pierre)
 )
