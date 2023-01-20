@@ -11,7 +11,7 @@
 
 (defun ni-get-default-project-directory ()
   (let ((dirname default-directory)
-        (prjroot (projectile-project-root)))
+        (prjroot (ni-find-search-directory)))
     (cond (prjroot prjroot)
           (dirname dirname)
           (t (error "ni-get-default-project-directory: No default or project directory found.")))))
