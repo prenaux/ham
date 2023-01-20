@@ -277,22 +277,10 @@
       (concat ENV_WORK "/Vlk/")
       (concat ENV_WORK "/Playground/")))
 
-
- ;; counsel-rg starting in current directory, prompt for it
- (global-set-key "\C-h\C-j" (lambda () (interactive)
-                              (list (read-directory-name "Directory: " default-directory))
-                              (ni-counsel-rg-match
-                                '(default-directory) nil)))
-
  ;; ham-grep starting in current directory, prompt for it
- (global-set-key "\C-hj" 'ham-grep-regexp-current-dir)
-
- ;; counsel-rg in the Work directories
- (global-set-key "\C-h\C-k" (lambda () (interactive)
-                              (ni-counsel-rg-match
-                                pierre-search-all-dirs nil)))
+ (global-set-key "\C-h\C-j" 'ham-grep-regexp-current-dir)
  ;; ham-grep in the Work directories
- (global-set-key "\C-hk" 'ham-grep-work-regexp)
+ (global-set-key "\C-h\C-k" 'ham-grep-work-regexp)
 
  ;; counsel-rg-match in current project
  (global-set-key (kbd "M-.") (lambda () (interactive)
@@ -304,11 +292,7 @@
                                  pierre-search-all-dirs
                                  pierre-search-file-patterns)))
 
- (global-set-key "\C-h\C-f" (lambda () (interactive)
-                               (ni-counsel-rg-dj nil "djfunt" pierre-search-file-patterns)))
- (global-set-key "\C-h\C-g" (lambda () (interactive)
-                               (ni-counsel-rg-dj pierre-search-all-dirs "djfunt" pierre-search-file-patterns)))
-
+ ;; Indent region
  (define-key global-map "\C-h\C-\\" 'indent-region)
 
  ;; Disable C-MouseWheel to zoom text. Note that you can use
