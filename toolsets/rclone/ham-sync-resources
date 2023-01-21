@@ -111,9 +111,11 @@ PARAMS=()
 if [[ "$SYNC_COMMAND" != "arch_"* ]]; then
     PARAMS=("${PARAMS[@]}" --filter-from "$SYNC_DATA_PATH")
 fi
+# PARAMS=("${PARAMS[@]}" --fast-list)
+# PARAMS=("${PARAMS[@]}" --max-age 1h)
 PARAMS=("${PARAMS[@]}" --stats-one-line)
-PARAMS=("${PARAMS[@]}" --checkers=24)
-PARAMS=("${PARAMS[@]}" --transfers=16)
+PARAMS=("${PARAMS[@]}" --checkers=${HAM_SYNC_NUM_CHECKERS:-24})
+PARAMS=("${PARAMS[@]}" --transfers=${HAM_SYNC_NUM_TRANSFERS:-16})
 PARAMS=("${PARAMS[@]}" --stats 60s)
 PARAMS=("${PARAMS[@]}" -v)
 if [ "$DOIT" != "yes" ]; then
