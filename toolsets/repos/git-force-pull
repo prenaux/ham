@@ -15,6 +15,10 @@ usage() {
     fi
 }
 
+if [ -z "$1" ]; then
+  usage
+fi
+
 STASH=1
 if [ "$1" == "nostash" ]; then
     STASH=0
@@ -35,14 +39,8 @@ else
     BRANCH=$2
 fi
 
-if [ -z "$BRANCH" ]; then
-    usage
-fi
-
-if [ "$BRANCH" == "current_branch" ] || [ "$BRANCH" == "." ]; then
-    BRANCH=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
-    echo "I/Force pulling current branch '$BRANCH'."
-fi
+BRANCH=`git-get-branch-name "$BRANCH"`
+echo "I/Force pulling branch '$BRANCH'."
 
 if [ $STASH == 1 ]; then
   (set -x;
