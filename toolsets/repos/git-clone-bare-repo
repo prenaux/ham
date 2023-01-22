@@ -1,0 +1,18 @@
+#!/bin/bash -e
+help() {
+    echo "usage: git-clone-bar-repo REPO_DIR_NAME (DEST)"
+    exit 1
+}
+
+if [ ! -d "$1" ]; then
+  echo "E/Can't find directory '$1'."
+  help
+fi
+
+(set -x ;
+ # Make sure the bare repo as the correct directory structure to prevent:
+ # 'fatal: repository 'DIR.git' does not exist'
+ mkdir -p "$1/branches" ;
+ mkdir -p "$1/refs/heads" ;
+ mkdir -p "$1/refs/tags" ;
+ git clone "$1" "$2")
