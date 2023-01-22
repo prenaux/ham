@@ -401,7 +401,7 @@ toolset_check_imported() {
     for ARG in $@
     do
         if [[ -z "`toolset_is_imported "$ARG"`" ]]; then
-            echo "E/'$ARG' toolset not imported."
+            echo "E/'$ARG' toolset not imported. Did you forget to run '. hat' ?"
             return 1
         fi
     done
