@@ -2,14 +2,13 @@
 . ham-bash-lib.sh
 
 usage() {
-    echo "usage: repos-git-batch (-x) [ commands ]"
+    echo "usage: repos-exec repos_list (-x) [ commands ]"
     echo ""
-    echo "  Wrapper for git-batch that will run git-batch concurrently on all"
-    echo "  git repos in the current directory."
+    echo "  Executes a bash command in the repositories."
     echo ""
-    echo "  -x specify that the commands should be run concurrently"
+    echo "  If '.' is passed as repos_list the repos in the CWD will be used."
     echo ""
-    echo "  The arguments are passed verbatim to git-batch."
+    echo "  The commands are executed verbatim with each repo as the CWD."
     echo ""
 
     if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
@@ -33,11 +32,15 @@ fi
 # Fetch the list of repos
 if [[ "$1" == "." ]]; then
     REPOS_CWD=`repos-list-cwd`
-else
+    shift
+elif [[ -f "$1" ]]; then
     REPOS_CWD=`cat "$1"`
     REPOS_CWD=$(eval echo \"$REPOS_CWD\")
+    shift
+else
+    echo "W/repos_list isn't a file, assuming its a command and using repos-list-cwd instead."
+    REPOS_CWD=`repos-list-cwd`
 fi
-shift
 
 # Check that they are all git directories
 for ARG in $REPOS_CWD; do
@@ -63,14 +66,14 @@ fi
 
 # Run the commands
 for ARG in $REPOS_CWD; do
-    echo "== Repo '$ARG'"
-    pushd "$ARG"
+    echo "I/===== Repo '$ARG' ====="
+    pushd "$ARG" > /dev/null
     if [ ! -z "$1" ]; then
         if [ -z $CONCURRENT ]; then
-            git $*
+            $@
             echo ""
         else
-            git $* &
+            $@ &
         fi
     fi
     popd > /dev/null
