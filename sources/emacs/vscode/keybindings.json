@@ -5,6 +5,7 @@
 //   - Awesome Emacs Keymap (tuttieee.emacs-mcx)
 //   - EditorConfig for VS Code (EditorConfig.EditorConfig)
 //   - multi-command (ryuta46.multi-command)
+//   - Rewrap (stkb.rewrap) - automatically assigned to Alt-Q
 //
 // To Edit the Keybindings:
 //   Cmd+Shift+P: Keyboard Shortcuts (JSON)
