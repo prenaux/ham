@@ -53,7 +53,7 @@ if [ -z "$GIT_GUI" ]; then
     if [ "$FORCE_TUI" == "yes" ] || [ -z "$GIT_GUI" ]
     then
         if [ `where_inpath lazygit` ]; then
-            GIT_GUI=lazygit
+            GIT_GUI=git-tui
         fi
     fi
 fi

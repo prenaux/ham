@@ -1,0 +1,42 @@
+#!/bin/bash -e
+usage() {
+    echo "usage: git-tui DIRECTORY (default to .)"
+    echo ""
+    echo "  Open the a Git TUI."
+    echo ""
+    exit 1
+}
+
+PARAM_DIR=${1:-.}
+DIR=${PARAM_DIR}
+if [ ! -d "$DIR" ]; then
+  DIR="$WORK/$DIR"
+  if [ ! -d "$DIR" ]; then
+    echo "E/Can't find directories '$PARAM_DIR' nor '$DIR'."
+    usage
+  fi
+fi
+
+DARKMODE=1
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    if [[ "$(defaults read -g AppleInterfaceStyle 2> /dev/null)" == "Dark" ]]; then
+        DARKMODE=1
+        echo "I/Detected darkmode."
+    else
+        DARKMODE=0
+        echo "I/Detected lightmode."
+    fi
+else
+    echo "I/Defaulting to darkmode."
+fi
+
+PARAMS=(-ucf "$HAM_HOME/toolsets/repos/lazygit/config.yml")
+if [[ $DARKMODE = 1 ]]; then
+  PARAMS=("${PARAMS[@]}" -ucf "$HAM_HOME/toolsets/repos/lazygit/darkmode.yml")
+else
+  PARAMS=("${PARAMS[@]}" -ucf "$HAM_HOME/toolsets/repos/lazygit/lightmode.yml")
+fi
+
+(set -x ;
+ cd "$DIR" ;
+ "lazygit" "${PARAMS[@]}")
