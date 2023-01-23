@@ -505,7 +505,7 @@ fcd() {
 #
 # fhh (print)
 #
-# Note: Can't be in an external script because each bash script as an
+# Note: Can't be in an external script because each bash script has an
 # independant (empty) history by default.
 #
 fhh() {
@@ -533,6 +533,7 @@ fhh() {
       echo "${CMD}"
     else
       # echo "I/Execute"
+      echo "$ ${CMD}"
       history -s $CMD
       eval "${CMD}"
     fi
