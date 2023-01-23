@@ -73,6 +73,7 @@ bin/osx-x86/python2
 
 # ham
 sources/ham/tests/*/*.exe
+sources/ham/tests/*/*.x64
 sources/ham/src/Makefile
 sources/ham/src/builds/unix/config.status
 sources/ham/src/jambase.c
