@@ -1,269 +1,568 @@
-//
-// Keybindings for VSCode that reproduce ni-keymap-pierre.el as closely as possible
-//
-// Extensions needed:
-//   - Awesome Emacs Keymap (tuttieee.emacs-mcx)
-//   - EditorConfig for VS Code (EditorConfig.EditorConfig)
-//   - multi-command (ryuta46.multi-command)
-//   - Rewrap (stkb.rewrap) - automatically assigned to Alt-Q
-//
-// To Edit the Keybindings:
-//   Cmd+Shift+P: Keyboard Shortcuts (JSON)
-//
 // Place your key bindings in this file to override the defaults
-//
 [
-    {
-        "key": "ctrl+up",
-        "command": "emacs-mcx.backwardParagraph",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !suggestWidgetVisible"
+  /**
+   * Panels
+   **/
+  {
+    "key": "ctrl+k ctrl+f",
+    "command": "workbench.view.explorer"
+  },
+  {
+    "key": "ctrl+k ctrl+g",
+    "command": "workbench.view.scm"
+  },
+  {
+    "key": "ctrl+k ctrl+d",
+    "command": "workbench.view.debug"
+  },
+  {
+    "key": "ctrl+k ctrl+x",
+    "command": "workbench.extensions.action.showEnabledExtensions"
+  },
+  {
+    "key": "ctrl+k ctrl+r",
+    "command": "workbench.view.extension.references-view"
+  },
+  {
+    "key": "ctrl+k ctrl+h",
+    "command": "workbench.view.extension.github-pull-requests"
+  },
+  {
+    "key": "ctrl+k ctrl+b",
+    "command": "workbench.action.toggleSidebarVisibility"
+  },
+  {
+    "key": "ctrl+k ctrl+z",
+    "command": "workbench.action.toggleZenMode"
+  },
+  {
+    "key": "ctrl+k ctrl+e",
+    "command": "workbench.action.focusActiveEditorGroup",
+  },
+  {
+    "key": "ctrl+k ctrl+t",
+    "command": "workbench.action.terminal.toggleTerminal",
+  },
+
+  /**
+   * "Maximize" Panel & Editor.
+   * If in the editor, closes the terminal panel if its visible, show it if its not.
+   * If in the terminal, closes the terminal panel if its visible, show it if its not.
+   */
+  {
+    "key": "ctrl+k ctrl+m",
+    "command": "workbench.action.toggleMaximizedPanel",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "ctrl+k ctrl+m",
+    "command": "workbench.action.closePanel",
+    "when": "editorFocus && panelVisible"
+  },
+  {
+    "key": "ctrl+k ctrl+m",
+    "command": "extension.multiCommand.execute",
+    "args": {
+      "sequence": [
+        "workbench.action.togglePanel",
+        "workbench.action.focusActiveEditorGroup"
+      ]
     },
-    {
-        "key": "alt+up",
-        "command": "emacs-mcx.backwardParagraph",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !suggestWidgetVisible"
-    },
-    {
-        "key": "ctrl+down",
-        "command": "emacs-mcx.forwardParagraph",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !suggestWidgetVisible"
-    },
-    {
-        "key": "alt+down",
-        "command": "emacs-mcx.forwardParagraph",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !suggestWidgetVisible"
-    },
-    {
-        "key": "alt+;",
-        "command": "-editor.action.blockComment",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !editorReadonly"
-    },
-    {
-        "key": "ctrl+right",
-        "command": "emacs-mcx.forwardWord",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
-    },
-    {
-        "key": "alt+right",
-        "command": "emacs-mcx.forwardWord",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
-    },
-    {
-        "key": "ctrl+backspace",
-        "command": "emacs-mcx.backwardKillWord",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !editorReadonly"
-    },
-    {
-        "key": "alt+backspace",
-        "command": "emacs-mcx.backwardKillWord",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !editorReadonly"
-    },
-    {
-        "key": "alt+left",
-        "command": "emacs-mcx.backwardWord",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
-    },
-    {
-        "key": "ctrl+left",
-        "command": "emacs-mcx.backwardWord",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
-    },
-    {
-        "key": "alt+0",
-        "command": "emacs-mcx.addSelectionToNextFindMatch",
-        "when": "editorFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
-    },
-    {
-        "key": "alt+9",
-        "command": "emacs-mcx.addSelectionToPreviousFindMatch",
-        "when": "editorFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
-    },
-    {
-        "key": "alt+up",
-        "command": "editor.action.previousSelectionMatchFindAction",
-        "when": "editorFocus"
-    },
-    {
-        "key": "alt+down",
-        "command": "editor.action.nextSelectionMatchFindAction",
-        "when": "editorFocus"
-    },
-    {
-        "key": "alt+p",
-        "command": "editor.action.previousSelectionMatchFindAction",
-        "when": "editorFocus"
-    },
-    {
-        "key": "alt+n",
-        "command": "editor.action.nextSelectionMatchFindAction",
-        "when": "editorFocus"
-    },
-    {
-        "key": "ctrl+h ctrl+d",
-        "command": "revealInExplorer"
-    },
-    {
-        "key": "alt+9",
-        "command": "editor.action.addSelectionToPreviousFindMatch"
-    },
-    {
-        "key": "shift+alt+3",
-        "command": "editor.action.smartSelect.expand",
-        "when": "editorTextFocus"
-    },
-    {
-        "key": "alt+3",
-        "command": "editor.action.jumpToBracket",
-        "when": "editorTextFocus"
-    },
-    {
-        "key": "shift+cmd+\\",
-        "command": "-editor.action.jumpToBracket",
-        "when": "editorTextFocus"
-    },
-    {
-        "key": "shift+alt+8",
-        "command": "editor.action.insertCursorAtEndOfEachLineSelected",
-        "when": "editorTextFocus"
-    },
-    {
-        "key": "shift+alt+i",
-        "command": "-editor.action.insertCursorAtEndOfEachLineSelected",
-        "when": "editorTextFocus"
-    },
-    {
-        "key": "alt+8",
-        "command": "editor.action.selectHighlights",
-        "when": "editorFocus"
-    },
-    {
-        "key": "shift+cmd+l",
-        "command": "-editor.action.selectHighlights",
-        "when": "editorFocus"
-    },
-    {
-        "key": "shift+alt+0",
-        "command": "editor.action.insertCursorBelow",
-        "when": "editorTextFocus"
-    },
-    {
-        "key": "alt+cmd+down",
-        "command": "-editor.action.insertCursorBelow",
-        "when": "editorTextFocus"
-    },
-    {
-        "key": "shift+alt+9",
-        "command": "editor.action.insertCursorAbove",
-        "when": "editorTextFocus"
-    },
-    {
-        "key": "alt+cmd+up",
-        "command": "-editor.action.insertCursorAbove",
-        "when": "editorTextFocus"
-    },
-    {
-        "key": "ctrl+h ctrl+a",
-        "command": "emacs-mcx.beginningOfBuffer",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
-    },
-    {
-        "key": "shift+alt+,",
-        "command": "-emacs-mcx.beginningOfBuffer",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
-    },
-    {
-        "key": "ctrl+h ctrl+e",
-        "command": "emacs-mcx.endOfBuffer",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
-    },
-    {
-        "key": "shift+alt+.",
-        "command": "-emacs-mcx.endOfBuffer",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
-    },
-    {
-        "key": "ctrl+home",
-        "command": "emacs-mcx.beginningOfBuffer",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
-    },
-    {
-        "key": "ctrl+end",
-        "command": "emacs-mcx.endOfBuffer",
-        "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
-    },
-    {
-        "key": "ctrl+alt+\\",
-        "command": "editor.action.formatSelection",
-        "when": "editorHasDocumentSelectionFormattingProvider && editorTextFocus && !editorReadonly"
-    },
-    {
-        "key": "ctrl+alt+l",
-        "command": "editor.action.formatSelection",
-        "when": "editorHasDocumentSelectionFormattingProvider && editorTextFocus && !editorReadonly"
-    },
-    // focus the terminal and rerun the last command in the history
-    // use the multicommand extension (ryuta46.multi-command)
-    {
-        "key": "ctrl+h ctrl+p",
-        "command": "extension.multiCommand.execute",
-        "args": {
-            "sequence": [
-                // "workbench.action.terminal.toggleTerminal",
-                "workbench.action.terminal.focus",
-                // line home
-                {
-                    "command": "workbench.action.terminal.sendSequence",
-                    "args": {
-                        "text": "\u001b[H"
-                    }
-                },
-                // clear to end of line
-                {
-                    "command": "workbench.action.terminal.sendSequence",
-                    "args": {
-                        "text": "\u001b[K"
-                    }
-                },
-                // up (previous history)
-                {
-                    "command": "workbench.action.terminal.sendSequence",
-                    "args": {
-                        "text": "\u001b[A"
-                    }
-                },
-                // execute
-                {
-                    "command": "workbench.action.terminal.sendSequence",
-                    "args": {
-                        "text": "\n"
-                    }
-                },
-            ]
-        }
-    },
-    {
-        "key": "alt+.",
-        "command": "editor.action.revealDefinition",
-        "when": "editorHasDocumentSelectionFormattingProvider && editorTextFocus && !editorReadonly"
-    },
-    {
-        "key": "ctrl+alt+left",
-        "command": "workbench.action.navigateBack",
-        "when": "canNavigateBack"
-    },
-    {
-        "key": "ctrl+alt+right",
-        "command": "workbench.action.navigateForward",
-        "when": "canNavigateForward"
-    },
-    {
-        "key": "ctrl+alt+right",
-        "command": "-cursorWordPartRight",
-        "when": "textInputFocus"
-    },
-    {
-        "key": "ctrl+alt+left",
-        "command": "-cursorWordPartLeft",
-        "when": "textInputFocus"
+    "when": "editorFocus && !panelVisible"
+  },
+
+  /**
+    * File Explorer
+    **/
+  {
+    "key": "cmd+d",
+    "command": "duplicate.execute",
+    "when": "explorerViewletVisible && filesExplorerFocus && !explorerResourceIsRoot && !inputFocus"
+  },
+  {
+    "key": "cmd+n",
+    "command": "explorer.newFile",
+    "when": "explorerViewletVisible && filesExplorerFocus && !inputFocus"
+  },
+  {
+    "key": "shift+cmd+n",
+    "command": "explorer.newFolder",
+    "when": "explorerViewletVisible && filesExplorerFocus && !inputFocus"
+  },
+
+  /**
+    * Line Manipulation
+    **/
+  {
+    "key": "ctrl+j",
+    "command": "editor.action.joinLines",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+[",
+    "command": "editor.action.outdentLines",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+]",
+    "command": "editor.action.indentLines",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+
+  /**
+   * Split Panels
+   **/
+  {
+    "key": "ctrl+=",
+    "command": "workbench.action.increaseViewSize",
+    "when": "editorFocus"
+  },
+  {
+    "key": "ctrl+-",
+    "command": "workbench.action.decreaseViewSize",
+    "when": "editorFocus"
+  },
+
+  /**
+    * Emmet
+    **/
+  {
+    "key": "ctrl+m ctrl+i",
+    "command": "editor.emmet.action.balanceIn",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+m ctrl+o",
+    "command": "editor.emmet.action.balanceOut",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+m ctrl+w",
+    "command": "editor.emmet.action.wrapWithAbbreviation",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+m ctrl+m",
+    "command": "editor.emmet.action.matchTag",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+m ctrl+e",
+    "command": "editor.action.smartSelect.expand",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+m ctrl+r",
+    "command": "editor.emmet.action.updateTag",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+m ctrl+backspace",
+    "command": "editor.emmet.action.removeTag",
+    "when": "editorTextFocus"
+  },
+
+  /**
+    * amVim Finder Fix
+    **/
+  {
+    "key": "enter",
+    "command": "editor.action.nextMatchFindAction",
+    "when": "findWidgetVisible"
+  },
+  {
+    "key": "shift+enter",
+    "command": "editor.action.previousMatchFindAction",
+    "when": "findWidgetVisible"
+  },
+
+  /**
+   * Project Switching
+   **/
+  {
+    "key": "ctrl+;",
+    "command": "workbench.action.switchWindow"
+  },
+
+  /**
+   * Toggle Font Size
+   **/
+  {
+    "key": "ctrl+0",
+    "command": "toggle",
+    "when": "editorTextFocus",
+    "args": {
+        "id": "fontSize",
+        "value": [
+            {
+                "editor.fontSize": 13,
+                "editor.lineHeight": 24
+            },
+            {
+                "editor.fontSize": 11,
+                "editor.lineHeight": 0
+            }
+        ]
     }
+  },
+
+  /**
+   * IntelliSense
+   **/
+  {
+    "key": "alt+r",
+    "command": "workbench.action.gotoSymbol"
+  },
+  {
+    "key": "alt+shift+r",
+    "command": "workbench.action.showAllSymbols"
+  },
+  {
+    "key": "alt+.",
+    "command": "editor.action.goToDeclaration",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+k ctrl+i",
+    "command": "namespaceResolver.import",
+  },
+
+  /**
+    * Hide Toaster Notifications
+    **/
+  {
+    "key": "escape",
+    "command": "notifications.hideToasts",
+    "when": "notificationToastsVisible"
+  },
+
+  /**
+   * Better PHPUnit
+   **/
+  {
+    "key": "ctrl+k ctrl+r",
+    "command": "better-phpunit.run",
+    "when": "editorTextFocus && editorLangId == 'php'"
+  },
+  {
+    "key": "ctrl+k ctrl+f",
+    "command": "better-phpunit.run-file",
+    "when": "editorTextFocus && editorLangId == 'php'"
+  },
+  {
+    "key": "ctrl+k ctrl+p",
+    "command": "better-phpunit.run-previous",
+    "when": "editorTextFocus && editorLangId == 'php'"
+  },
+
+  /**
+   * Emacs
+   **/
+  {
+    "key": "ctrl+up",
+    "command": "emacs-mcx.backwardParagraph",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !suggestWidgetVisible"
+  },
+  {
+    "key": "alt+up",
+    "command": "emacs-mcx.backwardParagraph",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !suggestWidgetVisible"
+  },
+  {
+    "key": "ctrl+down",
+    "command": "emacs-mcx.forwardParagraph",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !suggestWidgetVisible"
+  },
+  {
+    "key": "alt+down",
+    "command": "emacs-mcx.forwardParagraph",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !suggestWidgetVisible"
+  },
+  {
+    "key": "alt+;",
+    "command": "-editor.action.blockComment",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !editorReadonly"
+  },
+  {
+    "key": "ctrl+right",
+    "command": "emacs-mcx.forwardWord",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "alt+right",
+    "command": "emacs-mcx.forwardWord",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "ctrl+backspace",
+    "command": "emacs-mcx.backwardKillWord",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !editorReadonly"
+  },
+  {
+    "key": "alt+backspace",
+    "command": "emacs-mcx.backwardKillWord",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd && !editorReadonly"
+  },
+  {
+    "key": "alt+left",
+    "command": "emacs-mcx.backwardWord",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "ctrl+left",
+    "command": "emacs-mcx.backwardWord",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "alt+0",
+    "command": "emacs-mcx.addSelectionToNextFindMatch",
+    "when": "editorFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "alt+9",
+    "command": "emacs-mcx.addSelectionToPreviousFindMatch",
+    "when": "editorFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "alt+up",
+    "command": "editor.action.previousSelectionMatchFindAction",
+    "when": "editorFocus"
+  },
+  {
+    "key": "alt+down",
+    "command": "editor.action.nextSelectionMatchFindAction",
+    "when": "editorFocus"
+  },
+  {
+    "key": "alt+p",
+    "command": "editor.action.previousSelectionMatchFindAction",
+    "when": "editorFocus"
+  },
+  {
+    "key": "alt+n",
+    "command": "editor.action.nextSelectionMatchFindAction",
+    "when": "editorFocus"
+  },
+  {
+    "key": "ctrl+h ctrl+d",
+    "command": "revealInExplorer"
+  },
+  {
+    "key": "ctrl+h ctrl+j",
+    "command": "workbench.action.findInFiles"
+  },
+  {
+    "key": "alt+9",
+    "command": "editor.action.addSelectionToPreviousFindMatch"
+  },
+  {
+    "key": "shift+alt+a",
+    "command": "editor.action.smartSelect.expand",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "alt+a",
+    "command": "editor.action.jumpToBracket",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+alt+8",
+    "command": "editor.action.insertCursorAtEndOfEachLineSelected",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+alt+i",
+    "command": "-editor.action.insertCursorAtEndOfEachLineSelected",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "alt+8",
+    "command": "editor.action.selectHighlights",
+    "when": "editorFocus"
+  },
+  {
+    "key": "shift+alt+0",
+    "command": "editor.action.insertCursorBelow",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+alt+9",
+    "command": "editor.action.insertCursorAbove",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+h ctrl+a",
+    "command": "emacs-mcx.beginningOfBuffer",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "shift+alt+,",
+    "command": "-emacs-mcx.beginningOfBuffer",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "ctrl+h ctrl+e",
+    "command": "emacs-mcx.endOfBuffer",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "shift+alt+.",
+    "command": "-emacs-mcx.endOfBuffer",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "ctrl+home",
+    "command": "emacs-mcx.beginningOfBuffer",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "ctrl+end",
+    "command": "emacs-mcx.endOfBuffer",
+    "when": "editorTextFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
+  },
+  {
+    "key": "ctrl+alt+\\",
+    "command": "editor.action.formatSelection",
+    "when": "editorHasDocumentSelectionFormattingProvider && editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+alt+l",
+    "command": "editor.action.formatDocument",
+    "when": "editorTextFocus && !editorHasSelection"
+  },
+  {
+    "key": "ctrl+alt+l",
+    "command": "editor.action.formatSelection",
+    "when": "editorTextFocus && editorHasSelection"
+  },
+  {
+    "key": "alt+.",
+    "command": "editor.action.revealDefinition",
+    "when": "editorHasDocumentSelectionFormattingProvider && editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+alt+left",
+    "command": "workbench.action.navigateBack",
+    "when": "canNavigateBack"
+  },
+  {
+    "key": "ctrl+alt+right",
+    "command": "workbench.action.navigateForward",
+    "when": "canNavigateForward"
+  },
+  {
+    "key": "ctrl+alt+right",
+    "command": "-cursorWordPartRight",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "ctrl+alt+left",
+    "command": "-cursorWordPartLeft",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "ctrl+x b",
+    "command": "workbench.action.quickOpen"
+    // "command": "workbench.action.showEditorsInActiveGroup"
+  },
+  {
+    "key": "ctrl+l",
+    "command": "workbench.action.gotoLine"
+  },
+  {
+    "key": "ctrl+l",
+    "command": "workbench.action.gotoLine"
+  },
+  {
+    "key": "alt+1",
+    "command": "editor.action.marker.next",
+    "when": "editorFocus && !textCompareEditorVisible"
+  },
+  {
+    "key": "alt+2",
+    "command": "editor.action.marker.prev",
+    "when": "editorFocus && !textCompareEditorVisible"
+  },
+  {
+    "key": "alt+1",
+    "command": "workbench.action.compareEditor.nextChange",
+    "when": "textCompareEditorVisible"
+  },
+  {
+    "key": "alt+2",
+    "command": "workbench.action.compareEditor.previousChange",
+    "when": "textCompareEditorVisible"
+  },
+  {
+    "key": "alt+shift+1",
+    "command": "editor.action.diffReview.next",
+    "when": "isInDiffEditor"
+  },
+  {
+    "key": "alt+shift+2",
+    "command": "editor.action.diffReview.prev",
+    "when": "isInDiffEditor"
+  },
+  {
+    "key": "alt+3",
+    "command": "search.action.focusNextSearchResult"
+  },
+  {
+    "key": "alt+4",
+    "command": "search.action.focusPreviousSearchResult"
+  },
+  {
+    "key": "ctrl-c ctrl-c",
+    "command": "editor.action.commentLine",
+    "when": "editorFocus"
+  },
+  {
+    "key": "ctrl-h ctrl-w",
+    "command": "editor.action.toggleWordWrap",
+    "when": "editorFocus"
+  },
+
+  /**
+   * Macros
+   **/
+  // focus the terminal and rerun the last command in the history
+  // use the multicommand extension (ryuta46.multi-command)
+  {
+    "key": "ctrl+h ctrl+p",
+    "command": "extension.multiCommand.execute",
+    "args": {
+      "sequence": [
+        // "workbench.action.terminal.toggleTerminal",
+        "workbench.action.terminal.focus",
+        // line home
+        {
+          "command": "workbench.action.terminal.sendSequence",
+          "args": {
+            "text": "\u001b[H"
+          }
+        },
+        // clear to end of line
+        {
+          "command": "workbench.action.terminal.sendSequence",
+          "args": {
+            "text": "\u001b[K"
+          }
+        },
+        // up (previous history)
+        {
+          "command": "workbench.action.terminal.sendSequence",
+          "args": {
+            "text": "\u001b[A"
+          }
+        },
+        // execute
+        {
+          "command": "workbench.action.terminal.sendSequence",
+          "args": {
+            "text": "\n"
+          }
+        },
+      ]
+    }
+  },
 ]

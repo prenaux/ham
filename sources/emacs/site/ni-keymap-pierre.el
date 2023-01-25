@@ -1,6 +1,8 @@
 (provide 'ni-keymap-pierre)
 (NotBatchMode
 
+ (require 'bind-key)
+
 ;;;======================================================================
 ;;; aglemacs.el
 ;;;======================================================================
@@ -121,7 +123,13 @@
  (define-key global-map "\C-h\C-e" 'end-of-buffer)
 
  ;; Join line
- (global-set-key (kbd "C-M-j") 'join-line)
+ (defun pierre-join-line () ""
+   (interactive)
+   (end-of-line)
+   (next-line)
+   (join-line))
+
+ (bind-key* "C-j" 'pierre-join-line)
 
 ;;;======================================================================
 ;;; aglemacs.el: mark-multiple, expand-region
@@ -186,28 +194,18 @@
  ;; Save all then compile with the last compile command used
  (global-set-key (key "C-h C-b") 'save-all-and-compile)
 
-
  ;; Goto matching bracket/paren
- (global-set-key (key "M-3") 'ni-goto-matching-bracket)
+ (bind-key* "M-a" 'ni-goto-matching-bracket)
+
  ;; Expand region
  (require 'expand-region)
- (global-set-key (kbd "M-#") 'er/expand-region) ;; M-# (M-S-3)
+ (bind-key* "M-A" 'er/expand-region) ;; M-S-a
 
  ;; Previous/Next errors
- (defun pierre-next-error ()
-   (interactive)
-   (if (and (boundp 'aflymake-mode) aflymake-mode)
-     (aflymake-goto-next-error)
-     (next-error)))
-
- (defun pierre-prev-error ()
-   (interactive)
-   (if (and (boundp 'aflymake-mode) aflymake-mode)
-     (aflymake-goto-prev-error)
-     (previous-error)))
-
- (define-key global-map "\M-1" 'pierre-next-error)
- (define-key global-map "\M-2" 'pierre-prev-error)
+ (define-key global-map "\M-1" 'aflymake-goto-next-error)
+ (define-key global-map "\M-2" 'aflymake-goto-prev-error)
+ (define-key global-map "\M-3" 'next-error)
+ (define-key global-map "\M-4" 'previous-error)
 
  ;; Previous/Next flymake errors
  (global-set-key (kbd "M-!") 'next-error) ;; M-! (M-S-1)
