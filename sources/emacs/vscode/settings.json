@@ -47,7 +47,7 @@
   "workbench.statusBar.visible": true,
   "workbench.editor.showTabs": false,
   "editor.minimap.enabled": false,
-  "editor.rulers": [88],
+  "editor.rulers": [80],
   "editor.autoClosingBrackets": "never",
   "editor.inlineSuggest.enabled": true,
   "editor.tabSize": 2,
@@ -216,18 +216,13 @@
   "githubPullRequests.pullBranch": "never",
   "window.openFoldersInNewWindow": "on",
   "window.autoDetectColorScheme": true,
-  // Default Dark+, Cobalt2, Palenight Theme
-  "workbench.preferredDarkColorTheme": "Cobalt2",
+  // Default Dark+, Cobalt2, Palenight (Mild Contrast)
+  "workbench.preferredDarkColorTheme": "Palenight (Mild Contrast)",
   "workbench.preferredLightColorTheme": "Default Light+",
-  "workbench.colorTheme": "Cobalt2",
-
-  /**
-    * triggerTaskOnSave
-    **/
-  "triggerTaskOnSave.tasks": {
-    "Lint": [
-      "*.ni"
-    ],
-  },
-  "triggerTaskOnSave.showNotifications": true,
+  "workbench.colorTheme": "Palenight (Mild Contrast)",
+  // "find in selection" is automatically set when more than one line is selected.
+  // 1) select more than one line
+  // 2) fill search/replace
+  // 3) cmdCtrl+enter to replace in selection
+  "editor.find.autoFindInSelection": "multiline",
 }
