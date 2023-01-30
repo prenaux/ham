@@ -37,6 +37,8 @@ if [ "$1" == "uninstall_brew" ]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh)"
 
   fi
+
+  exit 0
 fi
 
 case "$HAM_BIN_LOA" in

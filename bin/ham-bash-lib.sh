@@ -614,7 +614,7 @@ else
     if [ "$UNAME_STR" == "Linux" ] && [ "$MACHINE_TYPE" == "x86_64" ]; then
         export HAM_OS=LINUX
         export HAM_BIN_LOA=lin-x64
-        export HAM_LOCAL_HOMEBREW="$HAM_HOME/toolsets/_brew/$HAM_BIN_LOA"
+        # export HAM_LOCAL_HOMEBREW="$HAM_HOME/toolsets/_brew/$HAM_BIN_LOA"
     else
         echo "W/Unknown OS '$UNAME_STR' '$MACHINE_TYPE'"
     fi
