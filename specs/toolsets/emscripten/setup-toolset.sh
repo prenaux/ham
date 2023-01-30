@@ -24,6 +24,11 @@ case $HAM_OS in
         export PATH=${HAM_TOOLSET_DIR}:${PATH}
         export BUILD_BIN_LOA=$HAM_BIN_LOA
         ;;
+    LINUX*)
+        HAM_ENABLE_EXPERIMENTAL_LINUX_BREW=1 ham-brew-install emscripten "bin/emcc"
+        export PATH=${HAM_TOOLSET_DIR}:${PATH}
+        export BUILD_BIN_LOA=$HAM_BIN_LOA
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
