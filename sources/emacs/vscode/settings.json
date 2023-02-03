@@ -20,6 +20,7 @@
     - calebporzio.better-phpunit: Better PHPUnit
     - wesbos.theme-cobalt2: Cobalt2 Theme Official
     - whizkydee.material-palenight-theme: Palenight Theme
+    - ms-vscode-remote.remote-ssh: Remote - SSH development
 
   To Edit the Keybindings:
     Alt+X / Cmd+Shift+P: Keyboard Shortcuts (JSON)
@@ -225,4 +226,5 @@
   // 2) fill search/replace
   // 3) cmdCtrl+enter to replace in selection
   "editor.find.autoFindInSelection": "multiline",
+  "git.inputValidationSubjectLength": 200
 }
