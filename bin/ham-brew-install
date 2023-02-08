@@ -6,7 +6,7 @@ if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
 usage() {
     echo ""
     echo "usage:"
-    echo "  ham-brew-install (reinstall|update|upgrade|up) PACKAGE CHECKFILE"
+    echo "  ham-brew-install (reinstall|update|upgrade|up) PACKAGE CHECKFILE (CHECKPKG)"
     echo ""
     if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
         # sourced...
@@ -33,7 +33,11 @@ if [ -z "$" -o -z "$2" ]; then
     usage
 fi
 
-PKG_HOME=`ham-brew-installdir "$PKGNAME"`
+if [ -z "$3" ]; then
+  PKG_HOME=`ham-brew-installdir "$PKGNAME"`
+else
+  PKG_HOME=`ham-brew-installdir "$3"`
+fi
 # echo "I/PKG_HOME: ${PKG_HOME}"
 
 if [ "$INSTALL" == "upgrade" ]; then
