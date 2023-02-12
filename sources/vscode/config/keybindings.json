@@ -34,6 +34,10 @@
     "key": "ctrl+h ctrl+z",
     "command": "workbench.action.toggleZenMode"
   },
+  {
+    "key": "ctrl+h ctrl+r",
+    "command": "workbench.view.extension.github-pull-requests"
+  },
 
   /**
    * "Maximize" Panel & Editor.
@@ -186,8 +190,8 @@
       "id": "editorFontSize",
       "value": [
         {
-          "editor.fontSize": 13,
-          "editor.lineHeight": 24
+          "editor.fontSize": 14,
+          "editor.lineHeight": 22
         },
         {
           "editor.fontSize": 11,
@@ -204,7 +208,7 @@
       "id": "terminalFontSize",
       "value": [
         {
-          "terminal.integrated.fontSize": 13,
+          "terminal.integrated.fontSize": 14,
           "terminal.integrated.lineHeight": 1.2
         },
         {
@@ -267,6 +271,16 @@
   /**
    * Emacs
    **/
+  {
+    "key": "up",
+    "command": "history.showPrevious",
+    "when": "findInputFocussed"
+  },
+  {
+    "key": "down",
+    "command": "history.showNext",
+    "when": "findInputFocussed"
+  },
   {
     "key": "ctrl+up",
     "command": "emacs-mcx.backwardParagraph",
@@ -480,8 +494,8 @@
   },
   {
     "key": "ctrl+x b",
-    // "command": "workbench.action.quickOpen"
-    "command": "workbench.action.showEditorsInActiveGroup"
+    "command": "workbench.action.quickOpen"
+    // "command": "workbench.action.showEditorsInActiveGroup"
   },
   {
     "key": "ctrl+l",
