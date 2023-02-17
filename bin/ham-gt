@@ -3,7 +3,11 @@
 export HAM_NO_VER_CHECK=1
 toolset_import_once nodejs > /dev/null
 if [ "$1" == "update_cli" ]; then
-  shift
-  (set -x ; npm install -g @withgraphite/graphite-cli@latest)
+  (set -x ;
+   pushd "$HAM_HOME"
+   npm install -g @withgraphite/graphite-cli@latest
+   popd)
+  echo "I/Graphite CLI updated."
+  exit 0
 fi
 gt "$@"
