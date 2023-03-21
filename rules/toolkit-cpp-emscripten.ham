@@ -1,6 +1,7 @@
 if $(BUILD) = da {
-  # Build with the sanitizer in debug mode
-  CLANG_SANITIZE ?= 1 ;
+  # We don't build with the sanitizer by default in debug mode for webassembly
+  # as the slowdown and memory usage spikes make the output borderline unusable.
+  # CLANG_SANITIZE ?= 1 ;
 }
 
 STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
