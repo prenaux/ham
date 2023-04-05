@@ -393,6 +393,70 @@ toolset_import_list() {
     done
 }
 
+# This will always override the MSVC_IDE_DIR.
+# NOTE: This is quite slow and should be used only once during setup.
+toolset_find_msvc_ide_dir() {
+    # We assume that all combinations of visual studio versions and editions
+    # can be located in both the x86 and x64 program files directories...
+    local vs_pf_dirs=(
+        "$PROGRAMW6432\\Microsoft Visual Studio" \
+        "$PROGRAMFILES\\Microsoft Visual Studio")
+
+    # Version arrays for the different types of visual studio licenses
+    # NOTE: the following arrays must be same length
+    local vs_versions_typed=(10 2020)
+    local vs_versions_typed_prefix=(' ' '\')
+    local vs_versions_typed_suffix=('.0' '\Community')
+
+    # Count of the supported versions / years
+    # eg. 2020 all the way to 2025
+    # eg. 10.0 all the way to 15.0
+    # NOTE: As of early 2023 community version is at 2022 and Visual Studio at 14.0
+    local vs_versions_supported_count=6
+
+    # loop through dirs, versions to find the IDE dir
+    for vs_pf_dir in "${vs_pf_dirs[@]}"; do
+        for i in "${!vs_versions_typed[@]}"; do
+            local print_=${vs_versions_typed_print[$i]}
+            local prefix_=${vs_versions_typed_prefix[$i]}
+            local suffix_=${vs_versions_typed_suffix[$i]}
+            local version_=${vs_versions_typed[$i]}
+            for ry in $(seq $vs_versions_supported_count -1 1); do
+                local out_version_=$(($version_ + ${ry} - 1))
+                local out_dir_="${vs_pf_dir}${prefix_}${out_version_}${suffix_}\\Common7\\IDE"
+                # echo "I/ Checking for IDE dir: ${out_dir_}"
+                # We check for the devenv.exe file, because the directory may exist
+                # but be empty.
+                if [ -d "$out_dir_" ] && [ -f "$out_dir_\\devenv.exe" ]; then
+                    echo ${out_dir_}
+                    return 0
+                fi
+            done
+        done
+    done
+    return 1
+}
+
+toolset_find_msvc_file() {
+    local ide_dir="${MSVC_IDE_DIR}"
+    if [ ! -d "${ide_dir}" ]; then
+        ide_dir=$(toolset_find_msvc_ide_dir) || return 1
+    fi
+    local file="${1}"
+    local path="${ide_dir}\\${file}"
+    if [ -f "${path}" ]; then
+        echo $path
+        return 0
+    fi
+    return 1
+}
+
+toolset_find_msvc_devenv() {
+    local devenv=$(toolset_find_msvc_file "devenv.exe") || return 1
+    echo ${devenv}
+    return 0
+}
+
 toolset_is_imported() {
     ni-hget HAM_IMPORTS_TOOLSETS $1
 }
