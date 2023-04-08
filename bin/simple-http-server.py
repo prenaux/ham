@@ -2,44 +2,27 @@
 import sys
 import os
 import socketserver
+import argparse
 from http.server import SimpleHTTPRequestHandler
 
-# Needed for SharedArrayBuffer support
-crossOriginIsolation = False
+# Set up the argument parser
+parser = argparse.ArgumentParser(description='Run a static HTTP server.')
+parser.add_argument('mode', choices=['regular', 'crossOriginIsolation'], help='The mode for the server.')
+parser.add_argument('-d', '--dir', default='.', help='The directory to serve.')
+parser.add_argument('-p', '--port', type=int, default=8123, help='The port to listen on.')
 
-def printHelpAndExit():
-    print("Syntax:")
-    print("  simple-http-server mode dir")
-    print("Modes:")
-    print("  - regular: Simple standard HTTP server.")
-    print("  - crossOriginIsolation: HTTP server with cross origin isolation.\n" +
-          "                          It can only load files under the same domain.")
-    exit(1)
+# Parse the arguments
+args = parser.parse_args()
 
-if len(sys.argv) > 1:
-    mode = sys.argv[1]
-    if (mode == "regular"):
-        crossOriginIsolation = False
-    elif (mode == "crossOriginIsolation"):
-        crossOriginIsolation = True
-    else:
-        print("E/Unknown server mode specified: " + mode)
-        printHelpAndExit()
-    print("I/Mode: " + mode)
+mode = args.mode
+print("I/Mode: " + mode)
 
-    if len(sys.argv) > 2:
-        dir = sys.argv[2]
-    else:
-        dir = "."
-    if (not os.path.isdir(dir)):
-        print("E/Directory doesnt exist: " + dir)
-        printHelpAndExit()
-    print("I/Serving directory: " + os.path.abspath(dir))
-    os.chdir(dir)
-
-else:
-    print("E/Missing parameter.")
+dir = args.dir
+if (not os.path.isdir(dir)):
+    print("E/Directory doesnt exist: " + dir)
     printHelpAndExit()
+print("I/Serving directory: " + os.path.abspath(dir))
+os.chdir(dir)
 
 encodings_map = {
     ".jsgz": "gzip",
@@ -61,7 +44,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', '*')
         self.send_header('Access-Control-Allow-Headers', '*')
-        if crossOriginIsolation:
+        if mode == "crossOriginIsolation":
             self.send_header('Cross-Origin-Opener-Policy', 'same-origin')
             self.send_header('Cross-Origin-Embedder-Policy', 'require-corp')
         SimpleHTTPRequestHandler.end_headers(self)
@@ -80,7 +63,7 @@ RequestHandler.extensions_map['.data'] = 'application/octet-stream'
 RequestHandler.extensions_map['.datagz'] = 'application/octet-stream'
 
 if __name__ == '__main__':
-    PORT = 8123
+    PORT = args.port
     with socketserver.TCPServer(("", PORT), RequestHandler) as httpd:
         print("I/Serving at: http://localhost:{}".format(PORT))
         print("I/Press Ctrl+C to stop.".format(PORT))
