@@ -52,6 +52,9 @@ case "$BUILD_TARGET" in
   web-js)
     TOOLSET_NAME=emscripten
     ;;
+  ios-arm64)
+    TOOLSET_NAME=ios
+    ;;
   *)
     ;;
 esac
