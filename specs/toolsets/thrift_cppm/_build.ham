@@ -107,3 +107,42 @@ if $(OS) = MACOSX {
   LINKLIBS on $(PKGTARGET) += -L$(OPENSSL_LIBDIR) -lcrypto -lssl ;
   ObjectHdrs $(BUILD_SRC) : [ FDirName $(OPENSSL_INCDIR) ] ;
 }
+
+### ham_thriftc #########################################################
+tkDefTool ham_thriftc : 1.0.0 ;
+
+SubDirHdrs $(SUBDIR) github-thrift compiler cpp src ;
+
+SRC =
+
+# gen'd by _gen_parser.sh
+[ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift ] :
+  thrifty.cc
+  thriftl.cc
+]
+
+[ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift ] :
+    common.cc
+]
+
+[ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift generate ] :
+    t_generator.cc
+    validator_parser.cc
+]
+
+[ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift parse ] :
+    t_typedef.cc
+    parse.cc
+]
+
+[ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift ] :
+    main.cc
+]
+
+[ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift audit ] :
+    t_audit.cpp
+]
+
+;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) : pch minsz exc : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
