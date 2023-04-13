@@ -95,6 +95,9 @@ die()
 }
 
 errcheck()
+# usage:
+#   errcheck errorcode ModuleName "Message Saying Why"
+#   errcheck $? $HAM_TOOLSET_NAME "Message Saying Why" || return 1
 {
   if [ $1 != 0 ]
   then
@@ -109,6 +112,50 @@ retcheck()
     complain "$@"
     return 1
   fi
+}
+
+#
+# check_file PATH (nope)
+#
+# 'nope' can be used to skip file check without writting a bunch of tests. For
+# example you can set the PATH to 'nocheck' and pass 'nocheck' to nope and the
+# check will be skipped instead of failing. This is useful when the list of
+# files is built in the script before the checks are run, you can write
+# 'nocheck' in the list and know that the check will be skipped afterward.
+#
+# return 1 if the file doesn't exist
+#
+check_file() {
+  PATH=$1
+  NOPE=$2
+  # echo "... check_file: $NOPE :: $PATH"
+
+  if [ -n "$NOPE" ] && [ "$NOPE" == "$PATH" ]; then
+    # Nocheck
+    echo "ok-nocheck"
+    return 0
+  elif [ -e "$PATH" ]; then
+    # File exists
+    echo "ok-exists"
+    return 0
+  else
+    # File doesnt exists
+    echo "notfound"
+    return 1
+  fi
+}
+
+errcheck_file()
+# usage:
+#   errcheck_file ModuleName FILE_PATH
+#   errcheck_file $HAM_TOOLSET_NAME some_file_path.lib || return 1
+{
+    MODULE_NAME="$1"
+    FILE_PATH="$2"
+    CHECK_FILE=$(check_file "$FILE_PATH")
+    if [ "$CHECK_FILE" == "notfound" ]; then
+        die "$MODULE_NAME" "Check file failed: $CHECK_FILE: '$FILE_PATH'."
+    fi
 }
 
 nativedir()
