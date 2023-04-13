@@ -1,0 +1,37 @@
+#!/bin/bash -e
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+usage() {
+    echo "usage:"
+    echo "  ${0##*/} TOOLSET EXE_TARGET_NAME"
+    echo ""
+    echo "example:"
+    echo "  ham-cppm-exe-path thrift_cppm ham_thriftc"
+    exit 1
+}
+
+# Build settings
+export BUILD=${BUILD:-ra}
+export BIN_LOA=${HAM_TARGET_BIN_LOA:-$HAM_BIN_LOA}
+
+# Parameters check
+TOOLSET=$1
+if [ -z "$TOOLSET" ]; then
+  echo "E/No TOOLSET specified"
+  usage
+# elif [ ! -d "$HAM_HOME/specs/toolsets/$TOOLSET" ]; then
+  # echo "E/TOOLSET doesn't exist: '$HAM_HOME/specs/toolsets/$TOOLSET'."
+  # usage
+fi
+shift
+
+EXE_TARGET_NAME=$1
+if [ -z "$EXE_TARGET_NAME" ]; then
+  echo "E/No EXE_TARGET_NAME specified"
+  usage
+fi
+shift
+
+EXE_PATH="$HAM_HOME/bin/$(ham-cppm-bin-filepath exe ${EXE_TARGET_NAME}_${BUILD})"
+echo "$EXE_PATH"
