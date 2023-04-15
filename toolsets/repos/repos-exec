@@ -6,7 +6,8 @@ usage() {
     echo ""
     echo "  Executes a bash command in the repositories."
     echo ""
-    echo "  If '.' is passed as repos_list the repos in the CWD will be used."
+    echo "  If a directory is passed as repo_list we'll switch to that folder and use 'repos-list-cwd'."
+    echo "  If '-x' is specified commands will be executed concurrently."
     echo ""
     echo "  The commands are executed verbatim with each repo as the CWD."
     echo ""
@@ -30,9 +31,12 @@ if [ $# = 0 -o "$1" == "-h" -o "$2" == "-h" ]; then
 fi
 
 # Fetch the list of repos
-if [[ "$1" == "." ]]; then
-    REPOS_CWD=`repos-list-cwd`
+if [[ -d "$1" ]]; then
+    echo "I/repos_list '$1' is a directory, switching to it and using repos-list-cwd."
+    cd "$1"
+    pwd
     shift
+    REPOS_CWD=`repos-list-cwd`
 elif [[ -f "$1" ]]; then
     REPOS_CWD=`cat "$1"`
     REPOS_CWD=$(eval echo \"$REPOS_CWD\")
