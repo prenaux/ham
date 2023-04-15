@@ -29,6 +29,7 @@
  (require 'ni-sql)
  (require 'ni-haskell)
  (require 'ni-theme)
+ (require 'tramp-term)
 )
 
 ;;;======================================================================
