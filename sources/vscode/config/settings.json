@@ -207,6 +207,28 @@
   "C_Cpp.codeFolding": "disabled",
 
   /**
+   * Exclude perf killers
+   *
+   **/
+   "files.exclude": {
+      "**/tmp/**": true,
+      "**/node_modules/**": true,
+      "**/.git/objects/**": true,
+  },
+  "files.watcherExclude": {
+      "**/.git/objects/**": true,
+      "**/.git/subtree-cache/**": true,
+      "**/node_modules/**": true,
+      "**/tmp/**": true,
+      "**/dist/**": true
+  },
+  "extensions.autoCheckUpdates": false,
+  "extensions.autoUpdate": false,
+  // 'python.linting.enabled' completely destroys performance on large projects
+  // and consumes all CPU. It's a known issue, but it's been open for 3 years.
+  "python.linting.enabled": true,
+
+  /**
     * Misc
     **/
   "emacs-mcx.strictEmacsMove": true,
@@ -215,6 +237,7 @@
   "git.confirmSync": false,
   "git.ignoreRebaseWarning": true,
   "githubPullRequests.pullBranch": "never",
+  "githubPullRequests.showPullRequestNumberInTree": true,
   "window.openFoldersInNewWindow": "on",
   "window.autoDetectColorScheme": true,
   // Default Dark+, Cobalt2, Palenight (Mild Contrast)
@@ -226,5 +249,7 @@
   // 2) fill search/replace
   // 3) cmdCtrl+enter to replace in selection
   "editor.find.autoFindInSelection": "multiline",
-  "git.inputValidationSubjectLength": 200
+  "git.inputValidationSubjectLength": 200,
+  "lldb.suppressUpdateNotifications": true,
+  "cmake.configureOnOpen": false
 }
