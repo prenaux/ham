@@ -131,6 +131,7 @@ local module = {
         bashPath = "/bin/bash"
         break;
       }
+      case "lin":
       case "linux": {
         bashPath = "/usr/bin/bash"
         break;
