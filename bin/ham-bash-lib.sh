@@ -20,7 +20,7 @@ if [[ $OS == Windows* ]]; then
     export TERM_NCOLORS=8
 else
     if test -t 1; then
-      if [[ -z "$TERM_NCOLORS" ]]; then
+      if [[ `which tput` ]] && [[ -z "$TERM_NCOLORS" || "$TERM_NCOLORS" -eq 0 ]]; then
         export TERM_NCOLORS=$(tput colors)
       fi
     fi
