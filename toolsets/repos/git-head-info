@@ -2,7 +2,7 @@
 usage() {
     SCRIPT_NAME=`basename "$0"`
     cat <<EOF
-Usage: $SCRIPT_NAME json|hash|current_branch
+Usage: $SCRIPT_NAME json|hash|branch|branch_changes|branch_change_count
 EOF
     exit 1
 }
@@ -23,6 +23,16 @@ elif [ "$1" == "hash" ]; then
     echo ${TAG}
 elif [ "$1" == "current_branch" ] || [ "$1" == "branch" ]; then
     echo ${CURRENT_BRANCH}
+elif [ "$1" == "current_branch_changes" ] || [ "$1" == "branch_changes" ]; then
+    status=$(git status --porcelain)
+    num_added=$(echo "$status" | awk 'match($1, "A"){print $2}' | wc -l)
+    num_modified=$(echo "$status" | awk 'match($1, "M"){print $2}' | wc -l)
+    num_deleted=$(echo "$status" | awk 'match($1, "D"){print $2}' | wc -l)
+    num_moved=$(echo "$status" | awk 'match($1, "R"){print $2}' | wc -l)
+    echo "${num_added}A,${num_modified}M,${num_deleted}D,${num_moved}V,${CURRENT_BRANCH}"
+elif [ "$1" == "current_branch_change_count" ] || [ "$1" == "branch_change_count" ]; then
+    num_changes=$(git status -s | wc -l)
+    echo "${CURRENT_BRANCH} has $num_changes changes"
 elif [ -z "$1" ]; then
     TZ=UTC git show --date=iso --quiet HEAD --pretty=format:"tag: ${TAG}%nhash: %h%nauthor: \"%cn\"%ncommitDate: \"${HEAD_DATE_UTC_ISO}\"%ncommitSubject: \"%s\"%nbranch: ${CURRENT_BRANCH}%n"
 else

@@ -1,4 +1,5 @@
 # https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md
+notARepository: 'skip' # one of: 'prompt' | 'create' | 'skip'
 gui:
   theme:
     lightTheme: true
