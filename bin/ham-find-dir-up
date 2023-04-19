@@ -1,0 +1,13 @@
+#!/bin/bash
+while [[ "$PWD" != "/" ]] ; do
+    DIR="./$1"
+    if [ -d "$DIR" ]; then
+        RET=`find "$PWD" -maxdepth 1 -name "$@"`
+        if [ -d "$RET" ]; then
+            echo "$RET"
+            break
+        fi
+    fi
+    cd ..
+    # echo "pwd: $PWD"
+done
