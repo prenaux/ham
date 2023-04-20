@@ -499,6 +499,10 @@ rule tkPkgLinkLibs {
   tkLinkLibs $(PKGTARGET) : $(<) : $(>) ;
 }
 
+rule tkPkgLinkFlags {
+  TargetLinkFlags $(PKGTARGETF) : $(<) ;
+}
+
 # tkDepDll TARGET : MODULENAME : DLLDIR
 rule tkDepDll {
   local dir = $(3) ;
