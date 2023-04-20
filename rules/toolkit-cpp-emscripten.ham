@@ -23,6 +23,7 @@ JSCC_WARN_ARGS =
 -Wno-deprecated-builtins
 -Wno-deprecated-declarations
 -Werror=return-stack-address
+-Wno-deprecated-enum-enum-conversion
 ;
 if $(LOA_LINKER) = clang || $(LOA_LINKER) = em {
   JSCC_WARN_ARGS +=
@@ -92,7 +93,7 @@ if $(DEBUG) = 1 {
 else {
   LINKFLAGS += $(JSCC_OPT_ARGS) ;
 }
-ECHO "# JSCC (Web) Link Flags :" $(LINKFLAGS) ;
+# ECHO "# JSCC (Web) Link Flags :" $(LINKFLAGS) ;
 
 rule tkCC++Build
 {
