@@ -432,7 +432,12 @@ if ( $(FLYMAKE) = 1 ) && ( $(CAN_LINT) = 1 ) {
 #----------------------------------------------------------------------
 rule logGetLoc {
   if ! $(SUBDIR_TOKENS) {
-    return "UNKNOWN_LOC" ;
+    if $(TK_NAME) {
+      return "$(TK_NAME)/UNKNOWN_LOC" ;
+    }
+    else {
+      return "UNKNOWN_LOC" ;
+    }
   }
   return [ FDirName $(SUBDIR_TOKENS) ] ;
 }
@@ -519,6 +524,22 @@ rule AssertFExists {
       logFatal "ASSERT: $(1): Can't find '$(_s)'." ;
     }
   }
+  return $(2) ;
+}
+
+# AssertFDirName CONTEXT_NAME : PATH ;
+rule AssertFDirName {
+  if ! $(1) {
+    logFatal "AssertFExists: CONTEXT_NAME not specified." ;
+  }
+  if ! $(2) {
+    logFatal "AssertFExists: PATH not specified." ;
+  }
+  local path = [ FDirName $(2) ] ;
+  if ! [ FExists $(path) ] {
+    logFatal "ASSERT: $(1): Can't find '$(path)'." ;
+  }
+  return $(path) ;
 }
 
 #----------------------------------------------------------------------
