@@ -29,7 +29,7 @@ elif [ "$1" == "current_branch_changes" ] || [ "$1" == "branch_changes" ]; then
     num_modified=$(echo "$status" | grep -c -E '^M| M|MM|M ')
     num_deleted=$(echo "$status" | grep -c -E '^D| D')
     num_moved=$(echo "$status" | grep -c -E '^R| R')
-    echo "${num_added}A,${num_modified}M,${num_deleted}D,${num_moved}R,${CURRENT_BRANCH}"
+    echo "${num_modified}M,${num_added}A,${num_deleted}D,${num_moved}R,${CURRENT_BRANCH}"
 elif [ "$1" == "current_branch_change_count" ] || [ "$1" == "branch_change_count" ]; then
     num_changes=$(git status -s | wc -l | tr -d '[:blank:]')
     echo "${CURRENT_BRANCH} has $num_changes changes"

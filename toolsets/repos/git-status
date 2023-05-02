@@ -1,0 +1,15 @@
+#!/bin/bash
+usage() {
+  echo "usage: git-status head(default)|short|full"
+  exit 1
+}
+
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+if [[ "$1" == "full" ]]; then
+  git status
+elif [[ "$1" == "short" ]]; then
+  git status -s
+else
+  git-head-info branch_changes
+fi
