@@ -31,7 +31,11 @@ if [ $# = 0 -o "$1" == "-h" -o "$2" == "-h" ]; then
 fi
 
 # Fetch the list of repos
-if [[ -d "$1" ]]; then
+if [[ -d "$1/.git" ]]; then
+    echo "I/'$1' is git repo, running in it directly."
+    REPOS_SINGLE_GIT_DIR="$(abspath $1)"
+    shift
+elif [[ -d "$1" ]]; then
     echo "I/repos_list '$1' is a directory, switching to it and using repos-list-cwd."
     cd "$1"
     pwd
@@ -46,17 +50,6 @@ else
     REPOS_CWD=`repos-list-cwd`
 fi
 
-# Check that they are all git directories
-for ARG in $REPOS_CWD; do
-    if [ ! -d $ARG/.git ]; then
-        echo "E/Not a git directory: '$ARG'"
-        ERR_NOTGITDIR=1
-    fi
-done
-if [ ! -d $ARG ]; then
-    exit 1
-fi
-
 # Check if we're running in concurrent mode
 if [ "$1" == "-x" ]; then
     CONCURRENT=1
@@ -68,9 +61,9 @@ else
     echo "I/Running concurrently"
 fi
 
-# Run the commands
-for ARG in $REPOS_CWD; do
-    echo "I/===== Repo '$ARG' ====="
+if [[ -n "$REPOS_SINGLE_GIT_DIR" ]]; then
+    ARG="$REPOS_SINGLE_GIT_DIR"
+    echo "I/===== Single Repo '$ARG' ====="
     pushd "$ARG" > /dev/null
     if [ ! -z "$1" ]; then
         if [ -z $CONCURRENT ]; then
@@ -81,7 +74,33 @@ for ARG in $REPOS_CWD; do
         fi
     fi
     popd > /dev/null
-done
+else
+    # Check that they are all git directories
+    for ARG in $REPOS_CWD; do
+        if [ ! -d $ARG/.git ]; then
+            echo "E/Not a git directory: '$ARG'"
+            ERR_NOTGITDIR=1
+        fi
+    done
+    if [ ! -d $ARG ]; then
+        exit 1
+    fi
+
+    # Run the commands
+    for ARG in $REPOS_CWD; do
+        echo "I/===== Repo '$ARG' ====="
+        pushd "$ARG" > /dev/null
+        if [ ! -z "$1" ]; then
+            if [ -z $CONCURRENT ]; then
+                $@
+                echo ""
+            else
+                $@ &
+            fi
+        fi
+        popd > /dev/null
+    done
+fi
 
 wait
 echo "== Done."
