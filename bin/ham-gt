@@ -4,7 +4,7 @@ export HAM_NO_VER_CHECK=1
 toolset_import_once nodejs > /dev/null
 
 usage() {
-  echo "syntax: ham-gt (update_cli) gt parameters"
+  echo "usage: ham-gt (update_cli) gt parameters"
   echo ""
   echo "  ham-gt makes sure the graphite cli is installed and provide"
   echo "  a simple way to update the cli."
