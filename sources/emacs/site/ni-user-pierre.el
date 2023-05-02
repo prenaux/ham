@@ -257,6 +257,7 @@ If the new path's directories does not exist, create them."
      )))
 
  (add-hook 'after-save-hook 'ni-backup-current-file-handler)
+ ;; (remove-hook 'after-save-hook 'ni-backup-current-file-handler)
 )
 
 ;;;======================================================================
