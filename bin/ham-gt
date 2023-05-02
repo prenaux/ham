@@ -2,12 +2,31 @@
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 export HAM_NO_VER_CHECK=1
 toolset_import_once nodejs > /dev/null
+
+usage() {
+  echo "syntax: ham-gt (update_cli) gt parameters"
+  echo ""
+  echo "  ham-gt makes sure the graphite cli is installed and provide"
+  echo "  a simple way to update the cli."
+  echo ""
+  echo "  --help to view the gt help"
+  exit 1
+}
+
+if [ -z "$1" ]; then
+  usage
+fi
+
 if [ "$1" == "update_cli" ]; then
   (set -x ;
    pushd "$HAM_HOME"
    npm install -g @withgraphite/graphite-cli@latest
    popd)
-  echo "I/Graphite CLI updated."
-  exit 0
+  echo "I/Graphite CLI updated: $("$NODEJS_BIN_DIR/gt" --version)"
+  shift
+  if [ -z "$1" ]; then
+    exit 0
+  fi
 fi
-gt "$@"
+
+"$NODEJS_BIN_DIR/gt" "$@"
