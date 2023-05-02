@@ -16,7 +16,6 @@ if [ "$1" = "ls" ]; then
 else
     for REMOTE in `git remote`; do
         ARGS="${@/__REMOTE__/$REMOTE}"
-        echo "+git $ARGS"
-        git $ARGS
+        (set -x ; git $ARGS)
     done
 fi
