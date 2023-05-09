@@ -231,7 +231,7 @@
    '( ;; ham
       "*.ham"
       ;; C/C++
-      "*.c" "*.cc" "*.cpp" "*.cpp2" "*.cni" "*.inl" "*.h" "*.hh" "*.hpp" ;; "cxx" "hxx"
+      "*.c" "*.cc" "*.cpp" "*.cpp2" "*.c2" "*.cni" "*.inl" "*.h" "*.hh" "*.hpp" "*.hpp2" "*.h2" ;; "cxx" "hxx"
       ;; ObjC/C++
       "*.m" "*.mm"
       ;; niScript
