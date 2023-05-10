@@ -1,18 +1,23 @@
 #!/bin/bash
-help() {
-    echo "usage: git-remotes ls|regular git args"
+usage() {
+    echo "usage: git-remotes ls"
+    echo ""
+    echo "  List all git remotes."
+    echo ""
+    echo "usage: git-remotes (regular git arguments)"
     echo ""
     echo "  Execute the specified git command for all remotes,"
     echo "  replacing __REMOTE__ by the remote name."
     exit 1
 }
-if [ "$1" = "ls" ]; then
+
+if [ -z "$1" ]; then
+  usage
+fi
+
+if [ "$1" == "ls" ]; then
     shift
-    for REMOTE in `git remote`; do
-        ARGS="${@/__REMOTE__/$REMOTE}"
-        # echo "Runing: $CMD $ARGS"
-        echo $REMOTE: $ARGS
-    done
+    git remote -v
 else
     for REMOTE in `git remote`; do
         ARGS="${@/__REMOTE__/$REMOTE}"
