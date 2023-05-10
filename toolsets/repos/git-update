@@ -1,0 +1,28 @@
+#!/bin/bash -e
+usage() {
+    echo "usage: git-update BRANCH"
+    echo ""
+    echo "  Fetch all and then merge --ff-only."
+    echo ""
+    echo "  BRANCH can be 'current_branch' or '.' to specify the branch currently checked-out."
+
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        # sourced...
+        return 1
+    else
+        # regular call
+        exit 1
+    fi
+}
+
+if [ -z "$1" ]; then
+  usage
+fi
+
+BRANCH=`git-get-branch-name "$1"`
+ORIGIN_BRANCH=`git-get-branch-name "origin:$1"`
+echo "I/Merging 'origin:$BRANCH' into '$BRANCH'."
+
+(set -x ;
+ git fetch --all ;
+ git merge --ff-only "$ORIGIN_BRANCH")
