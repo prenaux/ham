@@ -61,6 +61,8 @@ else
     echo "I/Running concurrently"
 fi
 
+echo "I/repos-exec: $@"
+
 if [[ -n "$REPOS_SINGLE_GIT_DIR" ]]; then
     ARG="$REPOS_SINGLE_GIT_DIR"
     echo "I/===== Single Repo '$ARG' ====="
