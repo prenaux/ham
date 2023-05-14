@@ -14,7 +14,6 @@ usage() {
   exit 1
 }
 
-# Print a complete git log with a graph
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 if [ -z "$1" ]; then

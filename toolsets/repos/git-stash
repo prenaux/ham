@@ -1,6 +1,6 @@
 #!/bin/bash
 help() {
-    echo "Syntax:"
+    echo "usage:"
     echo "  git-stash push|find STASH_NAME"
     echo "  git-stash (try)pop|apply|drop STASH_NAME"
     echo "  git-stash list"

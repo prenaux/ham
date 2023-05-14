@@ -1,6 +1,7 @@
 #!/bin/bash -e
 usage() {
     echo "usage: git-shallow-clone branch_name repo_url dest_folder"
+    echo ""
     echo "  Does a shallow clone of the specified repo."
     if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
         # sourced...
@@ -29,5 +30,5 @@ if [ -z "$DEST" ]; then
     usage
 fi
 
-set -ex
-git clone --depth 1 --single-branch --branch "$BRANCH" "$REPO_URL" "$DEST"
+(set -x ;
+ git clone --depth 1 --single-branch --branch "$BRANCH" "$REPO_URL" "$DEST")
