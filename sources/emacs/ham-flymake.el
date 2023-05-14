@@ -334,8 +334,24 @@
   (interactive)
   (aflymake-easy-load 'aflymake-ham-lint-command
                       aflymake-ham-lint-err-line-patterns-eslint
-                      'inplace "niscript"))
+                      'inplace "eslint"))
 
 (push '(".+\\.js$" ham-flymake-ham-lint-eslint-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
 (push '(".+\\.jsx$" ham-flymake-ham-lint-eslint-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
 (push '(".+\\.mjs$" ham-flymake-ham-lint-eslint-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
+
+;;*** Python ***********************************************************
+
+;; python pyre/black/flake8 lint messages
+;; (regexp file-idx line-idx col-idx(optional) text-idx(optional))
+(defvar aflymake-ham-lint-err-line-patterns-pyre
+  '(("^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\): \\(.*\\)$" 1 2 3 4)
+    ("^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\) \\(.*\\)$" 1 2 3 4)))
+
+(defun ham-flymake-ham-lint-pyre-init ()
+  (interactive)
+  (aflymake-easy-load 'aflymake-ham-lint-command
+                      aflymake-ham-lint-err-line-patterns-pyre
+                      'inplace "pyre"))
+
+(push '(".+\\.py$" ham-flymake-ham-lint-pyre-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
