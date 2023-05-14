@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 usage() {
   echo "usage: git-log (current_branch|.) (origin|.)"
   echo ""
@@ -17,15 +17,16 @@ usage() {
 # Print a complete git log with a graph
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
-BRANCH=$1
-if [ "$BRANCH" == "current_branch" ] || [ "$BRANCH" == "." ]; then
-    BRANCH=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
-    echo "I/Current branch '$BRANCH'."
-fi
-
-if [ -z "$BRANCH" ]; then
-  git log --all --decorate --oneline --graph
+if [ -z "$1" ]; then
+  echo "I/=== Status ==="
+  git-status short
+  echo "I/=== Last 10 commits ==="
+  git --no-pager log --all --decorate --oneline -10 --reverse
 else
+  BRANCH=`git-get-branch-name "$1"`
+  echo "I/Status:"
+  git-status
+  echo "I/Logging branch '$BRANCH'."
   shift
   ORIGIN="$1"
   if [ "$ORIGIN" == "origin" ] || [ "$ORIGIN" == "." ]; then

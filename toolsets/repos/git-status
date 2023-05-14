@@ -1,15 +1,33 @@
-#!/bin/bash
+#!/bin/bash -e
 usage() {
-  echo "usage: git-status head(default)|short|full"
+  echo "usage: git-status (head|short|full|diff)"
+  echo ""
+  echo "  Default to 'short' if no mode is specified."
   exit 1
 }
 
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
-if [[ "$1" == "full" ]]; then
+MODE="${1:-short}"
+if [ ! -d ".git" ]; then
+  echo "E/Not in a git repository: $(pwd)"
+  usage
+fi
+
+if [[ "$MODE" == "full" ]]; then
   git status
-elif [[ "$1" == "short" ]]; then
+elif [[ "$MODE" == "short" ]]; then
+  git-head-info branch_changes
+  git status -s
+elif [[ "$MODE" == "head" ]]; then
+  git-head-info branch_changes
+elif [[ "$MODE" == "diff" ]]; then
+  echo "I/=== Status Diffs ==="
+  git --no-pager diff
+  echo "I/=== Status Summary ==="
+  git-head-info branch_changes
   git status -s
 else
-  git-head-info branch_changes
+  echo "E/Unknown mode '$MODE'."
+  usage
 fi

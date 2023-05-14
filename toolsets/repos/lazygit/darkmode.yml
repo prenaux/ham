@@ -1,5 +1,9 @@
 # https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md
 notARepository: 'skip' # one of: 'prompt' | 'create' | 'skip'
 gui:
+  timeFormat: "20060102"
+git:
+  branchLogCmd: "git log --graph --color=always --abbrev-commit --decorate --date=relative --pretty=medium --oneline {{branchName}} --"
+gui:
   theme:
     lightTheme: false
