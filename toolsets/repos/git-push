@@ -1,0 +1,33 @@
+#!/bin/bash -e
+usage() {
+    echo "usage: git-push (origin) BRANCH"
+    echo ""
+    echo "  Safely force push the specified branch."
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        # sourced...
+        return 1
+    else
+        # regular call
+        exit 1
+    fi
+}
+
+if [ -z "$1" ]; then
+  usage
+fi
+
+if [ $# = 1 ]; then
+    ORIGIN=origin
+    BRANCH=$1
+else
+    ORIGIN=$1
+    BRANCH=$2
+fi
+
+BRANCH=`git-get-branch-name "$BRANCH"`
+
+echo "I/Status"
+git-status short
+echo "I/Pushing branch '$BRANCH'."
+(set -x ;
+ git push --force-with-lease --force-if-includes $ORIGIN $BRANCH)
