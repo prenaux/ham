@@ -9,7 +9,8 @@ if [ -z "$1" ]; then
    help
 fi
 
-BRANCH_NAME="$1"
+BRANCH=`git-get-branch-name "$1"`
 shift
 
+echo "I/Rebasing on '$BRANCH'."
 git rebase --autostash $BRANCH_NAME $*
