@@ -21,6 +21,7 @@
     - wesbos.theme-cobalt2: Cobalt2 Theme Official
     - whizkydee.material-palenight-theme: Palenight Theme
     - ms-vscode-remote.remote-ssh: Remote - SSH development
+    - junstyle.php-cs-fixer: php cs fixer
 
   To Edit the Keybindings:
     Alt+X / Cmd+Shift+P: Keyboard Shortcuts (JSON)
@@ -140,6 +141,10 @@
     "**/_*_ModuleDef.*": true,
     "**/*.h.idl.xml": true,
     "**/*.h.idl.inl": true,
+    // Hide compiled emscripten js
+    "**/bin/web-js/*_[dr]a.js": true,
+    "**/bin/web-js/*_[dr]a.aw": true,
+    "**/bin/web-js/*_[dr]a.html": true,
   },
 
   /**
@@ -251,5 +256,9 @@
   "editor.find.autoFindInSelection": "multiline",
   "git.inputValidationSubjectLength": 200,
   "lldb.suppressUpdateNotifications": true,
-  "cmake.configureOnOpen": false
+  "cmake.configureOnOpen": false,
+  "terminal.integrated.enableMultiLinePasteWarning": false,
+  // Stop the update notifications. Click the cog in the bottom left -> Check
+  // Updates to update manually.
+  "update.mode": "manual"
 }
