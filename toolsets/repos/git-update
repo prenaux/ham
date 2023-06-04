@@ -1,28 +1,61 @@
 #!/bin/bash -e
+. ham-bash-lib.sh
+
 usage() {
-    echo "usage: git-update BRANCH"
+    echo "usage: git-update (nofetch) BRANCH (ORIGIN_BRANCH)"
     echo ""
-    echo "  Fetch all and then merge --ff-only."
+    echo "  Fetch all, checkout BRANCH then rebase on ORIGIN_BRANCH. Automatically abort the rebase if there are any conflict."
     echo ""
     echo "  BRANCH can be 'current_branch' or '.' to specify the branch currently checked-out."
-
-    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-        # sourced...
-        return 1
-    else
-        # regular call
-        exit 1
-    fi
+    echo "  ORIGIN_BRANCH is 'origin:BRANCH' if not specified."
+    echo ""
+    exit 1
 }
 
-if [ -z "$1" ]; then
-  usage
+REPO_NAME=$(basename $(git rev-parse --show-toplevel))
+
+DO_FETCH=1
+if [ "$1" = "nofetch" ]; then
+  shift
+  DO_FETCH=0
 fi
 
+if [ -z "$1" ]; then
+  echo "E/BRANCH not specified."
+  usage
+fi
 BRANCH=`git-get-branch-name "$1"`
-ORIGIN_BRANCH=`git-get-branch-name "origin:$1"`
-echo "I/Merging 'origin:$BRANCH' into '$BRANCH'."
+shift
+
+if [ -z "$1" ]; then
+  ORIGIN_BRANCH=`git-get-branch-name "origin:$BRANCH"`
+else
+  ORIGIN_BRANCH=`git-get-branch-name "$1"`
+  shift
+fi
+log_info "Updating '$REPO_NAME' by rebasing '$BRANCH' onto '$ORIGIN_BRANCH'."
+
+if [ "$DO_FETCH" = "1" ]; then
+  (set -x ;
+   git fetch --all)
+fi
 
 (set -x ;
- git fetch --all ;
- git merge --ff-only "$ORIGIN_BRANCH")
+ git checkout "$BRANCH" ;
+ git-rebase "$ORIGIN_BRANCH")
+
+function in_rebase() {
+    g=$(git rev-parse --git-dir)
+    if [ -d "$g/rebase-merge" ] || [ -d "$g/rebase-apply" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+if in_rebase; then
+  log_error "Update failed, rebase aborted because of conflicts."
+  (set -x ; git rebase --abort)
+  exit 1
+else
+  log_success "Update done, rebase succeeded."
+fi
