@@ -28,6 +28,57 @@ else
 fi
 
 ########################################################################
+##  LOG
+########################################################################
+
+# Check if the terminal supports colors
+if [ "$TERM_NCOLORS" -gt 0 ]; then
+    HAM_TERMINAL_SUPPORTS_COLORS=true
+else
+    HAM_TERMINAL_SUPPORTS_COLORS=false
+fi
+
+log_info() {
+    if [ "$HAM_TERMINAL_SUPPORTS_COLORS" = true ] && [ -z "$NO_COLOR" ]; then
+        echo -e "\033[36mI/$@\033[0m"
+    else
+        echo "I/$@"
+    fi
+}
+
+log_success() {
+    if [ "$HAM_TERMINAL_SUPPORTS_COLORS" = true ] && [ -z "$NO_COLOR" ]; then
+        echo -e "\033[32mS/$@\033[0m"
+    else
+        echo "S/$@"
+    fi
+}
+
+log_error() {
+    if [ "$HAM_TERMINAL_SUPPORTS_COLORS" = true ] && [ -z "$NO_COLOR" ]; then
+        echo -e "\033[31mE/$@\033[0m"
+    else
+        echo "E/$@"
+    fi
+}
+
+log_warning() {
+    if [ "$HAM_TERMINAL_SUPPORTS_COLORS" = true ] && [ -z "$NO_COLOR" ]; then
+        echo -e "\033[33mW/$@\033[0m"
+    else
+        echo "W/$@"
+    fi
+}
+
+log_debug() {
+    if [ "$HAM_TERMINAL_SUPPORTS_COLORS" = true ] && [ -z "$NO_COLOR" ]; then
+        echo -e "\033[90mD/$@\033[0m"
+    else
+        echo "D/$@"
+    fi
+}
+
+########################################################################
 ##  Tables
 ########################################################################
 ni-hput() {
