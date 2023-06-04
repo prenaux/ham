@@ -260,5 +260,30 @@
   "terminal.integrated.enableMultiLinePasteWarning": false,
   // Stop the update notifications. Click the cog in the bottom left -> Check
   // Updates to update manually.
-  "update.mode": "manual"
+  "update.mode": "manual",
+  // Disable function keys in the terminal so that we can use htop, mc, etc.
+  "terminal.integrated.commandsToSkipShell": [
+    // f1
+    "-workbench.action.showCommands",
+    // f2
+    "-editor.action.rename",
+    // f3
+    "-workbench.action.terminal.findNext",
+    // f4
+    "-search.action.focusNextSearchResult",
+    // f5
+    "-workbench.action.debug.start",
+    // f6
+    "-workbench.action.debug.pause",
+    // f7
+    "-editor.action.wordHighlight.next",
+    // f8
+    "-editor.action.marker.nextInFiles",
+    // f9
+    "-editor.debug.action.toggleBreakpoint",
+    // f10
+    "-extension.node-debug.startWithStopOnEntry",
+    "-jupyter.runByLine",
+    "-jupyter.runByLineNext",
+  ]
 }
