@@ -22,6 +22,7 @@
     - whizkydee.material-palenight-theme: Palenight Theme
     - ms-vscode-remote.remote-ssh: Remote - SSH development
     - junstyle.php-cs-fixer: php cs fixer
+    - viveksjain.remreload: Automatically reload remote SSH window on timeout
 
   To Edit the Keybindings:
     Alt+X / Cmd+Shift+P: Keyboard Shortcuts (JSON)
