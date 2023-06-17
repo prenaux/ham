@@ -211,6 +211,7 @@
   "C_Cpp.formatting": "clangFormat",
   "C_Cpp.vcpkg.enabled": false,
   "C_Cpp.codeFolding": "disabled",
+  "C_Cpp.dimInactiveRegions": false,
 
   /**
    * Exclude perf killers
