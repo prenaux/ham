@@ -103,3 +103,5 @@ bin/*/*_da.so
 bin/*/*_da.exe
 bin/*/*_da.x64
 bin/*/*_da
+libs/msvc-nt-x86/
+libs/msvc-nt-x64/

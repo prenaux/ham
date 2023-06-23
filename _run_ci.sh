@@ -19,14 +19,7 @@ echo "I/Build and run pi with ham"
 
 echo "I/Build cppm modules."
 case $HAM_OS in
-    NT*)
-        echo "W/thrift_cppm module not supported yet on Windows."
-        ;;
-    OSX*)
-        (set -x ;
-         ham-cppm-build thrift_cppm)
-        ;;
-    LINUX*)
+    NT*|OSX*|LINUX*)
         (set -x ;
          ham-cppm-build thrift_cppm)
         ;;

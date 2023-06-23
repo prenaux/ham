@@ -5,6 +5,14 @@ SUFPCH = .pch ;
 
 CC_ADD_FLAGS = -Zm200 -Zc:forScope -W4 -std:$(C++VERSION) ;
 
+# Another MSVC awesomeness: The /Zc:__cplusplus compiler option enables the
+# __cplusplus preprocessor macro to report an updated value for recent C++
+# language standards support. By default, Visual Studio always returns the
+# value 199711L for the __cplusplus preprocessor macro.
+CC_ADD_FLAGS +=
+  -Zc:__cplusplus
+;
+
 # sometimes usefull
 if $(MSVC_SHOW_INCLUDES) = 1 {
   CC_ADD_FLAGS += -showIncludes ;

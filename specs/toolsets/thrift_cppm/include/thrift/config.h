@@ -2,11 +2,38 @@
 #ifndef __CONFIG_H_340AACBD_5C0F_CB49_9AA1_175A1D182B4A__
 #define __CONFIG_H_340AACBD_5C0F_CB49_9AA1_175A1D182B4A__
 
-#ifdef __EMSCRIPTEN__
+#if defined __EMSCRIPTEN__
 #define TSOCKET_NO_INTERRUPT_LISTENER
 #define TSOCKET_WEBSOCKET_EMULATION
+#endif
+
+#if defined __EMSCRIPTEN__ || defined _WIN32
 #define THRIFT_NO_SERVER
 #endif
+
+/* Name of package */
+#define PACKAGE "thrift"
+
+/* Define to the address where bug reports for this package should be sent. */
+#define PACKAGE_BUGREPORT ""
+
+/* Define to the full name of this package. */
+#define PACKAGE_NAME "thrift"
+
+/* Define to the full name and version of this package. */
+#define PACKAGE_STRING "thrift 0.17.0"
+
+/* Define to the one symbol short name of this package. */
+#define PACKAGE_TARNAME "thrift"
+
+/* Define to the home page for this package. */
+#define PACKAGE_URL ""
+
+/* Define to the version of this package. */
+#define PACKAGE_VERSION "0.17.0"
+
+// _WIN32 handled by github-thrift/lib/cpp/src/thrift/windows/config.h
+#if !defined _WIN32
 
 /* Define if the AI_ADDRCONFIG symbol is unavailable */
 /* #undef AI_ADDRCONFIG */
@@ -315,27 +342,6 @@
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
 
-/* Name of package */
-#define PACKAGE "thrift"
-
-/* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT ""
-
-/* Define to the full name of this package. */
-#define PACKAGE_NAME "thrift"
-
-/* Define to the full name and version of this package. */
-#define PACKAGE_STRING "thrift 0.17.0"
-
-/* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "thrift"
-
-/* Define to the home page for this package. */
-#define PACKAGE_URL ""
-
-/* Define to the version of this package. */
-#define PACKAGE_VERSION "0.17.0"
-
 /* Define as the return type of signal handlers (`int' or `void'). */
 #define RETSIGTYPE void
 
@@ -466,5 +472,7 @@
 /* Define to empty if the keyword `volatile' does not work. Warning: valid
    code using `volatile' can become incorrect without. Disable with care. */
 /* #undef volatile */
+
+#endif
 
 #endif // __CONFIG_H_340AACBD_5C0F_CB49_9AA1_175A1D182B4A__

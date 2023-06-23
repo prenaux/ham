@@ -4,6 +4,24 @@ if [ SubDirOnce TOP toolsets thrift_cppm ] = 1 { return ; }
 SubDirHdrs $(WORK) niLang sources niLang src API ;
 SubDirHdrs $(WORK) niLang sources niCURL src API ;
 
+if $(TARGET_OS) = LINUX || $(TARGET_OS) = MACOSX {
+  THRIFT_CPPM_HAS_SSL = 1 ;
+  THRIFT_CPPM_HAS_SERVER = 1 ;
+  THRIFT_CPPM_HAS_THRIFTC = 1 ;
+} else {
+  THRIFT_CPPM_HAS_SSL = 0 ;
+  THRIFT_CPPM_HAS_SERVER = 0 ;
+}
+# ECHO "... THRIFT_CPPM_HAS_SSL:" $(THRIFT_CPPM_HAS_SSL) ;
+# ECHO "... THRIFT_CPPM_HAS_SERVER:" $(THRIFT_CPPM_HAS_SERVER) ;
+
+if $(TARGET_OS) = LINUX || $(TARGET_OS) = MACOSX || $(TARGET_OS) = NT {
+  THRIFT_CPPM_HAS_THRIFTC = 1 ;
+} else {
+  THRIFT_CPPM_HAS_THRIFTC = 0 ;
+}
+# ECHO "... THRIFT_CPPM_HAS_THRIFTC:" $(THRIFT_CPPM_HAS_THRIFTC) ;
+
 ### thrift_cppm #########################################################
 tkDefModuleLib thrift_cppm : 1.0.0 ;
 hamToolsetHdrs boost_cppm ;
@@ -66,7 +84,7 @@ SRC =
 ] ;
 
 # SSL
-if $(OSPLAT) != JS {
+if $(THRIFT_CPPM_HAS_SSL) = 1 {
   # SSL src/thrift/transport/
   SRC += [ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift transport ] :
     TSSLSocket.cpp
@@ -74,7 +92,7 @@ if $(OSPLAT) != JS {
 }
 
 # Server
-if $(OSPLAT) != JS {
+if $(THRIFT_CPPM_HAS_SERVER) = 1 {
 
   # src/thrift/server/
   SRC += [ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift server ] :
@@ -99,50 +117,68 @@ if $(OSPLAT) != JS {
 
 }
 
+# Windows
+if $(TARGET_OS) = NT {
+  # src/thrift/windows/
+  SRC += [ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift windows ] :
+    GetTimeOfDay.cpp
+    OverlappedSubmissionThread.cpp
+    SocketPair.cpp
+    TWinsockSingleton.cpp
+    WinFcntl.cpp
+  ] ;
+}
+
 AssertFExists thrift_cppm : $(SRC) ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc rtti : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+ObjectDefines $(BUILD_SRC) : BOOST_ALL_NO_LIB=1 thrift_EXPORTS=1 ;
 
-if $(OS) = MACOSX {
+if $(TARGET_OS) = MACOSX {
   LINKLIBS on $(PKGTARGET) += -L$(OPENSSL_LIBDIR) -lcrypto -lssl ;
   ObjectHdrs $(BUILD_SRC) : [ FDirName $(OPENSSL_INCDIR) ] ;
 }
+if $(TARGET_OS) = NT {
+  LINKLIBS on $(PKGTARGET) += Ws2_32.lib ;
+}
 
 ### ham_thriftc #########################################################
-tkDefTool ham_thriftc : 1.0.0 ;
+if $(THRIFT_CPPM_HAS_THRIFTC) = 1 {
 
-SubDirHdrs $(SUBDIR) github-thrift compiler cpp src ;
+  tkDefTool ham_thriftc : 1.0.0 ;
 
-SRC =
+  SubDirHdrs $(SUBDIR) github-thrift compiler cpp src ;
 
-# gen'd by _gen_parser.sh
-[ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift ] :
-  thrifty.cc
-  thriftl.cc
-]
+  SRC =
 
-[ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift ] :
-    common.cc
-]
+  # NOTE: gen'd by _gen_parser.sh
+  [ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift ] :
+    thrifty.cc
+    thriftl.cc
+  ]
 
-[ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift generate ] :
-    t_generator.cc
-    validator_parser.cc
-]
+  [ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift ] :
+      common.cc
+  ]
 
-[ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift parse ] :
-    t_typedef.cc
-    parse.cc
-]
+  [ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift generate ] :
+      t_generator.cc
+      validator_parser.cc
+  ]
 
-[ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift ] :
-    main.cc
-]
+  [ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift parse ] :
+      t_typedef.cc
+      parse.cc
+  ]
 
-[ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift audit ] :
-    t_audit.cpp
-]
+  [ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift ] :
+      main.cc
+  ]
 
-;
+  [ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift audit ] :
+      t_audit.cpp
+  ]
+  ;
 
-BUILD_SRC = [ tkBuildPackage $(SRC) : pch minsz exc : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+  BUILD_SRC = [ tkBuildPackage $(SRC) : minsz exc : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+}
