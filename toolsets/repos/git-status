@@ -9,11 +9,6 @@ usage() {
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 MODE="${1:-short}"
-if [ ! -d ".git" ]; then
-  echo "E/Not in a git repository: $(pwd)"
-  usage
-fi
-
 if [[ "$MODE" == "full" ]]; then
   git status
 elif [[ "$MODE" == "short" ]]; then
