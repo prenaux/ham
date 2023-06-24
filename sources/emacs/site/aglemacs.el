@@ -265,6 +265,7 @@
 ;;*** TypeScript ********************************************************
 (autoload 'typescript-mode "typescript" nil t)
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
 
 ;;*** C# ****************************************************************
 (autoload 'csharp-mode "csharp-mode" nil t)
