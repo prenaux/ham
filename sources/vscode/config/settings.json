@@ -23,6 +23,7 @@
     - ms-vscode-remote.remote-ssh: Remote - SSH development
     - junstyle.php-cs-fixer: php cs fixer
     - viveksjain.remreload: Automatically reload remote SSH window on timeout
+    - Atishay-Jain.All-Autocomplete: Auto complete from all opened files
 
   To Edit the Keybindings:
     Alt+X / Cmd+Shift+P: Keyboard Shortcuts (JSON)
@@ -68,6 +69,14 @@
   },
   "zenMode.fullScreen": false,
   "zenMode.centerLayout": false,
+  "editor.wordBasedSuggestions": true,
+  "editor.wordBasedSuggestionsMode": "allDocuments",
+  // Controls whether suggestions should automatically show up while typing.
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": true,
+    "strings": true
+  },
 
   /**
     * Silence The Noise
@@ -277,6 +286,7 @@
     "-workbench.action.debug.start",
     // f6
     "-workbench.action.debug.pause",
+    "-workbench.action.focusNextPart",
     // f7
     "-editor.action.wordHighlight.next",
     // f8
@@ -287,5 +297,17 @@
     "-extension.node-debug.startWithStopOnEntry",
     "-jupyter.runByLine",
     "-jupyter.runByLineNext",
-  ]
+  ],
+  "git.path": ["d:/Work/ham/toolsets/repos/nt-x86/git/bin/git.exe", "/usr/bin/git"],
+  "terminal.integrated.profiles.windows": {
+      "ham-shell": {
+        "path": "d:/Work/ham/bin/nt-x86/bash.exe",
+        "icon": "terminal-bash",
+        "env": { "HAM_HOME": "d:/Work/ham/" },
+        "args": [
+          "--rcfile", "d:/Work/ham/bin/ham-bash-start.sh", "-i"
+        ]
+      }
+  },
+  "terminal.integrated.defaultProfile.windows": "ham-shell"
 }
