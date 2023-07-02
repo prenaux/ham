@@ -1,0 +1,4 @@
+bin/nt-x64
+bin/lin-x64
+bin/osx-x64
+bin/osx-arm64

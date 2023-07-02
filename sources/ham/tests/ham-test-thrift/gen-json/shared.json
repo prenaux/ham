@@ -1,0 +1,69 @@
+{
+  "name": "shared",
+  "doc": "This Thrift file can be included by other Thrift files that want to share\nthese definitions.\n",
+  "namespaces": {
+    "cpp": "shared",
+    "java": "shared",
+    "js": "shared",
+    "json": "shared",
+    "php": "shared",
+    "py": "shared",
+    "rs": "shared",
+    "xml": "shared"
+  },
+  "includes": [
+  ],
+  "enums": [
+  ],
+  "typedefs": [
+  ],
+  "structs": [
+    {
+      "name": "SharedStruct",
+      "isException": false,
+      "isUnion": false,
+      "fields": [
+        {
+          "key": 1,
+          "name": "key",
+          "typeId": "i32",
+          "required": "req_out"
+        },
+        {
+          "key": 2,
+          "name": "value",
+          "typeId": "string",
+          "required": "req_out"
+        }
+      ]
+    }
+  ],
+  "constants": [
+  ],
+  "services": [
+    {
+      "name": "SharedService",
+      "functions": [
+        {
+          "name": "getStruct",
+          "returnTypeId": "struct",
+          "returnType": {
+            "typeId": "struct",
+            "class": "SharedStruct"
+          },
+          "oneway": false,
+          "arguments": [
+            {
+              "key": 1,
+              "name": "key",
+              "typeId": "i32",
+              "required": "req_out"
+            }
+          ],
+          "exceptions": [
+          ]
+        }
+      ]
+    }
+  ]
+}

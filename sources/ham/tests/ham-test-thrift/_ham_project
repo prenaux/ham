@@ -1,0 +1,9 @@
+#!/bin/bash
+if [[ -z $HAM_PROJECT_DIR ]]; then
+    echo "E/HAM_PROJECT_DIR not set !"
+    return 1
+fi
+
+export PM2_ENV_NAME=ham-test-thrift
+
+toolset_import_list repos nodejs php_8 thrift default boost_cppm thrift_cppm || return 1

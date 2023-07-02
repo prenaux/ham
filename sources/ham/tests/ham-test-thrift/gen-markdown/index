@@ -1,0 +1,13 @@
+# Thrift declarations
+| Module | Services & Functions | Data types | Constants |
+| --- | --- | --- | --- |
+|tutorial|[Calculator](tutorial#service-calculator)|[Operation](tutorial#enumeration-operation)|[INT32CONSTANT](tutorial#constant-int32constant)|
+||    [ &bull; ping](tutorial#function-calculatorping)|[MyInteger](tutorial#typedef-myinteger)|[MAPCONSTANT](tutorial#constant-mapconstant)|
+||    [ &bull; add](tutorial#function-calculatoradd)|[Work](tutorial#struct-work)||
+||    [ &bull; calculate](tutorial#function-calculatorcalculate)|[InvalidOperation](tutorial#exception-invalidoperation)||
+||    [ &bull; zip](tutorial#function-calculatorzip)|||
+
+|shared|[SharedService](shared#service-sharedservice)|[SharedStruct](shared#struct-sharedstruct)||
+||    [ &bull; getStruct](shared#function-sharedservicegetstruct)|||
+
+

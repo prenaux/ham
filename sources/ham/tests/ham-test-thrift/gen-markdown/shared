@@ -1,0 +1,34 @@
+# Thrift module: shared
+
+This Thrift file can be included by other Thrift files that want to share these definitions. 
+
+| Module | Services & Functions | Data types | Constants |
+| --- | --- | --- | --- |
+|shared|[SharedService](#service-sharedservice)|[SharedStruct](#struct-sharedstruct)||
+||    [ &bull; getStruct](#function-sharedservicegetstruct)|||
+
+
+***
+## Data structures
+
+### Struct: SharedStruct
+
+
+| Key | Field | Type | Description | Requiredness | Default value |
+| --- | --- | --- | --- | --- | --- |
+|1|key|```i32```||default||
+|2|value|```string```||default||
+
+***
+## Services
+
+### Service: SharedService
+
+#### Function: SharedService.getStruct
+
+
+[```SharedStruct```](#struct-sharedstruct)
+ _getStruct_(```i32``` key)
+
+
+

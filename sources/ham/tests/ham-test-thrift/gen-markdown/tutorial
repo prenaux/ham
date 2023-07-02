@@ -1,0 +1,102 @@
+# Thrift module: tutorial
+
+The first thing to know about are types. The available types in Thrift are:   bool        Boolean, one byte  i8 (byte)   Signed 8-bit integer  i16         Signed 16-bit integer  i32         Signed 32-bit integer  i64         Signed 64-bit integer  double      64-bit floating point value  string      String  binary      Blob (byte array)  map&lt;t1,t2&gt;  Map from one type to another  list&lt;t1&gt;    Ordered list of one type  set&lt;t1&gt;     Set of unique elements of one type  Did you also notice that Thrift supports C style comments? 
+
+| Module | Services & Functions | Data types | Constants |
+| --- | --- | --- | --- |
+|tutorial|[Calculator](#service-calculator)|[Operation](#enumeration-operation)|[INT32CONSTANT](#constant-int32constant)|
+||    [ &bull; ping](#function-calculatorping)|[MyInteger](#typedef-myinteger)|[MAPCONSTANT](#constant-mapconstant)|
+||    [ &bull; add](#function-calculatoradd)|[Work](#struct-work)||
+||    [ &bull; calculate](#function-calculatorcalculate)|[InvalidOperation](#exception-invalidoperation)||
+||    [ &bull; zip](#function-calculatorzip)|||
+
+
+***
+## Constants
+
+|Constant|Type|Value||
+|---|---|---|---|
+| ```INT32CONSTANT``` | ```i32```| ``````9853`````` |Thrift also lets you define constants for use across languages. Complex types and structs are specified using JSON notation. |
+| ```MAPCONSTANT``` | map&lt;```string```, ```string```&gt;| ```{ ```goodnight``` = ```moon```, ```hello``` = ```world``` }``` ||
+
+***
+## Enumerations
+
+### Enumeration: Operation
+You can define enums, which are just 32 bit integers. Values are optional and start at 1 if not supplied, C style again. 
+
+|Name|Value|Description|
+|---|---|---|
+|```ADD```|```1```||
+|```SUBTRACT```|```2```||
+|```MULTIPLY```|```3```||
+|```DIVIDE```|```4```||
+
+***
+## Type declarations
+
+### Typedef: MyInteger
+Thrift lets you do typedefs to get pretty names for your types. Standard C style here. 
+
+_Base type_: **```i32```**
+
+
+***
+## Data structures
+
+### Struct: Work
+Structs are the basic complex data structures. They are comprised of fields which each have an integer identifier, a type, a symbolic name, and an optional default value.  Fields can be declared "optional", which ensures they will not be included in the serialized output if they aren't set.  Note that this requires some manual management in some languages. 
+
+| Key | Field | Type | Description | Requiredness | Default value |
+| --- | --- | --- | --- | --- | --- |
+|1|num1|```i32```||default|``````0``````|
+|2|num2|```i32```||default||
+|3|op|[```Operation```](#enumeration-operation)||default||
+|4|comment|```string```||optional||
+
+### Exception: InvalidOperation
+Structs can also be exceptions, if they are nasty. 
+
+| Key | Field | Type | Description | Requiredness | Default value |
+| --- | --- | --- | --- | --- | --- |
+|1|whatOp|```i32```||default||
+|2|why|```string```||default||
+
+***
+## Services
+
+### Service: Calculator
+**extends ** _[```SharedService```](shared#service-sharedsharedservice)_
+Ahh, now onto the cool part, defining a service. Services just need a name and can optionally inherit from another service using the extends keyword. 
+#### Function: Calculator.ping
+A method definition looks like C code. It has a return type, arguments, and optionally a list of exceptions that it may throw. Note that argument lists and exception lists are specified using the exact same syntax as field lists in struct or exception definitions. 
+
+```void```
+ _ping_()
+
+
+#### Function: Calculator.add
+
+
+```i32```
+ _add_(```i32``` num1,
+```i32``` num2)
+
+
+#### Function: Calculator.calculate
+
+
+```i32```
+ _calculate_(```i32``` logid,
+[```Work```](#struct-work) w)
+> throws [```InvalidOperation```](#exception-invalidoperation)
+
+
+#### Function: Calculator.zip
+This method has a oneway modifier. That means the client only makes a request and does not listen for any response at all. Oneway methods must be void. 
+
+```void```
+ _zip_()
+
+
+

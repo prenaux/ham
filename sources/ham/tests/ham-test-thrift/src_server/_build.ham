@@ -1,0 +1,15 @@
+if [ SubDirOnce TOP src_server ] = 1 { return ; }
+
+tkDefTool ham-test-thrift-server : 1.0.0 ;
+hamToolsetHdrs boost_cppm : ham ;
+hamToolsetLibs thrift_cppm : ham ;
+
+SRC = [ tkPkgSrcSubDir . ] ;
+# We have to exclude the skeleton files since those are templates
+SRC += [ ListFilter [ tkPkgSrcSubDir .. gen-cpp ] : ".*" : ".*skeleton\..*" ] ;
+SRC_EXTRA = ;
+
+runInDir ham-test-thrift-server ;
+BUILD_SRC = [ tkBuildPackage $(SRC) : exc rtti : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+
+DEPENDS ham-test-thrift : ham-test-thrift-server ;
