@@ -7,4 +7,16 @@ if [ -z "$HAM_PHP_EXE_PATH" ]; then
   echo "E/HAM_PHP_EXE_PATH not defined."
   exit 1
 fi
-"${HAM_PHP_EXE_PATH}" "$@"
+case $HAM_OS in
+  NT*)
+    PHP_INI_PATH="$PHP_HOME/../php_8_windows.ini"
+    if [ ! -e "$PHP_INI_PATH" ]; then
+      echo "E/Can't find PHP ini '$PHP_INI_PATH'."
+      exit 1
+    fi
+    "${HAM_PHP_EXE_PATH}" -c "$PHP_INI_PATH" "$@"
+    ;;
+  *)
+    "${HAM_PHP_EXE_PATH}" "$@"
+    ;;
+esac
