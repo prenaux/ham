@@ -19,6 +19,10 @@ case $HAM_OS in
           fi
         fi
         ;;
+    NT*)
+        toolset_check_and_dl_ver thrift nt-x64 v18_1 || return 1
+        pathenv_add "$HAM_TOOLSET_DIR/nt-x64"
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
