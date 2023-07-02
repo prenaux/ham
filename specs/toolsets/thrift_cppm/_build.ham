@@ -8,7 +8,11 @@ if $(TARGET_OS) = LINUX || $(TARGET_OS) = MACOSX {
   THRIFT_CPPM_HAS_SSL = 1 ;
   THRIFT_CPPM_HAS_SERVER = 1 ;
   THRIFT_CPPM_HAS_THRIFTC = 1 ;
-} else {
+}
+else if $(TARGET_OS) = NT {
+  THRIFT_CPPM_HAS_SERVER = 1 ;
+}
+else {
   THRIFT_CPPM_HAS_SSL = 0 ;
   THRIFT_CPPM_HAS_SERVER = 0 ;
 }
@@ -109,12 +113,13 @@ if $(THRIFT_CPPM_HAS_SERVER) = 1 {
     TServerSocket.cpp
   ] ;
 
-  # SSL src/thrift/transport/
-  SRC += [ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift transport ] :
-    TSSLServerSocket.cpp
-    TWebSocketServer.cpp
-  ] ;
-
+  if $(THRIFT_CPPM_HAS_SSL) = 1 {
+    # SSL src/thrift/transport/
+    SRC += [ tkPkgSrcSubDirLst [ FDirName github-thrift lib cpp src thrift transport ] :
+      TSSLServerSocket.cpp
+      TWebSocketServer.cpp
+    ] ;
+  }
 }
 
 # Windows

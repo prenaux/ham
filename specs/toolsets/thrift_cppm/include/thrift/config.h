@@ -7,7 +7,7 @@
 #define TSOCKET_WEBSOCKET_EMULATION
 #endif
 
-#if defined __EMSCRIPTEN__ || defined _WIN32
+#if defined __EMSCRIPTEN__
 #define THRIFT_NO_SERVER
 #endif
 
