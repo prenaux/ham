@@ -19,6 +19,28 @@ if [ -z "$1" ]; then
   usage
 fi
 BUILD_TARGET=$1
+if [ "$BUILD_TARGET" = "default" ]; then
+  # Should mirror the default toolsets in toolsets/default/setup-toolset.sh
+  case $HAM_OS in
+    NT*)
+      BUILD_TARGET=nt-x64
+      ;;
+    OSX*)
+      if [ "$HAM_BIN_LOA" == "osx-arm64" ]; then
+        BUILD_TARGET=osx-arm64
+      else
+        BUILD_TARGET=osx-x64
+      fi
+      ;;
+    LINUX)
+      BUILD_TARGET=lin-x64
+      ;;
+    *)
+      echo "E/Toolset: Unsupported host OS"
+      return 1
+      ;;
+  esac
+fi
 
 TOOLSET_NAME=""
 case "$BUILD_TARGET" in
