@@ -169,6 +169,18 @@ if $(THRIFT_CPPM_HAS_THRIFTC) = 1 {
   [ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift generate ] :
       t_generator.cc
       validator_parser.cc
+      t_cpp_generator.cc
+      t_html_generator.cc
+      t_java_generator.cc
+      t_js_generator.cc
+      t_json_generator.cc
+      t_markdown_generator.cc
+      t_php_generator.cc
+      t_py_generator.cc
+      t_rs_generator.cc
+      t_swift_generator.cc
+      t_xml_generator.cc
+      t_xsd_generator.cc
   ]
 
   [ tkPkgSrcSubDirLst [ FDirName github-thrift compiler cpp src thrift parse ] :
