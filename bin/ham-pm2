@@ -71,7 +71,7 @@ elif [ "$1" == start-once ]; then
     fi
     shift
 
-    if [[ $((pm2 info "$APP_NAME" || echo 'status|stopped') | grep status) =~ 'online' ]]; then
+    if [[ `pm2 info "$APP_NAME" | grep 'status.*online'` ]]; then
         echo "I/'$APP_NAME' already started and online."
     else
         echo "I/'$APP_NAME' not online, starting cmd: $START_CMD $@"
@@ -92,7 +92,7 @@ elif [ "$1" == restart ]; then
     fi
     shift
 
-    if [[ $((pm2 info "$APP_NAME" || echo 'status|stopped') | grep status) =~ 'online' ]]; then
+    if [[ `pm2 info "$APP_NAME" | grep 'status.*online'` ]]; then
         echo "I/'$APP_NAME' already started and online, stopping it first."
         pm2 stop "$APP_NAME"
     fi
