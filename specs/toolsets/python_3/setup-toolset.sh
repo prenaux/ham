@@ -9,21 +9,23 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/python_3"
 case $HAM_OS in
     NT*)
         PYINSTALL_VERDIR=Python310
-        PYINSTALL_VERSION=3.10.7
-        PYINSTALL_EXE_NAME=python-${PYINSTALL_VERSION}-amd64.exe
+        PYINSTALL_VERSION=3.10.11
         # Look for python in default install destination...
         export PYTHON3_DIR="$HOME/AppData/Local/Programs/Python/$PYINSTALL_VERDIR"
         if [ ! -e "$PYTHON3_DIR" ] || [ ! -e "$PYTHON3_DIR/python.exe" ]; then
             echo "I/Downloading Python ${PYINSTALL_VERSION}..."
+            # PYINSTALL_EXE_NAME=python-3_10_11-amd64.exe
+            # dl_file "$TEMPDIR/$PYINSTALL_EXE_NAME" https://cdn2.talansoft.com/ftp/toolsets/$PYINSTALL_EXE_NAME
+            PYINSTALL_EXE_NAME=python-${PYINSTALL_VERSION}-amd64.exe
             dl_file "$TEMPDIR/$PYINSTALL_EXE_NAME" https://www.python.org/ftp/python/$PYINSTALL_VERSION/$PYINSTALL_EXE_NAME
             errcheck $? python_3 "E/Can't download python 3" || return 1
             echo "I/Installing Python ${PYINSTALL_VERSION}..."
             (set -x ; "$TEMPDIR/$PYINSTALL_EXE_NAME" -quiet InstallAllUsers=0 Include_launcher=0)
             errcheck $? python_3 "E/Can't install python 3" || return 1
             if [ ! -e "${PYTHON3_DIR}/python.exe" ]; then
-              echo "W/Can't find exe after install, repairing..."
-              (set -x ; "$TEMPDIR/$PYINSTALL_EXE_NAME" -repair -quiet)
-              errcheck $? python_3 "E/Can't repair python 3" || return 1
+                echo "W/Can't find exe after install, repairing..."
+                (set -x ; "$TEMPDIR/$PYINSTALL_EXE_NAME" -repair -quiet)
+                errcheck $? python_3 "E/Can't repair python 3" || return 1
             fi
             rm -f "$TEMPDIR/$PYINSTALL_EXE_NAME"
         fi
