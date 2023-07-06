@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # These are needed by gyp to build native nodejs modules
-toolset_import_once default || return 1
 toolset_import_once python_3 || return 1
+toolset_import_once default || return 1
 
 # toolset
 export HAM_TOOLSET=NODEJS
@@ -18,15 +18,22 @@ case "$HAM_BIN_LOA" in
         # Absolutely obnoxious, why would you use a different folder structure only on Windows??
         export NODEJS_BIN_DIR="${NODEJS_DIR}"
         export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}/node_modules"
+        if [[ "${GITHUB_ACTIONS}" == "true" ]]; then
+            # Because of course GITHUB_ACTIONS do it even more different...
+            export NODEJS_GLOBAL_MODULES_BIN_DIR="c:/npm/prefix"
+        else
+            export NODEJS_GLOBAL_MODULES_BIN_DIR="$NODEJS_BIN_DIR"
+        fi
         ;;
     *)
         export NODEJS_BIN_DIR="${NODEJS_DIR}/bin"
         export NODEJS_GLOBAL_MODULES_DIR="${NODEJS_DIR}/lib/node_modules"
+        export NODEJS_GLOBAL_MODULES_BIN_DIR="$NODEJS_BIN_DIR"
         ;;
 esac
 export NODE_PATH=$NODEJS_GLOBAL_MODULES_DIR
 
-export PATH=${HAM_TOOLSET_DIR}:"${NODEJS_BIN_DIR}":${PATH}
+pathenv_add "${HAM_TOOLSET_DIR}"
 if [ ! -f "$NODEJS_DIR/$NODEJS_DL_TAG" ]; then
     echo "W/Couldn't find node, installing from the nodejs.org dist package..."
     case "$HAM_BIN_LOA" in
@@ -67,9 +74,16 @@ if [ ! -f "$NODEJS_DIR/$NODEJS_DL_TAG" ]; then
         return 1
     fi
     # Output the tag file
-    echo "$NODEJS_DL_VER" > "$NODEJS_DIR/$NODEJS_DL_TAG"
+    (set -x ; echo "$NODEJS_DL_VER" > "$NODEJS_DIR/$NODEJS_DL_TAG")
+    echo "I/NODEJS_BIN_DIR: ${NODEJS_BIN_DIR}"
+    echo "I/NODEJS_GLOBAL_MODULES_DIR: ${NODEJS_GLOBAL_MODULES_DIR}"
+    echo "I/NODEJS_GLOBAL_MODULES_BIN_DIR: ${NODEJS_GLOBAL_MODULES_BIN_DIR}"
 fi
+
 chmod +x "$NODEJS_BIN_DIR/"*
+pathenv_add "${NODEJS_BIN_DIR}"
+pathenv_add "${NODEJS_GLOBAL_MODULES_DIR}"
+pathenv_add "${NODEJS_GLOBAL_MODULES_BIN_DIR}"
 
 # Install any missing global node tools
 npm-install-global-deps

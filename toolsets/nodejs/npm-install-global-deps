@@ -56,3 +56,8 @@ npm install --force -g --no-bin-links \
     url-loader@0.5.x \
     webpack-dev-server@1.x \
     webpack@1.x
+
+# echo "I/Installed global packages:"
+# (set -x ;
+#  npm root -g
+#  npm list -g --depth=0)
