@@ -21,7 +21,8 @@ echo "I/Build cppm modules."
 case $HAM_OS in
     NT*|OSX*|LINUX*)
         (set -x ;
-         ham-cppm-build thrift_cppm)
+         ham-cppm-build thrift_cppm ;
+         "$HAM_HOME/sources/ham/tests/ham-test-thrift/_run_cpp_tests.sh")
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

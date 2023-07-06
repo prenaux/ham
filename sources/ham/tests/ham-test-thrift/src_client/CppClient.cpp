@@ -40,8 +40,10 @@ using namespace apache::thrift::transport;
 using namespace tutorial;
 using namespace shared;
 
+static constexpr int kPORT = 40990;
+
 int main() {
-  std::shared_ptr<TTransport> socket(new TSocket("localhost", 9090));
+  std::shared_ptr<TTransport> socket(new TSocket("localhost", kPORT));
 #ifdef USE_JSON_PROTOCOL
   std::shared_ptr<TTransport> transport(new THttpClient(socket, "localhost", "/service"));
   std::shared_ptr<TProtocol> protocol(new TJSONProtocol(transport));
@@ -86,7 +88,9 @@ int main() {
     cout << "Received log: " << ss << endl;
 
     transport->close();
+    return 0;
   } catch (TException& tx) {
     cout << "ERROR: " << tx.what() << endl;
+    return 1;
   }
 }

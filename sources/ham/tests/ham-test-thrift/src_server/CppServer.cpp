@@ -51,6 +51,8 @@ using namespace apache::thrift::server;
 using namespace tutorial;
 using namespace shared;
 
+static constexpr int kPORT = 40990;
+
 class CalculatorHandler : public CalculatorIf {
 public:
   CalculatorHandler() = default;
@@ -139,7 +141,7 @@ class CalculatorCloneFactory : virtual public CalculatorIfFactory {
 int main() {
   TThreadedServer server(
     std::make_shared<CalculatorProcessorFactory>(std::make_shared<CalculatorCloneFactory>()),
-    std::make_shared<TServerSocket>(9090), //port
+    std::make_shared<TServerSocket>(kPORT), //port
 #ifdef USE_JSON_PROTOCOL
     std::make_shared<THttpServerTransportFactory>(),
     std::make_shared<TJSONProtocolFactory>()
