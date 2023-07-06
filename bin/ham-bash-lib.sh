@@ -377,10 +377,26 @@ dl_file() {
 toolset_import() {
     ALREADY_IMPORTED=`ni-hget HAM_IMPORTS_TOOLSETS $1`
     if [[ "$ALREADY_IMPORTED" = "1" ]]; then
-        echo "W/toolset_import: toolset already imported '$1', skipped."
+        if [[ "$HAM_OS" == NT ]] && [[ "${GITHUB_ACTIONS}" == "true" ]]; then
+            # For some reason Windows GitHub Actions are messed up, we must
+            # reimport to make sure the environment is properly setup
+            echo "W/toolset_import: toolset already imported '$1', be reimported as we are in a Windows Github Action."
+            . ham-toolset-do-import.sh force $1 || return 1
+        else
+            echo "W/toolset_import: toolset already imported '$1', skipped."
+        fi
     else
-        . ham-toolset-do-import.sh $1
+        . ham-toolset-do-import.sh $1 || return 1
     fi
+}
+
+# This is meant to be used in _ham_project, do not use in setup-toolset.sh.
+toolset_import_list() {
+    for ARG in $@
+    do
+        toolset_import $ARG || return 1
+        export HAM_IMPORTED_TOOLSET=$ARG
+    done
 }
 
 toolset_import_once() {
@@ -475,20 +491,6 @@ toolset_info() {
     echo -n "TOOLS VERSION = "
     echo "$HAM_TOOLSET_VERSIONS"
     echo "==================================================="
-}
-
-# This is meant to be used in _ham_project, do not use in setup-toolset.sh.
-toolset_import_list() {
-    for ARG in $@
-    do
-      ALREADY_IMPORTED=`ni-hget HAM_IMPORTS_TOOLSETS $ARG`
-      if [[ "$ALREADY_IMPORTED" = "1" ]]; then
-        echo "W/toolset_import_list: toolset already imported '$ARG', skipped."
-      else
-        . ham-toolset-do-import.sh $ARG || return 1
-        export HAM_IMPORTED_TOOLSET=$ARG
-      fi
-    done
 }
 
 # This will always override the MSVC_IDE_DIR.
