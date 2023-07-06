@@ -12,6 +12,8 @@ case $HAM_OS in
         export REPOS_DIR="${HAM_TOOLSET_DIR}/nt-x86"
         export PATH=${HAM_TOOLSET_DIR}:${PATH}:${REPOS_DIR}/bin/:${REPOS_DIR}/git/bin/:${REPOS_DIR}/git/usr/bin/:${REPOS_DIR}/hg
         export OPENSSL_CONF="${REPOS_DIR}/git/ssl/openssl.cnf"
+        # Make sure that insanity is disabled, hands off my files keep them as they are in the repo ffs.
+        git config --global core.autocrlf false
         ;;
     OSX*)
         export PATH=${HAM_TOOLSET_DIR}:${PATH}
