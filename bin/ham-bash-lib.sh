@@ -521,7 +521,7 @@ toolset_find_msvc_ide_dir() {
             local prefix_=${vs_versions_typed_prefix[$i]}
             local suffix_=${vs_versions_typed_suffix[$i]}
             local version_=${vs_versions_typed[$i]}
-            for ry in $(seq $vs_versions_supported_count -1 1); do
+            for ((ry=$vs_versions_supported_count; ry>=1; ry--)); do
                 local out_version_=$(($version_ + ${ry} - 1))
                 local out_dir_="${vs_pf_dir}${prefix_}${out_version_}${suffix_}\\Common7\\IDE"
                 # echo "I/ Checking for IDE dir: ${out_dir_}"
