@@ -7,7 +7,7 @@ rule hamToolsetHdrs {
 
   local d = $(HAM_HDRS_$(toolsetName:U)) ;
   if ! $(d) {
-    logFatal "hamToolsetHdrs: HAM_HDRS_$(toolsetName:U) no defined." ;
+    logFatal "hamToolsetHdrs: HAM_HDRS_$(toolsetName:U) not defined." ;
   }
   if $(d) != "NONE" {
     if ! [ FExists $(d) ] {
