@@ -28,4 +28,6 @@ case $HAM_OS in
     fi
     ;;
 esac
-(set -x ; wget "$2" -O"$1")
+(set -x ;
+ mkdir -p "$(dirname "$1")"
+ wget --progress=bar:force:noscroll "$2" -O"$1")
