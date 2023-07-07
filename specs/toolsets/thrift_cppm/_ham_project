@@ -6,7 +6,7 @@ fi
 
 if [ ! -d "github-thrift" ]; then
   toolset_import_list repos || return 1
-  (set -x ; git clone --depth 1 https://github.com/bytecollider/thrift.git github-thrift)
+  (set -x ; git clone --depth 10 https://github.com/bytecollider/thrift.git github-thrift)
 else
   echo "I/cppm-thrift: github-thrift already cloned"
 fi
