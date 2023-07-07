@@ -16,7 +16,7 @@ concurrency:
 on:
   # Run on all push in main that modify any files in 'ham-test-thrift'
   push:
-    branches: [ main ]
+    branches: [ main, master ]
     paths:
       - '.github/workflows/ham-test-thrift-deploy.yml'
       - 'sources/ham/tests/ham-test-thrift/**'
