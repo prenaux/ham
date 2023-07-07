@@ -1,0 +1,101 @@
+name: ham-test-thrift-deploy
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  # Need to set the BRANCH envar when the action runs, because for PRs we cannot properly get the
+  # merging branch name via `git-head-info branch` since the PR Github Action runs at a detached HEAD
+  BRANCH: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
+
+concurrency:
+  group: ham-test-thrift-deploy-${{ github.head_ref }}
+  cancel-in-progress: true
+
+on:
+  # Run on all push in main that modify any files in 'ham-test-thrift'
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/ham-test-thrift-deploy.yml'
+      - 'sources/ham/tests/ham-test-thrift/**'
+
+  # Run on all pull requests that modify any files in 'ham-test-thrift'
+  pull_request:
+    paths:
+      - '.github/workflows/ham-test-thrift-deploy.yml'
+      - 'sources/ham/tests/ham-test-thrift/**'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  # This workflow contains a single job called "build"
+  build-ham-test-thrift-deploy:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+
+    # Add "id-token" with the intended permissions.
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # - name: Cache Ham
+        # uses: actions/cache@v3
+        # with:
+          # path: |
+            # ~/_ham/obj/
+            # ~/work/ham/ham
+          # key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-ham-823699a-niLang-2a45028
+
+      # Configure Workload Identity Federation and generate an access token.
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          workload_identity_provider: 'projects/738499856114/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+          service_account: 'github-cloudrun-deployer@we3d-games.iam.gserviceaccount.com'
+
+      # Alternative option - authentication via credentials json
+      # - id: 'auth'
+      #   uses: 'google-github-actions/auth@v0'
+      #   with:
+      #     credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker asia-docker.pkg.dev
+
+      - name: Ham initialization
+        run: |
+          source ./_env.sh
+          ham-install-os-packages
+
+      - name: Build docker image
+        run: |
+          source ./_env.sh
+          cd sources/ham/tests/ham-test-thrift
+          source hat
+          (set -x ; ./_docker_build.sh)
+
+      - name: Tag and Push Container
+        run: |-
+          source ./_env.sh
+          cd sources/ham/tests/ham-test-thrift
+          source hat
+          (set -x ; ./_docker_tag_and_push_image.sh)
+
+      - name: Deploy to Cloud Run
+        run: |-
+          source ./_env.sh
+          cd sources/ham/tests/ham-test-thrift
+          source hat
+          (set -x ; ./_docker_update_cloud_run_service.sh)
