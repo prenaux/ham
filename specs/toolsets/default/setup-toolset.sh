@@ -1,21 +1,24 @@
 #!/bin/bash
 toolset_import_once repos || return 1
-case $HAM_OS in
-    NT*)
+TARGET_BIN_LOA=$(toolset_get_target_bin_loa)
+case "${TARGET_BIN_LOA}" in
+    nt-x86)
+        toolset_import_once msvc_19_x86 || return 1
+        ;;
+    nt-x64)
         toolset_import_once msvc_19_x64 || return 1
         ;;
-    OSX*)
-        if [ "$HAM_BIN_LOA" == "osx-arm64" ]; then
-            toolset_import_once macos_arm64 || return 1
-        else
-            toolset_import_once macos_x64 || return 1
-        fi
+    osx-arm64)
+        toolset_import_once macos_arm64 || return 1
         ;;
-    LINUX)
+    osx-x64)
+        toolset_import_once macos_x64 || return 1
+        ;;
+    lin-x64)
         toolset_import_once linux_x64 || return 1
         ;;
     *)
-        echo "E/Toolset: Unsupported host OS"
+        echo "E/Toolset: Unsupported TARGET_BIN_LOA '${TARGET_BIN_LOA}'"
         return 1
         ;;
 esac

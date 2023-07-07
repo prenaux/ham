@@ -2,7 +2,7 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 HAM_NO_VER_CHECK=1 . "$SCRIPT_DIR/../../_env.sh"
 
-BIN_LOA=${HAM_TARGET_BIN_LOA:-$HAM_BIN_LOA}
+BIN_LOA=$(toolset_get_target_bin_loa)
 case $BIN_LOA in
     osx-arm64)
         HAM_NO_VER_CHECK=1 . ham-toolset macos_arm64 || exit 1

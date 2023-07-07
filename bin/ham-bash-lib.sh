@@ -317,7 +317,7 @@ update_prompt() {
         USERTAG="$USERNAME in $STY"
     fi
 
-    BIN_LOA=${HAM_TARGET_BIN_LOA:-${HAM_BIN_LOA}}
+    BIN_LOA=$(toolset_get_target_bin_loa)
     BUILD=${BUILD:-ra}
 
     if test "$TERM_NCOLORS" -ge 8; then
@@ -620,6 +620,40 @@ toolset_check_and_dl_ver() {
     else
         toolset_dl_cleanup ${TS_NAME} ${TS_VER_NAME}
     fi
+}
+
+toolset_get_target_bin_loa() {
+    BUILD_TARGET=$1
+    if [ -z "$BUILD_TARGET" ]; then
+        BUILD_TARGET=${HAM_TARGET_BIN_LOA:-default}
+    fi
+    if [ "$BUILD_TARGET" = "default" ]; then
+        # Should mirror the default toolsets in toolsets/default/setup-toolset.sh
+        case $HAM_OS in
+            NT*)
+                BUILD_TARGET=nt-x64
+                ;;
+            OSX*)
+                if [ "$HAM_BIN_LOA" == "osx-arm64" ]; then
+                    BUILD_TARGET=osx-arm64
+                else
+                    BUILD_TARGET=osx-x64
+                fi
+                ;;
+            LINUX)
+                BUILD_TARGET=lin-x64
+                ;;
+            *)
+                echo "E/toolset_get_target_bin_loa: Unsupported host OS '$HAM_OS'"
+                return 1
+                ;;
+        esac
+    fi
+    if [ -z "$BUILD_TARGET" ]; then
+        echo "E/toolset_get_target_bin_loa: Can't determine BUILD_TARGET."
+        return 1
+    fi
+    echo $BUILD_TARGET
 }
 
 ########################################################################

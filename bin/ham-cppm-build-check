@@ -17,7 +17,7 @@ usage() {
 
 # Build settings
 BUILD=${BUILD:-ra}
-BIN_LOA=${HAM_TARGET_BIN_LOA:-$HAM_BIN_LOA}
+BIN_LOA=$(toolset_get_target_bin_loa)
 
 # Parameters check
 TOOLSET=$1

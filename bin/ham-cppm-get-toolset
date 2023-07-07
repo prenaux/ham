@@ -1,4 +1,7 @@
 #!/bin/bash -e
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
 usage() {
     echo "usage:"
     echo "  ${0##*/} BUILD_TARGET"
@@ -18,32 +21,12 @@ if [ -z "$1" ]; then
   echo "E/BUILD_TARGET not specified."
   usage
 fi
+
 BUILD_TARGET=$1
-if [ "$BUILD_TARGET" = "default" ]; then
-  # Should mirror the default toolsets in toolsets/default/setup-toolset.sh
-  case $HAM_OS in
-    NT*)
-      BUILD_TARGET=nt-x64
-      ;;
-    OSX*)
-      if [ "$HAM_BIN_LOA" == "osx-arm64" ]; then
-        BUILD_TARGET=osx-arm64
-      else
-        BUILD_TARGET=osx-x64
-      fi
-      ;;
-    LINUX)
-      BUILD_TARGET=lin-x64
-      ;;
-    *)
-      echo "E/Toolset: Unsupported host OS"
-      return 1
-      ;;
-  esac
-fi
+TARGET_BIN_LOA=$(toolset_get_target_bin_loa "$BUILD_TARGET")
 
 TOOLSET_NAME=""
-case "$BUILD_TARGET" in
+case "$TARGET_BIN_LOA" in
   osx-x64)
     TOOLSET_NAME=macos_x64
     ;;
@@ -82,7 +65,7 @@ case "$BUILD_TARGET" in
 esac
 
 if [ -z "$TOOLSET_NAME" ]; then
-  echo "E/Unknown build target '$BUILD_TARGET'."
+  echo "E/Can't get toolset for BUILD_TARGET '$BUILD_TARGET' & TARGET_BIN_LOA '$TARGET_BIN_LOA'."
   exit 1
 fi
 

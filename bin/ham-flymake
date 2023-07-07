@@ -8,7 +8,7 @@ fi
 export FLYMAKE=1
 export HAM_NO_VER_CHECK=1
 export BUILD=da
-export HAM_TARGET_BIN_LOA=${HAM_TARGET_BIN_LOA:-$HAM_BIN_LOA}
+export HAM_TARGET_BIN_LOA=$(toolset_get_target_bin_loa)
 export HAM_IMPORTED_TOOLSETS=default
 if [[ -e ~/_ham_flymake ]]; then
     . ~/_ham_flymake
