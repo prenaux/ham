@@ -1,9 +1,6 @@
 if [ SubDirOnce TOP toolsets thrift_cppm ] = 1 { return ; }
 
-### niThrift ############################################################
-SubDirHdrs $(WORK) niLang sources niLang src API ;
-SubDirHdrs $(WORK) niLang sources niCURL src API ;
-
+### env setup ###########################################################
 if $(TARGET_OS) = LINUX || $(TARGET_OS) = MACOSX {
   THRIFT_CPPM_HAS_SSL = 1 ;
   THRIFT_CPPM_HAS_SERVER = 1 ;
