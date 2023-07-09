@@ -18,6 +18,8 @@ usage() {
 # Build settings
 BUILD=${BUILD:-ra}
 BIN_LOA=$(toolset_get_target_bin_loa)
+# echo "I/BUILD: $BUILD"
+# echo "I/BIN_LOA: $BIN_LOA"
 
 # Parameters check
 TOOLSET=$1

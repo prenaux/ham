@@ -623,7 +623,7 @@ toolset_check_and_dl_ver() {
 }
 
 toolset_get_target_bin_loa() {
-    BUILD_TARGET=$1
+    BUILD_TARGET=${1:-$BUILD_TARGET}
     if [ -z "$BUILD_TARGET" ]; then
         BUILD_TARGET=${HAM_TARGET_BIN_LOA:-default}
     fi
