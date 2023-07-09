@@ -1,8 +1,19 @@
 #!/bin/bash
 
-# These are needed by gyp to build native nodejs modules
-toolset_import_once python_3 || return 1
-toolset_import_once default || return 1
+case "$BUILD_TARGET" in
+    ""|nt-*|osx-*|lin-*)
+        NODEJS_CAN_NODE_MODULES=1
+        ;;
+    *)
+        NODEJS_CAN_NODE_MODULES=0
+        ;;
+esac
+
+if [ "$NODEJS_CAN_NODE_MODULES" = "1" ]; then
+    # These are needed by gyp to build native nodejs modules
+    toolset_import_once python_3 || return 1
+    toolset_import_once default || return 1
+fi
 
 # toolset
 export HAM_TOOLSET=NODEJS
@@ -85,8 +96,12 @@ pathenv_add "${NODEJS_BIN_DIR}"
 pathenv_add "${NODEJS_GLOBAL_MODULES_DIR}"
 pathenv_add "${NODEJS_GLOBAL_MODULES_BIN_DIR}"
 
-# Install any missing global node tools
-npm-install-global-deps
+if [ "$NODEJS_CAN_NODE_MODULES" = "1" ]; then
+    # Install any missing global node tools
+    npm-install-global-deps
+else
+    echo "W/nodejs toolset: BUILD_TARGET set to '$BUILD_TARGET' we cannot build or install node modules."
+fi
 
 VER="--- nodejs ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then

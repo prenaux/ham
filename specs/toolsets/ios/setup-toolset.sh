@@ -21,12 +21,8 @@ case $HAM_OS in
                 return 1
             fi
         fi
-        # Default iOS arch
-        export IOS_ARCH=arm64
         ;;
     OSX)
-        # Default iOS arch
-        export IOS_ARCH=arm64
         ham-brew-install fastlane "bin/fastlane"
         ham-brew-install ios-deploy "bin/ios-deploy"
         ;;
@@ -35,6 +31,8 @@ case $HAM_OS in
         return 1
         ;;
 esac
+
+export HAM_TARGET_BIN_LOA=ios-arm64
 
 VER="--- ios ----------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then

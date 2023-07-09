@@ -18,7 +18,7 @@ case "${TARGET_BIN_LOA}" in
         toolset_import_once linux_x64 || return 1
         ;;
     *)
-        echo "E/Toolset: Unsupported TARGET_BIN_LOA '${TARGET_BIN_LOA}'"
+        echo "E/default toolset: Unsupported TARGET_BIN_LOA '${TARGET_BIN_LOA}'"
         return 1
         ;;
 esac

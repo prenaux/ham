@@ -1,5 +1,5 @@
 #!/bin/bash -e
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then echo "E/ham-cppm-build-check: HAM_HOME not set !"; exit 1; fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 usage() {
@@ -24,17 +24,17 @@ BIN_LOA=$(toolset_get_target_bin_loa)
 # Parameters check
 TOOLSET=$1
 if [ -z "$TOOLSET" ]; then
-  echo "E/No TOOLSET specified"
+  echo "E/ham-cppm-build-check: No TOOLSET specified"
   usage
 elif [ ! -d "$HAM_HOME/specs/toolsets/$TOOLSET" ]; then
-  echo "E/TOOLSET doesn't exist: '$HAM_HOME/specs/toolsets/$TOOLSET'."
+  echo "E/ham-cppm-build-check: TOOLSET doesn't exist: '$HAM_HOME/specs/toolsets/$TOOLSET'."
   usage
 fi
 shift
 
 HDR_CHECK_PATH=$1
 if [ -z "$HDR_CHECK_PATH" ]; then
-  echo "E/No HDR_CHECK_PATH specified"
+  echo "E/ham-cppm-build-check: No HDR_CHECK_PATH specified"
   usage
 fi
 shift
@@ -42,7 +42,7 @@ shift
 
 LIB_CHECK_PATH=$1
 if [ -z "$LIB_CHECK_PATH" ]; then
-  echo "E/No LIB_CHECK_PATH specified"
+  echo "E/ham-cppm-build-check: No LIB_CHECK_PATH specified"
   usage
 elif [ "$1" == "nolib" ]; then
   LIB_CHECK_PATH=nolib
@@ -54,12 +54,17 @@ shift
 
 DLL_CHECK_PATH=$1
 if [ -z "$DLL_CHECK_PATH" ]; then
-  echo "E/No DLL_CHECK_PATH specified"
+  echo "E/ham-cppm-build-check: No DLL_CHECK_PATH specified"
   usage
 elif [ "$1" == "nodll" ]; then
   DLL_CHECK_PATH=nodll
 else
   DLL_CHECK_PATH="${HAM_HOME}/bin/`ham-cppm-bin-filepath dll ${DLL_CHECK_PATH}_${BUILD}`"
+  DLL_CHECK_EXT=${DLL_CHECK_PATH##*.}
+  # echo "I/DLL_CHECK_EXT: ${DLL_CHECK_EXT}"
+  if [ "$DLL_CHECK_EXT" == "no-dll-platform" ]; then
+    DLL_CHECK_PATH=nodll
+  fi
 fi
 shift
 # echo "I/DLL_CHECK_PATH: $DLL_CHECK_PATH"
@@ -102,29 +107,29 @@ if [ "$SHOULD_BUILD" == "1" ]; then
 
   FAILED=0
   if [ "$(check_file $HDR_CHECK_PATH noheader)" == "notfound" ]; then
-    echo "E/Can't find build artifact header '$HDR_CHECK_PATH'."
+    echo "E/ham-cppm-build-check: Can't find build artifact header '$HDR_CHECK_PATH'."
     FAILED=1
   fi
 
   if [ "$(check_file $LIB_CHECK_PATH nolib)" == "notfound" ]; then
-    echo "E/Can't find build artifact lib '$LIB_CHECK_PATH'."
+    echo "E/ham-cppm-build-check: Can't find build artifact lib '$LIB_CHECK_PATH'."
     FAILED=1
   fi
 
   if [ "$(check_file $DLL_CHECK_PATH nodll)" == "notfound" ]; then
-    echo "E/Can't find build artifact dll '$DLL_CHECK_PATH'."
+    echo "E/ham-cppm-build-check: Can't find build artifact dll '$DLL_CHECK_PATH'."
     FAILED=1
   fi
 
   for EXE_FILE in "${EXE_FILES[@]}"; do
     if [ ! -e "$EXE_FILE" ]; then
-      echo "E/Can't find build artifact exe '$EXE_FILE'."
+      echo "E/ham-cppm-build-check: Can't find build artifact exe '$EXE_FILE'."
       FAILED=1
     fi
   done
 
   if [ "$FAILED" == 1 ]; then
-    echo "E/Not all required artifacts of $TOOLSET could be built."
+    echo "E/ham-cppm-build-check: Not all required artifacts of $TOOLSET could be built."
     exit 1
   fi
 fi

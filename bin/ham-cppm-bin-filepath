@@ -36,9 +36,13 @@ case $TYPE in
         PREFIX=""
         SUFFIX=".x64"
         ;;
-      lin-*)
+      web-*)
         PREFIX=""
         SUFFIX=".html"
+        ;;
+      ios-*)
+        PREFIX=""
+        SUFFIX=".no-exe-platform"
         ;;
       *)
         PREFIX="unknown-exe-"
@@ -63,6 +67,10 @@ case $TYPE in
         SUFFIX=".so"
         ;;
       web-js)
+        PREFIX=""
+        SUFFIX=".no-dll-platform"
+        ;;
+      ios-*)
         PREFIX=""
         SUFFIX=".no-dll-platform"
         ;;
@@ -101,6 +109,11 @@ case $TYPE in
       web-js)
         LINKER=em
         PREFIX=""
+        SUFFIX=".a"
+        ;;
+      ios-*)
+        LINKER=gcc
+        PREFIX="lib"
         SUFFIX=".a"
         ;;
       *)

@@ -13,7 +13,7 @@ LINK = ld ;
 # The armv7f set adds dual-core instructions to armv7 for Apple A5 devices.
 # The armv7s set adds integer division optimizations for Apple A6 devices.
 # The arm64 set is for the A7, A8 and A8X devices, 64bit CPUs.
-IOS_ARCH ?= ARM64 ;
+IOS_ARCH ?= $(TARGET_OSPLAT) ;
 switch $(IOS_ARCH:L) {
   case armv6 :
     IOS_ARCH = $(IOS_ARCH:U) ;
@@ -25,6 +25,8 @@ switch $(IOS_ARCH:L) {
     IOS_ARCH = $(IOS_ARCH:U) ;
   case arm64 :
     IOS_ARCH = $(IOS_ARCH:U) ;
+  case x64 :
+    IOS_ARCH = X86_64 ;
   case x86_64 :
     IOS_ARCH = $(IOS_ARCH:U) ;
   case * :

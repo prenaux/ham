@@ -1,26 +1,31 @@
 if [ SubDirOnce TOP toolsets thrift_cppm ] = 1 { return ; }
 
+ECHO "... THRIFT_CPPM ..." ;
+
 ### env setup ###########################################################
+THRIFT_CPPM_HAS_SSL = 0 ;
+THRIFT_CPPM_HAS_SERVER = 0 ;
+THRIFT_CPPM_HAS_THRIFTC = 0 ;
+
 if $(TARGET_OS) = LINUX || $(TARGET_OS) = MACOSX {
-  THRIFT_CPPM_HAS_SSL = 1 ;
+  #
+  # We actually don't need SSL in Thrift as we use CURL to connect to SSL
+  # services from C++ atm (see niLang's niThrift). Also we'd need a robust
+  # OpenSSL build script because whatever is coming prebuilt in package
+  # managers is frought with various issues that create incompatibilities and
+  # breaks builds in various way.
+  #
+  # THRIFT_CPPM_HAS_SSL = 1 ;
   THRIFT_CPPM_HAS_SERVER = 1 ;
   THRIFT_CPPM_HAS_THRIFTC = 1 ;
 }
 else if $(TARGET_OS) = NT {
   THRIFT_CPPM_HAS_SERVER = 1 ;
 }
-else {
-  THRIFT_CPPM_HAS_SSL = 0 ;
-  THRIFT_CPPM_HAS_SERVER = 0 ;
-}
+
+# ECHO "... TARGET_OS:" $(TARGET_OS) ;
 # ECHO "... THRIFT_CPPM_HAS_SSL:" $(THRIFT_CPPM_HAS_SSL) ;
 # ECHO "... THRIFT_CPPM_HAS_SERVER:" $(THRIFT_CPPM_HAS_SERVER) ;
-
-if $(TARGET_OS) = LINUX || $(TARGET_OS) = MACOSX || $(TARGET_OS) = NT {
-  THRIFT_CPPM_HAS_THRIFTC = 1 ;
-} else {
-  THRIFT_CPPM_HAS_THRIFTC = 0 ;
-}
 # ECHO "... THRIFT_CPPM_HAS_THRIFTC:" $(THRIFT_CPPM_HAS_THRIFTC) ;
 
 ### thrift_cppm #########################################################
@@ -137,8 +142,10 @@ BUILD_SRC = [ tkBuildPackage $(SRC) : exc rtti : $(CHK_SOURCES) : $(SRC_EXTRA) ]
 ObjectDefines $(BUILD_SRC) : BOOST_ALL_NO_LIB=1 thrift_EXPORTS=1 ;
 
 if $(TARGET_OS) = MACOSX {
-  LINKLIBS on $(PKGTARGET) += -L$(OPENSSL_LIBDIR) -lcrypto -lssl ;
-  ObjectHdrs $(BUILD_SRC) : [ FDirName $(OPENSSL_INCDIR) ] ;
+  if $(THRIFT_CPPM_HAS_SSL) = 1 {
+    LINKLIBS on $(PKGTARGET) += -L$(OPENSSL_LIBDIR) -lcrypto -lssl ;
+    ObjectHdrs $(BUILD_SRC) : [ FDirName $(OPENSSL_INCDIR) ] ;
+  }
 }
 if $(TARGET_OS) = NT {
   LINKLIBS on $(PKGTARGET) += Ws2_32.lib ;
