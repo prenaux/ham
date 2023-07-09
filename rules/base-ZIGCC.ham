@@ -1,30 +1,3 @@
-if ! $(OSPLAT) {
-  if $(HAM_BIN_LOA) = osx-x64 ||
-     $(HAM_BIN_LOA) = nt-x86 ||
-     $(HAM_BIN_LOA) = lin-x64
-  {
-    OSPLAT = X64 ;
-  }
-  else if $(HAM_BIN_LOA) = osx-arm64 ||
-          $(HAM_BIN_LOA) = nt-arm64 ||
-          $(HAM_BIN_LOA) = lin-arm64
-  {
-    OSPLAT = ARM64 ;
-  }
-  else {
-    EXIT "E/OSPLAT not defined and unsupported HAM_BIN_LOA." ;
-  }
-}
-
-switch $(HAM_TARGET_BIN_LOA) {
-  case nt-x86 : TARGET_OS = NT ; TARGET_OSPLAT = X64 ;
-  case lin-x64 : TARGET_OS = LINUX ; TARGET_OSPLAT = X64 ;
-  case osx-x64 : TARGET_OS = MACOSX ; TARGET_OSPLAT = X64 ;
-  case osx-arm64 : TARGET_OS = MACOSX ; TARGET_OSPLAT = ARM64 ;
-  case * :
-    EXIT "E/HAM_TARGET_BIN_LOA not supported:" $(HAM_TARGET_BIN_LOA) ;
-}
-
 SLASH   ?= / ;
 SUFOBJ  ?= .o ;
 SUFLIB  ?= .a ;
