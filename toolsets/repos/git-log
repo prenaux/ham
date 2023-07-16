@@ -16,11 +16,13 @@ usage() {
 
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
+FORMAT=(--pretty=format:'%C(yellow)%h%Cgreen%d %Creset%s (%Cblue%an%Creset - %Cred%ad%Creset)' --date=short)
+
 if [ -z "$1" ]; then
   echo "I/=== Status ==="
   git-status short
   echo "I/=== Last 15 commits ==="
-  git --no-pager log --all --decorate --oneline -15 --graph
+  git --no-pager log --all --decorate --oneline -15 --graph "${FORMAT[@]}"
 else
   BRANCH=`git-get-branch-name "$1"`
   echo "I/Status:"
@@ -33,9 +35,9 @@ else
     echo "I/Default origin '$ORIGIN'."
   fi
   if [ -z "$ORIGIN" ]; then
-    git log --decorate --oneline --graph --first-parent $BRANCH "$@"
+    git log --decorate --oneline --graph --first-parent "${FORMAT[@]}" $BRANCH "$@"
   else
     shift
-    git log --decorate --oneline --graph --first-parent $BRANCH $ORIGIN/$BRANCH "$@"
+    git log --decorate --oneline --graph --first-parent "${FORMAT[@]}" $BRANCH $ORIGIN/$BRANCH "$@"
   fi
 fi
