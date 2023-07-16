@@ -11,7 +11,7 @@ _ham_complete_ls_targets() {
     CUR_WORD="$2"
     (set -e ;
      cd "$DIR" ;
-     find . -maxdepth 1 -type f -name "*.sh" -executable -exec basename {} \; ;
+     find . -maxdepth 1 -type f -name "*.sh" -perm +111 -exec basename {} \; ;
      if [[ "$CUR_WORD" != _* ]] && [ -f "$DIR/_ham_project" ]; then
          ham-ls-targets
      fi
