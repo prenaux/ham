@@ -17,54 +17,59 @@ usage() {
   fi
 }
 
-# Argument is a file
-if [ -f "$1" ]; then
+HAM_PROJECT_FILE=""
+if [ $# = 0 ] || [ "$1" == "." ]; then
+  FOUND_PROJECT_DIR="`hat-search-ham-project.sh`"
+  if [[ -z "$FOUND_PROJECT_DIR" ]]; then
+    log_error "No argument or '.' specified but couldn't find a _ham_project file."
+    usage
+  else
+    export HAM_PROJECT_DIR=${FOUND_PROJECT_DIR}
+    HAM_PROJECT_FILE="$(abspath "${FOUND_PROJECT_DIR}/_ham_project")"
+  fi
+elif [ -f "$1" ]; then
   if [ `basename "$1"` != "_ham_project" ]; then
-    echo "E/Passed a file that's not named _ham_project as parameter '$1'."
+    log_error "ham-toolset: The specified file '$1' is not named '_ham_project'."
     usage
   fi
+  HAM_PROJECT_FILE="$(abspath "$1")"
+elif [ -d "$1" ]; then
+  if [ ! -f "$1/_ham_project" ]; then
+    log_error "ham-toolset: The specified directory '$1' doesn't contain a '_ham_project' file."
+    usage
+  fi
+  HAM_PROJECT_FILE="$(abspath "$1/_ham_project")"
+elif [ -d "$WORK/$1" ]; then
+  if [ ! -f "$WORK/$1/_ham_project" ]; then
+    log_error "ham-toolset: The specified WORK directory '$WORK/$1' doesn't contain a '_ham_project' file."
+    usage
+  fi
+  HAM_PROJECT_FILE="$(abspath "$WORK/$1/_ham_project")"
+fi
 
+# Import a _ham_project
+if [ -n "$HAM_PROJECT_FILE" ]; then
+  echo "I/Import _ham_project: '$HAM_PROJECT_FILE'."
   . ham-env-clear
-  export HAM_PROJECT_DIR=`dirname "$1"`
-  . "$1"
+  export HAM_PROJECT_DIR=`dirname "$HAM_PROJECT_FILE"`
+  pushd "$HAM_PROJECT_DIR"
+  . "$HAM_PROJECT_FILE"
   HAM_DIE_SHOULD_RETURN=$SCRIPT_SOURCED errcheck $? ham-toolset "Can't import _ham_project." || return 1
+  popd
+# Import a list of toolsets
 else
+  . ham-env-clear
   # find the _ham_project file
   FOUND_PROJECT_DIR="`hat-search-ham-project.sh`"
-  # if [[ -e "$FOUND_PROJECT_DIR" ]]; then
-  #   echo "I/Found _ham_project in '${FOUND_PROJECT_DIR}'"
-  # fi
-
-  # echo "D/HAM_NO_VER_CHECK: $HAM_NO_VER_CHECK"
-  if [ $# = 0 ] || [ $1 == "." ]; then
-    if [[ -z "$FOUND_PROJECT_DIR" ]]; then
-      echo "E/No argument specified and couldn't find a _ham_project file."
-      usage
-    else
-      . ham-env-clear
-      export HAM_PROJECT_DIR=${FOUND_PROJECT_DIR}
-      pushd "$HAM_PROJECT_DIR"
-      . "$HAM_PROJECT_DIR/_ham_project"
-      HAM_DIE_SHOULD_RETURN=$SCRIPT_SOURCED errcheck $? ham-toolset "Can't import _ham_project." || return 1
-      popd
-    fi
-
-    if [ -z "$HAM_NO_VER_CHECK" ]; then
-      toolset_info
-      update_prompt
-    fi
-  else
-    . ham-env-clear
-    if [[ -e "$FOUND_PROJECT_DIR" ]]; then
-      export HAM_PROJECT_DIR=${FOUND_PROJECT_DIR}
-    fi
-
-    toolset_import_list "$@" || return 1
-    HAM_DIE_SHOULD_RETURN=$SCRIPT_SOURCED errcheck $? ham-toolset "Can't import toolsets: $ALL_ARGS." || return 1
-
-    if [ -z "$HAM_NO_VER_CHECK" ]; then
-      toolset_info
-      update_prompt
-    fi
+  if [[ -e "$FOUND_PROJECT_DIR" ]]; then
+    log_info "Found _ham_project in '${FOUND_PROJECT_DIR}'"
+    export HAM_PROJECT_DIR=${FOUND_PROJECT_DIR}
   fi
+  toolset_import_list "$@" || return 1
+  HAM_DIE_SHOULD_RETURN=$SCRIPT_SOURCED errcheck $? ham-toolset "Can't import toolsets: $ALL_ARGS." || return 1
+fi
+
+if [ -z "$HAM_NO_VER_CHECK" ]; then
+  toolset_info
+  update_prompt
 fi

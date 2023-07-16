@@ -10,15 +10,17 @@ export PATH=${PREV_PATH}:${PATH}
 
 # the help
 usage() {
-    echo "usage: ham [ options ] targets..."
+    echo "usage: ham [ options ] targets|scripts..."
     echo "version:" `"${HAM_CMD}" -v`
     echo ""
     echo "ham launch script:"
     echo "  -h             This help message"
-    echo "  -v             Print ham's version"
+    echo "  -v             Print ham's executable version"
+    echo "  -X toolkit     Import a toolkit's _ham_project and build it."
+    echo "                 (Equivalent to -T toolkit -D toolkit)."
     echo "  -T toolset     Add a toolset to import"
     echo "                 (can be specified multiple times)"
-    echo "  -D directory   Add a toolkit to build - the toolkit should be in $WORK"
+    echo "  -D toolkit     Add a toolkit to build - the toolkit should be in $WORK"
     echo "                 (can be specified multiple times)"
     echo "  --             Following parameters will be passed to ham directly"
     echo ""
@@ -31,7 +33,15 @@ usage() {
     echo "  # Build all in the current toolkit, displaying all the commands"
     echo "  ham -T default -- -dx all"
     echo "  # Build all in the niLang & niLang toolkits"
-    echo "  ham -T default -D niLang all"
+    echo "  ham -T niLang -D niLang all"
+    echo "  # Run _build_bootstrap.sh in the niLang toolkit"
+    echo "  ham -D niLang _build_bootstrap.sh"
+    echo "  # Run _build_bootstrap.sh in the niLang toolkit"
+    echo "  ham -D niLang _build_bootstrap.sh"
+    echo "  # Build niLang for web-js"
+    echo "  BUILD_TARGET=web-js ham -X niLang pass1 all"
+    echo "  # Debug build of niLang for web-js"
+    echo "  BUILD_TARGET=web-js BUILD=da ham -X niLang pass1 all"
     echo ""
 
     if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
@@ -59,8 +69,40 @@ if [ $# = 0 ]; then
 fi
 
 # process the arguments
+_ARG_TOOLSET=""
 _ARG_DIRECTORIES=()
-while getopts "T:D:vh" OPT
+
+process_toolset() {
+    OPTARG="$1"
+    if [ -z "${_ARG_TOOLSET}" ]; then
+      _ARG_TOOLSET="$OPTARG"
+    else
+      _ARG_TOOLSET="$_ARG_TOOLSET $OPTARG"
+    fi
+    # echo "_ARG_TOOLSET:" $_ARG_TOOLSET
+}
+
+process_directory() {
+    OPTARG=`ham-url dec "$1"`
+    if  [[ "$OPTARG" == ?:/* ]] || [[ "$OPTARG" == /* ]] || [[ "$OPTARG" == .* ]] ;
+    then
+        _ARG_DIRECTORY="$OPTARG"
+        if [[ ! -e "$_ARG_DIRECTORY" ]]; then
+            echo "E/Can't find directory '$_ARG_DIRECTORY'"
+            usage
+        fi
+    else
+        # Work App path
+        _ARG_DIRECTORY="$WORK/$OPTARG/"
+        if [[ ! -e "$_ARG_DIRECTORY" ]]; then
+            echo "E/Can't find directory '$_ARG_DIRECTORY'"
+            usage
+        fi
+    fi
+    _ARG_DIRECTORIES+=("$_ARG_DIRECTORY")
+}
+
+while getopts "T:D:X:vh" OPT
 do
     case "$OPT" in
         h)
@@ -74,7 +116,8 @@ do
             usage
             ;;
         v)
-            "$HAM_CMD" -v
+            log_info "HAM_CMD: ${HAM_CMD}"
+            log_info "VERSION: $("$HAM_CMD" -v)"
             if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
                 return 0
             else
@@ -82,38 +125,14 @@ do
             fi
             ;;
         T)
-            if [ -z "${_ARG_TOOLSET}" ]; then
-              _ARG_TOOLSET="$OPTARG"
-            else
-              _ARG_TOOLSET="$_ARG_TOOLSET $OPTARG"
-            fi
-            # echo "_ARG_TOOLSET:" $_ARG_TOOLSET
+            process_toolset "$OPTARG"
             ;;
         D)
-            OPTARG=`ham-url dec "$OPTARG"`
-            if  [[ "$OPTARG" == ?:/* ]] || [[ "$OPTARG" == /* ]] || [[ "$OPTARG" == .* ]] ;
-            then
-                # Explicit path
-                _ARG_DIRECTORY="$OPTARG/sources/"
-                if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                    _ARG_DIRECTORY="$OPTARG"
-                    if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                        echo "E/Can't find directory '$_ARG_DIRECTORY'"
-                        usage
-                    fi
-                fi
-            else
-                # Work App path
-                _ARG_DIRECTORY="$WORK/$OPTARG/sources/"
-                if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                    _ARG_DIRECTORY="$WORK/$OPTARG/"
-                    if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                        echo "E/Can't find directory '$_ARG_DIRECTORY'"
-                        usage
-                    fi
-                fi
-            fi
-            _ARG_DIRECTORIES+=("$_ARG_DIRECTORY")
+            process_directory "$OPTARG"
+            ;;
+        X)
+            process_toolset "$OPTARG"
+            process_directory "$OPTARG"
             ;;
         *)
             echo "E/Unknown option '$OPT'"
@@ -126,14 +145,7 @@ shift $((OPTIND-1))
 if [[ "$_ARG_TOOLSET" != "" ]]; then
     . "$HAM_HOME/bin/ham-bash-setenv.sh"
     export HAM_NO_VER_CHECK=${HAM_NO_VER_CHECK:-1}
-    if [ -f "${_ARG_TOOLSET}" ]; then
-      pushd `dirname "${_ARG_TOOLSET}"`
-      # Specified toolset is a file - should be a _ham_project
-      . ham-toolset "${_ARG_TOOLSET}"
-      popd
-    else
-      . ham-toolset $_ARG_TOOLSET
-    fi
+    . ham-toolset "$_ARG_TOOLSET"
     errcheck $? ham "Can't setup the '$_ARG_TOOLSET' toolset."
 fi
 
@@ -142,6 +154,55 @@ if [[ -z "$HAM_TOOLSET" ]]; then
     usage
 fi
 
+ham_or_bash() {
+  # Initialize two arrays to hold .sh files and other parameters
+  SH_FILES=()
+  HAM_CMD_PARAMS=()
+
+  # Separate .sh files from other parameters and validate bash scripts
+  for PARAM in "$@"; do
+      if [[ "$PARAM" == *.sh ]]; then
+          if [[ ! -f "$PARAM" ]]; then
+              log_error "Can't find '$PARAM' in '$(pwd)'."
+              exit 1
+          fi
+          SH_FILES+=("$PARAM")
+      else
+          HAM_CMD_PARAMS+=("$PARAM")
+      fi
+  done
+
+  # Run ham-validate-targets if there are parameters to pass to it
+  HAM_EXEC_DIR="."
+  if [ "${#HAM_CMD_PARAMS[@]}" -gt 0 ]; then
+      if [[ ! -f "_build.ham" ]]; then
+        if [[ ! -f "sources/_build.ham" ]]; then
+            log_error "Can't find '_build.ham' and 'sources/_build.ham' in '$(pwd)'."
+            exit 1
+        else
+            HAM_EXEC_DIR="./sources"
+        fi
+      fi
+  fi
+
+  # Execute collected .sh files directly
+  for SH_FILE in "${SH_FILES[@]}"; do
+      echo "I/Excuting '${SH_FILE}' in '$(pwd)'."
+      "./$SH_FILE"
+      errcheck $? ham "Script '${SH_FILE}' execution failed in '$(pwd)'."
+  done
+
+  # Run the remaining parameters with $HAM_CMD if there are any
+  if [ "${#HAM_CMD_PARAMS[@]}" -gt 0 ]; then
+      if [ -n "$HAM_EXEC_DIR" ]; then
+        cd "$HAM_EXEC_DIR"
+      fi
+      echo "I/'ham ${HAM_CMD_PARAMS[@]}' in '$(pwd)'"
+      "$HAM_CMD" "${HAM_CMD_PARAMS[@]}"
+      errcheck $? ham "Ham build in '$DIR' failed."
+  fi
+}
+
 hamIn() {
     export CWD="`pwd`"
     export DIR="$1"
@@ -149,8 +210,8 @@ hamIn() {
     if [[ "$CWD" != "$DIR" ]]; then
         pushd "$DIR"
     fi
-    (set -x ; "$HAM_CMD" $*)
-    errcheck $? ham "Build in $DIR failed."
+    ham_or_bash "$@"
+    errcheck $? ham "Run in '$DIR' failed."
     if [[ "$CWD" != "$DIR" ]]; then
         popd > /dev/null
     fi
@@ -161,13 +222,7 @@ if [[ "$_ARG_DIRECTORY" != "" ]]; then
         hamIn "$dir" $*
     done
 else
-    # find the _build.ham file
-    export BUILD_HAM_DIR="`ham-search-build-ham.sh`"
-    if [[ -z "$BUILD_HAM_DIR" ]]; then
-        echo "E/Can't find _build.ham !"
-        exit 1
-    fi
-    hamIn "$BUILD_HAM_DIR" $*
+    hamIn . $*
 fi
 
 EXEC_TIME="$(($(date +%s)-EXEC_TIME))"
