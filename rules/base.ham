@@ -477,9 +477,15 @@ rule logError {
   }
 }
 
+LOG_FATAL_EXIT ?= 1 ;
 rule logFatal {
   local _loc = [ logGetLoc ] ;
-  EXIT "F/$(_loc):" $(<) ;
+  if $(LOG_FATAL_EXIT) = 1 {
+    EXIT "F/$(_loc):" $(<) ;
+  }
+  else {
+    ECHO "F/$(_loc):" $(<) ;
+  }
 }
 
 rule logVar {
@@ -491,24 +497,24 @@ rule logVar {
 #----------------------------------------------------------------------
 rule AssertEq {
   if $(<) != $(>) {
-    logFatal "ASSERT:" $(<) "!=" $(>) ;
+    logFatal "AssertEq:" $(<) "!=" $(>) ;
   }
 }
 
 rule AssertVarDefined {
   if ! $($(<)) {
-    logFatal "ASSERT:" $(<) "variable should be defined." ;
+    logFatal "AssertVarDefined:" $(<) "variable should be defined." ;
   }
 }
 
 rule AssertVarUndefined {
   if $($(<)) {
-    logFatal "ASSERT:" $(<) "variable should not be defined." ;
+    logFatal "AssertVarUndefined:" $(<) "variable should not be defined." ;
   }
 }
 
 rule AssertUnreachable {
-  logFatal "ASSERT: code should not be reached:" $(<) ;
+  logFatal "AssertUnreachable: code should not be reached:" $(<) ;
 }
 
 # AssertFExists CONTEXT_NAME : FILES ;
@@ -521,7 +527,7 @@ rule AssertFExists {
   }
   for _s in $(2) {
     if ! [ FExists $(_s) ] {
-      logFatal "ASSERT: $(1): Can't find '$(_s)'." ;
+      logFatal "AssertFExists: $(1): Can't find '$(_s)'." ;
     }
   }
   return $(2) ;
@@ -530,14 +536,14 @@ rule AssertFExists {
 # AssertFDirName CONTEXT_NAME : PATH ;
 rule AssertFDirName {
   if ! $(1) {
-    logFatal "AssertFExists: CONTEXT_NAME not specified." ;
+    logFatal "AssertFDirName: CONTEXT_NAME not specified." ;
   }
   if ! $(2) {
-    logFatal "AssertFExists: PATH not specified." ;
+    logFatal "AssertFDirName: PATH not specified." ;
   }
   local path = [ FDirName $(2) ] ;
   if ! [ FExists $(path) ] {
-    logFatal "ASSERT: $(1): Can't find '$(path)'." ;
+    logFatal "AssertFDirName: $(1): Can't find '$(path)'." ;
   }
   return $(path) ;
 }
@@ -553,10 +559,10 @@ rule ImportBuildPath {
   PATH = $(HAM_HOME)/rules/$(<) ;
   if ! [ FExists $(PATH) ] {
     if $(>) {
-      EXIT $(>) ;
+      EXIT "ImportBuildPath:" $(>) ;
     }
     else {
-      EXIT "E/Can't find import:" $(PATH) ;
+      EXIT "ImportBuildPath: E/Can't find import:" $(PATH) ;
     }
   }
 
@@ -653,7 +659,7 @@ switch $(HAM_TARGET_BIN_LOA) {
   case web-js : TARGET_OS = WEB ; TARGET_OSPLAT = JS ;
   case ios-arm64 : TARGET_OS = IOS ; TARGET_OSPLAT = ARM64 ;
   case * :
-    EXIT "E/HAM_TARGET_BIN_LOA not supported:" $(HAM_TARGET_BIN_LOA) ;
+    EXIT "F/HAM_TARGET_BIN_LOA not supported:" $(HAM_TARGET_BIN_LOA) ;
 }
 TARGET_OS_FULL = $(TARGET_OS)-$(TARGET_OSPLAT) ;
 
@@ -1292,8 +1298,7 @@ rule SharedLibraryFromObjects
   }
   else
   {
-    Echo "Sorry, I don't know how to make a shared library on your system" ;
-    Exit "Please contact the Ham maintainer for help" ;
+    logFatal "SharedLibraryFromObjects: Sorry, I don't know how to make a shared library on your system" ;
   }
 }
 
@@ -1751,7 +1756,7 @@ rule FTargetSuffix
 }
 
 rule UserFTargetSuffix {
-  EXIT "UserFTargetSuffix not defined for:" $(<) ;
+  logFatal "UserFTargetSuffix: not defined for:" $(<) ;
 }
 
 rule FTarget
@@ -2042,7 +2047,7 @@ rule SubDir
   $(SUBDIRRULES) $(<) ;
 
   if ! [ FExists $(SUBDIR) ] {
-    EXIT "Can't find subdirectory: '$(SUBDIR)'" ;
+    EXIT "SubDir: Can't find subdirectory: '$(SUBDIR)'" ;
   }
 }
 
@@ -2102,7 +2107,7 @@ rule SubInclude
 
   if ! $($(<[1]))
   {
-    Exit SubInclude '$(<[1])' without prior SubDir '$(<[1])' ;
+    EXIT SubInclude '$(<[1])' without prior SubDir '$(<[1])' ;
   }
 
   SubDir $(<) ;
@@ -2119,7 +2124,7 @@ rule SubRules
 
   if ! $($(<[1]))
   {
-    Exit SubRules $(<[1]) without prior SubDir $(<[1]) ;
+    EXIT SubRules $(<[1]) without prior SubDir $(<[1]) ;
   }
 
   SubDir $(<) ;
@@ -2133,7 +2138,7 @@ rule Undefines
 
 rule UserObject
 {
-  Exit "Unknown suffix on" $(>) "- see UserObject rule in Jamfile(5)." ;
+  logFatal "UserObject: Unknown suffix on" $(>) "- see UserObject rule in 'base.ham'." ;
 }
 
 #
@@ -2358,7 +2363,7 @@ rule FCleanDirs {
 # Return an absolute directory path from a path which is relative to the SUBDIR
 rule FSubDirAbsName {
   if ! $(TOP_DIR) {
-    EXIT "The TOP_DIR environment variable must be set in your local _rules.ham." ;
+    EXIT "FSubDirAbsName: The TOP_DIR environment variable must be set in your local _rules.ham." ;
   }
 
   local d = [ FCleanDirs $(SUBDIR_TOKENS) $(<) ] ;
