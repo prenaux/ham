@@ -140,7 +140,7 @@ shift
 if [[ "$_ARG_TOOLSET" != "" ]]; then
     . "$HAM_HOME/bin/ham-bash-setenv.sh"
     export HAM_NO_VER_CHECK=${HAM_NO_VER_CHECK:-1}
-    . ham-toolset $_ARG_TOOLSET
+    . ham-toolset $_ARG_TOOLSET > /dev/null
     errcheck $? ham "Can't setup the '$_ARG_TOOLSET' toolset."
 fi
 
@@ -154,7 +154,7 @@ fi
 ham_call() {
   (
     # set -x ;
-    "${HAM_CMD}" $*
+    LOG_FATAL_EXIT=0 "${HAM_CMD}" $*
   )
 }
 
