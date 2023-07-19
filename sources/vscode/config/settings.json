@@ -122,7 +122,7 @@
   /**
     * Typography
     **/
-  "editor.fontFamily": "MonoLisa, Menlo, Monaco, 'Courier New', monospace",
+  "editor.fontFamily": "CommitMono, MonoLisa, Menlo, Monaco, 'Courier New', monospace",
   "editor.fontSize": 13,
   "editor.lineHeight": 24,
   "editor.suggestFontSize": 13,
@@ -179,7 +179,8 @@
     "*.niw": "squirrel",
     "*.gml": "xml",
     "*.vlk": "xml",
-    "*.level": "xml"
+    "*.level": "xml",
+    "*.css": "tailwindcss"
   },
 
   /**
@@ -309,5 +310,6 @@
         ]
       }
   },
-  "terminal.integrated.defaultProfile.windows": "ham-shell"
+  "terminal.integrated.defaultProfile.windows": "ham-shell",
+  "terminal.integrated.scrollback": 1000000
 }
