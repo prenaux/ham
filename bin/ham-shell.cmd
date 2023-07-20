@@ -1,9 +1,9 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-set PATH="%~dp0";"%~dp0\nt-x86"
-REM !! DO NOT add quotes below !!
+REM !! DO NOT add quotes around %~dp0 !!
 set HAM_HOME=%~dp0\..
+set PATH="%~dp0";"%~dp0\nt-x86";%HAM_HOME%\toolsets\repos\nt-x86\git\bin\;%PATH%
 
 REM Check if bash.exe exists, and if not, call ham-toolset-dl-and-extract.cmd
 if not exist "%HAM_HOME%\toolsets\repos\nt-x86\git\bin\bash.exe" (
@@ -27,4 +27,4 @@ if not exist "%HAM_HOME%\toolsets\repos\nt-x86\git\bin\bash.exe" (
 )
 
 REM Now run bash.exe with the specified parameters
-"%HAM_HOME%\toolsets\repos\nt-x86\git\bin\bash.exe" --rcfile "%HAM_HOME%\bin\ham-bash-start.sh" -i %*
+bash.exe --rcfile "%HAM_HOME%\bin\ham-bash-start.sh" -i %*

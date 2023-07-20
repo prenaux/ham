@@ -31,6 +31,7 @@
  ;; custom version... we need to force cmdproxy and setup the exec-path
  (add-to-list 'exec-path (concat HAM_HOME "/bin"))
  (add-to-list 'exec-path (concat HAM_HOME "/bin/nt-x86"))
+ (add-to-list 'exec-path (concat HAM_HOME "/toolsets/repos/nt-x86/git/bin"))
  (defun shell-command-to-string (command)
    "Execute shell command COMMAND and return its output as a string."
    (with-output-to-string
