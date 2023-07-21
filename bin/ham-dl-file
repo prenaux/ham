@@ -19,15 +19,31 @@ if [ -z "$2" ]; then
   usage
 fi
 
-# Use wget instead of curl because it can resume partial downloads
-case $HAM_OS in
-  OSX*)
-    if [ ! -x "$(command -v wget)" ]; then
-      echo "I/wget not found, using brew to install it..."
-      ham-brew install wget
-    fi
-    ;;
-esac
+log_info "Downloading '$URL' to '$OUTFILE'."
+
+# Create the output folder
+OUTDIR=$(dirname "$OUTFILE")
 (set -x ;
- mkdir -p "$(dirname "$1")"
- wget --progress=bar:force:noscroll "$2" -O"$1")
+ mkdir -p "$OUTDIR")
+errcheck $? ham-dl-file "Can't create output directory '$OUTDIR'."
+
+# Sanitize the path
+OUTFILE=$(abspath "$OUTFILE")
+
+if [ -n "$HAM_DL_WGET" ]; then
+  # Download with wget, it can resume partial downloads
+  case $HAM_OS in
+    OSX*)
+      if [ ! -x "$(command -v wget)" ]; then
+        echo "I/wget not found, using brew to install it..."
+        ham-brew install wget
+      fi
+      ;;
+  esac
+  (set -x ;
+   wget --progress=bar:force:noscroll "$URL" -O"$OUTFILE")
+else
+  # Download with curl
+  (set -x ;
+   curl -# -o "$OUTFILE" "$URL")
+fi
