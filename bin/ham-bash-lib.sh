@@ -894,6 +894,3 @@ if [[ -z "$BUILD_BIN_LOA" ]]; then
     echo "E/BUILD_BIN_LOA not set !"
     exit 1
 fi
-
-# Make sure HAM_HOME has the proper unix format
-export HAM_HOME=`abspath "$HAM_HOME"`

@@ -57,6 +57,9 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
     pathenv_add "$HAM_HOME/bin"
     pathenv_add "$WORK/niLang/bin"
     export PATH_BACKUP=$PATH
+
+    # Sanitize HAM_HOME's path
+    export HAM_HOME=$(abspath "$HAM_HOME")
 else
     true
 fi
