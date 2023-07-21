@@ -2395,20 +2395,17 @@ actions Masm
 
 actions Cc
 {
-  SRC_ABSPATH="`pwd`/$(>)"
-  $(CC) -c -o "$(<)" $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "${SRC_ABSPATH}"
+  $(CC) -c -o "$(<)" $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "$(>)"
 }
 
 actions C99
 {
-  SRC_ABSPATH="`pwd`/$(>)"
-  $(CC) -c -o "$(<)" $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "${SRC_ABSPATH}"
+  $(CC) -c -o "$(<)" $(CCFLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "$(>)"
 }
 
 actions C++
 {
-  SRC_ABSPATH="`pwd`/$(>)"
-  $(C++) -c -o "$(<)" $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "${SRC_ABSPATH}"
+  $(C++) -c -o "$(<)" $(C++FLAGS) $(OPTIM) $(CCDEFS) $(CCHDRS) "$(>)"
 }
 
 rule LintC

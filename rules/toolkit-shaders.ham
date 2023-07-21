@@ -138,11 +138,10 @@ rule shaderCgc1
 if $(SHADER_NICGC_SERVER) {
   actions shaderCgc1
   {
-    SRC_ABSPATH="`pwd`/$(>)"
     SRC_PP="$(<:S=.pp.txt)"
     set -e
     # Preprocess the shader
-    $(NICPP_EXE) -D$(SHADER_PROFILE)=1 $(SHADER_CGC1_DEFS) $(SHADER_CGC1_HDRS) "${SRC_ABSPATH}" "${SRC_PP}"
+    $(NICPP_EXE) -D$(SHADER_PROFILE)=1 $(SHADER_CGC1_DEFS) $(SHADER_CGC1_HDRS) "$(>)" "${SRC_PP}"
     # Compile the preprocessed shader
     $(NICGC_EXE) -S "$(SHADER_NICGC_SERVER)" $(SHADER_CGC1_FLAGS) $(SHADER_CGC1_DEFS) $(SHADER_CGC1_HDRS) $(SHADER_PROFILE) $(SHADER_NAME) "${SRC_PP}" "$(<)"
     # Cleanup temps
@@ -152,8 +151,7 @@ if $(SHADER_NICGC_SERVER) {
 else {
   actions shaderCgc1
   {
-    SRC_ABSPATH="`pwd`/$(>)"
-    $(NICGC_EXE) $(SHADER_CGC1_FLAGS) $(SHADER_CGC1_DEFS) $(SHADER_CGC1_HDRS) $(SHADER_PROFILE) $(SHADER_NAME) "${SRC_ABSPATH}" "$(<)"
+    $(NICGC_EXE) $(SHADER_CGC1_FLAGS) $(SHADER_CGC1_DEFS) $(SHADER_CGC1_HDRS) $(SHADER_PROFILE) $(SHADER_NAME) "$(>)" "$(<)"
   }
 }
 
@@ -189,8 +187,7 @@ rule shaderGlsl
 
 actions shaderGlsl
 {
-  SRC_ABSPATH="`pwd`/$(>)"
-  $(NISH_EXE) @nish $(SHADER_GLSL_FLAGS) $(SHADER_GLSL_DEFS) $(SHADER_GLSL_HDRS) -x $(SHADER_STAGE) -p $(SHADER_PROFILE) -t $(SHADER_TARGETS) -n $(SHADER_NAME) "${SRC_ABSPATH}" "$(<)"
+  $(NISH_EXE) @nish $(SHADER_GLSL_FLAGS) $(SHADER_GLSL_DEFS) $(SHADER_GLSL_HDRS) -x $(SHADER_STAGE) -p $(SHADER_PROFILE) -t $(SHADER_TARGETS) -n $(SHADER_NAME) "$(>)" "$(<)"
 }
 
 #----------------------------------------------------------------------
