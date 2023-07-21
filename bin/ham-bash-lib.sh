@@ -269,6 +269,36 @@ path_filename() {
     echo "$filename"
 }
 
+path_filename_noext() {
+    filename=$(basename "$1")
+    echo "${filename%.*}"
+}
+
+path_extension() {
+    filename=$(basename "$1")
+    echo "${filename##*.}"
+}
+
+path_dirname() {
+    dir=$(dirname "$1")
+    echo "$dir"
+}
+
+path_abs_dirname() {
+    dir=$(nativedir "$(dirname "$1")")
+    echo "$dir"
+}
+
+path_native_dirname() {
+    dir=$(nativedir "$(dirname "$1")")
+    echo "$dir"
+}
+
+path_unix_dirname() {
+    dir=$(unxpath "$(dirname "$1")")
+    echo "$dir"
+}
+
 pathenv_add() {
     if [ ! -d "$1" ]; then
         return 0
