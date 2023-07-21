@@ -1,0 +1,69 @@
+#!/bin/bash
+if [[ -z "$HAM_HOME" ]]; then
+    export HAM_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+    echo "W/HAM_HOME not set, set to:" $HAM_HOME
+fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+function usage() {
+    echo "usage: hamx :toolkit ENV=value target script.sh ..."
+    echo ""
+    echo "  :toolkit     Import a toolkit."
+    echo "  ENV=value    Set an environment variable for the ham command."
+    echo "  target       Specify a target to be passed to the ham command."
+    echo "  script.sh    Specify a script to be run by the ham command."
+    echo ""
+    echo "Notes:"
+    echo "  The execution order is always the same regardless of the parameter orders:"
+    echo "  1. The toolkits are imported"
+    echo "  2. The environment variables are set"
+    echo "  3. The bash scripts are executed"
+    echo "  4. The ham targets are built"
+    echo ""
+}
+
+# Script to wrap 'ham' command according to your specifications
+function hamx() {
+    if [[ $# -eq 0 ]]; then
+        usage
+        return 1
+    fi
+
+    local toolkits=()
+    local envs=()
+    local targets=()
+    local scripts=()
+    local flags=()
+
+    for arg in "$@"
+    do
+        if [[ "$arg" == *=* ]] && [[ ! "$arg" == *.* ]]; then
+            envs+=("-E" "$arg")
+        elif [[ "$arg" == :* ]]; then
+            toolkits+=("-X" "${arg#*:}")
+        elif [[ "$arg" == *.sh ]]; then
+            scripts+=("$arg")
+        elif [[ "$arg" == -* ]]; then
+            flags+=("$arg")
+        else
+            targets+=("$arg")
+        fi
+    done
+
+    if [[ ${#targets[@]} -eq 0 ]] && [[ ${#scripts[@]} -eq 0 ]]; then
+        log_error "No targets or scripts specified."
+        usage
+        return 1
+    fi
+
+    if [[ ${#flags[@]} -eq 0 ]]; then
+      (set -x ;
+       ham "${envs[@]}" "${toolkits[@]}" "${scripts[@]}" "${targets[@]}")
+    else
+      (set -x ;
+       ham "${envs[@]}" "${toolkits[@]}" "${scripts[@]}" -- ${flags[@]} "${targets[@]}")
+    fi
+}
+
+# Invoke hamx with all passed arguments
+hamx "$@"
