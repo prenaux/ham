@@ -91,11 +91,18 @@ fi
 if [ "$SHOULD_BUILD" == "0" ]; then
   while [ "$#" -gt 0 ]; do
     EXE_PATH=$(ham-cppm-exe-path $TOOLSET $1)
-    # echo "I/EXE_PATH: $EXE_PATH"
-    EXE_FILES+=("$EXE_PATH")
-    if [ ! -e "$EXE_PATH" ]; then
-      SHOULD_BUILD=1
-      break
+    EXE_PATH_EXT=$(path_extension "$EXE_PATH")
+    if [ "$EXE_PATH_EXT" == "no-exe-platform" ] ||
+         [ "$EXE_PATH_EXT" == "html" ]; then
+      # echo "I/Skip non executable EXE_PATH: $EXE_PATH"
+      true
+    else
+      # echo "I/EXE_PATH: $EXE_PATH"
+      EXE_FILES+=("$EXE_PATH")
+      if [ ! -e "$EXE_PATH" ]; then
+        SHOULD_BUILD=1
+        break
+      fi
     fi
     shift
   done
