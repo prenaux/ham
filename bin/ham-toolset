@@ -27,11 +27,7 @@ if [ $# = 0 ] || [ "$1" == "." ]; then
     export HAM_PROJECT_DIR=${FOUND_PROJECT_DIR}
     HAM_PROJECT_FILE="$(abspath "${FOUND_PROJECT_DIR}/_ham_project")"
   fi
-elif [ -f "$1" ]; then
-  if [ `basename "$1"` != "_ham_project" ]; then
-    log_error "ham-toolset: The specified file '$1' is not named '_ham_project'."
-    usage
-  fi
+elif [ -f "$1" ] && [ `basename "$1"` == "_ham_project" ]; then
   HAM_PROJECT_FILE="$(abspath "$1")"
 elif [ -d "$1" ]; then
   if [ ! -f "$1/_ham_project" ]; then
@@ -45,6 +41,9 @@ elif [ -d "$WORK/$1" ]; then
     usage
   fi
   HAM_PROJECT_FILE="$(abspath "$WORK/$1/_ham_project")"
+elif [ -f "$1" ]; then
+  log_error "ham-toolset: The specified file '$1' is not named '_ham_project'."
+  usage
 fi
 
 # Import a _ham_project
