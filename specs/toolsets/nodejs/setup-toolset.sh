@@ -50,7 +50,7 @@ if [ ! -f "$NODEJS_DIR/$NODEJS_DL_TAG" ]; then
     case "$HAM_BIN_LOA" in
         nt-x86)
             NODEJS_DL_NAME="node-${NODEJS_DL_VER}-win-x64"
-            NODEJS_DL_FN="${NODEJS_DL_NAME}.zip"
+            NODEJS_DL_FN="${NODEJS_DL_NAME}.7z"
             ;;
         osx-x64)
             NODEJS_DL_NAME="node-${NODEJS_DL_VER}-darwin-x64"
@@ -62,7 +62,7 @@ if [ ! -f "$NODEJS_DIR/$NODEJS_DL_TAG" ]; then
             ;;
         lin-x64)
             NODEJS_DL_NAME="node-${NODEJS_DL_VER}-linux-x64"
-            NODEJS_DL_FN="${NODEJS_DL_NAME}.tar.xz"
+            NODEJS_DL_FN="${NODEJS_DL_NAME}.tar.gz"
             ;;
         *)
             complain nodejs_toolset "Unsupported arch '$HAM_BIN_LOA'."
@@ -73,7 +73,7 @@ if [ ! -f "$NODEJS_DIR/$NODEJS_DL_TAG" ]; then
     (set -ex ;
      rm -Rf "$NODEJS_DIR" ;
      ham-dl-file "${NODEJS_DL_FN}" "$NODEJS_DL_URL" ;
-     7z x -y "${NODEJS_DL_FN}" -o"${HAM_TOOLSET_DIR}" | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" - ;
+     ham-unpack "${NODEJS_DL_FN}" "${HAM_TOOLSET_DIR}" ;
      mv "${HAM_TOOLSET_DIR}/${NODEJS_DL_NAME}" "${NODEJS_DIR}" ;
      rm "${NODEJS_DL_FN}")
     if [ ! -f "$NODEJS_BIN_DIR/node" ]; then

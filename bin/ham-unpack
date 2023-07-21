@@ -1,0 +1,46 @@
+#!/bin/bash -e
+export HAM_NO_TAG_CHECK=1
+if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+print_help() {
+    echo "syntax: ham-unpack ARCH OUTDIR"
+    exit 1
+}
+
+ARCH="$1"
+if [ -z "$1" ]; then
+  echo "E/ARCH not specified."
+  usage
+fi
+
+OUTDIR="$2"
+if [ -z "$2" ]; then
+  echo "E/OUTDIR not specified."
+  usage
+fi
+
+# Create the output folder
+(set -x ;
+ mkdir -p "$OUTDIR")
+errcheck $? ham-unpack "Can't create output directory '$OUTDIR'."
+
+# Unpack
+case "$ARCH" in
+  *.7z)
+    (set -x ; 7z x -y "$ARCH" -o"$OUTDIR")
+    if [ ${PIPESTATUS[0]} != 0 ]; then
+      log_error "Extraction failed !"
+      usage
+    fi
+    ;;
+  *.tar.gz|*.tar.xz)
+    tar xf "$ARCH" -C "$OUTDIR"
+    ;;
+  *)
+    log_error "Unknown kind of archive '$ARCH'."
+    usage
+    ;;
+esac
+
+log_info "Done, unpacked '$ARCH' in '$OUTDIR'."
