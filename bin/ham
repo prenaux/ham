@@ -68,18 +68,13 @@ if [ $# = 0 ]; then
 fi
 
 # process the arguments
-_ARG_TOOLSET=""
+_ARG_TOOLSETS=()
 _ARG_DIRECTORIES=()
 _ARG_ENVS=()
 
 process_toolset() {
     OPTARG="$1"
-    if [ -z "${_ARG_TOOLSET}" ]; then
-      _ARG_TOOLSET="$OPTARG"
-    else
-      _ARG_TOOLSET="$_ARG_TOOLSET $OPTARG"
-    fi
-    # echo "_ARG_TOOLSET:" $_ARG_TOOLSET
+    _ARG_TOOLSETS+=("$OPTARG")
 }
 
 process_directory() {
@@ -149,12 +144,18 @@ do
 done
 shift $((OPTIND-1))
 
-if [[ "$_ARG_TOOLSET" != "" ]]; then
+# echo "_ARG_ENVS: ${_ARG_ENVS[@]}"
+
+if [ "${#_ARG_TOOLSETS[@]}" -gt 0 ]; then
     . "$HAM_HOME/bin/ham-bash-setenv.sh"
     export HAM_NO_VER_CHECK=${HAM_NO_VER_CHECK:-1}
-    echo "I/Set toolsets '$_ARG_TOOLSET'"
-    . ham-toolset "$_ARG_TOOLSET"
-    errcheck $? ham "Can't setup the '$_ARG_TOOLSET' toolset."
+    echo "I/Set toolsets '${_ARG_TOOLSETS[@]}'"
+    # Set envvars
+    for ENV in "${_ARG_ENVS[@]}"; do
+        export "$ENV"
+    done
+    . ham-toolset "${_ARG_TOOLSETS[@]}"
+    errcheck $? ham "Can't setup the '${_ARG_TOOLSETS[@]}' toolset(s)."
 fi
 
 if [[ -z "$HAM_TOOLSET" ]]; then
@@ -169,15 +170,15 @@ ham_or_bash() {
 
   # Separate .sh files from other parameters and validate bash scripts
   for PARAM in "$@"; do
-      if [[ "$PARAM" == *.sh ]]; then
-          if [[ ! -f "$PARAM" ]]; then
-              log_error "Can't find '$PARAM' in '$(pwd)'."
-              exit 1
-          fi
-          SH_FILES+=("$PARAM")
-      else
-          HAM_CMD_PARAMS+=("$PARAM")
+    if [[ "$PARAM" == *.sh ]]; then
+      if [[ ! -f "$PARAM" ]]; then
+        log_error "Can't find '$PARAM' in '$(pwd)'."
+        exit 1
       fi
+      SH_FILES+=("$PARAM")
+    else
+      HAM_CMD_PARAMS+=("$PARAM")
+    fi
   done
 
   # Run ham-validate-targets if there are parameters to pass to it
@@ -193,7 +194,7 @@ ham_or_bash() {
       fi
   fi
 
-  # echo "_ARG_ENVS: ${_ARG_ENVS[@]}"
+  # Set envvars
   for ENV in "${_ARG_ENVS[@]}"; do
       export "$ENV"
   done
