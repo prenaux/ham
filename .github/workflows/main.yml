@@ -63,6 +63,14 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: Run_ci
+      - name: ham-install-for-windows
+        run: |
+          .\bin\ham-install-for-windows.cmd
+
+      - name: ham-toolset repos default
+        run: |
+          .\bin\ham-toolset.cmd repos default
+
+      - name: _run_ci.sh
         run: |
           .\bin\ham.cmd -X ham _run_ci.sh
