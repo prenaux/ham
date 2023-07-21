@@ -1,0 +1,8 @@
+#!/bin/bash -e
+if [[ -z $HAM_PROJECT_DIR ]]; then
+    echo "E/HAM_PROJECT_DIR not set !"
+    return 1
+fi
+
+toolset_import_list repos
+pathenv_add "$HAM_PROJECT_DIR/bin"
