@@ -22,6 +22,7 @@ usage() {
     echo "                 (can be specified multiple times)"
     echo "  -T toolset     Add a toolset to import"
     echo "                 (can be specified multiple times)"
+    echo "  -E env=value   Add an envvar to set."
     echo "  --             Following parameters will be passed to ham directly"
     echo ""
     echo "ham process:"
@@ -69,6 +70,7 @@ fi
 # process the arguments
 _ARG_TOOLSET=""
 _ARG_DIRECTORIES=()
+_ARG_ENVS=()
 
 process_toolset() {
     OPTARG="$1"
@@ -100,7 +102,11 @@ process_directory() {
     _ARG_DIRECTORIES+=("$_ARG_DIRECTORY")
 }
 
-while getopts "T:D:X:vh" OPT
+process_env() {
+    _ARG_ENVS+=($1)
+}
+
+while getopts "T:D:X:E:vh" OPT
 do
     case "$OPT" in
         h)
@@ -131,6 +137,9 @@ do
         X)
             process_toolset "$OPTARG"
             process_directory "$OPTARG"
+            ;;
+        E)
+            process_env "$OPTARG"
             ;;
         *)
             echo "E/Unknown option '$OPT'"
@@ -183,6 +192,11 @@ ham_or_bash() {
         fi
       fi
   fi
+
+  # echo "_ARG_ENVS: ${_ARG_ENVS[@]}"
+  for ENV in "${_ARG_ENVS[@]}"; do
+      export "$ENV"
+  done
 
   # Execute collected .sh files directly
   for SH_FILE in "${SH_FILES[@]}"; do
