@@ -1,9 +1,5 @@
 name: run_ci
 
-defaults:
-  run:
-    shell: bash
-
 concurrency:
   group: main-${{ github.head_ref }}
   cancel-in-progress: true
@@ -67,12 +63,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: Hat repos & default
-        run: |
-          source _env.sh
-          . hat repos default
-
       - name: Run_ci
         run: |
-          source _env.sh
-          ./_run_ci.sh
+          .\bin\ham.cmd -X ham _run_ci.sh
