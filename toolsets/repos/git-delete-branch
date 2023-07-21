@@ -23,5 +23,7 @@ if [ -z "$REMOTE_NAME" ]; then
     REMOTE_NAME=origin
 fi
 
-git branch $DELETE_FLAG $BRANCH_NAME && \
-    git push -d $REMOTE_NAME $BRANCH_NAME
+(set -x ;
+ git branch $DELETE_FLAG $BRANCH_NAME ;
+ git fetch --prune $REMOTE_NAME ;
+ git push $REMOTE_NAME --delete $BRANCH_NAME)
