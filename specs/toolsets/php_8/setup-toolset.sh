@@ -39,6 +39,8 @@ case $HAM_OS in
         export HAM_PHP_EXE_PATH="$PHP_HOME/php.exe"
         export HAM_PHP_FPM_EXE_PATH="$PHP_HOME/php-fpm.exe"
         toolset_check_and_dl_ver php_8 nt-x64 v2 || return 1
+        pathenv_add "${PHP_HOME}/bin"
+        pathenv_add "${HOME}/.composer/vendor/bin"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

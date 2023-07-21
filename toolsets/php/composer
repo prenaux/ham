@@ -1,3 +1,8 @@
-#!/bin/bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-php_run "$DIR/composer_2.phar" "$@"
+#!/bin/bash -e
+if [[ -z $HAM_HOME ]]; then
+    echo "E/HAM_HOME not set !"
+    exit 1
+fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+SCRIPT_DIR=$(path_abs_dirname "${BASH_SOURCE[0]}")
+php_run "$SCRIPT_DIR/composer_2.phar" "$@"
