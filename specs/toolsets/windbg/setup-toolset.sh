@@ -9,7 +9,6 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/windbg"
 case $HAM_OS in
     NT*)
         export WINDBG_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH=${WINDBG_DIR}/debugger_x86:${PATH}
         if [ ! -e "$WINDBG_DIR" ]; then
             toolset_dl windbg windbg_nt-x86
             if [ ! -e "$WINDBG_DIR" ]; then
@@ -17,6 +16,7 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        pathenv_add "${WINDBG_DIR}/debugger_x86"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

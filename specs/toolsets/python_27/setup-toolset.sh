@@ -9,7 +9,6 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/python_27"
 case $HAM_OS in
     NT*)
         export PYTHON_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH=${PYTHON_DIR}:${PYTHON_DIR}/DLLs:${PYTHON_DIR}/Scripts:${PATH}
         if [ ! -e "$PYTHON_DIR" ]; then
             toolset_dl python_27 python_27_nt-x86
             if [ ! -e "$PYTHON_DIR" ]; then
@@ -19,6 +18,9 @@ case $HAM_OS in
         fi
         export PYTHON="${PYTHON_DIR}/python.exe"
         export PYTHON2_BINDIR="${PYTHON_DIR}/Scripts"
+        pathenv_add "${PYTHON_DIR}"
+        pathenv_add "${PYTHON_DIR}/DLLs"
+        pathenv_add "${PYTHON_DIR}/Scripts"
         ;;
     OSX*)
         ln -s /usr/bin/python2.7 "${HAM_HOME}/bin/osx-x86/python2"
@@ -28,7 +30,7 @@ case $HAM_OS in
         fi
         alias python=python2
         export PYTHON2_BINDIR=$HOME/Library/Python/2.7/bin
-        export PATH=$PYTHON2_BINDIR:$PATH
+        pathenv_add "$PYTHON2_BINDIR"
         ;;
     LINUX*)
         true # Assume its already available and default on Linux

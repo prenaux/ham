@@ -31,7 +31,7 @@ case $HAM_OS in
 esac
 
 # path
-export PATH="${HAM_TOOLSET_DIR}":${PATH}
+pathenv_add "${HAM_TOOLSET_DIR}"
 
 # version
 VER="--- wine ------------------------------"

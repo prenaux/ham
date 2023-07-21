@@ -9,7 +9,6 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/cg"
 case $HAM_OS in
     NT*)
         export CG_BIN_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH="${CG_BIN_DIR}":${PATH}
         if [ ! -e "$CG_BIN_DIR/cgc.exe" ]; then
             toolset_dl cg cg_nt-x86
             if [ ! -e "$CG_BIN_DIR/cgc.exe" ]; then
@@ -17,10 +16,10 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        pathenv_add "${CG_BIN_DIR}"
         ;;
     OSX*)
         export CG_BIN_DIR="${HAM_TOOLSET_DIR}/osx-x86/"
-        export PATH="${CG_BIN_DIR}":${PATH}
         if [ ! -e "$CG_BIN_DIR/cgc" ]; then
             toolset_dl cg cg_osx-x86
             if [ ! -e "$CG_BIN_DIR/cgc" ]; then
@@ -28,6 +27,7 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        pathenv_add "${CG_BIN_DIR}"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
@@ -46,7 +46,7 @@ if [ ! -e "$CG_DOCS_DIR/license.pdf" ]; then
 fi
 
 # path
-export PATH="${HAM_TOOLSET_DIR}":${PATH}
+pathenv_add "${HAM_TOOLSET_DIR}"
 
 # version
 VER="--- cg ------------------------"

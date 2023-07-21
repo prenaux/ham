@@ -5,7 +5,7 @@ toolset_import_once rust || return 1
 export HAM_TOOLSET=WEB3_ANCHOR
 export HAM_TOOLSET_NAME=web3_anchor
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/web3_anchor"
-export PATH=${HAM_TOOLSET_DIR}:${PATH}
+pathenv_add ${HAM_TOOLSET_DIR}
 
 if [ -z "$ANCHOR_REQUIRED_VERSION" ]; then
     complain web3_anchor "ANCHOR_REQUIRED_VERSION not exported."

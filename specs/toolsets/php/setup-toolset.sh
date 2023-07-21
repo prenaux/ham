@@ -16,7 +16,6 @@ export HAM_PHP_VERSION=7.4
 case $HAM_OS in
     NT*)
         export PHP_HOME="${HAM_TOOLSET_DIR}/nt-x86"
-        export PATH="${PHP_HOME}":"${HAM_TOOLSET_DIR}":${PATH}
         toolset_check_and_dl_ver php nt-x86 v7_3 || return 1
         if [ ! -e "C:/Windows/php.ini" ]; then
             echo "!!!"
@@ -30,6 +29,8 @@ case $HAM_OS in
             explorer .
             popd
         fi
+        pathenv_add "${PHP_HOME}"
+        pathenv_add "${HAM_TOOLSET_DIR}"
         ;;
     OSX*)
         export PHP_HOME=`ham-brew-installdir php@7.4`
@@ -44,8 +45,9 @@ case $HAM_OS in
             ham-brew tap shivammathur/php
             ham-brew-install shivammathur/php/php@7.4 "bin/php" php@7.4 || return 1
         fi
-
-        export PATH="${HAM_TOOLSET_DIR}":"${HOME}/.composer/vendor/bin":"${PHP_HOME}/bin":${PATH}
+        pathenv_add "${PHP_HOME}/bin"
+        pathenv_add "${HOME}/.composer/vendor/bin"
+        pathenv_add "${HAM_TOOLSET_DIR}"
         export HAM_PHP_EXE_PATH="$PHP_HOME/bin/php"
         export HAM_PHP_FPM_EXE_PATH="$PHP_HOME/sbin/php-fpm"
         ;;

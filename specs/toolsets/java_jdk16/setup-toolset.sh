@@ -8,7 +8,6 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/java_jdk16"
 case $HAM_OS in
     NT*)
         export JAVA_HOME="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH="${JAVA_HOME}/bin":${PATH}
         if [ ! -e "$JAVA_HOME/bin/java.exe" -o ! -e "$JAVA_HOME/bin/javac.exe" ]; then
             toolset_dl java_jdk16 java_jdk16_nt-x86
             if [ ! -e "$JAVA_HOME/bin/java.exe" -o ! -e "$JAVA_HOME/bin/javac.exe" ]; then
@@ -16,6 +15,7 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        pathenv_add "${JAVA_HOME}/bin"
         ;;
     OSX)
         export JAVA_HOME=$(/usr/libexec/java_home)

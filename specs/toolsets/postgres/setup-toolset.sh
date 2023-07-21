@@ -19,12 +19,12 @@ case $HAM_OS in
                 return 1
             fi
         fi
-        export PATH="${POSTGRES_DIR}/bin":${PATH}
+        pathenv_add "${POSTGRES_DIR}/bin"
         ;;
     OSX*)
         ham-brew-install postgresql@10 "bin/postgres"
         export POSTGRES_DIR="`ham-brew-installdir postgresql@10`"
-        export PATH="${POSTGRES_DIR}/bin":${PATH}
+        pathenv_add "${POSTGRES_DIR}/bin"
         ;;
     LINUX*)
         if [ -z "`which psql`" ]; then
@@ -42,7 +42,7 @@ case $HAM_OS in
 esac
 
 # path
-export PATH="${HAM_TOOLSET_DIR}":${PATH}
+pathenv_add "${HAM_TOOLSET_DIR}"
 export POSTGRES_DB_DIR="$WORK/Server/pg"
 
 VER="--- psql -------------------------"

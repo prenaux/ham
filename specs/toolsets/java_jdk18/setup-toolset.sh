@@ -9,7 +9,6 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/java_jdk18"
 case $HAM_OS in
     NT*)
         export JAVA_HOME="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH="${JAVA_HOME}/bin":${PATH}
         if [ ! -e "$JAVA_HOME/bin/java.exe" -o ! -e "$JAVA_HOME/bin/javac.exe" ]; then
             toolset_dl java_jdk18 java_jdk18_nt-x86
             if [ ! -e "$JAVA_HOME/bin/java.exe" -o ! -e "$JAVA_HOME/bin/javac.exe" ]; then
@@ -17,6 +16,7 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        pathenv_add "${JAVA_HOME}/bin"
         ;;
     OSX)
         if [ "$HAM_BIN_LOA" == "osx-arm64" ]; then
@@ -31,12 +31,12 @@ case $HAM_OS in
                     return 1
                 fi
             fi
-            export PATH="${JAVA_HOME}/bin":"${JAVA_HOME}/jre/bin":${PATH}
+            pathenv_add "${JAVA_HOME}/bin"
+            pathenv_add "${JAVA_HOME}/jre/bin"
         fi
         ;;
     LINUX)
         export JAVA_HOME="${HAM_TOOLSET_DIR}/${HAM_BIN_LOA}/"
-        export PATH="${JAVA_HOME}/bin":${PATH}
         if [ ! -e "$JAVA_HOME/bin/java" -o ! -e "$JAVA_HOME/bin/javac" ]; then
             toolset_dl java_jdk18 java_jdk18_${HAM_BIN_LOA}
             if [ ! -e "$JAVA_HOME/bin/java" -o ! -e "$JAVA_HOME/bin/javac" ]; then
@@ -44,8 +44,9 @@ case $HAM_OS in
                 return 1
             fi
         fi
-	      chmod +x "$JAVA_HOME/bin/"*
-	      chmod +x "$JAVA_HOME/jre/bin/"*
+        pathenv_add "${JAVA_HOME}/bin"
+        chmod +x "$JAVA_HOME/bin/"*
+        chmod +x "$JAVA_HOME/jre/bin/"*
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

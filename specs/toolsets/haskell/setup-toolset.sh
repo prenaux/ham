@@ -14,12 +14,15 @@ case $HAM_OS in
         GHC_BASE_DIR="${HAM_TOOLSET_DIR}/nt-x86"
         GHC_BIN_DIR="${GHC_BASE_DIR}/bin"
         # Setup the path
-        export PATH="${GHC_BIN_DIR}:${GHC_BASE_DIR}/lib/bin:${GHC_BASE_DIR}/lib/extralibs/bin:${PATH}"
+        pathenv_add "${GHC_BIN_DIR}"
+        pathenv_add "${GHC_BASE_DIR}/lib/bin"
+        pathenv_add "${GHC_BASE_DIR}/lib/extralibs/bin"
 
         # Setup cabal
         CABAL_DIR="${GHC_BASE_DIR}/cabal"
         CABAL_CONFIG="${CABAL_DIR}/config"
         mkdir -p "${CABAL_DIR}"
+        mkdir -p "${CABAL_DIR}/bin"
         mkdir -p "${CABAL_DIR}/packages"
         mkdir -p "${CABAL_DIR}/world"
         mkdir -p "${CABAL_DIR}/logs"
@@ -31,7 +34,7 @@ case $HAM_OS in
         echo "symlink-bindir: ${CABAL_DIR_NATIVE}/bin" >> "${CABAL_CONFIG}"
         echo "repository hackage.haskell.org" >> "${CABAL_CONFIG}"
         echo "  url: http://hackage.haskell.org/" >> "${CABAL_CONFIG}"
-        export PATH="${CABAL_DIR}/bin:${PATH}"
+        pathenv_add "${CABAL_DIR}/bin"
         ;;
     OSX*)
         if [ "$HAM_BIN_LOA" == "osx-arm64" ]; then
@@ -47,7 +50,9 @@ case $HAM_OS in
         return 1
         ;;
 esac
-export PATH=${HAM_TOOLSET_DIR}:${HS_STACK_BIN_DIR}:${PATH}
+
+pathenv_add "${HAM_TOOLSET_DIR}"
+pathenv_add "${HS_STACK_BIN_DIR}"
 
 # Version checks
 VER="--- haskell ----------------------"

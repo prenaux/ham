@@ -10,7 +10,7 @@ case $HAM_OS in
     NT*)
         toolset_check_and_dl_ver cmake nt-x86 v1 || return 1
         export CMAKE_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH=${CMAKE_DIR}/bin:${PATH}
+        pathenv_add "${CMAKE_DIR}/bin"
         if [ ! -e "$CMAKE_DIR/bin/cmake.exe" ]; then
             echo "E/cmake.exe doesn't exist in the toolset"
             return 1

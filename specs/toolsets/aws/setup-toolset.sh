@@ -40,7 +40,9 @@ case $HAM_OS in
         return 1
         ;;
 esac
-export PATH=$HAM_TOOLSET_DIR:${PATH}
+
+# path
+pathenv_add "$HAM_TOOLSET_DIR"
 
 VER="--- aws ---------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then

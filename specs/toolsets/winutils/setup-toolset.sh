@@ -9,7 +9,6 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/winutils"
 case $HAM_OS in
     NT*)
         export WINUTILS_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH="${HAM_TOOLSET_DIR}/":${PATH}
         if [ ! -e "$WINUTILS_DIR" ]; then
             toolset_dl winutils winutils_nt-x86
             if [ ! -e "$WINUTILS_DIR" ]; then
@@ -17,6 +16,7 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        pathenv_add "${HAM_TOOLSET_DIR}"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

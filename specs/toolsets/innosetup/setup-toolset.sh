@@ -9,7 +9,6 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/innosetup"
 case $HAM_OS in
     NT*)
         export INNOSETUP_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH="${INNOSETUP_DIR}":${PATH}
         if [ ! -e "$INNOSETUP_DIR" ]; then
             toolset_dl innosetup innosetup_nt-x86
             if [ ! -e "$INNOSETUP_DIR" ]; then
@@ -17,6 +16,7 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        pathenv_add "${INNOSETUP_DIR}"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

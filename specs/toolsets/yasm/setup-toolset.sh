@@ -9,7 +9,6 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/yasm"
 case $HAM_OS in
     NT*)
         export YASM_BIN_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH="${YASM_BIN_DIR}":${PATH}
         if [ ! -e "$YASM_BIN_DIR" ]; then
             toolset_dl yasm yasm_nt-x86
             if [ ! -e "$YASM_BIN_DIR" ]; then
@@ -17,10 +16,10 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        pathenv_add "${YASM_BIN_DIR}"
         ;;
     OSX*)
         export YASM_BIN_DIR="${HAM_TOOLSET_DIR}/osx-x86/"
-        export PATH="${YASM_BIN_DIR}":${PATH}
         if [ ! -e "$YASM_BIN_DIR/yasm" ]; then
             toolset_dl yasm yasm_osx-x86
             if [ ! -e "$YASM_BIN_DIR/yasm" ]; then
@@ -28,6 +27,7 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        pathenv_add "${YASM_BIN_DIR}"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"
@@ -36,7 +36,7 @@ case $HAM_OS in
 esac
 
 # path
-export PATH="${HAM_TOOLSET_DIR}":${PATH}
+pathenv_add "${HAM_TOOLSET_DIR}"
 
 # version
 VER="--- yasm ------------------------"

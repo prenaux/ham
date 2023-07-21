@@ -14,7 +14,7 @@ case $HAM_OS in
           echo "W/Couldn't find openjdk@17's java, trying to install with brew"
           ham-brew install openjdk@17
         fi
-        export PATH="${JAVA_HOME}/bin":${PATH}
+        pathenv_add "${JAVA_HOME}/bin"
         if [ -d "/usr/local/java-runtime/impl" ] && [ ! -e "/usr/local/java-runtime/impl/17" ]; then
           sudo ln -s "$JAVA_HOME" "/usr/local/java-runtime/impl/17"
         fi

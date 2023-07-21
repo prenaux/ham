@@ -12,7 +12,6 @@ case $HAM_OS in
     NT*)
         export EMACS_EXE=emacs.exe
         export EMACS_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH="${EMACS_DIR}/bin":${PATH}
         if [ ! -e "$EMACS_DIR" ]; then
             toolset_dl emacs emacs_nt-x86
             # toolset_check_and_dl_ver emacs nt-x86 v28 || return 1
@@ -21,6 +20,7 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        pathenv_add "${EMACS_DIR}/bin"
         ;;
     OSX*)
         if [ -z `which emacs`]; then

@@ -21,12 +21,12 @@ case $HAM_OS in
             xcode-select --install
             ham-brew install emscripten
         fi
-        export PATH=${HAM_TOOLSET_DIR}:${PATH}
+        pathenv_add "${HAM_TOOLSET_DIR}"
         export BUILD_BIN_LOA=$HAM_BIN_LOA
         ;;
     LINUX*)
         HAM_ENABLE_EXPERIMENTAL_LINUX_BREW=1 ham-brew-install emscripten "bin/emcc"
-        export PATH=${HAM_TOOLSET_DIR}:${PATH}
+        pathenv_add "${HAM_TOOLSET_DIR}"
         export BUILD_BIN_LOA=$HAM_BIN_LOA
         ;;
     *)

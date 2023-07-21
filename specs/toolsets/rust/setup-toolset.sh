@@ -24,7 +24,7 @@ case $HAM_OS in
         return 1
         ;;
 esac
-export PATH=${HAM_TOOLSET_DIR}:${PATH}
+pathenv_add "${HAM_TOOLSET_DIR}"
 
 # Version checks
 VER="--- rust ----------------------"

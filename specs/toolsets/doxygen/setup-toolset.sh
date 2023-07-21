@@ -9,7 +9,6 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/doxygen"
 case $HAM_OS in
     NT*)
         export DOXYGEN_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH="${DOXYGEN_DIR}":${PATH}
         if [ ! -e "$DOXYGEN_DIR/doxygen_187.exe" ]; then
             toolset_dl doxygen doxygen_nt-x86
             if [ ! -e "$DOXYGEN_DIR" ]; then
@@ -17,10 +16,10 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        pathenv_add "${DOXYGEN_DIR}"
         ;;
     OSX*)
         export DOXYGEN_DIR="${HAM_TOOLSET_DIR}/osx-x86/Resources"
-        export PATH="${DOXYGEN_DIR}":${PATH}
         if [ ! -e "$DOXYGEN_DIR/doxygen" ]; then
             toolset_dl doxygen doxygen_osx-x86
             if [ ! -e "$DOXYGEN_DIR" ]; then
@@ -28,6 +27,7 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        pathenv_add "${DOXYGEN_DIR}"
         VER="`doxygen_187 --version`"
         if [ $? != 0 ]; then
             rm -f "$DOXYGEN_DIR/doxygen_187"

@@ -10,7 +10,6 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/xslt_tools"
 case $HAM_OS in
     NT*)
         export XSLT_TOOLS_BIN_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH="${XSLT_TOOLS_BIN_DIR}":${PATH}
         if [ ! -e "$XSLT_TOOLS_BIN_DIR" ]; then
             toolset_dl xslt_tools xslt_tools_1_nt-x86
             if [ ! -e "$XSLT_TOOLS_BIN_DIR" ]; then
@@ -18,6 +17,7 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        pathenv_add "${XSLT_TOOLS_BIN_DIR}"
         ;;
     LINUX|OSX)
         # xsltproc is already bundled in OSX
@@ -41,7 +41,7 @@ if [ ! -e "$XSLT_TOOLS_JARS_DIR" ]; then
 fi
 
 # path
-export PATH="${HAM_TOOLSET_DIR}":${PATH}
+pathenv_add "${HAM_TOOLSET_DIR}"
 
 # version
 VER="--- xslt_tools ------------------------"
@@ -56,6 +56,8 @@ if [ "$HAM_NO_VER_CHECK" != "1" ]; then
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
+
+xslt_tools-saxon -version
 
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
     VER="$VER

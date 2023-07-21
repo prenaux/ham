@@ -9,7 +9,6 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/mysql"
 case $HAM_OS in
     NT*)
         export MYSQL_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        export PATH="${MYSQL_DIR}/bin":${PATH}
         if [ ! -e "$MYSQL_DIR" ]; then
             toolset_dl mysql mysql_nt-x86
             if [ ! -e "$MYSQL_DIR" ]; then
@@ -17,6 +16,7 @@ case $HAM_OS in
                 return 1
             fi
         fi
+        pathenv_add "${MYSQL_DIR}/bin"
         ;;
     OSX*)
         ;;
@@ -27,7 +27,8 @@ case $HAM_OS in
 esac
 
 # path
-export PATH="${HAM_TOOLSET_DIR}":${PATH}
+pathenv_add "${HAM_TOOLSET_DIR}"
+
 export MYSQL_DB_DIR="$WORK/Server/mysql"
 
 mkdir -p "$MYSQL_DB_DIR"

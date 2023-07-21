@@ -102,8 +102,10 @@ if [ ! -e "$ADR_SDK_PLATFORM_DIR"  ]; then
     return 1
 fi
 
-
-export PATH=${PATH}:"${HAM_TOOLSET_DIR}":"${ADR_DIR_BASE}/scripts":"${ADR_DIR_SDK}/tools":"${ADR_DIR_SDK}/platform-tools"
+pathenv_add "${HAM_TOOLSET_DIR}"
+pathenv_add "${ADR_DIR_BASE}/scripts"
+pathenv_add "${ADR_DIR_SDK}/tools"
+pathenv_add "${ADR_DIR_SDK}/platform-tools"
 
 export CYGWIN=nodosfilewarning # disable awesome cygwin warning...
 
@@ -113,7 +115,7 @@ export ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT="${ADR_LLVM_TOOLCHAIN_ROOT}/prebuilt/$AD
 export ADR_LLVM_TOOLCHAIN_PREFIX="${ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT}/bin/"
 export ADR_DIR_NDK_USR="${ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT}/sysroot/usr"
 export ADR_DIR_NDK_PLATFORM="${ADR_LLVM_TOOLCHAIN_PREBUILT_ROOT}/sysroot/usr/lib/arm-linux-androideabi/21"
-export PATH="${ADR_LLVM_TOOLCHAIN_PREFIX}":${PATH}
+pathenv_add "${ADR_LLVM_TOOLCHAIN_PREFIX}"
 
 export ANDROID_HOME=${ADR_DIR_SDK}
 

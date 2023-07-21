@@ -87,7 +87,10 @@ echo "I/Found MSBuild at '$MSBUILD_EXE'"
 ########################################################################
 export HAM_CL="\"${MSVCDIR_BIN}/cl.exe\""
 export HAM_LINK="\"${MSVCDIR_BIN}/link.exe\""
-export PATH="${WINSDKDIR_BIN}":"${MSVCDIR_BIN}":"${MSVC_IDE_DIR}":${PATH}
+pathenv_add "${WINSDKDIR_BIN}"
+pathenv_add "${MSVCDIR_BIN}"
+pathenv_add "${MSVC_IDE_DIR}"
+
 export INCLUDE="`nativedir \"${WINSDKDIR_INCLUDE}/um\"`;`nativedir \"${WINSDKDIR_INCLUDE}/ucrt\"`;`nativedir \"${WINSDKDIR_INCLUDE}/shared\"`;`nativedir \"${MSVCDIR}/include\"`"
 export LIB="`nativedir \"${WINSDKDIR_LIBS}/um/${HAM_MSVC_ARCH}\"`;`nativedir \"${WINSDKDIR_LIBS}/ucrt/${HAM_MSVC_ARCH}\"`;`nativedir \"${MSVCDIR}/lib/${HAM_MSVC_ARCH}\"`"
 

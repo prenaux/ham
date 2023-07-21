@@ -14,7 +14,7 @@ case $HAM_OS in
           echo "W/Couldn't find openjdk@11's java, trying to install with brew"
           ham-brew install openjdk@11
         fi
-        export PATH="${JAVA_HOME}/bin":${PATH}
+        pathenv_add "${JAVA_HOME}/bin"
         ;;
     *)
         echo "E/Toolset: Unsupported host OS"

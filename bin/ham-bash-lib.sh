@@ -866,4 +866,4 @@ if [[ -z "$BUILD_BIN_LOA" ]]; then
 fi
 
 # Make sure HAM_HOME has the proper unix format
-export HAM_HOME=`unxpath "$HAM_HOME"`
+export HAM_HOME=`abspath "$HAM_HOME"`
