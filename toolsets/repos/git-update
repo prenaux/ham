@@ -37,7 +37,7 @@ log_info "Updating '$REPO_NAME' by rebasing '$BRANCH' onto '$ORIGIN_BRANCH'."
 
 if [ "$DO_FETCH" = "1" ]; then
   (set -x ;
-   git fetch --all)
+   git fetch --prune --all)
 fi
 
 (set -x ;
