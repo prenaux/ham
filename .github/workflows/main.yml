@@ -27,15 +27,17 @@ jobs:
           sudo apt update
           DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo apt install -y clang curl ffmpeg freeglut3-dev g++ gcc git libcurl4-openssl-dev lftp libsdl2-dev libssl-dev libudev-dev mesa-common-dev mesa-utils ntpdate p7zip-full pkg-config python3 python3-pip subversion wget xsltproc libdw-dev libunwind-dev
 
-      - name: Hat repos & default
+      - name: ham-toolset repos default
         run: |
-          source _env.sh
-          . hat repos default
+          ./bin/ham-toolset repos default
 
-      - name: Run_ci
+      - name: ham-toolset rclone python_3 nodejs php_8
         run: |
-          source _env.sh
-          ./_run_ci.sh
+          ./bin/ham-toolset rclone python_3 nodejs php_8
+
+      - name: _run_ci.sh
+        run: |
+          ./bin/ham -X ham _run_ci.sh
 
   build_macos_latest:
     # The type of runner that the job will run on
@@ -45,15 +47,17 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: Hat repos & default
+      - name: ham-toolset repos default
         run: |
-          source _env.sh
-          . hat repos default
+          ./bin/ham-toolset repos default
 
-      - name: Run_ci
+      - name: ham-toolset rclone python_3 nodejs php_8
         run: |
-          source _env.sh
-          ./_run_ci.sh
+          ./bin/ham-toolset rclone python_3 nodejs php_8
+
+      - name: _run_ci.sh
+        run: |
+          ./bin/ham -X ham _run_ci.sh
 
   build_windows_latest:
     # The type of runner that the job will run on
@@ -70,6 +74,10 @@ jobs:
       - name: ham-toolset repos default
         run: |
           .\bin\ham-toolset.cmd repos default
+
+      - name: ham-toolset rclone python_3 nodejs php_8
+        run: |
+          .\bin\ham-toolset.cmd rclone python_3 nodejs php_8
 
       - name: _run_ci.sh
         run: |
