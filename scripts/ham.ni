@@ -122,9 +122,13 @@ local module = {
     local bashPath
     switch (::lang.getHostOS().tolower()) {
       case "nt": {
-        bashPath = getHamHome().adddirback("bin/nt-x86").setfile("bash.exe")
-        if (!::gRootFS.FileExists(bashPath,::eFileAttrFlags.AllFiles))
-          throw "Can't find bash executable in: " + bashPath
+        bashPath = getHamHome().adddirback("toolsets/repos/nt-x86/git/bin").setfile("bash.exe")
+        if (!::gRootFS.FileExists(bashPath,::eFileAttrFlags.AllFiles)) {
+          bashPath = getHamHome().adddirback("bin/nt-x86").setfile("bash.exe")
+          if (!::gRootFS.FileExists(bashPath,::eFileAttrFlags.AllFiles)) {
+            throw "Can't find bash executable in: " + bashPath
+          }
+        }
         break;
       }
       case "osx": {
