@@ -14,8 +14,7 @@ echo "I/Run ham tests"
 
 echo "I/Build and run pi with ham"
 (set -x;
- cd "$HAM_HOME/sources/ham/tests/pi" ;
- ham Run_pi)
+ ham -X ham/sources/ham/tests/pi Run_pi)
 
 echo "I/Build cppm modules."
 case $HAM_OS in
