@@ -1,0 +1,9 @@
+#!/bin/bash
+if [[ -z $HAM_PROJECT_DIR ]]; then
+    echo "E/HAM_PROJECT_DIR not set !"
+    return 1
+fi
+
+toolset_import_list repos python_3 default || return 1
+
+source py3-venv-activate
