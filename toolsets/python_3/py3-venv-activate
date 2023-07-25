@@ -1,18 +1,41 @@
 #!/bin/bash -e
 . ham-bash-lib.sh
 
+export VIRTUAL_ENV_DISABLE_PROMPT=true
 unset VIRTUAL_ENV
+unset VIRTUAL_ENV_PROMPT
 
-if [ ! -e "venv/bin/activate" ]; then
+export PY3_VENV_BASE_DIR="$(abspath .)"
+case $HAM_OS in
+    NT*)
+      export PY3_VENV_BIN_DIR="${PY3_VENV_BASE_DIR}/venv/Scripts"
+      ;;
+    *)
+      export PY3_VENV_BIN_DIR="${PY3_VENV_BASE_DIR}/venv/bin"
+      ;;
+esac
+
+# Check that the environment is setup
+if [ ! -e "${PY3_VENV_BIN_DIR}/activate" ]; then
     PY3_VENV_REQUIREMENTS_SHOULD_INSTALL=yes
     if [ ! -e "py3_requirements.txt" ]; then
         complain "No venv and no py3_requirements.txt present to initialize it. You can use 'echo \"\" > py3_requirements.txt' to initialize an empty one."
         return 1
     fi
     py3-venv "venv"
+    if [ ! -e "${PY3_VENV_BIN_DIR}/activate" ]; then
+        complain "No '${PY3_VENV_BIN_DIR}/activate' script found after venv activation."
+        return 1
+    fi
 fi
 
-source ./venv/bin/activate
+# Pierre: We do the activation ourselves because on Windows the builtin script
+# is broken when running in bash. Also its so simple that it really doesn't need
+# the potential flakiness.
+export VIRTUAL_ENV="$(abspath "./venv")"
+export VIRTUAL_ENV_PROMPT="ham-py3-venv"
+
+pathenv_add "$(abspath ${PY3_VENV_BIN_DIR})"
 
 if [ "$PY3_VENV_REQUIREMENTS_SHOULD_INSTALL" == "yes" ]; then
     py3-venv-pip-reinstall || return 1

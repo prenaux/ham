@@ -6,4 +6,14 @@ if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
 if [ -z `where_inpath python.exe` ]; then
     toolset_import_once python_3 > /dev/null
 fi
-${PYTHON3_DIR}/python.exe "$@"
+
+if [ -n "${PY3_VENV_BIN_DIR}" ]; then
+  PY3_EXE_PATH="${PY3_VENV_BIN_DIR}/python.exe"
+else
+  PY3_EXE_PATH="${PYTHON3_BINDIR}/python.exe"
+fi
+
+if [ ! -f "${PY3_EXE_PATH}" ]; then
+  log_error "'${PY3_EXE_PATH}' doesn't exist or isn't a file."
+fi
+"${PY3_EXE_PATH}" "$@"

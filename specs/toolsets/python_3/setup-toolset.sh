@@ -32,9 +32,7 @@ case $HAM_OS in
         pathenv_add "${PYTHON3_DIR}/Scripts"
         pathenv_add "${PYTHON3_DIR}/DLLs"
         pathenv_add "${PYTHON3_DIR}"
-        # I have no word for how insane the python 'path handling' works on
-        # Windows... but we have to deal with it anyway...
-        export PYTHON3_BINDIR="$HOME/AppData/Roaming/Python/$PYINSTALL_VERDIR/Scripts/"
+        export PYTHON3_BINDIR="$PYTHON3_DIR"
         pathenv_add "$PYTHON3_BINDIR"
         ;;
 
