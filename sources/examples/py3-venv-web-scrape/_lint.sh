@@ -4,7 +4,10 @@ if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SCRIPT_DIR"
-. hat ./_ham_project > /dev/null
+if [ -z "$PY3_VENV_BIN_DIR" ]; then
+  log_info "Importing _ham_project"
+  . hat ./_ham_project > /dev/null
+fi
 set -e ;
 
 #
@@ -14,16 +17,20 @@ set -e ;
 # the sed abomination is to strip the color code so that tools can parse the
 # error output sanely without needing to use the json output
 #
-(log_info "Running pyre..."
- set +e ;
- set -x ;
- pyre 2>&1 | \
-     sed -r "s/\x1B\[[0-9;]*[mG]//g" | \
-     sed -r "s/tsrc\///g" | \
-     sed -r "s/src\///g" ;
- errcode=${PIPESTATUS[0]} ;
- set +x ;
- errcheck "${errcode}" _lint "Pyre failed." || exit 1)
+if [[ "${HAM_OS}" == "NT"* ]]; then
+  log_warning "Pyre doesn't work on Windows, skipped."
+else
+  (log_info "Running pyre..."
+   set +e ;
+   set -x ;
+   pyre 2>&1 | \
+       sed -r "s/\x1B\[[0-9;]*[mG]//g" | \
+       sed -r "s/tsrc\///g" | \
+       sed -r "s/src\///g" ;
+   errcode=${PIPESTATUS[0]} ;
+   set +x ;
+   errcheck "${errcode}" _lint "Pyre failed." || exit 1)
+fi
 
 # Strip comments from _flake8 and output to .flake8
 sed -e '/^#[^!].*/d' -e 's/\(.*[^!]\)#.*[^}]/\1/' _flake8 > ./venv/_flake8_stripped

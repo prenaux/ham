@@ -4,7 +4,10 @@ if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SCRIPT_DIR"
-. hat ./_ham_project > /dev/null
+if [ -z "$PY3_VENV_BIN_DIR" ]; then
+  log_info "Importing _ham_project"
+  . hat ./_ham_project > /dev/null
+fi
 set -ex
 
 #
@@ -12,7 +15,11 @@ set -ex
 #
 # `pyre infer -i` updates the source with all the infered type annotations
 #
-pyre infer -i
+if [[ "${HAM_OS}" == "NT"* ]]; then
+  log_warning "Pyre doesn't work on Windows, skipped."
+else
+  pyre infer -i
+fi
 
 # TODO: ufmt can lint a single file, so we should do that when its specified
 ufmt format "./src" "./tsrc"
