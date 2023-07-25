@@ -7,7 +7,7 @@ if [ -z `where_inpath python.exe` ]; then
     toolset_import_once python_3 > /dev/null
 fi
 
-if [ -n "${PY3_VENV_BIN_DIR}" ]; then
+if [ -f "${PY3_VENV_BIN_DIR}/python.exe" ]; then
   PY3_EXE_PATH="${PY3_VENV_BIN_DIR}/python.exe"
 else
   PY3_EXE_PATH="${PYTHON3_BINDIR}/python.exe"
