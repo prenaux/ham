@@ -7,3 +7,6 @@ fi
 toolset_import_list repos python_3 default || return 1
 
 source py3-venv-activate
+
+# Remove any left over flymake file
+rm -f "src/*_flymake.py" "tsrc/*_flymake.py"

@@ -2,6 +2,22 @@
 
 A simple web scraper to test py3-venv.
 
+## Running
+
+```
+# Run one of the script (will list all scripts in src with a main function)
+./_run.sh
+
+# Run a specific script in src
+./_run.sh hello World
+
+# Run all the tests
+./_test.sh
+
+# Run all the tests with the specified pattern
+./_test.sh hello
+```
+
 ## Notes
 
 - `py3_pip_install.txt` is the list of python libraries to install. `py3-venv-pip-install` is the best way to add modules, but you can also edit the `py3_pip_install.txt` file and run `py3-venv-pip-reinstall`.
@@ -11,7 +27,7 @@ A simple web scraper to test py3-venv.
 
 Get started:
 ```
-cd $WORK/pierre/py-web-scrape
+cd $WORK/ham/sources/examples/py3-venv-web-scrape
 . hat
 # Calls 'source py3-venv-activate' to setup the python3 venv and download all
 # the dependencies if necessary.

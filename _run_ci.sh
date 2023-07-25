@@ -16,6 +16,10 @@ echo "I/Build and run pi with ham"
 (set -x;
  ham -X ham/sources/ham/tests/pi Run_pi)
 
+echo "I/Test examples"
+(set -x;
+ ham -X ham/sources/examples/py3-venv-web-scrape _run_ci.sh)
+
 echo "I/Build cppm modules."
 case $HAM_OS in
     NT*|OSX*|LINUX*)
