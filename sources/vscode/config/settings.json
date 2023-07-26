@@ -122,7 +122,7 @@
   /**
     * Typography
     **/
-  "editor.fontFamily": "CommitMono, MonoLisa, Menlo, Monaco, 'Courier New', monospace",
+  "editor.fontFamily": "CommitMono, MonoLisa, Consolas, Menlo, Monaco, 'Courier New', monospace",
   "editor.fontSize": 13,
   "editor.lineHeight": 24,
   "editor.suggestFontSize": 13,
@@ -135,27 +135,6 @@
     **/
   "editor.find.loop": false,
   "search.useIgnoreFiles": false,
-  "search.exclude": {
-    // Hide everything in /vendor, except the "laravel" and "livewire" folder.
-    "**/vendor/{[^l],?[^ai]}*": true,
-    // Hide everything in /public, except "index.php"
-    "**/public/{[^i],?[^n]}*": true,
-    "**/node_modules": true,
-    "**/dist": true,
-    "**/_ide_helper.php": true,
-    "**/composer.lock": true,
-    "**/package-lock.json": true,
-    "storage": true,
-    ".phpunit.result.cache": true,
-    "**/*.min.js": true,
-    "**/_*_ModuleDef.*": true,
-    "**/*.h.idl.xml": true,
-    "**/*.h.idl.inl": true,
-    // Hide compiled emscripten js
-    "**/bin/web-js/*_[dr]a.js": true,
-    "**/bin/web-js/*_[dr]a.aw": true,
-    "**/bin/web-js/*_[dr]a.html": true,
-  },
 
   /**
     * Code
@@ -225,25 +204,68 @@
 
   /**
    * Exclude perf killers
-   *
    **/
-   "files.exclude": {
-      "**/tmp/**": true,
-      "**/node_modules/**": true,
-      "**/.git/objects/**": true,
-  },
+  "files.exclude": {
+     "**/.git/objects/**": true,
+     "**/.hg/**": true,
+     "**/.svn/**": true,
+     "**/node_modules/**": true,
+     "**/tmp/**": true,
+   },
+
   "files.watcherExclude": {
-      "**/.git/objects/**": true,
-      "**/.git/subtree-cache/**": true,
-      "**/node_modules/**": true,
-      "**/tmp/**": true,
-      "**/dist/**": true
+    "**/_tmp/**": true,
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/.hg/**": true,
+    "**/.svn/**": true,
+    "**/dist/**": true,
+    "**/ham/toolsets/*/dist/**": true,
+    "**/ham/toolsets/*/lin-*/**": true,
+    "**/ham/toolsets/*/nt-*/**": true,
+    "**/ham/toolsets/*/osx-*/**": true,
+    "**/node_modules/**": true,
+    "**/tmp/**": true,
+    "**/venv/**": true,
   },
+
+  "search.exclude": {
+    // Hide other source controls
+    "**/.hg/**": true,
+    "**/.svn/**": true,
+    // Hide everything in /vendor, except the "laravel" and "livewire" folder.
+    "**/vendor/{[^l],?[^ai]}*": true,
+    // Hide everything in /public, except "index.php"
+    "**/public/{[^i],?[^n]}*": true,
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/_ide_helper.php": true,
+    "**/composer.lock": true,
+    "**/package-lock.json": true,
+    "storage": true,
+    ".phpunit.result.cache": true,
+    "**/*.min.js": true,
+    "**/_*_ModuleDef.*": true,
+    "**/*.h.idl.xml": true,
+    "**/*.h.idl.inl": true,
+    // Hide compiled emscripten js
+    "**/bin/web-js/*_[dr]a.js": true,
+    "**/bin/web-js/*_[dr]a.aw": true,
+    "**/bin/web-js/*_[dr]a.html": true,
+    // Hide venv in Python modules
+    "**/venv/**": true,
+    // Hide ham toolsets
+    "**/ham/toolsets/*/lin-*/**": true,
+    "**/ham/toolsets/*/nt-*/**": true,
+    "**/ham/toolsets/*/osx-*/**": true,
+    "**/ham/toolsets/*/dist/**": true,
+  },
+
   "extensions.autoCheckUpdates": false,
   "extensions.autoUpdate": false,
   // 'python.linting.enabled' completely destroys performance on large projects
   // and consumes all CPU. It's a known issue, but it's been open for 3 years.
-  "python.linting.enabled": true,
+  "python.linting.enabled": false,
 
   /**
     * Misc
@@ -255,7 +277,7 @@
   "git.ignoreRebaseWarning": true,
   "githubPullRequests.pullBranch": "never",
   "githubPullRequests.showPullRequestNumberInTree": true,
-  "window.openFoldersInNewWindow": "on",
+  "window.openFoldersInNewWindow": "off",
   "window.autoDetectColorScheme": true,
   // Default Dark+, Cobalt2, Palenight (Mild Contrast)
   "workbench.preferredDarkColorTheme": "Palenight (Mild Contrast)",
@@ -273,6 +295,7 @@
   // Stop the update notifications. Click the cog in the bottom left -> Check
   // Updates to update manually.
   "update.mode": "manual",
+
   // Disable function keys in the terminal so that we can use htop, mc, etc.
   "terminal.integrated.commandsToSkipShell": [
     // f1
@@ -299,16 +322,27 @@
     "-jupyter.runByLine",
     "-jupyter.runByLineNext",
   ],
-  "git.path": ["d:/Work/ham/toolsets/repos/nt-x86/git/bin/git.exe", "/usr/bin/git"],
+
+  // The path to the git executable. If none of these works use the Command
+  // Palette then "Open Remote Settings (JSON)" to set this value to the
+  // absolute path to your git executable.
+  "git.path": [
+    "/usr/bin/git",
+    "d:/Work/ham/toolsets/repos/nt-x86/git/bin/git.exe",
+    "${env:HOME}/Work/ham/toolsets/repos/nt-x86/git/mingw64/bin/git.exe",
+  ],
+
+  // Terminal paths
   "terminal.integrated.profiles.windows": {
-      "ham-shell": {
-        "path": "d:/Work/ham/bin/nt-x86/bash.exe",
-        "icon": "terminal-bash",
-        "env": { "HAM_HOME": "d:/Work/ham/" },
-        "args": [
-          "--rcfile", "d:/Work/ham/bin/ham-bash-start.sh", "-i"
-        ]
-      }
+    "ham-shell": {
+      "path": [
+        "${env:HOME}/Work/ham/toolsets/repos/nt-x86/git/bin/bash.exe",
+        "d:/Work/ham/toolsets/repos/nt-x86/git/bin/bash.exe"
+      ],
+      "icon": "terminal-bash",
+      "env": {},
+      "args": [ "-i" ]
+    },
   },
   "terminal.integrated.defaultProfile.windows": "ham-shell",
   "terminal.integrated.scrollback": 1000000
