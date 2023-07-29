@@ -2,6 +2,8 @@
 notARepository: 'skip' # one of: 'prompt' | 'create' | 'skip'
 gui:
   timeFormat: "20060102"
+  scrollPastBottom: false
+  scrollHeight: 10
 git:
   branchLogCmd: "git log --graph --color=always --abbrev-commit --decorate --date=relative --pretty=medium --oneline {{branchName}} --"
 gui:
