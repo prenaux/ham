@@ -24,6 +24,7 @@
     - junstyle.php-cs-fixer: php cs fixer
     - viveksjain.remreload: Automatically reload remote SSH window on timeout
     - Atishay-Jain.All-Autocomplete: Auto complete from all opened files
+    - ms-vscode.hexeditor: Hex Editor
 
   To Edit the Keybindings:
     Alt+X / Cmd+Shift+P: Keyboard Shortcuts (JSON)
@@ -206,20 +207,30 @@
    * Exclude perf killers
    **/
   "files.exclude": {
+     "**/_deploy/**": true,
+     "**/_emacs_bak/**": true,
+     "**/_tmp/**": true,
      "**/.git/objects/**": true,
      "**/.hg/**": true,
      "**/.svn/**": true,
+     "**/.yarn/**": true,
+     "**/gh-ci-**/**": true,
      "**/node_modules/**": true,
      "**/tmp/**": true,
    },
 
   "files.watcherExclude": {
+    "**/_deploy/**": true,
+    "**/_emacs_bak/**": true,
     "**/_tmp/**": true,
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
+    "**/.gradle/**": true,
     "**/.hg/**": true,
     "**/.svn/**": true,
+    "**/.yarn/**": true,
     "**/dist/**": true,
+    "**/gh-ci-**/**": true,
     "**/ham/toolsets/*/dist/**": true,
     "**/ham/toolsets/*/lin-*/**": true,
     "**/ham/toolsets/*/nt-*/**": true,
@@ -230,6 +241,13 @@
   },
 
   "search.exclude": {
+    // Hide temp, backup & build folders
+    "**/_deploy/**": true,
+    "**/_emacs_bak/**": true,
+    "**/_tmp/**": true,
+    "**/.gradle/**": true,
+    "**/.yarn/**": true,
+    "**/gh-ci-**/**": true,
     // Hide other source controls
     "**/.hg/**": true,
     "**/.svn/**": true,
@@ -250,7 +268,6 @@
     "**/*.h.idl.inl": true,
     // Hide compiled emscripten js
     "**/bin/web-js/*_[dr]a.js": true,
-    "**/bin/web-js/*_[dr]a.aw": true,
     "**/bin/web-js/*_[dr]a.html": true,
     // Hide venv in Python modules
     "**/venv/**": true,
@@ -280,9 +297,12 @@
   "window.openFoldersInNewWindow": "off",
   "window.autoDetectColorScheme": true,
   // Default Dark+, Cobalt2, Palenight (Mild Contrast)
-  "workbench.preferredDarkColorTheme": "Palenight (Mild Contrast)",
+  // Note: We keep the defaults here, I suggest that you set your a different
+  //       theme per context using "Open Remote Settings (JSON)" so that you can
+  //       clearly tell which context/remote machine you are in at a glance.
+  "workbench.preferredDarkColorTheme": "Default Dark+",
   "workbench.preferredLightColorTheme": "Default Light+",
-  "workbench.colorTheme": "Palenight (Mild Contrast)",
+  "workbench.colorTheme": "Default Dark+",
   // "find in selection" is automatically set when more than one line is selected.
   // 1) select more than one line
   // 2) fill search/replace
