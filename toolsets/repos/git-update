@@ -53,9 +53,9 @@ function in_rebase() {
     fi
 }
 if in_rebase; then
-  log_error "Update failed, rebase aborted because of conflicts."
+  log_error "Repo '$REPO_NAME' update failed, rebase aborted because of conflicts."
   (set -x ; git rebase --abort)
   exit 1
 else
-  log_success "Update done, rebase succeeded."
+  log_success "Repo '$REPO_NAME' update done, rebase succeeded."
 fi
