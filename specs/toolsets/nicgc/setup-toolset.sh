@@ -4,7 +4,7 @@
 case $HAM_OS in
     NT*)
         ;;
-    OSX*)
+    OSX*|LINUX*)
         toolset_import_once wine || return 1
         ;;
     *)
@@ -25,6 +25,11 @@ case $HAM_OS in
     OSX*)
         toolset_check_and_dl_ver nicgc osx-x64 v1 || return 1
         export NICGC_DIR="${HAM_TOOLSET_DIR}/osx-x64"
+        pathenv_add "${NICGC_DIR}/bin"
+        ;;
+    LINUX*)
+        toolset_check_and_dl_ver nicgc lin-x64 v1 || return 1
+        export NICGC_DIR="${HAM_TOOLSET_DIR}/lin-x64"
         pathenv_add "${NICGC_DIR}/bin"
         ;;
     *)
