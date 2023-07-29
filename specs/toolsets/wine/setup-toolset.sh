@@ -24,6 +24,18 @@ case $HAM_OS in
         # change locale (en_EN.UTF-8): No such file or directory"
         # export LC_ALL=en_EN.UTF-8
         ;;
+    LINUX*)
+        if [ -z `where_inpath wine` ]; then
+          (set -ex ;
+           sudo apt -y update ;
+           sudo apt install -y wine)
+          if [ -z `where_inpath wine` ]; then
+            echo "E/Can't find wine after installing it."
+            exit 1
+          fi
+        fi
+        export WINEARCH=win64
+        ;;
     *)
         echo "E/Toolset: Unsupported host OS"
         return 1
