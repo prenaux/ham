@@ -58,7 +58,7 @@ case $OPERATION in
     # Apply stash and then drop it, exit 0 and message if the stash doesnt exist
     trypop)
         if [ -z "$ID" ]; then
-            echo "I/No stash '$NAME'"
+            echo "I/trypop: no stash '$NAME', skipping."
         else
             git stash apply $ID
             git stash drop $ID
@@ -75,7 +75,7 @@ case $OPERATION in
     # Apply stash, message if the stash doesnt exist
     tryapply)
         if [ -z "$ID" ]; then
-            echo "I/No stash '$NAME'"
+            echo "I/tryapply: no stash '$NAME', skipping."
         else
             git stash apply $ID
         fi
@@ -91,7 +91,7 @@ case $OPERATION in
     # Drop the specified stash, message if the stash doesnt exist
     trydrop)
         if [ -z "$ID" ]; then
-            echo "I/Can't find stash '$NAME'"
+            echo "I/trydrop: no stash '$NAME', skipping."
         else
             git stash drop $ID
         fi

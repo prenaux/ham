@@ -42,26 +42,12 @@ fi
 BRANCH=`git-get-branch-name "$BRANCH"`
 echo "I/Force pulling branch '$BRANCH'."
 
-if [ $STASH == 1 ]; then
-  (set -x;
-   git-stash trydrop git-force-pull ;
-   git-stash push git-force-pull ;
-   git checkout $BRANCH ;
-   git-stash trypop git-force-pull)
-else
-  (set -x ;
-   git checkout $BRANCH)
+# Fetch the branch first
+if [[ $FETCH == 1 ]]; then
+    (set -x ; git fetch --update-head-ok $ORIGIN +$BRANCH:$BRANCH)
 fi
 
-if [ "`git branch --list tmp-git-force-pull`" ]; then
-    (set -x ; git branch -D tmp-git-force-pull)
-fi
-
-(set -x ; git checkout -b tmp-git-force-pull)
-if [ $FETCH == 1 ]; then
-    (set -x ; git fetch $ORIGIN +$BRANCH:$BRANCH)
-fi
-if [ $STASH == 1 ]; then
+if [[ $STASH == 1 ]]; then
     (set -x ;
      git-stash trydrop git-force-pull ;
      git-stash push git-force-pull ;
@@ -70,4 +56,3 @@ if [ $STASH == 1 ]; then
 else
     (set -x ; git checkout $BRANCH)
 fi
-(set -x ; git branch -D tmp-git-force-pull)
