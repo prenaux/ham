@@ -1,0 +1,3 @@
+#!/bin/bash -ex
+git reset --soft HEAD~
+git-status

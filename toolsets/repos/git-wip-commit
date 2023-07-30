@@ -1,0 +1,24 @@
+#!/bin/bash
+. ham-bash-lib.sh
+TEMPFILE=$(mktemp)
+
+if [[ -z $(git status --porcelain) ]] && \
+     [[ -z $(git diff --cached --exit-code) ]] && \
+     [[ -z $(git ls-files --exclude-standard --others) ]]; then
+  log_info "There are no changes. Nothing to commit.";
+  exit 0
+fi
+
+echo -e "wip - $(arch_datez)\n\n$(git-status)" > "$TEMPFILE" ;
+errcheck $? git-wip-commit "Can't get commit message." || exit 1
+
+log_info "Commit message:"
+cat "$TEMPFILE"
+
+log_info "Commiting changes..."
+(set -ex ;
+ git add -A ;
+ git commit -F "$TEMPFILE" ;
+ rm "$TEMPFILE")
+
+log_success "Done."
