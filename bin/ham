@@ -212,7 +212,18 @@ ham_or_bash() {
         cd "$HAM_EXEC_DIR"
       fi
       echo "I/'ham ${HAM_CMD_PARAMS[@]}' in '$(pwd)'"
-      "$HAM_CMD" "${HAM_CMD_PARAMS[@]}"
+      case $HAM_OS in
+        NT*)
+          # Disable MSYS2 path translation since ham provides proper windows path
+          # and MSYS2 for some reason mangles absolute paths ('C:/Bla'
+          # becomes 'D:/C:/' - seems like its too hard to check that it has a
+          # drive in the path?)
+          MSYS2_ARG_CONV_EXCL='*' "$HAM_CMD" "${HAM_CMD_PARAMS[@]}"
+          ;;
+        *)
+          "$HAM_CMD" "${HAM_CMD_PARAMS[@]}"
+          ;;
+      esac
       errcheck $? ham "Ham build in '$DIR' failed."
   fi
 }

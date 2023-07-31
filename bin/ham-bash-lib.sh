@@ -18,8 +18,6 @@ if [[ $OS == Windows* ]]; then
     export CYGWIN=nodosfilewarning
     # On Windows both Emacs & the regular terminal seem to work fine with 8 colors...
     export TERM_NCOLORS=8
-    # See https://www.msys2.org/docs/filesystem-paths/
-    export MSYS2_ARG_CONV_EXCL='*'
 else
     if test -t 1; then
       if [[ `which tput` ]] && [[ -z "$TERM_NCOLORS" || "$TERM_NCOLORS" -eq 0 ]]; then
