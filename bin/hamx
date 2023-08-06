@@ -6,10 +6,11 @@ fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 function usage() {
-    echo "usage: hamx :toolkit ENV=value target script.sh ..."
+    echo "usage: hamx :toolkit ENV=value -ham-flag target script.sh ..."
     echo ""
     echo "  :toolkit     Import a toolkit."
     echo "  ENV=value    Set an environment variable for the ham command."
+    echo "  -ham-flag    Specify an option to pass to ham as-is."
     echo "  target       Specify a target to be passed to the ham command."
     echo "  script.sh    Specify a script to be run by the ham command."
     echo ""
@@ -18,7 +19,7 @@ function usage() {
     echo "  1. The toolkits are imported"
     echo "  2. The environment variables are set"
     echo "  3. The bash scripts are executed"
-    echo "  4. The ham targets are built"
+    echo "  4. The ham targets are built using the specified ham flags if any"
     echo ""
 }
 
