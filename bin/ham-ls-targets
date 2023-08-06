@@ -194,7 +194,7 @@ ham_show_targets_in() {
           # sort ignore case, ignore blank, uniq
           sort -f -b -u |
           # exclude targets that look like a file
-          grep -v -e '/' -e '^<.*>' -e '_\(ra\|da\)\.\(dylib\|so\|a\|exe\)$'
+          grep -v -e '/' -e '^<.*>' -e '_\(ra\|da\)\.\(dylib\|so\|a\|exe\|lib\|dll\)$'
         ;;
       test)
         ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" |
