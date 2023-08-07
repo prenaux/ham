@@ -1,7 +1,44 @@
 #!/bin/bash -e
-export HAM_NO_VER_CHECK=1
+#===== PRELUDE BEGIN ===========
+export SCRIPT_NAME=$(basename "$0")
+export SCRIPT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
+#===== PRELUDE TOOLSETS ========
+export HAM_NO_VER_CHECK=1
+#===== PRELUDE END =============
+
+function sh_lint() {
+  toolset_import_once shell_linter > /dev/null
+  errcheck $? "$SCRIPT_NAME" "Can't import shell_linter toolset." || return 1
+
+  if [ -z "$1" ]; then
+    # List the shell files in a folder
+    FILES=$("$HAM_SHELL_LINTER_DIR/shfmt" -f .)
+  else
+    FILES="$@"
+  fi
+
+  if [[ "$LINT_FORMAT" == "yes" ]] || [[ "$LINT_CHECK_FORMAT" == "yes" ]]; then
+    local shfmt_params=(-i 2 -ci -bn -ln=bash -bn=false)
+    if [[ "$LINT_CHECK_FORMAT" == "yes" ]]; then
+      shfmt_params=(-d ${shfmt_params[@]})
+    else
+      shfmt_params=(-w ${shfmt_params[@]})
+    fi
+    (set -x ;
+     "$HAM_SHELL_LINTER_DIR/shfmt" ${shfmt_params[@]} ${FILES[@]})
+  fi
+
+  if [[ "$NO_LINT" != "yes" ]]; then
+    local shellcheck_params=(-x --shell=bash --source-path="$HAM_HOME")
+    if [[ "$LINT_VERBOSE" != "yes" ]]; then
+      shellcheck_params=(--format=gcc ${shellcheck_params[@]})
+    fi
+    (set -x ;
+     "$HAM_SHELL_LINTER_DIR/shellcheck" ${shellcheck_params[@]} ${FILES[@]})
+  fi
+}
 
 function ni_lint() {
     DIR=`pwd`
@@ -149,6 +186,10 @@ function lint_file() {
             ni_lint "$CMD"
             errcheck $? ni_lint "Single ni file lint failed in '$DIRNAME'."
             ;;
+        sh)
+            sh_lint "$CMD"
+            errcheck $? sh_lint "Single sh file lint failed in '$DIRNAME'."
+            ;;
         *)
             die "Unsupported extension '$EXT' for '$CMD' in '$DIRNAME'."
             ;;
@@ -159,7 +200,7 @@ function lint_dir() {
     LANG=$1
     DIRNAME=$2
     if [ ! -d "$DIRNAME" ]; then
-        echo "E/no directory '$DIRNAME' specified after '${LANG}'."
+        echo "E/'$DIRNAME' is not a directory, after '${LANG}'."
         return 1
     fi
     shift
@@ -168,6 +209,16 @@ function lint_dir() {
     ${LANG}_lint
     errcheck $? ${LANG}_lint "${LANG} files lint failed in '$DIRNAME'."
     popd >> /dev/null
+}
+
+function lint_dir_or_file() {
+  LANG=$1
+  DIR_OR_FILENAME=$2
+  if [ -d "$DIR_OR_FILENAME" ]; then
+    lint_dir $LANG "$DIR_OR_FILENAME"
+  else
+    ${LANG}_lint "$DIR_OR_FILENAME"
+  fi
 }
 
 function all_lint() {
@@ -179,65 +230,96 @@ function all_lint() {
     while [ "$1" != "" ]; do
         CMD="$1"
         shift
+        if [ -d "$CMD" ]; then
+          log_error "Specified directory '$CMD' should be preceeded by the language to lint."
+          return 1
+        fi
         case "$CMD" in
             cpp)
-                (set -e ; lint_dir cpp $1)
+                (set -e ; lint_dir_or_file cpp "$1")
                 shift
                 ;;
             php)
-                (set -e ; lint_dir php $1)
+                (set -e ; lint_dir_or_file php "$1")
                 shift
                 ;;
             js)
-                (set -e ; lint_dir js $1)
+                (set -e ; lint_dir_or_file js "$1")
                 shift
                 ;;
             rust)
-                (set -e ; lint_dir rust $1)
+                (set -e ; lint_dir_or_file rust "$1")
                 shift
                 ;;
             ni)
-                (set -e ; lint_dir ni $1)
+                (set -e ; lint_dir_or_file ni "$1")
+                shift
+                ;;
+            sh)
+                (set -e ; lint_dir_or_file sh "$1")
                 shift
                 ;;
             *)
-                lint_file $CMD
+                lint_file "$CMD"
                 ;;
         esac
     done
 }
 
-function lint_sh_usage() {
-    echo "usage: ./_lint.sh (options) FILE_PATHS"
-    echo ""
-    echo "  --fix     If possible fix the problems detected during linting."
-    echo "  --format  If possible format the specified files."
-    echo ""
-    echo "  A directory can be checked at once by specifying the language"
-    echo "  follow by the directory path"
-    echo ""
-    echo "examples:"
-    echo "  ./_lint.sh sources/MyModule/MyThing.cpp"
-    echo "  ./_lint.sh cpp sources/MyModule/"
-    exit 1
+function ham_lint_usage() {
+  echo "usage:"
+  echo "  ${SCRIPT_NAME} modes FILE"
+  echo "  ${SCRIPT_NAME} modes language DIRECTORY"
+  echo ""
+  echo "  --lint          Lint the code."
+  echo "  --fix           If possible fix the problems detected during linting."
+  echo "  --format        If possible format the specified files."
+  echo "  --check-format  Only check if the code would be formatted."
+  echo "  --verbose       Use the most verbose output (meant for cli, not tools integration)."
+  echo ""
+  echo "  A directory can be checked at once by specifying the language"
+  echo "  follow by the directory path"
+  echo ""
+  echo "examples:"
+  echo "  ${SCRIPT_NAME} sources/MyModule/MyThing.cpp"
+  echo "  ${SCRIPT_NAME} cpp sources/MyModule/"
+  exit 1
 }
 
-function lint_sh_main() {
-    while [[ "$1" == "-"* ]]; do
-        if [ "$1" == "--fix" ]; then
-            shift
-            export LINT_FIX=yes
-        elif [ "$1" == "--format" ]; then
-            shift
-            export LINT_FORMAT=yes
-        else
-            die "Unknown lint option '$1'."
-        fi
-    done
-
-    if [ -z "$1" ]; then
-        lint_sh_usage
+function ham_lint_main() {
+  export NO_LINT=yes
+  if [[ "$1" != "-"* ]]; then
+    log_error "No mode specified."
+    ham_lint_usage
+  fi
+  while [[ "$1" == "-"* ]]; do
+    if [ "$1" == "--fix" ]; then
+      shift
+      export LINT_FIX=yes
+    elif [ "$1" == "--format" ]; then
+      shift
+      export LINT_FORMAT=yes
+    elif [ "$1" == "--check-format" ]; then
+      shift
+      export LINT_CHECK_FORMAT=yes
+    elif [ "$1" == "--lint" ]; then
+      shift
+      export NO_LINT=
+    elif [ "$1" == "--verbose" ]; then
+      shift
+      export LINT_VERBOSE=yes
     else
-        all_lint "$@"
+      log_error "Unknown option '$1'."
+      ham_lint_usage || return 1
     fi
+  done
+
+  if [ -z "$1" ]; then
+    log_error "No path to lint specified."
+    ham_lint_usage
+  else
+    all_lint "$@"
+  fi
 }
+
+ham_lint_main "$@"
