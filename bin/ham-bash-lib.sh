@@ -119,9 +119,9 @@ complain()
       shift
   fi
   if [ -z "$2" ]; then
-      echo >&2 "E/$1"
+      log_error "$1"
   else
-      echo >&2 "E/$1: $2"
+      log_error "$1: $2"
   fi
 }
 
