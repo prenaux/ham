@@ -24,5 +24,9 @@ indent_size = 4
 [*.{c,cpp,cpp2,cni,h,hpp,cxx,hxx,inl}]
 indent_size = 2
 
+[*.{ni,nip,niw,gml}]
+indent_size = 2
+
 [*.sh]
-indent_size = 4
+indent_style = space
+indent_size = 2
