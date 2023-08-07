@@ -1,11 +1,12 @@
-#!/bin/bash
-# Prelude - BEGIN
-export SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-export HAM_NO_VER_CHECK=1
+#!/bin/bash -e
+#===== PRELUDE BEGIN ===========
+export SCRIPT_NAME=$(basename "$0")
+export SCRIPT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
-# Prelude - Toolsets
+#===== PRELUDE TOOLSETS ========
+export HAM_NO_VER_CHECK=1
 toolset_import_once python_3 > /dev/null
-# Prelude - END
+#===== PRELUDE END =============
 
 python3 "$SCRIPT_DIR/simple-http-server.py" "$@"
