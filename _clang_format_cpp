@@ -1,0 +1,61 @@
+#
+# Documentation at https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+#
+
+# Let clang-format detect based on the extension
+# Language: Cpp
+Standard: c++17
+BasedOnStyle: Google
+SortIncludes: false
+IndentWidth: 2
+ContinuationIndentWidth: 2
+PPIndentWidth: 2
+IndentPPDirectives: BeforeHash
+ColumnLimit: 80
+MaxEmptyLinesToKeep: 1
+IndentGotoLabels: false
+IndentWrappedFunctionNames: false
+ReflowComments: false
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+AllowAllConstructorInitializersOnNextLine: true
+UseTab: false
+UseCRLF: false
+DeriveLineEnding: false
+LineEnding: LF
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLambdasOnASingleLine: Inline
+AllowShortLoopsOnASingleLine: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+  BeforeElse: true
+  AfterFunction: false
+BreakStringLiterals: false
+BreakConstructorInitializers: BeforeComma
+PackConstructorInitializers: Never
+BinPackArguments: false
+BinPackParameters: false
+AllowAllArgumentsOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AlignConsecutiveBitFields: true
+BreakBeforeTernaryOperators: true
+AlignAfterOpenBracket: AlwaysBreak
+AlignOperands: Align
+BreakBeforeBinaryOperators: None
+ForEachMacros: ["niLoop","niLoopr","niLoopit","niLooprit","niExec","niExec_","niSubmit","niSubmit_"]
+StatementAttributeLikeMacros: ["niAlignedType","niAligned","niDeprecated","niFn","niFnS","niFnV"]
+TypenameMacros: ["niExportFunc","niExportFuncCPP","niFn","niFnS","niFnV","niExportFn"]
+IfMacros: ["niCheckIfError","niIfConstructError","niCheckNNIfNull","niTry","niTryError","niCatch","niCatchAll","niCatchError"]
+SpaceBeforeParens: ControlStatementsExceptControlMacros
+AlignEscapedNewlines: Left
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 0
+WhitespaceSensitiveMacros:
+ - niDeclareInterfaceUUID
+ - niCAssert
+InsertNewlineAtEOF: true
+RequiresExpressionIndentation: OuterScope
