@@ -1,0 +1,7 @@
+PROG = dos2unix ;
+Main $(PROG) : common.c querycp.c dos2unix.c ;
+RunExe Run_$(PROG) : $(PROG) ;
+
+PROG = unix2dos ;
+Main $(PROG) : common.c querycp.c unix2dos.c ;
+RunExe Run_$(PROG) : $(PROG) ;
