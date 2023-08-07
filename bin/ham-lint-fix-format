@@ -80,7 +80,6 @@ function cpp_clang_format_dir() {
     DIR=$1
     shift
     echo "I/cpp_clang_format_dir: '$DIR'"
-    clang_format_params=()
     (set -e ;
      find "$DIR" \
           \( -name '*.c' \
@@ -94,23 +93,23 @@ function cpp_clang_format_dir() {
           -o -name '*.inl' \
           ! -iname '*.idl.inl' \
           \) -print0 |\
-         xargs -t -0 -n 10 -P ${HAM_NUM_JOBS:-8} run-for-xargs clang-format $@) || return 1
+         xargs -t -0 -n 10 -P ${HAM_NUM_JOBS:-8} run-for-xargs ham-clang-format-cpp $@) || return 1
 }
 
 function cpp_lint() {
-    PARAMS=(-style="file:$HAM_HOME/_clang_format_cpp")
     if [ "$LINT_FORMAT" == "yes" ] || [ "$LINT_FIX" == "yes" ]; then
-        PARAMS=(-i ${PARAMS[@]})
+        PARAMS=(format)
     else
-        PARAMS=(--dry-run -Werror ${PARAMS[@]})
+        PARAMS=(dryrun)
     fi
 
     if [ -z "$1" ]; then
         DIR=`pwd`
         cpp_clang_format_dir "$DIR" ${PARAMS[@]}
     else
-        (set -x; clang-format ${PARAMS[@]} "$1")
-        ham_flymake_lint "$1"
+        (set -x;
+         ham-clang-format-cpp ${PARAMS[@]} "$1"
+         ham_flymake_lint "$1")
     fi
 }
 
@@ -223,9 +222,12 @@ function lint_dir_or_file() {
   LANG=$1
   DIR_OR_FILENAME=$2
   if [ -d "$DIR_OR_FILENAME" ]; then
+    log_info "lint_dir_or_file: $LANG: formatting directory '$DIR_OR_FILENAME'."
     lint_dir $LANG "$DIR_OR_FILENAME"
-  else
+  elif [ -e "$DIR_OR_FILENAME" ]; then
     ${LANG}_lint "$DIR_OR_FILENAME"
+  else
+    log_warning "lint_dir_or_file: $LANG: '$DIR_OR_FILENAME' doesn't exist."
   fi
 }
 
