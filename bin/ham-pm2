@@ -35,20 +35,20 @@ usage() {
     echo ""
     echo "    source                           To be sourced at the top of a script to warm up the pm2"
     echo "                                     environment to run it multiple times."
-    echo "    start-once APP_NAME START_CMD    Start a pm2 process if it isnt already started."
+    echo "    start-once PM2_APP_NAME START_CMD    Start a pm2 process if it isnt already started."
     echo ""
     exit 1
 }
 
 do_pm2_start() {
-  local APP_NAME=$1
+  local PM2_APP_NAME=$1
   shift
   local START_CMD=$1
   shift
   if [ -z "$1" ]; then
-    (set -x; pm2 start --update-env --name "$APP_NAME" "$START_CMD")
+    (set -x; pm2 start --update-env --name "$PM2_APP_NAME" "$START_CMD")
   else
-    (set -x; pm2 start --update-env --name "$APP_NAME" "$START_CMD" -- "$@")
+    (set -x; pm2 start --update-env --name "$PM2_APP_NAME" "$START_CMD" -- "$@")
   fi
 }
 
@@ -58,9 +58,9 @@ elif [ "$1" == source ]; then
     echo -n ""
 elif [ "$1" == start-once ]; then
     shift
-    APP_NAME="$1"
-    if [ -z "$APP_NAME" ]; then
-        echo "E/ham-pm2: start-once: APP_NAME not specified."
+    PM2_APP_NAME="$1"
+    if [ -z "$PM2_APP_NAME" ]; then
+        echo "E/ham-pm2: start-once: PM2_APP_NAME not specified."
         exit 1
     fi
     shift
@@ -71,17 +71,17 @@ elif [ "$1" == start-once ]; then
     fi
     shift
 
-    if [[ `pm2 info "$APP_NAME" | grep 'status.*online'` ]]; then
-        echo "I/ham-pm2: '$APP_NAME' already started and online."
+    if [[ `pm2 info "$PM2_APP_NAME" | grep 'status.*online'` ]]; then
+        echo "I/ham-pm2: '$PM2_APP_NAME' already started and online."
     else
-        echo "I/ham-pm2: '$APP_NAME' not online, starting cmd: $START_CMD $@"
-        do_pm2_start "$APP_NAME" "$START_CMD" "$@"
+        echo "I/ham-pm2: '$PM2_APP_NAME' not online, starting cmd: $START_CMD $@"
+        do_pm2_start "$PM2_APP_NAME" "$START_CMD" "$@"
     fi
 elif [ "$1" == restart ]; then
     shift
-    APP_NAME="$1"
-    if [ -z "$APP_NAME" ]; then
-        echo "E/ham-pm2: restart: APP_NAME not specified."
+    PM2_APP_NAME="$1"
+    if [ -z "$PM2_APP_NAME" ]; then
+        echo "E/ham-pm2: restart: PM2_APP_NAME not specified."
         exit 1
     fi
     shift
@@ -92,12 +92,12 @@ elif [ "$1" == restart ]; then
     fi
     shift
 
-    if [[ `pm2 info "$APP_NAME" | grep 'status.*online'` ]]; then
-        echo "I/ham-pm2: '$APP_NAME' already started and online, stopping it first."
-        pm2 stop "$APP_NAME"
+    if [[ `pm2 info "$PM2_APP_NAME" | grep 'status.*online'` ]]; then
+        echo "I/ham-pm2: '$PM2_APP_NAME' already started and online, stopping it first."
+        pm2 stop "$PM2_APP_NAME"
     fi
-    echo "I/ham-pm2: '$APP_NAME' starting cmd: $START_CMD $@"
-    do_pm2_start "$APP_NAME" "$START_CMD" "$@"
+    echo "I/ham-pm2: '$Pm2_APP_NAME' starting cmd: $START_CMD $@"
+    do_pm2_start "$PM2_APP_NAME" "$START_CMD" "$@"
 else
     set -e
     pm2 "$@"
