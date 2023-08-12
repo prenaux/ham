@@ -113,6 +113,33 @@ function cpp_lint() {
     fi
 }
 
+function java_clang_format_dir() {
+    DIR=$1
+    shift
+    echo "I/java_clang_format_dir: '$DIR'"
+    (set -e ;
+     find "$DIR" \
+          \( -name '*.java' \
+          \) -print0 |\
+         xargs -t -0 -n 10 -P ${HAM_NUM_JOBS:-8} run-for-xargs ham-clang-format-cpp $@) || return 1
+}
+
+function java_lint() {
+    if [ "$LINT_FORMAT" == "yes" ] || [ "$LINT_FIX" == "yes" ]; then
+        PARAMS=(format)
+    else
+        PARAMS=(dryrun)
+    fi
+
+    if [ -z "$1" ]; then
+        DIR=`pwd`
+        java_clang_format_dir "$DIR" ${PARAMS[@]}
+    else
+        (set -x;
+         ham-clang-format-cpp ${PARAMS[@]} "$1")
+    fi
+}
+
 function js_lint() {
     toolset_import_once nodejs > /dev/null
     FIX_OPT=
@@ -172,6 +199,10 @@ function lint_file() {
         c|cc|cpp|cxx|h|hh|hpp|hxx|inl)
             cpp_lint "$CMD"
             errcheck $? cpp_lint "Single cpp file lint failed in '$DIRNAME'."
+            ;;
+        java)
+            java_lint "$CMD"
+            errcheck $? cpp_lint "Single java file lint failed in '$DIRNAME'."
             ;;
         cni|cpp2)
             ham_flymake_lint "$CMD"
@@ -247,6 +278,10 @@ function all_lint() {
         case "$CMD" in
             cpp)
                 (set -e ; lint_dir_or_file cpp "$1")
+                shift
+                ;;
+            java)
+                (set -e ; lint_dir_or_file java "$1")
                 shift
                 ;;
             php)
