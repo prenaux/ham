@@ -2,29 +2,34 @@
   /*
 
   Extensions:
+    - Atishay-Jain.All-Autocomplete: Auto complete from all opened files
+    - bmewburn.vscode-intelephense-client: PHP Intelephense
+    - bradlc.vscode-tailwindcss: Tailwind CSS IntelliSense
+    - brokenprogrammer.paragraphjump: Jump to the next/previous paragraph
+    - calebporzio.better-phpunit: Better PHPUnit
     - EditorConfig.EditorConfig: EditorConfig for VS Code
     - elazarcoh.cpp2-syntax: Cpp2 Syntax Highlighting
-    - heaths.vscode-guid: Insert GUID - automatically assigned to Alt-G
+    - Gruntfuggly.triggertaskonsave: Trigger Task on Save
+    - heaths.vscode-guid: Insert GUID
     - IronGeek.vscode-env: Env File Syntax Highlighting
-    - mhutchie.git-graph: Git Graph
+    - JuanBlanco.solidity: Solidity Language Support
+    - junstyle.php-cs-fixer: php cs fixer
+    - MehediDracula.php-namespace-resolver: PHP Namespace Resolver
     - mloskot.vscode-boost-jam: Boost Jam Language Support
     - monkeygroover.vscode-squirrel-lang: Squirrel Language Support
+    - mrkou47.thrift-syntax-support: Thrift Syntax Support
     - mrmlnc.vscode-duplicate: Duplicate Selection
+    - ms-vscode-remote.remote-ssh: Remote - SSH development
+    - ms-vscode.hexeditor: Hex Editor
     - rebornix.toggle: Toggle
     - ryuta46.multi-command: Multi Command - automatically assigned to Alt-X
+    - sleistner.vscode-fileutils: File Utils
     - stkb.rewrap: Rewrap - automatically assigned to Alt-Q
     - tuttieee.emacs-mcx: Awesome Emacs Keymap
     - vadimcn.vscode-lldb: LLDB Debugger
-    - MehediDracula.php-namespace-resolver: PHP Namespace Resolver
-    - bmewburn.vscode-intelephense-client: PHP Intelephense
-    - calebporzio.better-phpunit: Better PHPUnit
+    - viveksjain.remreload: Automatically reload remote SSH window on timeout
     - wesbos.theme-cobalt2: Cobalt2 Theme Official
     - whizkydee.material-palenight-theme: Palenight Theme
-    - ms-vscode-remote.remote-ssh: Remote - SSH development
-    - junstyle.php-cs-fixer: php cs fixer
-    - viveksjain.remreload: Automatically reload remote SSH window on timeout
-    - Atishay-Jain.All-Autocomplete: Auto complete from all opened files
-    - ms-vscode.hexeditor: Hex Editor
 
   To Edit the Keybindings:
     Alt+X / Cmd+Shift+P: Keyboard Shortcuts (JSON)
@@ -136,6 +141,9 @@
     **/
   "editor.find.loop": false,
   "search.useIgnoreFiles": false,
+  // Destroys performance. See for solution:
+  // https://github.com/microsoft/vscode/issues/98594#issuecomment-658533647
+  "search.followSymlinks": false,
 
   /**
     * Code
