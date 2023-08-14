@@ -323,7 +323,7 @@ function ham_lint_usage() {
   echo "  --verbose       Use the most verbose output (meant for cli, not tools integration)."
   echo ""
   echo "  A directory can be checked at once by specifying the language"
-  echo "  follow by the directory path"
+  echo "  followed by the directory path."
   echo ""
   echo "examples:"
   echo "  ${SCRIPT_NAME} sources/MyModule/MyThing.cpp"
