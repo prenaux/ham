@@ -33,203 +33,179 @@
  * 11/04/02 (seiwald) - const-ing for string literals
  */
 
-# include "jam.h"
-# include "pathsys.h"
+#include "jam.h"
+#include "pathsys.h"
 
-# ifdef USE_PATHUNIX
+#ifdef USE_PATHUNIX
 
 /*
  * path_parse() - split a file name into dir/base/suffix/member
  */
 
-void
-path_parse( 
-	const char *file,
-	PATHNAME *f )
-{
-	const char *p, *q;
-	const char *end;
-	
-	memset( (char *)f, 0, sizeof( *f ) );
+void path_parse(const char *file, PATHNAME *f) {
+  const char *p, *q;
+  const char *end;
 
-	/* Look for <grist> */
+  memset((char *)f, 0, sizeof(*f));
 
-	if( file[0] == '<' && ( p = strchr( file, '>' ) ) )
-	{
-	    f->f_grist.ptr = file;
-	    f->f_grist.len = p - file;
-	    file = p + 1;
-	}
+  /* Look for <grist> */
 
-	/* Look for dir/ */
+  if (file[0] == '<' && (p = strchr(file, '>'))) {
+    f->f_grist.ptr = file;
+    f->f_grist.len = p - file;
+    file = p + 1;
+  }
 
-	p = strrchr( file, '/' );
+  /* Look for dir/ */
 
-# if PATH_DELIM == '\\'
-	/* On NT, look for dir\ as well */
-	{
-	    char *p1 = strrchr( file, '\\' );
-	    p = p1 > p ? p1 : p;
-	}
-# endif
+  p = strrchr(file, '/');
 
-	if( p )
-	{
-	    f->f_dir.ptr = file;
-	    f->f_dir.len = p - file;
-	
-	    /* Special case for / - dirname is /, not "" */
+  #if PATH_DELIM == '\\'
+  /* On NT, look for dir\ as well */
+  {
+    char *p1 = strrchr(file, '\\');
+    p = p1 > p ? p1 : p;
+  }
+  #endif
 
-	    if( !f->f_dir.len )
-		f->f_dir.len = 1;
+  if (p) {
+    f->f_dir.ptr = file;
+    f->f_dir.len = p - file;
 
-# if PATH_DELIM == '\\'
-	    /* Special case for D:/ - dirname is D:/, not "D:" */
+    /* Special case for / - dirname is /, not "" */
 
-	    if( f->f_dir.len == 2 && file[1] == ':' )
-		f->f_dir.len = 3;
-# endif
+    if (!f->f_dir.len)
+      f->f_dir.len = 1;
 
-	    file = p + 1;
-	}
+  #if PATH_DELIM == '\\'
+    /* Special case for D:/ - dirname is D:/, not "D:" */
 
-	end = file + strlen( file );
+    if (f->f_dir.len == 2 && file[1] == ':')
+      f->f_dir.len = 3;
+  #endif
 
-	/* Look for (member) */
+    file = p + 1;
+  }
 
-	if( ( p = strchr( file, '(' ) ) && end[-1] == ')' )
-	{
-	    f->f_member.ptr = p + 1;
-	    f->f_member.len = end - p - 2;
-	    end = p;
-	} 
+  end = file + strlen(file);
 
-	/* Look for .suffix */
-	/* This would be memrchr() */
+  /* Look for (member) */
 
-	p = 0;
-	q = file;
+  if ((p = strchr(file, '(')) && end[-1] == ')') {
+    f->f_member.ptr = p + 1;
+    f->f_member.len = end - p - 2;
+    end = p;
+  }
 
-	while( q = (char *)memchr( q, '.', end - q ) )
-	    p = q++;
+  /* Look for .suffix */
+  /* This would be memrchr() */
 
-	if( p )
-	{
-	    f->f_suffix.ptr = p;
-	    f->f_suffix.len = end - p;
-	    end = p;
-	}
+  p = 0;
+  q = file;
 
-	/* Leaves base */
+  while (q = (char *)memchr(q, '.', end - q))
+    p = q++;
 
-	f->f_base.ptr = file;
-	f->f_base.len = end - file;
+  if (p) {
+    f->f_suffix.ptr = p;
+    f->f_suffix.len = end - p;
+    end = p;
+  }
+
+  /* Leaves base */
+
+  f->f_base.ptr = file;
+  f->f_base.len = end - file;
 }
 
 /*
  * path_build() - build a filename given dir/base/suffix/member
  */
 
-void
-path_build(
-	PATHNAME *f,
-	char	*file,
-	int	binding )
-{
-	/* Start with the grist.  If the current grist isn't */
-	/* surrounded by <>'s, add them. */
+void path_build(PATHNAME *f, char *file, int binding) {
+  /* Start with the grist.  If the current grist isn't */
+  /* surrounded by <>'s, add them. */
 
-	if( f->f_grist.len )
-	{
-	    if( f->f_grist.ptr[0] != '<' ) *file++ = '<';
-	    memcpy( file, f->f_grist.ptr, f->f_grist.len );
-	    file += f->f_grist.len;
-	    if( file[-1] != '>' ) *file++ = '>';
-	}
+  if (f->f_grist.len) {
+    if (f->f_grist.ptr[0] != '<')
+      *file++ = '<';
+    memcpy(file, f->f_grist.ptr, f->f_grist.len);
+    file += f->f_grist.len;
+    if (file[-1] != '>')
+      *file++ = '>';
+  }
 
-	/* Don't prepend root if it's . or directory is rooted */
+  /* Don't prepend root if it's . or directory is rooted */
 
-# if PATH_DELIM == '/'
+  #if PATH_DELIM == '/'
 
-	if( f->f_root.len 
-	    && !( f->f_root.len == 1 && f->f_root.ptr[0] == '.' )
-	    && !( f->f_dir.len && f->f_dir.ptr[0] == '/' ) )
+  if (
+    f->f_root.len && !(f->f_root.len == 1 && f->f_root.ptr[0] == '.') &&
+    !(f->f_dir.len && f->f_dir.ptr[0] == '/'))
+  #else /* unix */
 
-# else /* unix */
+  if (
+    f->f_root.len && !(f->f_root.len == 1 && f->f_root.ptr[0] == '.') &&
+    !(f->f_dir.len && f->f_dir.ptr[0] == '/') &&
+    !(f->f_dir.len && f->f_dir.ptr[0] == '\\') &&
+    !(f->f_dir.len && f->f_dir.ptr[1] == ':'))
 
-	if( f->f_root.len 
-	    && !( f->f_root.len == 1 && f->f_root.ptr[0] == '.' )
-	    && !( f->f_dir.len && f->f_dir.ptr[0] == '/' )
-	    && !( f->f_dir.len && f->f_dir.ptr[0] == '\\' )
-	    && !( f->f_dir.len && f->f_dir.ptr[1] == ':' ) )
+  #endif /* unix */
 
-# endif /* unix */
+  {
+    memcpy(file, f->f_root.ptr, f->f_root.len);
+    file += f->f_root.len;
+    *file++ = PATH_DELIM;
+  }
 
-	{
-	    memcpy( file, f->f_root.ptr, f->f_root.len );
-	    file += f->f_root.len;
-	    *file++ = PATH_DELIM;
-	}
+  if (f->f_dir.len) {
+    memcpy(file, f->f_dir.ptr, f->f_dir.len);
+    file += f->f_dir.len;
+  }
 
-	if( f->f_dir.len )
-	{
-	    memcpy( file, f->f_dir.ptr, f->f_dir.len );
-	    file += f->f_dir.len;
-	}
+  /* UNIX: Put / between dir and file */
+  /* NT:   Put \ between dir and file */
 
-	/* UNIX: Put / between dir and file */
-	/* NT:   Put \ between dir and file */
+  if (f->f_dir.len && (f->f_base.len || f->f_suffix.len)) {
+    /* UNIX: Special case for dir \ : don't add another \ */
+    /* NT:   Special case for dir / : don't add another / */
 
-	if( f->f_dir.len && ( f->f_base.len || f->f_suffix.len ) )
-	{
-	    /* UNIX: Special case for dir \ : don't add another \ */
-	    /* NT:   Special case for dir / : don't add another / */
+  #if PATH_DELIM == '\\'
+    if (!(f->f_dir.len == 3 && f->f_dir.ptr[1] == ':'))
+  #endif
+      if (!(f->f_dir.len == 1 && f->f_dir.ptr[0] == PATH_DELIM))
+        *file++ = PATH_DELIM;
+  }
 
-# if PATH_DELIM == '\\'
-	    if( !( f->f_dir.len == 3 && f->f_dir.ptr[1] == ':' ) )
-# endif
-		if( !( f->f_dir.len == 1 && f->f_dir.ptr[0] == PATH_DELIM ) )
-		    *file++ = PATH_DELIM;
-	}
+  if (f->f_base.len) {
+    memcpy(file, f->f_base.ptr, f->f_base.len);
+    file += f->f_base.len;
+  }
 
-	if( f->f_base.len )
-	{
-	    memcpy( file, f->f_base.ptr, f->f_base.len );
-	    file += f->f_base.len;
-	}
+  if (f->f_suffix.len) {
+    memcpy(file, f->f_suffix.ptr, f->f_suffix.len);
+    file += f->f_suffix.len;
+  }
 
-	if( f->f_suffix.len )
-	{
-	    memcpy( file, f->f_suffix.ptr, f->f_suffix.len );
-	    file += f->f_suffix.len;
-	}
-
-	if( f->f_member.len )
-	{
-	    *file++ = '(';
-	    memcpy( file, f->f_member.ptr, f->f_member.len );
-	    file += f->f_member.len;
-	    *file++ = ')';
-	}
-	*file = 0;
+  if (f->f_member.len) {
+    *file++ = '(';
+    memcpy(file, f->f_member.ptr, f->f_member.len);
+    file += f->f_member.len;
+    *file++ = ')';
+  }
+  *file = 0;
 }
 
 /*
  *	path_parent() - make a PATHNAME point to its parent dir
  */
 
-void
-path_parent( PATHNAME *f )
-{
-	/* just set everything else to nothing */
+void path_parent(PATHNAME *f) {
+  /* just set everything else to nothing */
 
-	f->f_base.ptr =
-	f->f_suffix.ptr =
-	f->f_member.ptr = "";
+  f->f_base.ptr = f->f_suffix.ptr = f->f_member.ptr = "";
 
-	f->f_base.len = 
-	f->f_suffix.len = 
-	f->f_member.len = 0;
+  f->f_base.len = f->f_suffix.len = f->f_member.len = 0;
 }
 
-# endif /* unix, NT, OS/2, AmigaOS */
+#endif /* unix, NT, OS/2, AmigaOS */

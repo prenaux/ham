@@ -9,6 +9,6 @@
  *              #define MACRO  "filename" definitions
  */
 
-void   macro_headers( TARGET *t );
+void macro_headers(TARGET* t);
 
-const char*  macro_header_get( const char*  macro_name );
+const char* macro_header_get(const char* macro_name);

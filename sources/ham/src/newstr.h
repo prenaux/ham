@@ -10,7 +10,7 @@
  * 11/04/02 (seiwald) - const-ing for string literals
  */
 
-const char *newstr( const char *string );
-const char *copystr( const char *s );
-void freestr( const char *s );
+const char *newstr(const char *string);
+const char *copystr(const char *s);
+void freestr(const char *s);
 void donestr();

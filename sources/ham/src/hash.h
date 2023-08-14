@@ -12,9 +12,9 @@
 
 typedef struct hashdata HASHDATA;
 
-struct hash *	hashinit( int datalen, const char *name );
-int 		hashitem( struct hash *hp, HASHDATA **data, int enter );
-void 		hashdone( struct hash *hp );
+struct hash *hashinit(int datalen, const char *name);
+int hashitem(struct hash *hp, HASHDATA **data, int enter);
+void hashdone(struct hash *hp);
 
-# define	hashenter( hp, data ) !hashitem( hp, data, !0 )
-# define	hashcheck( hp, data ) hashitem( hp, data, 0 )
+#define hashenter(hp, data) !hashitem(hp, data, !0)
+#define hashcheck(hp, data) hashitem(hp, data, 0)

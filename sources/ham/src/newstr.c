@@ -26,9 +26,9 @@
  * 11/04/02 (seiwald) - const-ing for string literals
  */
 
-# include "jam.h"
-# include "newstr.h"
-# include "hash.h"
+#include "jam.h"
+#include "newstr.h"
+#include "hash.h"
 
 typedef const char *STRING;
 
@@ -39,60 +39,51 @@ static int strtotal = 0;
  * newstr() - return a malloc'ed copy of a string
  */
 
-const char *
-newstr( const char *string )
-{
-	STRING str, *s = &str;
+const char *newstr(const char *string) {
+  STRING str, *s = &str;
 
-	if( !strhash )
-	    strhash = hashinit( sizeof( STRING ), "strings" );
+  if (!strhash)
+    strhash = hashinit(sizeof(STRING), "strings");
 
-	*s = string;
+  *s = string;
 
-	if( hashenter( strhash, (HASHDATA **)&s ) )
-	{
-	    int l = strlen( string );
-	    char *m = (char *)malloc( l + 1 );
+  if (hashenter(strhash, (HASHDATA **)&s)) {
+    int l = strlen(string);
+    char *m = (char *)malloc(l + 1);
 
-	    if (DEBUG_MEM)
-		    printf("newstr: allocating %d bytes\n", l + 1 );
+    if (DEBUG_MEM)
+      printf("newstr: allocating %d bytes\n", l + 1);
 
-	    strtotal += l + 1;
-	    memcpy( m, string, l + 1 );
-	    *s = m;
-	}
+    strtotal += l + 1;
+    memcpy(m, string, l + 1);
+    *s = m;
+  }
 
-	return *s;
+  return *s;
 }
 
 /*
  * copystr() - return a copy of a string previously returned by newstr()
  */
 
-const char *
-copystr( const char *s )
-{
-	return s;
+const char *copystr(const char *s) {
+  return s;
 }
 
 /*
  * freestr() - free a string returned by newstr() or copystr()
  */
 
-void
-freestr( const char *s )
-{
+void freestr(const char *s) {
 }
 
 /*
  * donestr() - free string tables
  */
 
-void
-donestr()
-{
-	hashdone( strhash );
+void donestr() {
+  hashdone(strhash);
 
-	if( DEBUG_MEM )
-	    printf( "%dK in strings\n", strtotal / 1024 );
+  if (DEBUG_MEM)
+    printf("%dK in strings\n", strtotal / 1024);
 }
