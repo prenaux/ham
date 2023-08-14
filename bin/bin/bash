@@ -1,8 +1,0 @@
-#!bash
-windir() {
-    DIRPATH=$1
-    2>/dev/null cd "$DIRPATH"; pwd -W
-}
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../../toolsets/repos/nt-x86/git/bin" && pwd )"
-DIR="`windir ${DIR}`"
-"$DIR/bash.exe" "$@"

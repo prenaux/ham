@@ -1,2 +1,0 @@
-This folder exist so that the standard bang syntax #!/bin/sh works in the bash
-scripts on Windows.
