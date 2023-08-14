@@ -1,5 +1,0 @@
-#!/bin/bash -e
-export HAM_NO_VER_CHECK=1
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
-. "$HAM_HOME/bin/ham-bash-setenv.sh"
-python3 "${BUCKBUILD_DIST_DIR}/buck.pex" "$@"
