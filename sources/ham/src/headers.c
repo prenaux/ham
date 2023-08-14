@@ -29,64 +29,59 @@
  * 12/09/02 (seiwald) - push regexp creation down to headers1().
  */
 
-# include "jam.h"
-# include "lists.h"
-# include "parse.h"
-# include "compile.h"
-# include "rules.h"
-# include "variable.h"
-# include "regexp.h"
-# include "headers.h"
-# include "newstr.h"
-# include "hdrmacro.h"
+#include "jam.h"
+#include "lists.h"
+#include "parse.h"
+#include "compile.h"
+#include "rules.h"
+#include "variable.h"
+#include "regexp.h"
+#include "headers.h"
+#include "newstr.h"
+#include "hdrmacro.h"
 
 #ifdef OPT_HEADER_CACHE_EXT
-#include "hcache.h"
+  #include "hcache.h"
 #else
-static LIST *headers1( const char *file, LIST *hdrscan );
+static LIST *headers1(const char *file, LIST *hdrscan);
 #endif
 
 /*
  * headers() - scan a target for include files and call HDRRULE
  */
 
-# define MAXINC 25
+#define MAXINC 25
 
-void
-headers( TARGET *t )
-{
-	LIST	*hdrscan;
-	LIST	*hdrrule;
-	LIST	*hdrcache;
-	LOL	lol;
+void headers(TARGET *t) {
+  LIST *hdrscan;
+  LIST *hdrrule;
+  LIST *hdrcache;
+  LOL lol;
 
-	if( !( hdrscan = var_get( "HDRSCAN" ) ) || 
-	    !( hdrrule = var_get( "HDRRULE" ) ) )
-	        return;
+  if (!(hdrscan = var_get("HDRSCAN")) || !(hdrrule = var_get("HDRRULE")))
+    return;
 
-	/* Doctor up call to HDRRULE rule */
-	/* Call headers1() to get LIST of included files. */
+  /* Doctor up call to HDRRULE rule */
+  /* Call headers1() to get LIST of included files. */
 
-	if( DEBUG_HEADER )
-	    printf( "header scan %s\n", t->name );
+  if (DEBUG_HEADER)
+    printf("header scan %s\n", t->name);
 
-	lol_init( &lol );
+  lol_init(&lol);
 
-
-
-	lol_add( &lol, list_new( L0, t->name, 1 ) );
+  lol_add(&lol, list_new(L0, t->name, 1));
 #ifdef OPT_HEADER_CACHE_EXT
-	lol_add( &lol, hcache( t, hdrscan ) );
+  lol_add(&lol, hcache(t, hdrscan));
 #else
-	lol_add( &lol, headers1( t->boundname, hdrscan ) );
+  lol_add(&lol, headers1(t->boundname, hdrscan));
 #endif
 
-	if( lol_get( &lol, 1 ) )
-	    list_free( evaluate_rule( hdrrule->string, &lol, L0 ) );
+  if (lol_get(&lol, 1))
+    list_free(evaluate_rule(hdrrule->string, &lol, L0));
 
-	/* Clean up */
+  /* Clean up */
 
-	lol_free( &lol );
+  lol_free(&lol);
 }
 
 /*
@@ -98,82 +93,76 @@ LIST *
 #else
 static LIST *
 #endif
-headers1( 
-	const char *file,
-	LIST *hdrscan )
-{
-	FILE	*f;
-	int	i;
-	int	rec = 0;
-	LIST	*result = 0;
-	regexp	*re[ MAXINC ];
-	regexp  *re_macros;
-	char	buf[ 1024 ];
+headers1(const char *file, LIST *hdrscan) {
+  FILE *f;
+  int i;
+  int rec = 0;
+  LIST *result = 0;
+  regexp *re[MAXINC];
+  regexp *re_macros;
+  char buf[1024];
 
-	if( !( f = fopen( file, "r" ) ) )
-	    return result;
+  if (!(f = fopen(file, "r")))
+    return result;
 
-    var_set( "HDROPENED", list_new( L0, file, 0 ), VAR_SET );
+  var_set("HDROPENED", list_new(L0, file, 0), VAR_SET);
 
-	while( rec < MAXINC && hdrscan )
-	{
-	    re[rec++] = regcomp( hdrscan->string );
-	    hdrscan = list_next( hdrscan );
-	}
+  while (rec < MAXINC && hdrscan) {
+    re[rec++] = regcomp(hdrscan->string);
+    hdrscan = list_next(hdrscan);
+  }
 
-        /* the following regexp is used to detect cases where a  */
-        /* file is included through a line line "#include MACRO" */
-        re_macros = regcomp(
-           "^[ 	]*#[ 	]*include[ 	]*([A-Za-z][A-Za-z0-9_]*).*$" );
+  /* the following regexp is used to detect cases where a  */
+  /* file is included through a line line "#include MACRO" */
+  re_macros =
+    regcomp("^[ 	]*#[ 	]*include[ 	]*([A-Za-z][A-Za-z0-9_]*).*$");
 
-	while( fgets( buf, sizeof( buf ), f ) )
-	{
-	    for( i = 0; i < rec; i++ )
-		if( regexec( re[i], buf ) && re[i]->startp[1] )
-	    {
-		/* Copy and terminate extracted string. */
+  while (fgets(buf, sizeof(buf), f)) {
+    for (i = 0; i < rec; i++)
+      if (regexec(re[i], buf) && re[i]->startp[1]) {
+        /* Copy and terminate extracted string. */
 
-		char buf2[ MAXSYM ];
-		int l = re[i]->endp[1] - re[i]->startp[1];
-		memcpy( buf2, re[i]->startp[1], l );
-		buf2[ l ] = 0;
-		result = list_new( result, buf2, 0 );
+        char buf2[MAXSYM];
+        int l = re[i]->endp[1] - re[i]->startp[1];
+        memcpy(buf2, re[i]->startp[1], l);
+        buf2[l] = 0;
+        result = list_new(result, buf2, 0);
 
-		if( DEBUG_HEADER )
-		    printf( "header found: %s\n", buf2 );
-	    }
+        if (DEBUG_HEADER)
+          printf("header found: %s\n", buf2);
+      }
 
-	    /* special treatment for #include MACRO */
-	    if ( regexec( re_macros, buf ) && re_macros->startp[1] )
-	    {
-		const char*  header_filename;
-		char         buf2[ MAXSYM ];
-		int          l = re_macros->endp[1] - re_macros->startp[1];
-		
-		memcpy( buf2, re_macros->startp[1], l );
-		buf2[ l ] = 0;
+    /* special treatment for #include MACRO */
+    if (regexec(re_macros, buf) && re_macros->startp[1]) {
+      const char *header_filename;
+      char buf2[MAXSYM];
+      int l = re_macros->endp[1] - re_macros->startp[1];
 
-		if ( DEBUG_HEADER )
-		    printf( "macro header found: %s", buf2 );
+      memcpy(buf2, re_macros->startp[1], l);
+      buf2[l] = 0;
 
-		header_filename = macro_header_get( buf2 );
-		if (header_filename) {
-		    if ( DEBUG_HEADER )
-			printf( " resolved to '%s'\n", header_filename );
-		    result = list_new( result, header_filename, 0 );
-		} else {
-		    if ( DEBUG_HEADER )
-			printf( " ignored !!\n" );
-		}
-	    }
-	}
+      if (DEBUG_HEADER)
+        printf("macro header found: %s", buf2);
 
-	free( re_macros );
+      header_filename = macro_header_get(buf2);
+      if (header_filename) {
+        if (DEBUG_HEADER)
+          printf(" resolved to '%s'\n", header_filename);
+        result = list_new(result, header_filename, 0);
+      }
+      else {
+        if (DEBUG_HEADER)
+          printf(" ignored !!\n");
+      }
+    }
+  }
 
-	while( rec )
-	    free( (char*)re[--rec] );
+  free(re_macros);
 
-	fclose( f );
+  while (rec)
+    free((char *)re[--rec]);
 
-	return result;
+  fclose(f);
+
+  return result;
 }

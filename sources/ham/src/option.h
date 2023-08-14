@@ -13,14 +13,14 @@
  * 11/04/02 (seiwald) - const-ing for string literals
  */
 
-typedef struct option
-{
-	char	flag;		/* filled in by getoption() */
-	const char	*val;	/* set to random address if true */
+typedef struct option {
+  char flag;       /* filled in by getoption() */
+  const char *val; /* set to random address if true */
 } option;
 
-# define N_OPTS    256
-# define N_TARGETS 256
+#define N_OPTS 256
+#define N_TARGETS 256
 
-int 		getoptions( int argc, char **argv, const char *opts, option *optv, char** targets );
-const char *	getoptval( option *optv, char opt, int subopt );
+int getoptions(
+  int argc, char **argv, const char *opts, option *optv, char **targets);
+const char *getoptval(option *optv, char opt, int subopt);

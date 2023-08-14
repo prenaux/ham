@@ -33,13 +33,13 @@
  * 01/14/03 (seiwald) - fix includes fix with new internal includes TARGET
  */
 
-# include "jam.h"
-# include "lists.h"
-# include "parse.h"
-# include "variable.h"
-# include "rules.h"
-# include "newstr.h"
-# include "hash.h"
+#include "jam.h"
+#include "lists.h"
+#include "parse.h"
+#include "variable.h"
+#include "rules.h"
+#include "newstr.h"
+#include "hash.h"
 
 static struct hash *rulehash = 0;
 static struct hash *targethash = 0;
@@ -47,51 +47,45 @@ static struct hash *targethash = 0;
 /*
  * bindrule() - return pointer to RULE, creating it if necessary
  */
-RULE *
-bindrule( const char *rulename )
-{
-	RULE rule, *r = &rule;
+RULE *bindrule(const char *rulename) {
+  RULE rule, *r = &rule;
 
-	if( !rulehash )
-	    rulehash = hashinit( sizeof( RULE ), "rules" );
+  if (!rulehash)
+    rulehash = hashinit(sizeof(RULE), "rules");
 
-	r->name = rulename;
+  r->name = rulename;
 
-	if( hashenter( rulehash, (HASHDATA **)&r ) )
-	{
-	    r->name = newstr( rulename );	/* never freed */
-	    r->procedure = (PARSE *)0;
-	    r->actions = (char *)0;
-	    r->bindlist = L0;
-	    r->params = L0;
-	    r->flags = 0;
-	}
+  if (hashenter(rulehash, (HASHDATA **)&r)) {
+    r->name = newstr(rulename); /* never freed */
+    r->procedure = (PARSE *)0;
+    r->actions = (char *)0;
+    r->bindlist = L0;
+    r->params = L0;
+    r->flags = 0;
+  }
 
-	return r;
+  return r;
 }
 
 /*
  * bindtarget() - return pointer to TARGET, creating it if necessary
  */
 
-TARGET *
-bindtarget( const char *targetname )
-{
-	TARGET target, *t = &target;
+TARGET *bindtarget(const char *targetname) {
+  TARGET target, *t = &target;
 
-	if( !targethash )
-	    targethash = hashinit( sizeof( TARGET ), "targets" );
+  if (!targethash)
+    targethash = hashinit(sizeof(TARGET), "targets");
 
-	t->name = targetname;
+  t->name = targetname;
 
-	if( hashenter( targethash, (HASHDATA **)&t ) )
-	{
-	    memset( (char *)t, '\0', sizeof( *t ) );
-	    t->name = newstr( targetname );	/* never freed */
-	    t->boundname = t->name;		/* default for T_FLAG_NOTFILE */
-	}
+  if (hashenter(targethash, (HASHDATA **)&t)) {
+    memset((char *)t, '\0', sizeof(*t));
+    t->name = newstr(targetname); /* never freed */
+    t->boundname = t->name;       /* default for T_FLAG_NOTFILE */
+  }
 
-	return t;
+  return t;
 }
 
 /*
@@ -100,29 +94,25 @@ bindtarget( const char *targetname )
  * Not entered into hash table -- for internal nodes.
  */
 
-TARGET *
-copytarget( const TARGET *ot )
-{
-	TARGET *t;
+TARGET *copytarget(const TARGET *ot) {
+  TARGET *t;
 
-	t = (TARGET *)malloc( sizeof( *t ) );
-	memset( (char *)t, '\0', sizeof( *t ) );
-	t->name = copystr( ot->name );
-	t->boundname = t->name;
+  t = (TARGET *)malloc(sizeof(*t));
+  memset((char *)t, '\0', sizeof(*t));
+  t->name = copystr(ot->name);
+  t->boundname = t->name;
 
-	t->flags |= T_FLAG_NOTFILE | T_FLAG_INTERNAL;
+  t->flags |= T_FLAG_NOTFILE | T_FLAG_INTERNAL;
 
-	return t;
+  return t;
 }
 
 /*
  * touchtarget() - mark a target to simulate being new
  */
 
-void
-touchtarget( const char *t )
-{
-	bindtarget( t )->flags |= T_FLAG_TOUCHED;
+void touchtarget(const char *t) {
+  bindtarget(t)->flags |= T_FLAG_TOUCHED;
 }
 
 /*
@@ -133,15 +123,11 @@ touchtarget( const char *t )
  *	targets	list of target names
  */
 
-TARGETS *
-targetlist( 
-	TARGETS	*chain,
-	LIST 	*targets )
-{
-	for( ; targets; targets = list_next( targets ) )
-	    chain = targetentry( chain, bindtarget( targets->string ) );
+TARGETS *targetlist(TARGETS *chain, LIST *targets) {
+  for (; targets; targets = list_next(targets))
+    chain = targetentry(chain, bindtarget(targets->string));
 
-	return chain;
+  return chain;
 }
 
 /*
@@ -152,22 +138,20 @@ targetlist(
  *	target	new target to append
  */
 
-TARGETS *
-targetentry( 
-	TARGETS	*chain,
-	TARGET	*target )
-{
-	TARGETS *c;
+TARGETS *targetentry(TARGETS *chain, TARGET *target) {
+  TARGETS *c;
 
-	c = (TARGETS *)malloc( sizeof( TARGETS ) );
-	c->target = target;
+  c = (TARGETS *)malloc(sizeof(TARGETS));
+  c->target = target;
 
-	if( !chain ) chain = c;
-	else chain->tail->next = c;
-	chain->tail = c;
-	c->next = 0;
+  if (!chain)
+    chain = c;
+  else
+    chain->tail->next = c;
+  chain->tail = c;
+  c->next = 0;
 
-	return chain;
+  return chain;
 }
 
 /*
@@ -178,43 +162,37 @@ targetentry(
  *	target	new target to append
  */
 
-TARGETS *
-targetchain( 
-	TARGETS	*chain,
-	TARGETS	*targets )
-{
-	TARGETS *c;
+TARGETS *targetchain(TARGETS *chain, TARGETS *targets) {
+  TARGETS *c;
 
-	if( !targets )
-	    return chain;
-	else if( !chain )
-	    return targets;
+  if (!targets)
+    return chain;
+  else if (!chain)
+    return targets;
 
-	chain->tail->next = targets;
-	chain->tail = targets->tail;
+  chain->tail->next = targets;
+  chain->tail = targets->tail;
 
-	return chain;
+  return chain;
 }
 
 /*
  * actionlist() - append to an ACTION chain
  */
 
-ACTIONS *
-actionlist(
-	ACTIONS	*chain,
-	ACTION	*action )
-{
-	ACTIONS *actions = (ACTIONS *)malloc( sizeof( ACTIONS ) );
+ACTIONS *actionlist(ACTIONS *chain, ACTION *action) {
+  ACTIONS *actions = (ACTIONS *)malloc(sizeof(ACTIONS));
 
-	actions->action = action;
+  actions->action = action;
 
-	if( !chain ) chain = actions;
-	else chain->tail->next = actions;
-	chain->tail = actions;
-	actions->next = 0;
+  if (!chain)
+    chain = actions;
+  else
+    chain->tail->next = actions;
+  chain->tail = actions;
+  actions->next = 0;
 
-	return chain;
+  return chain;
 }
 
 /*
@@ -226,55 +204,49 @@ actionlist(
  * Returns the head of the chain of settings.
  */
 
-SETTINGS *
-addsettings(
-	SETTINGS *head,
-	int	setflag,
-	const char *symbol,
-	LIST	*value )
-{
-	SETTINGS *v;
-	
-	/* Look for previous setting */
+SETTINGS *addsettings(
+  SETTINGS *head, int setflag, const char *symbol, LIST *value) {
+  SETTINGS *v;
 
-	for( v = head; v; v = v->next )
-	    if( !strcmp( v->symbol, symbol ) )
-		break;
+  /* Look for previous setting */
 
-	/* If not previously set, alloc a new. */
-	/* If appending, do so. */
-	/* Else free old and set new. */
+  for (v = head; v; v = v->next)
+    if (!strcmp(v->symbol, symbol))
+      break;
 
-	if( !v )
-	{
-	    v = (SETTINGS *)malloc( sizeof( *v ) );
-	    v->symbol = newstr( symbol );
-	    v->value = value;
-	    v->next = head;
-	    head = v;
-	}
-	else switch( setflag )
-	{
-	case VAR_SET:
-	    /* Toss old, set new */
-	    list_free( v->value );
-	    v->value = value;
-	    break;
+  /* If not previously set, alloc a new. */
+  /* If appending, do so. */
+  /* Else free old and set new. */
 
-	case VAR_APPEND:
-	    /* Append new to old */
-	    v->value = list_append( v->value, value );
-	    break;
+  if (!v) {
+    v = (SETTINGS *)malloc(sizeof(*v));
+    v->symbol = newstr(symbol);
+    v->value = value;
+    v->next = head;
+    head = v;
+  }
+  else
+    switch (setflag) {
+      case VAR_SET:
+        /* Toss old, set new */
+        list_free(v->value);
+        v->value = value;
+        break;
 
-	case VAR_DEFAULT:
-	    /* Toss new, old already set */
-	    list_free( value );
-	    break;
-	} 
+      case VAR_APPEND:
+        /* Append new to old */
+        v->value = list_append(v->value, value);
+        break;
 
-	/* Return (new) head of list. */
+      case VAR_DEFAULT:
+        /* Toss new, old already set */
+        list_free(value);
+        break;
+    }
 
-	return head;
+  /* Return (new) head of list. */
+
+  return head;
 }
 
 /*
@@ -292,70 +264,58 @@ addsettings(
  * "on target" syntax.
  */
 
-SETTINGS *
-copysettings( SETTINGS *from )
-{
-	SETTINGS *head = 0, *v;
+SETTINGS *copysettings(SETTINGS *from) {
+  SETTINGS *head = 0, *v;
 
-	for( ; from; from = from->next )
-	{
-	    SETTINGS *v = (SETTINGS *)malloc( sizeof( *v ) );
-	    v->symbol = copystr( from->symbol );
-	    v->value = list_copy( 0, from->value );
-	    v->next = head;
-	    head = v;
-	}
+  for (; from; from = from->next) {
+    SETTINGS *v = (SETTINGS *)malloc(sizeof(*v));
+    v->symbol = copystr(from->symbol);
+    v->value = list_copy(0, from->value);
+    v->next = head;
+    head = v;
+  }
 
-	return head;
+  return head;
 }
 
 /*
  * pushsettings() - set all target specific variables
  */
 
-void
-pushsettings( SETTINGS *v )
-{
-	for( ; v; v = v->next )
-	    v->value = var_swap( v->symbol, v->value );
+void pushsettings(SETTINGS *v) {
+  for (; v; v = v->next)
+    v->value = var_swap(v->symbol, v->value);
 }
 
 /*
  * popsettings() - reset target specific variables to their pre-push values
  */
 
-void
-popsettings( SETTINGS *v )
-{
-	pushsettings( v );	/* just swap again */
+void popsettings(SETTINGS *v) {
+  pushsettings(v); /* just swap again */
 }
 
 /*
  *    freesettings() - delete a settings list
  */
 
-void
-freesettings( SETTINGS *v )
-{
-	while( v )
-	{
-	    SETTINGS *n = v->next;
+void freesettings(SETTINGS *v) {
+  while (v) {
+    SETTINGS *n = v->next;
 
-	    freestr( v->symbol );
-	    list_free( v->value );
-	    free( (char *)v );
+    freestr(v->symbol);
+    list_free(v->value);
+    free((char *)v);
 
-	    v = n;
-	}
+    v = n;
+  }
 }
 
 /*
  * donerules() - free RULE and TARGET tables
  */
 
-void
-donerules()
-{
-	hashdone( rulehash );
-	hashdone( targethash );
+void donerules() {
+  hashdone(rulehash);
+  hashdone(targethash);
 }

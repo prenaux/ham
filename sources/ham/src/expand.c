@@ -30,45 +30,44 @@
  * 29/04/08 (pierre)  - added :C that converts \ and / to the platform's path sep
  */
 
-# include "jam.h"
-# include "lists.h"
-# include "variable.h"
-# include "expand.h"
-# include "pathsys.h"
-# include "newstr.h"
-# include "buffer.h"
-# include "regexp.h"
-# include "hash.h"
+#include "jam.h"
+#include "lists.h"
+#include "variable.h"
+#include "expand.h"
+#include "pathsys.h"
+#include "newstr.h"
+#include "buffer.h"
+#include "regexp.h"
+#include "hash.h"
 
 typedef struct {
-	PATHNAME	f;		/* :GDBSMR -- pieces */
-	char		parent;		/* :P -- go to parent directory */
-	char		filemods;	/* one of the above applied */
-	char		downshift;	/* :L -- downshift result */
-	char		upshift;	/* :U -- upshift result */
-	PATHPART	empty;		/* :E -- default for empties */
-	PATHPART	join;		/* :J -- join list with char */
-	char		fslash;		/* :/ -- convert all \ to / */
-	char		bslash;		/* :\ -- convert all / to \ */
+  PATHNAME f;     /* :GDBSMR -- pieces */
+  char parent;    /* :P -- go to parent directory */
+  char filemods;  /* one of the above applied */
+  char downshift; /* :L -- downshift result */
+  char upshift;   /* :U -- upshift result */
+  PATHPART empty; /* :E -- default for empties */
+  PATHPART join;  /* :J -- join list with char */
+  char fslash;    /* :/ -- convert all \ to / */
+  char bslash;    /* :\ -- convert all / to \ */
 
-} VAR_EDITS ;
+} VAR_EDITS;
 
-static void var_edit_parse( const char *mods, VAR_EDITS *edits );
-static void var_edit_file( const char *in, BUFFER *buff, VAR_EDITS *edits );
-static void var_edit_shift( char *out, VAR_EDITS *edits );
-static void var_edit_slash( char *out, VAR_EDITS *edits );
+static void var_edit_parse(const char *mods, VAR_EDITS *edits);
+static void var_edit_file(const char *in, BUFFER *buff, VAR_EDITS *edits);
+static void var_edit_shift(char *out, VAR_EDITS *edits);
+static void var_edit_slash(char *out, VAR_EDITS *edits);
 
 struct hash *regexhash;
 
-typedef struct
-{
-    const char *name;
-    regexp *re;
+typedef struct {
+  const char *name;
+  regexp *re;
 } regexdata;
 
-# define MAGIC_COLON	'\001'
-# define MAGIC_LEFT	'\002'
-# define MAGIC_RIGHT	'\003'
+#define MAGIC_COLON '\001'
+#define MAGIC_LEFT '\002'
+#define MAGIC_RIGHT '\003'
 
 /*
  * var_expand() - variable-expand input string into list of strings
@@ -82,71 +81,63 @@ typedef struct
  * Returns a newly created list.
  */
 
-LIST *
-var_expand(
-	LIST		*l,
-	const char 	*in,
-	const char 	*end,
-	LOL		*lol,
-	int		cancopyin )
-{
-	BUFFER buff;
-	const char *inp = in;
-	int depth;
-	size_t save_buffer_pos, ov_save_buffer_pos;
-	int literal = 0;
+LIST *var_expand(
+  LIST *l, const char *in, const char *end, LOL *lol, int cancopyin) {
+  BUFFER buff;
+  const char *inp = in;
+  int depth;
+  size_t save_buffer_pos, ov_save_buffer_pos;
+  int literal = 0;
 
-	if( DEBUG_VAREXP )
-    printf( "expand '%.*s'\n", (int)(end - in), in );
+  if (DEBUG_VAREXP)
+    printf("expand '%.*s'\n", (int)(end - in), in);
 
-	/* This gets alot of cases: $(<) and $(>) */
+  /* This gets alot of cases: $(<) and $(>) */
 
-	if( end - in == 4 && in[0] == '$' && in[1] == '(' && in[3] == ')' )
-	{
-	    switch( in[2] )
-	    {
-	    case '1':
-	    case '<':
-		return list_copy( l, lol_get( lol, 0 ) );
+  if (end - in == 4 && in[0] == '$' && in[1] == '(' && in[3] == ')') {
+    switch (in[2]) {
+      case '1':
+      case '<':
+        return list_copy(l, lol_get(lol, 0));
 
-	    case '2':
-	    case '>':
-		return list_copy( l, lol_get( lol, 1 ) );
-	    }
-	}
+      case '2':
+      case '>':
+        return list_copy(l, lol_get(lol, 1));
+    }
+  }
 
-	buffer_init( &buff );
+  buffer_init(&buff);
 
-	/* Just try simple copy of in to out. */
+  /* Just try simple copy of in to out. */
 
-	while( in < end ) {
-	    char ch = *in++;
-	    buffer_addchar( &buff, ch );
-	    if( ch == '$' && *in == '(' )
-		goto expand;
-	}
+  while (in < end) {
+    char ch = *in++;
+    buffer_addchar(&buff, ch);
+    if (ch == '$' && *in == '(')
+      goto expand;
+  }
 
-	/* No variables expanded - just add copy of input string to list. */
+  /* No variables expanded - just add copy of input string to list. */
 
-	/* Cancopyin is an optimization: if the input was already a list */
-	/* item, we can use the copystr() to put it on the new list. */
-	/* Otherwise, we use the slower newstr(). */
+  /* Cancopyin is an optimization: if the input was already a list */
+  /* item, we can use the copystr() to put it on the new list. */
+  /* Otherwise, we use the slower newstr(). */
 
-	buffer_putchar( &buff, 0 );
+  buffer_putchar(&buff, 0);
 
-	if( cancopyin ) {
-	    LIST *new_list = list_new( l, inp, 1 );
-	    buffer_free( &buff );
-	    return new_list;
-	}
-	else {
-	    LIST *new_list = list_new( l, buffer_ptr( &buff ), 0 );
-	    buffer_free( &buff );
-	    return new_list;
-	}
+  if (cancopyin) {
+    LIST *new_list = list_new(l, inp, 1);
+    buffer_free(&buff);
+    return new_list;
+  }
+  else {
+    LIST *new_list = list_new(l, buffer_ptr(&buff), 0);
+    buffer_free(&buff);
+    return new_list;
+  }
 
-    expand:
-	/*
+expand:
+  /*
 	 * Input so far (ignore blanks):
 	 *
 	 *	stuff-in-outbuf $(variable) remainder
@@ -167,32 +158,43 @@ var_expand(
 	 * :'s.  Ugly.
 	 */
 
-	depth = 1;
-	buffer_deltapos( &buff, -1 );
-	save_buffer_pos = buffer_pos( &buff );
-	in++;
+  depth = 1;
+  buffer_deltapos(&buff, -1);
+  save_buffer_pos = buffer_pos(&buff);
+  in++;
 
-	while( in < end && depth )
-	{
-	    char ch = *in++;
-	    buffer_addchar( &buff, ch );
-	    switch( ch )
-	    {
-	    case '(': depth++; break;
-	    case ')': depth--; break;
-	    case ':': buffer_deltapos( &buff, -1 ); buffer_addchar( &buff, MAGIC_COLON ); break;
-	    case '[': buffer_deltapos( &buff, -1 ); buffer_addchar( &buff, MAGIC_LEFT ); break;
-	    case ']': buffer_deltapos( &buff, -1 ); buffer_addchar( &buff, MAGIC_RIGHT ); break;
-	    }
-	}
+  while (in < end && depth) {
+    char ch = *in++;
+    buffer_addchar(&buff, ch);
+    switch (ch) {
+      case '(':
+        depth++;
+        break;
+      case ')':
+        depth--;
+        break;
+      case ':':
+        buffer_deltapos(&buff, -1);
+        buffer_addchar(&buff, MAGIC_COLON);
+        break;
+      case '[':
+        buffer_deltapos(&buff, -1);
+        buffer_addchar(&buff, MAGIC_LEFT);
+        break;
+      case ']':
+        buffer_deltapos(&buff, -1);
+        buffer_addchar(&buff, MAGIC_RIGHT);
+        break;
+    }
+  }
 
-	/* Copied ) - back up. */
+  /* Copied ) - back up. */
 
-	buffer_deltapos( &buff, -1 );
-	ov_save_buffer_pos = buffer_pos( &buff );
-	buffer_setpos( &buff, save_buffer_pos );
+  buffer_deltapos(&buff, -1);
+  ov_save_buffer_pos = buffer_pos(&buff);
+  buffer_setpos(&buff, save_buffer_pos);
 
-	/*
+  /*
 	 * Input so far (ignore blanks):
 	 *
 	 *	stuff-in-outbuf $(variable) remainder
@@ -210,201 +212,197 @@ var_expand(
 	 * Thus we produce a product of three lists.
 	 */
 
-	{
-	    LIST *variables = 0;
-	    LIST *remainder = 0;
-	    LIST *vars;
+  {
+    LIST *variables = 0;
+    LIST *remainder = 0;
+    LIST *vars;
 
-	    /* Recursively expand variable name & rest of input */
+    /* Recursively expand variable name & rest of input */
 
-	    if( save_buffer_pos < ov_save_buffer_pos )
-		variables = var_expand( L0, buffer_posptr( &buff ), buffer_ptr( &buff ) + ov_save_buffer_pos, lol, 0 );
-	    if( in < end )
-		remainder = var_expand( L0, in, end, lol, 0 );
+    if (save_buffer_pos < ov_save_buffer_pos)
+      variables = var_expand(
+        L0,
+        buffer_posptr(&buff),
+        buffer_ptr(&buff) + ov_save_buffer_pos,
+        lol,
+        0);
+    if (in < end)
+      remainder = var_expand(L0, in, end, lol, 0);
 
-	    /* Now produce the result chain */
+    /* Now produce the result chain */
 
-	    /* For each variable name */
+    /* For each variable name */
 
-	    for( vars = variables; vars; vars = list_next( vars ) )
-	    {
-		LIST *value, *evalue = 0;
-		char *colon;
-		char *bracket;
-		BUFFER varnamebuff;
-		int sub1 = 0, sub2 = -1;
-		VAR_EDITS edits;
-		memset(&edits, 0, sizeof(VAR_EDITS));
+    for (vars = variables; vars; vars = list_next(vars)) {
+      LIST *value, *evalue = 0;
+      char *colon;
+      char *bracket;
+      BUFFER varnamebuff;
+      int sub1 = 0, sub2 = -1;
+      VAR_EDITS edits;
+      memset(&edits, 0, sizeof(VAR_EDITS));
 
-		/* Look for a : modifier in the variable name */
-		/* Must copy into varname so we can modify it */
+      /* Look for a : modifier in the variable name */
+      /* Must copy into varname so we can modify it */
 
-		buffer_init( &varnamebuff );
-		buffer_addstring( &varnamebuff, vars->string, strlen( vars->string ) );
-		buffer_addchar( &varnamebuff, 0 );
+      buffer_init(&varnamebuff);
+      buffer_addstring(&varnamebuff, vars->string, strlen(vars->string));
+      buffer_addchar(&varnamebuff, 0);
 
-		if( colon = strchr( buffer_ptr( &varnamebuff ), MAGIC_COLON ) )
-		{
-		    *colon = '\0';
-		    var_edit_parse( colon + 1, &edits );
-		}
+      if (colon = strchr(buffer_ptr(&varnamebuff), MAGIC_COLON)) {
+        *colon = '\0';
+        var_edit_parse(colon + 1, &edits);
+      }
 
-		/* Look for [x-y] and [x-] subscripting */
-		/* sub1 is x (0 default) */
-		/* sub2 is length (-1 means forever) */
+      /* Look for [x-y] and [x-] subscripting */
+      /* sub1 is x (0 default) */
+      /* sub2 is length (-1 means forever) */
 
-		if( bracket = strchr( buffer_ptr( &varnamebuff ), MAGIC_LEFT ) )
-		{
-		    char *dash;
+      if (bracket = strchr(buffer_ptr(&varnamebuff), MAGIC_LEFT)) {
+        char *dash;
 
-		    if( dash = strchr( bracket + 1, '-' ) )
-			*dash = '\0';
+        if (dash = strchr(bracket + 1, '-'))
+          *dash = '\0';
 
-		    sub1 = atoi( bracket + 1 ) - 1;
+        sub1 = atoi(bracket + 1) - 1;
 
-		    if( !dash )
-			sub2 = 1;
-		    else if( !dash[1] || dash[1] == MAGIC_RIGHT )
-			sub2 = -1;
-		    else
-			sub2 = atoi( dash + 1 ) - sub1;
+        if (!dash)
+          sub2 = 1;
+        else if (!dash[1] || dash[1] == MAGIC_RIGHT)
+          sub2 = -1;
+        else
+          sub2 = atoi(dash + 1) - sub1;
 
-		    *bracket = '\0';
-		}
+        *bracket = '\0';
+      }
 
-		/* Get variable value, specially handling $(<), $(>), $(n) */
+      /* Get variable value, specially handling $(<), $(>), $(n) */
 
-		{
-		    const char* varname = buffer_ptr( &varnamebuff );
-		    if( varname[0] == '<' && !varname[1] )
-			value = lol_get( lol, 0 );
-		    else if( varname[0] == '>' && !varname[1] )
-			value = lol_get( lol, 1 );
-		    else if( varname[0] >= '1' && varname[0] <= '9' && !varname[1] )
-			value = lol_get( lol, varname[0] - '1' );
-		    else
-			value = var_get( varname );
-		}
+      {
+        const char *varname = buffer_ptr(&varnamebuff);
+        if (varname[0] == '<' && !varname[1])
+          value = lol_get(lol, 0);
+        else if (varname[0] == '>' && !varname[1])
+          value = lol_get(lol, 1);
+        else if (varname[0] >= '1' && varname[0] <= '9' && !varname[1])
+          value = lol_get(lol, varname[0] - '1');
+        else
+          value = var_get(varname);
+      }
 
-		/* The fast path: $(x) - just copy the variable value. */
-		/* This is only an optimization */
+      /* The fast path: $(x) - just copy the variable value. */
+      /* This is only an optimization */
 
-		if( buffer_isempty( &buff ) && !bracket && !colon && in == end )
-		{
-		    l = list_copy( l, value );
-		    buffer_free( &buff );
-		    continue;
-		}
+      if (buffer_isempty(&buff) && !bracket && !colon && in == end) {
+        l = list_copy(l, value);
+        buffer_free(&buff);
+        continue;
+      }
 
-		/* Handle start subscript */
+      /* Handle start subscript */
 
-		while( sub1 > 0 && value )
-		    --sub1, value = list_next( value );
+      while (sub1 > 0 && value)
+        --sub1, value = list_next(value);
 
-		/* Empty w/ :E=default? */
+      /* Empty w/ :E=default? */
 
-		if( !value && colon && edits.empty.ptr )
-		    evalue = value = list_new( L0, edits.empty.ptr, 0 );
+      if (!value && colon && edits.empty.ptr)
+        evalue = value = list_new(L0, edits.empty.ptr, 0);
 
-		/* For each variable value */
+      /* For each variable value */
 
-		for( ; value; value = list_next( value ) )
-		{
-		    LIST *rem;
-		    size_t save_buffer_pos;
-		    size_t end_buffer_pos;
-		    const char *valuestring;
+      for (; value; value = list_next(value)) {
+        LIST *rem;
+        size_t save_buffer_pos;
+        size_t end_buffer_pos;
+        const char *valuestring;
 
-		    /* Handle end subscript (length actually) */
+        /* Handle end subscript (length actually) */
 
-		    if( sub2 >= 0 && --sub2 < 0 )
-			break;
+        if (sub2 >= 0 && --sub2 < 0)
+          break;
 
-		    /* Apply : mods, if present */
+        /* Apply : mods, if present */
 
-		    save_buffer_pos = buffer_pos( &buff );
+        save_buffer_pos = buffer_pos(&buff);
 
-		    valuestring = value->string;
+        valuestring = value->string;
 
-		    if( colon && edits.filemods ) {
-			var_edit_file( valuestring, &buff, &edits );
-		    } else {
-			buffer_addstring( &buff, valuestring, strlen( valuestring ) + 1 );
-		    }
-		    buffer_setpos( &buff, save_buffer_pos );
+        if (colon && edits.filemods) {
+          var_edit_file(valuestring, &buff, &edits);
+        }
+        else {
+          buffer_addstring(&buff, valuestring, strlen(valuestring) + 1);
+        }
+        buffer_setpos(&buff, save_buffer_pos);
 
-		    if( colon && ( edits.upshift || edits.downshift ) )
-			var_edit_shift( buffer_posptr( &buff ), &edits );
+        if (colon && (edits.upshift || edits.downshift))
+          var_edit_shift(buffer_posptr(&buff), &edits);
 
-		    if( colon && ( edits.fslash || edits.bslash ) )
-			var_edit_slash( buffer_posptr( &buff ), &edits );
+        if (colon && (edits.fslash || edits.bslash))
+          var_edit_slash(buffer_posptr(&buff), &edits);
 
-		    /* Handle :J=joinval */
-		    /* If we have more values for this var, just */
-		    /* keep appending them (with the join value) */
-		    /* rather than creating separate LIST elements. */
+        /* Handle :J=joinval */
+        /* If we have more values for this var, just */
+        /* keep appending them (with the join value) */
+        /* rather than creating separate LIST elements. */
 
-		    if( colon && edits.join.ptr &&
-		      ( list_next( value ) || list_next( vars ) ) )
-		    {
-			buffer_setpos( &buff, buffer_pos( &buff ) + strlen( buffer_posptr( &buff ) ) );
-			buffer_addstring( &buff, edits.join.ptr, strlen( edits.join.ptr ) + 1 );
-			buffer_deltapos( &buff, -1 );
-			continue;
-		    }
+        if (colon && edits.join.ptr && (list_next(value) || list_next(vars))) {
+          buffer_setpos(
+            &buff, buffer_pos(&buff) + strlen(buffer_posptr(&buff)));
+          buffer_addstring(&buff, edits.join.ptr, strlen(edits.join.ptr) + 1);
+          buffer_deltapos(&buff, -1);
+          continue;
+        }
 
-		    /* If no remainder, append result to output chain. */
+        /* If no remainder, append result to output chain. */
 
-		    if( in == end )
-		    {
-			l = list_new( l, buffer_ptr( &buff ), 0 );
-			continue;
-		    }
+        if (in == end) {
+          l = list_new(l, buffer_ptr(&buff), 0);
+          continue;
+        }
 
-		    /* For each remainder, append the complete string */
-		    /* to the output chain. */
-		    /* Remember the end of the variable expansion so */
-		    /* we can just tack on each instance of 'remainder' */
+        /* For each remainder, append the complete string */
+        /* to the output chain. */
+        /* Remember the end of the variable expansion so */
+        /* we can just tack on each instance of 'remainder' */
 
-		    save_buffer_pos = buffer_pos( &buff );
-		    end_buffer_pos = strlen( buffer_ptr( &buff ) );
-		    buffer_setpos( &buff, end_buffer_pos );
+        save_buffer_pos = buffer_pos(&buff);
+        end_buffer_pos = strlen(buffer_ptr(&buff));
+        buffer_setpos(&buff, end_buffer_pos);
 
-		    for( rem = remainder; rem; rem = list_next( rem ) )
-		    {
-			buffer_addstring( &buff, rem->string, strlen( rem->string ) + 1 );
-			buffer_setpos( &buff, end_buffer_pos );
-			l = list_new( l, buffer_ptr( &buff ), 0 );
-		    }
+        for (rem = remainder; rem; rem = list_next(rem)) {
+          buffer_addstring(&buff, rem->string, strlen(rem->string) + 1);
+          buffer_setpos(&buff, end_buffer_pos);
+          l = list_new(l, buffer_ptr(&buff), 0);
+        }
 
-		    buffer_setpos( &buff, save_buffer_pos );
-		}
+        buffer_setpos(&buff, save_buffer_pos);
+      }
 
-		/* Toss used empty */
+      /* Toss used empty */
 
-		if( evalue )
-		    list_free( evalue );
+      if (evalue)
+        list_free(evalue);
+    }
 
-	    }
+    /* variables & remainder were gifts from var_expand */
+    /* and must be freed */
 
-	    /* variables & remainder were gifts from var_expand */
-	    /* and must be freed */
+    if (variables)
+      list_free(variables);
+    if (remainder)
+      list_free(remainder);
 
-	    if( variables )
-		list_free( variables );
-	    if( remainder)
-		list_free( remainder );
+    if (DEBUG_VAREXP) {
+      printf("expanded to ");
+      list_print(l);
+      printf("\n");
+    }
 
-	    if( DEBUG_VAREXP )
-	    {
-		printf( "expanded to " );
-		list_print( l );
-		printf( "\n" );
-	    }
-
-	    buffer_free( &buff );
-	    return l;
-	}
+    buffer_free(&buff);
+    return l;
+  }
 }
 
 /*
@@ -442,179 +440,179 @@ var_expand(
  * var_edit_file() below and path_build() obligingly follow this convention.
  */
 
-static void
-var_edit_parse(
-	const char	*mods,
-	VAR_EDITS	*edits )
-{
-	int havezeroed = 0;
-	memset( (char *)edits, 0, sizeof( *edits ) );
+static void var_edit_parse(const char *mods, VAR_EDITS *edits) {
+  int havezeroed = 0;
+  memset((char *)edits, 0, sizeof(*edits));
 
-	while( *mods )
-	{
-	    char *p;
-	    PATHPART *fp;
+  while (*mods) {
+    char *p;
+    PATHPART *fp;
 
-	    switch( *mods++ )
-	    {
-	    case 'L': edits->downshift = 1; continue;
-	    case 'U': edits->upshift = 1; continue;
-	    case 'P': edits->parent = edits->filemods = 1; continue;
-	    case 'E': fp = &edits->empty; goto strval;
-	    case 'J': fp = &edits->join; goto strval;
-	    case 'G': fp = &edits->f.f_grist; goto fileval;
-	    case 'R': fp = &edits->f.f_root; goto fileval;
-	    case 'D': fp = &edits->f.f_dir; goto fileval;
-	    case 'B': fp = &edits->f.f_base; goto fileval;
-	    case 'S': fp = &edits->f.f_suffix; goto fileval;
-	    case 'M': fp = &edits->f.f_member; goto fileval;
-	    case '/':  edits->fslash = 1; continue;
-	    case '\\': edits->bslash = 1; continue;
-	    case MAGIC_COLON: continue;
-	    default: return; /* should complain, but so what... */
-	    }
+    switch (*mods++) {
+      case 'L':
+        edits->downshift = 1;
+        continue;
+      case 'U':
+        edits->upshift = 1;
+        continue;
+      case 'P':
+        edits->parent = edits->filemods = 1;
+        continue;
+      case 'E':
+        fp = &edits->empty;
+        goto strval;
+      case 'J':
+        fp = &edits->join;
+        goto strval;
+      case 'G':
+        fp = &edits->f.f_grist;
+        goto fileval;
+      case 'R':
+        fp = &edits->f.f_root;
+        goto fileval;
+      case 'D':
+        fp = &edits->f.f_dir;
+        goto fileval;
+      case 'B':
+        fp = &edits->f.f_base;
+        goto fileval;
+      case 'S':
+        fp = &edits->f.f_suffix;
+        goto fileval;
+      case 'M':
+        fp = &edits->f.f_member;
+        goto fileval;
+      case '/':
+        edits->fslash = 1;
+        continue;
+      case '\\':
+        edits->bslash = 1;
+        continue;
+      case MAGIC_COLON:
+        continue;
+      default:
+        return; /* should complain, but so what... */
+    }
 
-	fileval:
+fileval:
 
-	    /* Handle :CHARS, where each char (without a following =) */
-	    /* selects a particular file path element.  On the first such */
-	    /* char, we deselect all others (by setting ptr = "", len = 0) */
-	    /* and for each char we select that element (by setting ptr = 0) */
+    /* Handle :CHARS, where each char (without a following =) */
+    /* selects a particular file path element.  On the first such */
+    /* char, we deselect all others (by setting ptr = "", len = 0) */
+    /* and for each char we select that element (by setting ptr = 0) */
 
-	    edits->filemods = 1;
+    edits->filemods = 1;
 
-	    if( *mods != '=' )
-	    {
-		int i;
+    if (*mods != '=') {
+      int i;
 
-		if( !havezeroed++ )
-		    for( i = 0; i < 6; i++ )
-		{
-		    edits->f.part[ i ].len = 0;
-		    edits->f.part[ i ].ptr = "";
-		}
+      if (!havezeroed++)
+        for (i = 0; i < 6; i++) {
+          edits->f.part[i].len = 0;
+          edits->f.part[i].ptr = "";
+        }
 
-		fp->ptr = 0;
-		continue;
-	    }
+      fp->ptr = 0;
+      continue;
+    }
 
-	strval:
+strval:
 
-	    /* Handle :X=value, or :X */
+    /* Handle :X=value, or :X */
 
-	    if( *mods != '=' )
-	    {
-		fp->ptr = "";
-		fp->len = 0;
-	    }
-	    else if( p = strchr( mods, MAGIC_COLON ) )
-	    {
-		*p = 0;
-		fp->ptr = ++mods;
-		fp->len = (int)(p - mods);
-		mods = p + 1;
-	    }
-	    else
-	    {
-		fp->ptr = ++mods;
-		fp->len = (int)(strlen( mods ));
-		mods += fp->len;
-	    }
-	}
+    if (*mods != '=') {
+      fp->ptr = "";
+      fp->len = 0;
+    }
+    else if (p = strchr(mods, MAGIC_COLON)) {
+      *p = 0;
+      fp->ptr = ++mods;
+      fp->len = (int)(p - mods);
+      mods = p + 1;
+    }
+    else {
+      fp->ptr = ++mods;
+      fp->len = (int)(strlen(mods));
+      mods += fp->len;
+    }
+  }
 }
 
 /*
  * var_edit_file() - copy input target name to output, modifying filename
  */
 
-static void
-var_edit_file(
-	const char *in,
-	BUFFER *buff,
-	VAR_EDITS *edits )
-{
-	PATHNAME pathname;
-	char		buf[ MAXJPATH ];
+static void var_edit_file(const char *in, BUFFER *buff, VAR_EDITS *edits) {
+  PATHNAME pathname;
+  char buf[MAXJPATH];
 
-	/* Parse apart original filename, putting parts into "pathname" */
+  /* Parse apart original filename, putting parts into "pathname" */
 
-	path_parse( in, &pathname );
+  path_parse(in, &pathname);
 
-	/* Replace any pathname with edits->f */
+  /* Replace any pathname with edits->f */
 
-	if( edits->f.f_grist.ptr )
-	    pathname.f_grist = edits->f.f_grist;
+  if (edits->f.f_grist.ptr)
+    pathname.f_grist = edits->f.f_grist;
 
-	if( edits->f.f_root.ptr )
-	    pathname.f_root = edits->f.f_root;
+  if (edits->f.f_root.ptr)
+    pathname.f_root = edits->f.f_root;
 
-	if( edits->f.f_dir.ptr )
-	    pathname.f_dir = edits->f.f_dir;
+  if (edits->f.f_dir.ptr)
+    pathname.f_dir = edits->f.f_dir;
 
-	if( edits->f.f_base.ptr )
-	    pathname.f_base = edits->f.f_base;
+  if (edits->f.f_base.ptr)
+    pathname.f_base = edits->f.f_base;
 
-	if( edits->f.f_suffix.ptr )
-	    pathname.f_suffix = edits->f.f_suffix;
+  if (edits->f.f_suffix.ptr)
+    pathname.f_suffix = edits->f.f_suffix;
 
-	if( edits->f.f_member.ptr )
-	    pathname.f_member = edits->f.f_member;
+  if (edits->f.f_member.ptr)
+    pathname.f_member = edits->f.f_member;
 
-	/* If requested, modify pathname to point to parent */
+  /* If requested, modify pathname to point to parent */
 
-	if( edits->parent )
-	    path_parent( &pathname );
+  if (edits->parent)
+    path_parent(&pathname);
 
-	/* Put filename back together */
+  /* Put filename back together */
 
-	path_build( &pathname, buf, 0 );
-	buffer_addstring( buff, buf, strlen( buf ) + 1 );
+  path_build(&pathname, buf, 0);
+  buffer_addstring(buff, buf, strlen(buf) + 1);
 }
 
 /*
  * var_edit_shift() - do upshift/downshift mods
  */
 
-static void
-var_edit_shift(
-	char	*out,
-	VAR_EDITS *edits )
-{
-	/* Handle upshifting, downshifting now */
+static void var_edit_shift(char *out, VAR_EDITS *edits) {
+  /* Handle upshifting, downshifting now */
 
-	if( edits->upshift )
-	{
-	    for( ; *out; ++out )
-		*out = (char)toupper( *out );
-	}
-	else if( edits->downshift )
-	{
-	    for( ; *out; ++out )
-		*out = (char)tolower( *out );
-	}
+  if (edits->upshift) {
+    for (; *out; ++out)
+      *out = (char)toupper(*out);
+  }
+  else if (edits->downshift) {
+    for (; *out; ++out)
+      *out = (char)tolower(*out);
+  }
 }
 
 /*
  * var_edit_slash() - do forward/backward slash mod
  */
 
-static void
-var_edit_slash(
-	char	*out,
-	VAR_EDITS *edits )
-{
-	/* Handle forward, backward slash modifications now */
+static void var_edit_slash(char *out, VAR_EDITS *edits) {
+  /* Handle forward, backward slash modifications now */
 
-	if( edits->fslash )
-	{
-	    for( ; *out; ++out )
-		if( *out == '\\' )
-		    *out = '/';
-	}
-	else if( edits->bslash )
-	{
-	    for( ; *out; ++out )
-		if( *out == '/' )
-		    *out = '\\';
-	}
+  if (edits->fslash) {
+    for (; *out; ++out)
+      if (*out == '\\')
+        *out = '/';
+  }
+  else if (edits->bslash) {
+    for (; *out; ++out)
+      if (*out == '/')
+        *out = '\\';
+  }
 }

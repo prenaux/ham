@@ -18,27 +18,27 @@
 typedef struct _PARSE PARSE;
 
 struct _PARSE {
-	LIST		*(*func)( PARSE *p, LOL *args, int *jmp );
-	PARSE	*left;
-	PARSE	*right;
-	PARSE	*third;
-	const char	*string;
-	const char	*string1;
-	int	num;
-	int	refs;
-} ;
+  LIST *(*func)(PARSE *p, LOL *args, int *jmp);
+  PARSE *left;
+  PARSE *right;
+  PARSE *third;
+  const char *string;
+  const char *string1;
+  int num;
+  int refs;
+};
 
-void 	parse_file( const char *f );
-void 	parse_save( PARSE *p );
+void parse_file(const char *f);
+void parse_save(PARSE *p);
 
-PARSE * parse_make( 
-	LIST 		*(*func)( PARSE *p, LOL *args, int *jmp ),
-	PARSE	*left,
-	PARSE	*right,
-	PARSE	*third,
-	const char	*string,
-	const char	*string1,
-	int	num );
+PARSE *parse_make(
+  LIST *(*func)(PARSE *p, LOL *args, int *jmp),
+  PARSE *left,
+  PARSE *right,
+  PARSE *third,
+  const char *string,
+  const char *string1,
+  int num);
 
-void 	parse_refer( PARSE *p );
-void 	parse_free( PARSE *p );
+void parse_refer(PARSE *p);
+void parse_free(PARSE *p);

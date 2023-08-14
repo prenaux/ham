@@ -35,58 +35,58 @@
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
+  #define YYTOKENTYPE
+/* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
-   enum yytokentype {
-     _BANG_t = 258,
-     _BANG_EQUALS_t = 259,
-     _AMPER_t = 260,
-     _AMPERAMPER_t = 261,
-     _LPAREN_t = 262,
-     _RPAREN_t = 263,
-     _PLUS_EQUALS_t = 264,
-     _COLON_t = 265,
-     _SEMIC_t = 266,
-     _LANGLE_t = 267,
-     _LANGLE_EQUALS_t = 268,
-     _EQUALS_t = 269,
-     _RANGLE_t = 270,
-     _RANGLE_EQUALS_t = 271,
-     _QUESTION_EQUALS_t = 272,
-     _LBRACKET_t = 273,
-     _RBRACKET_t = 274,
-     ACTIONS_t = 275,
-     BIND_t = 276,
-     BREAK_t = 277,
-     CASE_t = 278,
-     CONTINUE_t = 279,
-     DEFAULT_t = 280,
-     ELSE_t = 281,
-     EXISTING_t = 282,
-     FOR_t = 283,
-     IF_t = 284,
-     IGNORE_t = 285,
-     IN_t = 286,
-     INCLUDE_t = 287,
-     LOCAL_t = 288,
-     MAXLINE_t = 289,
-     ON_t = 290,
-     PIECEMEAL_t = 291,
-     QUIETLY_t = 292,
-     RETURN_t = 293,
-     RULE_t = 294,
-     SWITCH_t = 295,
-     TOGETHER_t = 296,
-     UPDATED_t = 297,
-     WHILE_t = 298,
-     _LBRACE_t = 299,
-     _BAR_t = 300,
-     _BARBAR_t = 301,
-     _RBRACE_t = 302,
-     ARG = 303,
-     STRING = 304
-   };
+enum yytokentype {
+  _BANG_t = 258,
+  _BANG_EQUALS_t = 259,
+  _AMPER_t = 260,
+  _AMPERAMPER_t = 261,
+  _LPAREN_t = 262,
+  _RPAREN_t = 263,
+  _PLUS_EQUALS_t = 264,
+  _COLON_t = 265,
+  _SEMIC_t = 266,
+  _LANGLE_t = 267,
+  _LANGLE_EQUALS_t = 268,
+  _EQUALS_t = 269,
+  _RANGLE_t = 270,
+  _RANGLE_EQUALS_t = 271,
+  _QUESTION_EQUALS_t = 272,
+  _LBRACKET_t = 273,
+  _RBRACKET_t = 274,
+  ACTIONS_t = 275,
+  BIND_t = 276,
+  BREAK_t = 277,
+  CASE_t = 278,
+  CONTINUE_t = 279,
+  DEFAULT_t = 280,
+  ELSE_t = 281,
+  EXISTING_t = 282,
+  FOR_t = 283,
+  IF_t = 284,
+  IGNORE_t = 285,
+  IN_t = 286,
+  INCLUDE_t = 287,
+  LOCAL_t = 288,
+  MAXLINE_t = 289,
+  ON_t = 290,
+  PIECEMEAL_t = 291,
+  QUIETLY_t = 292,
+  RETURN_t = 293,
+  RULE_t = 294,
+  SWITCH_t = 295,
+  TOGETHER_t = 296,
+  UPDATED_t = 297,
+  WHILE_t = 298,
+  _LBRACE_t = 299,
+  _BAR_t = 300,
+  _BARBAR_t = 301,
+  _RBRACE_t = 302,
+  ARG = 303,
+  STRING = 304
+};
 #endif
 /* Tokens.  */
 #define _BANG_t 258
@@ -137,15 +137,11 @@
 #define ARG 303
 #define STRING 304
 
-
-
-
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+#if !defined YYSTYPE && !defined YYSTYPE_IS_DECLARED
 typedef int YYSTYPE;
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
+  #define yystype YYSTYPE /* obsolescent; will be withdrawn */
+  #define YYSTYPE_IS_DECLARED 1
+  #define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 extern YYSTYPE yylval;
-

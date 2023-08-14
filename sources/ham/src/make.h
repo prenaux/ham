@@ -10,5 +10,5 @@
  * 11/04/02 (seiwald) - const-ing for string literals
  */
 
-int make( int n_targets, const char **targets, int anyhow );
-int make1( TARGET *t );
+int make(int n_targets, const char **targets, int anyhow);
+int make1(TARGET *t);

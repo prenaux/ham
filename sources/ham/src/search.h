@@ -10,4 +10,4 @@
  * 11/04/02 (seiwald) - const-ing for string literals
  */
 
-const char *search( const char *target, time_t *time );
+const char *search(const char *target, time_t *time);

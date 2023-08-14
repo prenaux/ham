@@ -34,10 +34,10 @@ extern "C" {
 #include <stddef.h>
 
 struct sha256_buff {
-    uint64_t data_size;
-    uint32_t h[8];
-    uint8_t last_chunk[64];
-    uint8_t chunk_size;
+  uint64_t data_size;
+  uint32_t h[8];
+  uint8_t last_chunk[64];
+  uint8_t chunk_size;
 };
 
 /* Initialization, must be called before any further use */
@@ -65,33 +65,34 @@ void sha256_easy_hash_hex(const void* data, size_t size, char* hex);
 #ifdef __cplusplus
 }
 
-#include <string>
+  #include <string>
 
 class SHA256 {
-private:
-    struct sha256_buff buff;
-public:
-    SHA256() {
-        sha256_init(&buff);
-    }
+ private:
+  struct sha256_buff buff;
 
-    void update(const void* data, std::size_t size) {
-        sha256_update(&buff, data, size);
-    }
+ public:
+  SHA256() {
+    sha256_init(&buff);
+  }
 
-    std::string hash() {
-        char hash[64];
-        sha256_finalize(&buff);
-        sha256_read_hex(&buff, hash);
-        sha256_init(&buff);
-        return std::string(hash, 64);
-    }
+  void update(const void* data, std::size_t size) {
+    sha256_update(&buff, data, size);
+  }
 
-    static std::string hashString(const std::string& str) {
-        char hash[64];
-        sha256_easy_hash_hex(str.c_str(), str.length(), hash);
-        return std::string(hash, 64);
-    }
+  std::string hash() {
+    char hash[64];
+    sha256_finalize(&buff);
+    sha256_read_hex(&buff, hash);
+    sha256_init(&buff);
+    return std::string(hash, 64);
+  }
+
+  static std::string hashString(const std::string& str) {
+    char hash[64];
+    sha256_easy_hash_hex(str.c_str(), str.length(), hash);
+    return std::string(hash, 64);
+  }
 };
 
 #endif

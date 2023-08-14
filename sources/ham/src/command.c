@@ -11,54 +11,45 @@
  * 09/08/00 (seiwald) - bulletproof PIECEMEAL size computation
  */
 
-# include "jam.h"
+#include "jam.h"
 
-# include "lists.h"
-# include "parse.h"
-# include "variable.h"
-# include "rules.h"
+#include "lists.h"
+#include "parse.h"
+#include "variable.h"
+#include "rules.h"
 
-# include "command.h"
+#include "command.h"
 
 /*
  * cmd_new() - return a new CMD or 0 if too many args
  */
 
-CMD *
-cmd_new(
-	RULE	*rule,
-	LIST	*targets,
-	LIST	*sources,
-	int	maxline )
-{
-	CMD *cmd = (CMD *)malloc( sizeof( CMD ) );
+CMD *cmd_new(RULE *rule, LIST *targets, LIST *sources, int maxline) {
+  CMD *cmd = (CMD *)malloc(sizeof(CMD));
 
-	cmd->rule = rule;
-	cmd->next = 0;
+  cmd->rule = rule;
+  cmd->next = 0;
 
-	lol_init( &cmd->args );
-	lol_add( &cmd->args, targets );
-	lol_add( &cmd->args, sources );
+  lol_init(&cmd->args);
+  lol_add(&cmd->args, targets);
+  lol_add(&cmd->args, sources);
 
-	/* Bail if the result won't fit in maxline */
-	/* We don't free targets/sources if bailing. */
+  /* Bail if the result won't fit in maxline */
+  /* We don't free targets/sources if bailing. */
 
-	if( var_string( rule->actions, cmd->buf, maxline, &cmd->args ) < 0 )
-	{
-	    cmd_free( cmd );
-	    return 0;
-	}
+  if (var_string(rule->actions, cmd->buf, maxline, &cmd->args) < 0) {
+    cmd_free(cmd);
+    return 0;
+  }
 
-	return cmd;
+  return cmd;
 }
 
 /*
  * cmd_free() - free a CMD
  */
 
-void
-cmd_free( CMD *cmd )
-{
-	lol_free( &cmd->args );
-	free( (char *)cmd );
+void cmd_free(CMD *cmd) {
+  lol_free(&cmd->args);
+  free((char *)cmd);
 }
