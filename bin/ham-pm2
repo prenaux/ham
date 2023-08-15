@@ -33,8 +33,8 @@ usage() {
     echo ""
     echo "  ham-pm2 commands:"
     echo ""
-    echo "    source                           To be sourced at the top of a script to warm up the pm2"
-    echo "                                     environment to run it multiple times."
+    echo "    source                               To be sourced at the top of a script to warm up the pm2"
+    echo "                                         environment to run it multiple times."
     echo "    start-once PM2_APP_NAME START_CMD    Start a pm2 process if it isnt already started."
     echo ""
     exit 1
