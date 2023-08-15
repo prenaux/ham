@@ -158,6 +158,17 @@ ham_call() {
   )
 }
 
+filter_get_buildable_targets() {
+  grep -v "^time" | grep -e "touched\|update"
+}
+
+filter_get_target_name_and_sort() {
+  # get the last word on the line
+  sed 's/[[:blank:]]*$//; s/.*[[:blank:]]//' |
+    # sort ignore case, ignore blank, uniq
+    sort -f -b -u
+}
+
 ham_show_targets_in() {
     export CWD="`pwd`"
     export DIR="$1"
@@ -180,29 +191,20 @@ ham_show_targets_in() {
         ;;
       all)
         ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" |
-          grep -e "touched\|update" |
-          # get the last word on the line
-          sed 's/[[:blank:]]*$//; s/.*[[:blank:]]//' |
-          # sort ignore case, ignore blank, uniq
-          sort -f -b -u
+          filter_get_buildable_targets |
+          filter_get_target_name_and_sort
         ;;
       no_file)
         ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" |
-          grep -e "touched\|update" |
-          # get the last word on the line
-          sed 's/[[:blank:]]*$//; s/.*[[:blank:]]//' |
-          # sort ignore case, ignore blank, uniq
-          sort -f -b -u |
+          filter_get_buildable_targets |
+          filter_get_target_name_and_sort |
           # exclude targets that look like a file
           grep -v -e '/' -e '^<.*>' -e '_\(ra\|da\)\.\(dylib\|so\|a\|exe\|lib\|dll\)$'
         ;;
       test)
         ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" |
-          grep -e "touched\|update" |
-          # get the last word on the line
-          sed 's/[[:blank:]]*$//; s/.*[[:blank:]]//' |
-          # sort ignore case, ignore blank, uniq
-          sort -f -b -u |
+          filter_get_buildable_targets |
+          filter_get_target_name_and_sort |
           # looks like a test?
           grep -i -e "^test" -e "_test_" -e "_test$" |
           # exclude trivial Run/Debug dupes
@@ -210,21 +212,15 @@ ham_show_targets_in() {
         ;;
       run)
         ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" |
-          grep -e "touched\|update" |
-          # get the last word on the line
-          sed 's/[[:blank:]]*$//; s/.*[[:blank:]]//' |
-          # sort ignore case, ignore blank, uniq
-          sort -f -b -u |
+          filter_get_buildable_targets |
+          filter_get_target_name_and_sort |
           # looks like a runnable?
           grep -i -e "^run_" -e "_run$"
         ;;
       debug)
         ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" |
-          grep -e "touched\|update" |
-          # get the last word on the line
-          sed 's/[[:blank:]]*$//; s/.*[[:blank:]]//' |
-          # sort ignore case, ignore blank, uniq
-          sort -f -b -u |
+          filter_get_buildable_targets |
+          filter_get_target_name_and_sort |
           # looks like a debuggable?
           grep -i -e "^debug_" -e "_debug$"
         ;;
