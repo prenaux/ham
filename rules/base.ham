@@ -472,6 +472,12 @@ rule AssertEq {
   }
 }
 
+rule AssertNEq {
+  if $(<) = $(>) {
+    logFatal "AssertNEq:" $(<) "==" $(>) ;
+  }
+}
+
 rule AssertVarDefined {
   if ! $($(<)) {
     logFatal "AssertVarDefined:" $(<) "variable should be defined." ;
