@@ -1,5 +1,7 @@
 SubDir TOP ;
 
+ushScripts ham-test-thrift ;
+
 if $(TARGET_FEATURE_CONSOLE) {
   SubInclude TOP src_client ;
   SubInclude TOP src_server ;
