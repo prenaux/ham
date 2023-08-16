@@ -1,12 +1,5 @@
-#!/bin/bash -e
-#===== PRELUDE BEGIN ===========
-export SCRIPT_NAME=$(basename "$0")
-export SCRIPT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
-. "$HAM_HOME/bin/ham-bash-setenv.sh"
-#===== PRELUDE TOOLSETS ========
-export HAM_NO_VER_CHECK=1
-#===== PRELUDE END =============
+#!/bin/bash
+export HAM_LINT_ALL_FILENAME="_lint_all_files.txt"
 
 function sh_lint() {
   toolset_import_once shell_linter > /dev/null
@@ -311,19 +304,19 @@ function all_lint() {
     done
 }
 
-function ham_lint_usage() {
+function ham_lint_fix_usage() {
   echo "usage:"
   echo "  ${SCRIPT_NAME} modes FILE"
+  echo "    Check a single file."
   echo "  ${SCRIPT_NAME} modes language DIRECTORY"
+  echo "    Check all the files of the specified language in the specified directory."
   echo ""
+  echo "modes:"
   echo "  --lint          Lint the code."
   echo "  --fix           If possible fix the problems detected during linting."
   echo "  --format        If possible format the specified files."
   echo "  --check-format  Only check if the code would be formatted."
   echo "  --verbose       Use the most verbose output (meant for cli, not tools integration)."
-  echo ""
-  echo "  A directory can be checked at once by specifying the language"
-  echo "  followed by the directory path."
   echo ""
   echo "examples:"
   echo "  ${SCRIPT_NAME} sources/MyModule/MyThing.cpp"
@@ -331,11 +324,11 @@ function ham_lint_usage() {
   exit 1
 }
 
-function ham_lint_main() {
+function ham_lint_fix_main() {
   export NO_LINT=yes
   if [[ "$1" != "-"* ]]; then
     log_error "No mode specified."
-    ham_lint_usage
+    ham_lint_fix_usage
   fi
   while [[ "$1" == "-"* ]]; do
     if [ "$1" == "--fix" ]; then
@@ -355,16 +348,62 @@ function ham_lint_main() {
       export LINT_VERBOSE=yes
     else
       log_error "Unknown option '$1'."
-      ham_lint_usage || return 1
+      ham_lint_fix_usage || return 1
     fi
   done
 
   if [ -z "$1" ]; then
     log_error "No path to lint specified."
-    ham_lint_usage
+    ham_lint_fix_usage
   else
     all_lint "$@"
   fi
 }
 
-ham_lint_main "$@"
+function ham_lint_fix_format_sh_main() {
+  if [[ ! -e "${HAM_LINT_ALL_FILENAME}" ]]; then
+    log_error "'$(abspath ${HAM_LINT_ALL_FILENAME})' doesn't exist."
+    exit 1
+  fi
+
+  local PARAMS=()
+  if [[ "$1" == "fix" ]]; then
+    PARAMS=(--fix --format)
+  elif [[ "$1" == "format" ]]; then
+    PARAMS=(--format)
+  elif [[ "$1" == "lint" ]]; then
+    PARAMS=(--lint --check-format)
+  else
+    die ham_lint_fix_format_sh_main "No mode specified: lint|fix|format"
+  fi
+  shift
+
+  if [[ -n "$1" ]]; then
+    ham_lint_fix_main ${PARAMS[@]} "$@"
+  else
+    local IFS_OLD=$IFS
+    IFS=$' \n'
+    local ALL_FILES=()
+    while read -r line; do
+        for word in $line; do
+            ALL_FILES+=("$word")
+        done
+    done < "${HAM_LINT_ALL_FILENAME}"
+    IFS=$IFS_OLD
+    # log_debug "ALL_FILES: ${ALL_FILES[@]}"
+
+    ham_lint_fix_main ${PARAMS[@]} "${ALL_FILES[@]}"
+  fi
+}
+
+function ham_lint_sh() {
+  ham_lint_fix_format_sh_main lint "$@"
+}
+
+function ham_fix_sh() {
+  ham_lint_fix_format_sh_main fix "$@"
+}
+
+function ham_format_sh() {
+  ham_lint_fix_format_sh_main format "$@"
+}
