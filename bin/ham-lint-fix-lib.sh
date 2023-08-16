@@ -72,7 +72,7 @@ function ham_flymake_lint() {
 function cpp_clang_format_dir() {
     DIR=$1
     shift
-    echo "I/cpp_clang_format_dir: '$DIR'"
+    log_info "cpp_clang_format_dir: '$DIR'"
     (set -e ;
      find "$DIR" \
           \( -name '*.c' \
@@ -109,7 +109,7 @@ function cpp_lint() {
 function java_clang_format_dir() {
     DIR=$1
     shift
-    echo "I/java_clang_format_dir: '$DIR'"
+    log_info "java_clang_format_dir: '$DIR'"
     (set -e ;
      find "$DIR" \
           \( -name '*.java' \
@@ -231,11 +231,11 @@ function lint_dir() {
     LANG=$1
     DIRNAME=$2
     if [ ! -d "$DIRNAME" ]; then
-        echo "E/'$DIRNAME' is not a directory, after '${LANG}'."
+        log_error "'$DIRNAME' is not a directory, after '${LANG}'."
         return 1
     fi
     shift
-    echo "I/${LANG}_lint all in '$DIRNAME'."
+    log_info "${LANG}_lint all in '$DIRNAME'."
     pushd "$DIRNAME" >> /dev/null
     ${LANG}_lint
     errcheck $? ${LANG}_lint "${LANG} files lint failed in '$DIRNAME'."
@@ -257,7 +257,7 @@ function lint_dir_or_file() {
 
 function all_lint() {
     if [ -z "$1" ]; then
-        echo "E/Nothing to lint specified in '$DIRNAME'."
+        log_error "Nothing to lint specified in '$DIRNAME'."
         return 1
     fi
 
