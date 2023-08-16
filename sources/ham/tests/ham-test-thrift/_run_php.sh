@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 cd src_php
 if [ ! -e "vendor/autoload.php" ]; then
-    composer install
+  composer install
 fi
 php PhpClient.php
