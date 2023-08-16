@@ -2,6 +2,10 @@ RUN_DIR ?= . ;
 RUN_SYMBOLS_DIR ?= . ;
 RUN_EXE_SUFFIX ?= $(SUFEXE) ;
 
+# ECHO "... BUILD_BIN_LOA:" $(BUILD_BIN_LOA) ;
+# ECHO "... BIN_LOA:" $(BIN_LOA) ;
+# ECHO "... TARGET_FEATURE_RUN_EXE:" $(TARGET_FEATURE_RUN_EXE) ;
+
 NOTFILE runnable;
 NOTFILE debuggable;
 DEPENDS runnable : debuggable ;
@@ -69,6 +73,61 @@ else {
   }
 }
 
-# ECHO "... BUILD_BIN_LOA:" $(BUILD_BIN_LOA) ;
-# ECHO "... BIN_LOA:" $(BIN_LOA) ;
-# ECHO "... TARGET_FEATURE_RUN_EXE:" $(TARGET_FEATURE_RUN_EXE) ;
+# Run a build script.
+# ushRun TARGET : SCRIPT_NAME : INPUT_DEPS : ARTIFACTS ;
+rule ushRunBashScript {
+  local target = $(1) ;
+  local scriptPath = [ FGristFiles [ AssertFExists ushRunBashScript_$(target) : $(2) ] ] ;
+  local inputDeps = $(3) ;
+  local artifacts = $(4) ;
+  DEPENDS $(target) : $(scriptPath) ;
+  if $(inputDeps) {
+    DEPENDS $(target) : $(inputDeps) ;
+  }
+  if $(artifacts) {
+    DEPENDS $(artifacts) : $(target) ;
+  }
+  else {
+    NOTFILE $(target) ;
+    ALWAYS $(target) ;
+  }
+  ushRun1 $(target) : $(scriptPath) ;
+  DEPENDS ush : $(target) ;
+}
+
+actions ushRun1 {
+  # set -e
+  . "$HAM_HOME/bin/ham-bash-lib.sh"
+  SCRIPT_PATH=`abspath "$(>)"`
+  SCRIPT_DIR=`dirname "${SCRIPT_PATH}"`
+  # log_info "... ushRun1: $(<) : ${SCRIPT_PATH}"
+  cd "${SCRIPT_DIR}"
+  "${SCRIPT_PATH}"
+}
+
+# Run a underscore script in the current subdir
+rule ushRun {
+  local target = ush_$(1) ;
+  local scriptName = [ FDirName $(SUBDIR) _$(1).sh ] ;
+  ushRunBashScript $(target) : $(scriptName) ;
+  return $(target) ;
+}
+
+# Run the standard script
+# ushScripts TARGET : SCRIPT_LIST ?? lint fix run_ci
+rule ushScripts {
+  local moduleTarget = $(1) ;
+  local scriptList = $(2) ;
+  if ! $(scriptList) {
+    scriptList = lint fix run_ci ;
+  }
+  for script in $(scriptList) {
+    local scriptTarget = ush_$(script)_$(moduleTarget) ;
+    local scriptName = [ FDirName $(SUBDIR) _$(script).sh ] ;
+    ushRunBashScript $(scriptTarget) : $(scriptName) ;
+    DEPENDS ush_$(script) : $(scriptTarget) ;
+    if $(target) {
+      DEPENDS $(target) : $(scriptTarget) ;
+    }
+  }
+}
