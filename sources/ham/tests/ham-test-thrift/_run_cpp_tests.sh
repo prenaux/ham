@@ -8,6 +8,7 @@ function wait_for_thrift_server() {
   (
     set +ex
     echo -n "I/Waiting for thrift server '$1' to start..."
+    # shellcheck disable=SC2034
     for try in {1..100}; do
       RES=$(
         curl --silent --head --fail "$1" >/dev/null
