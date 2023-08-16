@@ -7,4 +7,4 @@ if [ -z "$PORT" ]; then
   echo "E/PORT not set '$PORT'."
   exit 1
 fi
-$DEPLOY_EXE -Dport=${PORT}
+"$DEPLOY_EXE" -Dport="${PORT}"
