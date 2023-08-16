@@ -1,6 +1,25 @@
 (provide 'ni-base)
 
 ;;;======================================================================
+;;; Emacs devenv
+;;;======================================================================
+(defun agl-getenv (str)
+  (if (getenv str)
+      (replace-regexp-in-string "\\\\" "/" (getenv str))
+    ""))
+
+;; If not set "EMACS_DEVENV" is set from HAM_HOME
+(if (not (getenv "EMACS_DEVENV"))
+    (setenv "EMACS_DEVENV" (getenv "HAM_HOME")))
+(defconst EMACS_DEVENV (agl-getenv "EMACS_DEVENV"))
+(defconst ENV_DEVENV (agl-getenv "EMACS_DEVENV"))
+(defconst ENV_DEVENV_EMACS_SCRIPTS (concat ENV_DEVENV "/sources/emacs/site"))
+(defconst ENV_EMACS_BATCHMODE  (agl-getenv "EMACS_BATCHMODE"))
+(add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/misc"))
+(require 'emacs-type)
+(require 's)
+
+;;;======================================================================
 ;;; Version & Conditional exec macros
 ;;;======================================================================
 (defmacro Aquamacs (&rest x)
@@ -127,33 +146,6 @@
 (defmacro DontExecute (&rest x) ())
 
 ;;;======================================================================
-;;; Emacs devenv
-;;;======================================================================
-(defun agl-begin-time-block (name)
-  (setq *emacs-time-block-prev-begin* *emacs-time-block-begin*)
-  (setq *emacs-time-block-begin* (float-time))
-  (NotBatchMode
-   (message (concat "[%3.3fs] [%3.3fs] === " name " ===")
-            (- (float-time) *emacs-time-start*)
-            (- (float-time) *emacs-time-block-prev-begin*))))
-
-(defun agl-getenv (str)
-  (if (getenv str)
-      (replace-regexp-in-string "\\\\" "/" (getenv str))
-    ""))
-
-;; If not set "EMACS_DEVENV" is set from HAM_HOME
-(if (not (getenv "EMACS_DEVENV"))
-    (setenv "EMACS_DEVENV" (getenv "HAM_HOME")))
-(defconst EMACS_DEVENV (agl-getenv "EMACS_DEVENV"))
-(defconst ENV_DEVENV (agl-getenv "EMACS_DEVENV"))
-(defconst ENV_DEVENV_EMACS_SCRIPTS (concat ENV_DEVENV "/sources/emacs/site"))
-(defconst ENV_EMACS_BATCHMODE  (agl-getenv "EMACS_BATCHMODE"))
-(add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/misc"))
-(require 'emacs-type)
-(require 's)
-
-;;;======================================================================
 ;;; Emacs 24 compat
 ;;;======================================================================
 (if (not (fboundp 'string-empty-p))
@@ -259,6 +251,13 @@ See the docstrings of `defalias' and `make-obsolete' for more details."
 ;;;======================================================================
 ;;; Utils
 ;;;======================================================================
+(defun agl-begin-time-block (name)
+  (setq *emacs-time-block-prev-begin* *emacs-time-block-begin*)
+  (setq *emacs-time-block-begin* (float-time))
+  (NotBatchMode
+   (message (concat "[%3.3fs] [%3.3fs] === " name " ===")
+            (- (float-time) *emacs-time-start*)
+            (- (float-time) *emacs-time-block-prev-begin*))))
 
 ;; Flatten a list and remove all the nil elements
 (defun agl-list-flatten (mylist)
