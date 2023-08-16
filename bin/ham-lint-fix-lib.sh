@@ -13,23 +13,29 @@ function sh_lint() {
   fi
 
   if [[ "$LINT_FORMAT" == "yes" ]] || [[ "$LINT_CHECK_FORMAT" == "yes" ]]; then
-    local shfmt_params=(-i 2 -ci -bn -ln=bash -bn=false)
+    local SHFMT_PARAMS=(-i 2 -ci -bn -ln=bash -bn=false)
     if [[ "$LINT_CHECK_FORMAT" == "yes" ]]; then
-      shfmt_params=(-d ${shfmt_params[@]})
+      SHFMT_PARAMS=(-d ${SHFMT_PARAMS[@]})
     else
-      shfmt_params=(-w ${shfmt_params[@]})
+      SHFMT_PARAMS=(-w ${SHFMT_PARAMS[@]})
     fi
     (set -x ;
-     "$HAM_SHELL_LINTER_DIR/shfmt" ${shfmt_params[@]} ${FILES[@]})
+     "$HAM_SHELL_LINTER_DIR/shfmt" ${SHFMT_PARAMS[@]} ${FILES[@]})
   fi
 
   if [[ "$NO_LINT" != "yes" ]]; then
-    local shellcheck_params=(-x --shell=bash --source-path="$HAM_HOME")
+    local SHELLCHECK_PARAMS=(--shell=bash)
+
+    # SHELLCHECK_PARAMS=(-e SC1091) # 'Not following: ... was not specified as input'
+    # Better than disabling SC1091, but oh so slowww :(
+    # SHELLCHECK_PARAMS=(-x --source-path="$HAM_HOME" --source-path="$HAM_HOME/bin")
+    SHELLCHECK_PARAMS=(-x --source-path="$HAM_HOME" --source-path="$HAM_HOME/bin")
+
     if [[ "$LINT_VERBOSE" != "yes" ]]; then
-      shellcheck_params=(--format=gcc ${shellcheck_params[@]})
+      SHELLCHECK_PARAMS=(--format=gcc ${SHELLCHECK_PARAMS[@]})
     fi
     (set -x ;
-     "$HAM_SHELL_LINTER_DIR/shellcheck" ${shellcheck_params[@]} ${FILES[@]})
+     "$HAM_SHELL_LINTER_DIR/shellcheck" ${SHELLCHECK_PARAMS[@]} ${FILES[@]})
   fi
 }
 
