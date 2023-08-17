@@ -1,4 +1,8 @@
 #!/bin/bash
+if [[ -z "$HAM_HOME" ]]; then
+    export HAM_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+    echo "W/HAM_HOME not set, set to:" $HAM_HOME
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 # IMPORTANT: Update the tag date when you make any change to the list of

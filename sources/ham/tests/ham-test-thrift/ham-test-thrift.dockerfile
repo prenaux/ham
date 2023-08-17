@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 # Install sudo dependencies. We deploy a single exe so we install the minimum
 # dependencies instead of the full ham environment.
