@@ -1,0 +1,60 @@
+#!/bin/bash -e
+function usage() {
+  echo "usage:"
+  echo "  lin-apt-install-nodeps <package_name> (package_url)"
+  echo "example:"
+  echo "  lin-apt-install-nodeps git-svn"
+  exit 1
+}
+
+function install_nodeps() {
+  set -ex
+
+  OUTDIR="$TEMPDIR/apt-install-nodeps/$1"
+  if [[ -e "$OUTDIR" ]]; then
+    sudo rm -Rf "$OUTDIR"
+  fi
+  mkdir -p "$OUTDIR"
+  cd "$OUTDIR"
+
+  PACKAGE_NAME=$1
+  if [[ -z "$PACKAGE_NAME" ]]; then
+    usage
+  fi
+  URL=$2
+  DEB_FILE="${PACKAGE_NAME}-dl.deb"
+  EXTRACT_DIR="${PACKAGE_NAME}-deb"
+  MODIFIED_DEB="${PACKAGE_NAME}-nodeps.deb"
+
+  # Download the .deb package
+  VERSION=$(sudo apt-cache policy git-svn | grep Candidate | awk '{print $2}')
+  # Print the URI for that specific version
+  if [[ -z "$URL" ]]; then
+    URL=$(apt-get download --print-uris git-svn=$VERSION 2>&1 | grep "^'" | cut -d"'" -f2)
+  fi
+  wget $URL -O "$DEB_FILE"
+
+  # Check if the download succeeded
+  if [ $? -ne 0 ]; then
+    echo "Error downloading package."
+    return 1
+  fi
+
+  # Extract the .deb package
+  dpkg-deb -R "$DEB_FILE" "$EXTRACT_DIR"
+
+  # Modify the control file to remove the dependency
+  # sed -i "s/^Depends:.*${DEPENDENCY}/Depends: none/" "$EXTRACT_DIR/DEBIAN/control"
+  sed -i "/^Depends:.*${DEPENDENCY}/d" "$EXTRACT_DIR/DEBIAN/control"
+
+  # Repack the .deb package
+  dpkg-deb -b "$EXTRACT_DIR" "$MODIFIED_DEB"
+
+  # Install the modified .deb package ignoring dependencies
+  sudo dpkg --force-depends -i "$MODIFIED_DEB"
+
+  # Cleanup
+  # sudo rm -Rf "$OUTDIR"
+}
+
+install_nodeps "$@"
