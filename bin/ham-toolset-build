@@ -6,15 +6,26 @@ mkdir -p "${TS_DL_DIR}"
 
 usage() {
     echo "usage:"
-    echo "  ham-toolset-build NAME LOA VER"
+    echo "  ham-toolset-build (dontpack) NAME LOA VER"
+    echo ""
+    echo "notes:"
+    echo "  'dontpack' will only update the version tag file and"
+    echo "  skip creating the actual archive"
     echo ""
     echo "example:"
     echo "  # Package multiplatform toolset binaries"
     echo "  ham-toolset-build rclone dist $(ver_date)"
-    echo "  # Package host plawtform toolset binaries"
+    echo "  # Package host platform toolset binaries"
     echo "  ham-toolset-build ffmpeg $HAM_BIN_LOA $(ver_date)"
+    echo "  # Dontpack and test setup-toolset.sh"
+    echo "  ham-toolset-build dontpack zig $HAM_BIN_LOA v0_11_0 && HAM_TOOLSET_DL_URL=none hat zig_default"
     exit 1
 }
+
+if [[ "$1" == "dontpack" ]]; then
+    DONT_PACK=yes
+    shift
+fi
 
 if [ -z "$1" ]; then
     echo "E/Toolset NAME not specified."
@@ -46,6 +57,10 @@ cd "$TS_DIR"
 rm -f toolset_${TS_NAME}_*
 echo "${TS_VER_FILE_NAME}" > "${TS_VER_FILE_NAME}"
 
+toolset_unquarantine_dir "$TS_DIR/"
+
 # 'cd ..' because we need the LOA to be the root of the archive
-cd ..
-7z-pack-dir "${TS_DL_DIR}/${TS_VER_NAME}.7z" "${TS_LOA}"
+if [[ "$DONT_PACK" != "yes" ]]; then
+  cd ..
+  7z-pack-dir "${TS_DL_DIR}/${TS_VER_NAME}.7z" "${TS_LOA}"
+fi

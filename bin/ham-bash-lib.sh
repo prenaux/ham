@@ -12,6 +12,9 @@ fi
 if [[ -z $EDITOR ]]; then
     export EDITOR=ham-editor
 fi
+if [[ -z "$HAM_TOOLSET_DL_URL" ]]; then
+    export HAM_TOOLSET_DL_URL=https://cdn2.talansoft.com/ftp/toolsets
+fi
 
 if [[ $OS == Windows* ]]; then
     # Serious BS from Cygwin...
@@ -457,7 +460,7 @@ toolset_dl_and_extract() {
     export CWD=`pwd`
     export DL_DIR="${HAM_HOME}/toolsets/_dl"
     export DIR="${HAM_HOME}/toolsets/$1"
-    export ARCH_URL="https://cdn2.talansoft.com/ftp/toolsets/$2.7z"
+    export ARCH_URL="${HAM_TOOLSET_DL_URL}/$2.7z"
     # export ARCH_URL="http://localhost:8123/data/toolsets/$2.7z"
     export DLFILENAME="_$2.7z"
     echo "=== Importing toolset '$1' from $DIR"
