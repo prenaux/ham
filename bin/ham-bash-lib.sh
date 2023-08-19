@@ -24,7 +24,8 @@ if [[ $OS == Windows* ]]; then
 else
   if test -t 1; then
     if [[ $(which tput) ]] && [[ -z "$TERM_NCOLORS" || "$TERM_NCOLORS" -eq 0 ]]; then
-      export TERM_NCOLORS=$(tput colors)
+      TERM_NCOLORS=$(tput colors)
+      export TERM_NCOLORS
     fi
   fi
   export TERM_NCOLORS=${TERM_NCOLORS:-0}
@@ -43,41 +44,41 @@ fi
 
 log_info() {
   if [ "$HAM_TERMINAL_SUPPORTS_COLORS" = true ] && [ -z "$NO_COLOR" ]; then
-    echo -e "\033[36mI/$@\033[0m"
+    echo -e "\033[36mI/$*\033[0m"
   else
-    echo "I/$@"
+    echo "I/$*"
   fi
 }
 
 log_success() {
   if [ "$HAM_TERMINAL_SUPPORTS_COLORS" = true ] && [ -z "$NO_COLOR" ]; then
-    echo -e "\033[32mS/$@\033[0m"
+    echo -e "\033[32mS/$*\033[0m"
   else
-    echo "S/$@"
+    echo "S/$*"
   fi
 }
 
 log_error() {
   if [ "$HAM_TERMINAL_SUPPORTS_COLORS" = true ] && [ -z "$NO_COLOR" ]; then
-    echo -e "\033[31mE/$@\033[0m"
+    echo -e "\033[31mE/$*\033[0m"
   else
-    echo "E/$@"
+    echo "E/$*"
   fi
 }
 
 log_warning() {
   if [ "$HAM_TERMINAL_SUPPORTS_COLORS" = true ] && [ -z "$NO_COLOR" ]; then
-    echo -e "\033[33mW/$@\033[0m"
+    echo -e "\033[33mW/$*\033[0m"
   else
-    echo "W/$@"
+    echo "W/$*"
   fi
 }
 
 log_debug() {
   if [ "$HAM_TERMINAL_SUPPORTS_COLORS" = true ] && [ -z "$NO_COLOR" ]; then
-    echo -e "\033[90mD/$@\033[0m"
+    echo -e "\033[90mD/$*\033[0m"
   else
-    echo "D/$@"
+    echo "D/$*"
   fi
 }
 
@@ -94,7 +95,7 @@ ni-hremove() {
 
 ni-hclear() {
   for h in $(ni-hkeys t); do
-    ni-hremove $1 $h
+    ni-hremove "$1" "$h"
   done
 }
 
@@ -113,9 +114,10 @@ ni-hprint() {
 ########################################################################
 ##  Utils
 ########################################################################
-complain() { # usage:
-  #   complain ModuleName "Diagnostic Message"
-  #   complain "Diagnostic Message"
+# usage:
+#   complain ModuleName "Diagnostic Message"
+#   complain "Diagnostic Message"
+complain() {
   if [ "$1" = "_" ]; then
     shift
   fi
@@ -126,12 +128,14 @@ complain() { # usage:
   fi
 }
 
-die_exit() { # usage: die_exit ModuleName "Message Saying Why"
+# usage: die_exit ModuleName "Message Saying Why"
+die_exit() {
   complain "$@"
   exit 1
 }
 
-die() { # usage: die ModuleName "Message Saying Why"
+# usage: die ModuleName "Message Saying Why"
+die() {
   complain "$@"
   if [ -z "$HAM_DIE_SHOULD_RETURN" ]; then
     # echo "I/DIE: EXIT"
@@ -142,11 +146,12 @@ die() { # usage: die ModuleName "Message Saying Why"
   fi
 }
 
-errcheck() { # usage:
-  #   errcheck errorcode ModuleName "Message Saying Why"
-  #   errcheck $? $HAM_TOOLSET_NAME "Message Saying Why" || return 1
-  if [ $1 != 0 ]; then
-    die $2 "$3 (errcode $1)"
+# usage:
+#   errcheck errorcode ModuleName "Message Saying Why"
+#   errcheck $? $HAM_TOOLSET_NAME "Message Saying Why" || return 1
+errcheck() {
+  if [ "$1" != 0 ]; then
+    die "$2" "$3 (errcode $1)"
   fi
 }
 
@@ -189,9 +194,10 @@ check_file() {
   fi
 }
 
-errcheck_file() { # usage:
-  #   errcheck_file ModuleName FILE_PATH
-  #   errcheck_file $HAM_TOOLSET_NAME some_file_path.lib || return 1
+# usage:
+#   errcheck_file ModuleName FILE_PATH
+#   errcheck_file $HAM_TOOLSET_NAME some_file_path.lib || return 1
+errcheck_file() {
   MODULE_NAME="$1"
   FILE_PATH="$2"
   CHECK_FILE=$(check_file "$FILE_PATH")
@@ -200,37 +206,39 @@ errcheck_file() { # usage:
   fi
 }
 
-nativedir() { # usage: NativePathNameVariable=$(nativedir "/directory/PathName")
+# usage: NativePathNameVariable=$(nativedir "/directory/PathName")
+nativedir() {
   DIRPATH="$1"
   case $HAM_OS in
     NT*)
-      cd 2>/dev/null "$DIRPATH"
+      cd 2>/dev/null "$DIRPATH" || return 1
       pwd -W
       ;;
     *)
-      echo $(cd "$DIRPATH" && pwd)
+      (cd "$DIRPATH" && pwd)
       ;;
   esac
 }
 
-unxpath() { # usage: NativePathNameVariable=$(unxpath "/directory/PathName")
-  #
-  # Determine the native path name equivalent for a POSIX style
-  # "/directory/PathName"; (CAVEAT: the specified "/directory/PathName" *must*
-  # reference an existing *directory* on the MSYS or POSIX host).
+# usage: NativePathNameVariable=$(unxpath "/directory/PathName")
+#
+# Determine the native path name equivalent for a POSIX style
+# "/directory/PathName"; (CAVEAT: the specified "/directory/PathName" *must*
+# reference an existing *directory* on the MSYS or POSIX host).
+unxpath() {
   DIR=$(nativedir "$1")
   case $HAM_OS in
     NT*)
       BLA=${DIR//\\/\/}
-      if test ${BLA//[a-zA-Z]:*/ABSWINPATH} = "ABSWINPATH"; then
-        echo /${BLA//:\//\/}
+      if test "${BLA//[a-zA-Z]:*/ABSWINPATH}" = "ABSWINPATH"; then
+        echo /"${BLA//:\//\/}"
       else
-        echo $BLA
+        echo "$BLA"
       fi
       ;;
     *)
       ABSPATH=${DIR}
-      echo $ABSPATH
+      echo "$ABSPATH"
       ;;
   esac
 }
@@ -340,31 +348,27 @@ update_prompt() {
     USERTAG="$USERNAME in $STY"
   fi
 
-  BIN_LOA=$(toolset_get_target_bin_loa)
+  BIN_LOA=$(toolset_get_target_bin_loa "${BUILD_TARGET}")
   BUILD=${BUILD:-ra}
 
   if test "$TERM_NCOLORS" -ge 8; then
-    PROMPT='\[\033[35m$PROJECT_NAME$TOOLSET_EXTRA\033[0m\] \[\033[32m$(current_git_branch)\033[0m\]\w (\e[38;5;95m$USERTAG\e[0m,\e[38;5;95m$BIN_LOA\e[0m,\e[38;5;95m$BUILD\e[0m) \[\033[0;36m$HAM_IMPORTED_TOOLSETS\033[0m\]'
+    # shellcheck disable=SC2153
+    PROMPT="\[\033[35m${PROJECT_NAME}${TOOLSET_EXTRA}\033[0m\] \[\033[32m$(current_git_branch)\033[0m\]\w (\e[38;5;95m$USERTAG\e[0m,\e[38;5;95m$BIN_LOA\e[0m,\e[38;5;95m$BUILD\e[0m) \[\033[0;36m${HAM_IMPORTED_TOOLSETS}\033[0m\]"
 
-    if [ ! -z "$DEVSERVER" ]; then
+    if [ -n "$DEVSERVER" ]; then
       PROMPT="$PROMPT, \[\033[32m$DEVSERVER\033[0m\]"
     fi
 
-    if [ ! -z "$HOSTNAME_LABEL" ]; then
+    if [ -n "$HOSTNAME_LABEL" ]; then
       PROMPT="\[\033[${HOSTNAME_COLOR:-37}m${HOSTNAME_LABEL}\033[0m\] $PROMPT"
     fi
   else
-    PROMPT='# $PROJECT_NAME$TOOLSET_EXTRA \[$(current_git_branch)\]\w ($USERTAG,$BIN_LOA,$BUILD) $HAM_IMPORTED_TOOLSETS'
+    PROMPT="# ${PROJECT_NAME}${TOOLSET_EXTRA} \[$(current_git_branch)\]\w ($USERTAG,$BIN_LOA,$BUILD) ${HAM_IMPORTED_TOOLSETS}"
   fi
 
   export PS1="
 $PROMPT
 $ "
-}
-
-update_project_work() {
-  export WORK="$(unxpath $1)"
-  echo "I/Updated WORK: '$WORK'"
 }
 
 upsearch() {
@@ -398,42 +402,42 @@ dl_file() {
 }
 
 toolset_import() {
-  ALREADY_IMPORTED=$(ni-hget HAM_IMPORTS_TOOLSETS $1)
+  ALREADY_IMPORTED=$(ni-hget HAM_IMPORTS_TOOLSETS "$1")
   if [[ "$ALREADY_IMPORTED" = "1" ]]; then
     if [[ "$HAM_OS" == NT ]] && [[ "${GITHUB_ACTIONS}" == "true" ]]; then
       # For some reason Windows GitHub Actions are messed up, we must
       # reimport to make sure the environment is properly setup
       echo "W/toolset_import: toolset already imported '$1', be reimported as we are in a Windows Github Action."
-      . ham-toolset-do-import.sh force $1 || return 1
+      . ham-toolset-do-import.sh force "$1" || return 1
     else
       echo "W/toolset_import: toolset already imported '$1', skipped."
     fi
   else
-    . ham-toolset-do-import.sh $1 || return 1
+    . ham-toolset-do-import.sh "$1" || return 1
   fi
 }
 
 # This is meant to be used in _ham_project, do not use in setup-toolset.sh.
 toolset_import_list() {
-  for ARG in $@; do
-    toolset_import $ARG || return 1
+  for ARG in "$@"; do
+    toolset_import "$ARG" || return 1
     export HAM_IMPORTED_TOOLSET=$ARG
   done
 }
 
 toolset_import_once() {
-  ALREADY_IMPORTED=$(ni-hget HAM_IMPORTS_TOOLSETS $1)
+  ALREADY_IMPORTED=$(ni-hget HAM_IMPORTS_TOOLSETS "$1")
   if [[ $ALREADY_IMPORTED != "1" ]]; then
-    . ham-toolset-do-import.sh $1
+    . ham-toolset-do-import.sh "$1"
   fi
 }
 
 toolset_import_force() {
-  . ham-toolset-do-import.sh force $1
+  . ham-toolset-do-import.sh force "$1"
 }
 
 toolset_import_strict() {
-  . ham-toolset-do-import.sh $1
+  . ham-toolset-do-import.sh "$1"
 }
 
 toolset_unquarantine_dir() {
@@ -446,52 +450,49 @@ toolset_unquarantine_dir() {
 }
 
 toolset_dl_and_extract() {
-  export CWD=$(pwd)
-  export DL_DIR="${HAM_HOME}/toolsets/_dl"
-  export DIR="${HAM_HOME}/toolsets/$1"
-  export ARCH_URL="${HAM_TOOLSET_DL_URL}/$2.7z"
+  DL_DIR="${HAM_HOME}/toolsets/_dl"
+  DIR="${HAM_HOME}/toolsets/$1"
+  ARCH_URL="${HAM_TOOLSET_DL_URL}/$2.7z"
   # export ARCH_URL="http://localhost:8123/data/toolsets/$2.7z"
-  export DLFILENAME="_$2.7z"
+  DLFILENAME="_$2.7z"
   echo "=== Importing toolset '$1' from $DIR"
   mkdir -p "${DIR}"
-  pushd "${DIR}" >/dev/null
 
   if [ -e "$DL_DIR/$2.7z" ]; then
     echo "I/Copying archive found at: $DL_DIR/$2.7z"
     cp "$DL_DIR/$2.7z" "./$DLFILENAME"
   fi
 
-  if [ $? != 0 ]; then
+  if ! pushd "${DIR}" >/dev/null; then
     echo "E/Can't cd to the toolset's directory '$DIR'."
     return 1
   elif [ -e "$DLFILENAME" ]; then
     echo "I/Extracting $DLFILENAME"
     7z x -y "$DLFILENAME" | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
-    if [ ${PIPESTATUS[0]} != 0 ]; then
+    if [ "${PIPESTATUS[0]}" != 0 ]; then
       echo "E/Extraction failed ! Removing corrupted archive, please re-run the environment setup."
       rm "$DLFILENAME"
-      popd
+      popd || return 1
       return 1
     fi
-    popd
+    popd || return 1
   elif [ ! -e "$DLFILENAME" ]; then
     echo "I/Trying download from ${ARCH_URL}"
-    dl_file "$DLFILENAME.dlfile" "$ARCH_URL"
-    if [ $? != 0 ]; then
+    if ! dl_file "$DLFILENAME.dlfile" "$ARCH_URL"; then
       echo "E/Download failed !"
-      popd
+      popd || return 1
       return 1
     fi
     mv "$DLFILENAME.dlfile" "$DLFILENAME"
     echo "I/Extracting $DLFILENAME"
     7z x -y "$DLFILENAME" | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
-    if [ ${PIPESTATUS[0]} != 0 ]; then
+    if [ "${PIPESTATUS[0]}" != 0 ]; then
       echo "E/Extraction failed ! Removing corrupted archive, please re-run the environment setup."
       rm "$DLFILENAME"
-      popd
+      popd || return 1
       return 1
     fi
-    popd
+    popd || return 1
   fi
 
   toolset_unquarantine_dir "${DIR}"
@@ -515,76 +516,12 @@ toolset_info() {
   echo "==================================================="
 }
 
-# This will always override the MSVC_IDE_DIR.
-# NOTE: This is quite slow and should be used only once during setup.
-toolset_find_msvc_ide_dir() {
-  # We assume that all combinations of visual studio versions and editions
-  # can be located in both the x86 and x64 program files directories...
-  local vs_pf_dirs=(
-    "$PROGRAMW6432\\Microsoft Visual Studio"
-    "$PROGRAMFILES\\Microsoft Visual Studio")
-
-  # Version arrays for the different types of visual studio licenses
-  # NOTE: the following arrays must be same length
-  local vs_versions_typed=(10 2020)
-  local vs_versions_typed_prefix=(' ' '\')
-  local vs_versions_typed_suffix=('.0' '\Community')
-
-  # Count of the supported versions / years
-  # eg. 2020 all the way to 2025
-  # eg. 10.0 all the way to 15.0
-  # NOTE: As of early 2023 community version is at 2022 and Visual Studio at 14.0
-  local vs_versions_supported_count=6
-
-  # loop through dirs, versions to find the IDE dir
-  for vs_pf_dir in "${vs_pf_dirs[@]}"; do
-    for i in "${!vs_versions_typed[@]}"; do
-      local print_=${vs_versions_typed_print[$i]}
-      local prefix_=${vs_versions_typed_prefix[$i]}
-      local suffix_=${vs_versions_typed_suffix[$i]}
-      local version_=${vs_versions_typed[$i]}
-      for ((ry = $vs_versions_supported_count; ry >= 1; ry--)); do
-        local out_version_=$(($version_ + ${ry} - 1))
-        local out_dir_="${vs_pf_dir}${prefix_}${out_version_}${suffix_}\\Common7\\IDE"
-        # echo "I/ Checking for IDE dir: ${out_dir_}"
-        # We check for the devenv.exe file, because the directory may exist
-        # but be empty.
-        if [ -d "$out_dir_" ] && [ -f "$out_dir_\\devenv.exe" ]; then
-          echo ${out_dir_}
-          return 0
-        fi
-      done
-    done
-  done
-  return 1
-}
-
-toolset_find_msvc_file() {
-  local ide_dir="${MSVC_IDE_DIR}"
-  if [ ! -d "${ide_dir}" ]; then
-    ide_dir=$(toolset_find_msvc_ide_dir) || return 1
-  fi
-  local file="${1}"
-  local path="${ide_dir}\\${file}"
-  if [ -f "${path}" ]; then
-    echo $path
-    return 0
-  fi
-  return 1
-}
-
-toolset_find_msvc_devenv() {
-  local devenv=$(toolset_find_msvc_file "devenv.exe") || return 1
-  echo ${devenv}
-  return 0
-}
-
 toolset_is_imported() {
-  ni-hget HAM_IMPORTS_TOOLSETS $1
+  ni-hget HAM_IMPORTS_TOOLSETS "$1"
 }
 
 toolset_check_imported() {
-  for ARG in $@; do
+  for ARG in "$@"; do
     if [[ -z "$(toolset_is_imported "$ARG")" ]]; then
       echo "E/'$ARG' toolset not imported. Did you forget to run '. hat' ?"
       return 1
@@ -606,8 +543,8 @@ toolset_bak_rm() {
 
 # usage: toolset_dl TOOLSET_NAME TOOLSET_DL_NAME
 toolset_dl() {
-  toolset_dl_and_extract $@
-  toolset_dl_cleanup $@
+  toolset_dl_and_extract "$@"
+  toolset_dl_cleanup "$@"
 }
 
 toolset_ver_file_path() {
@@ -630,16 +567,16 @@ toolset_check_and_dl_ver() {
   TS_VER_NAME=${TS_NAME}_${TS_LOA}_${TS_VER}
   TS_VER_FILE_NAME=toolset_${TS_VER_NAME}
   if [ ! -e "${TS_DIR}/${TS_VER_FILE_NAME}" ]; then
-    toolset_bak_mv ${TS_LOA}
-    toolset_dl_and_extract ${TS_NAME} ${TS_VER_NAME}
+    toolset_bak_mv "${TS_LOA}"
+    toolset_dl_and_extract "${TS_NAME}" "${TS_VER_NAME}"
     if [ ! -e "${TS_DIR}/${TS_VER_FILE_NAME}" ]; then
       echo "E/Toolset '$TS_NAME': Can't find '${TS_VER_FILE_NAME}' in '${TS_DIR}'."
       return 1
     fi
-    toolset_dl_cleanup ${TS_NAME} ${TS_VER_NAME}
-    toolset_bak_rm ${TS_LOA}
+    toolset_dl_cleanup "${TS_NAME}" "${TS_VER_NAME}"
+    toolset_bak_rm "${TS_LOA}"
   else
-    toolset_dl_cleanup ${TS_NAME} ${TS_VER_NAME}
+    toolset_dl_cleanup "${TS_NAME}" "${TS_VER_NAME}"
   fi
 }
 
@@ -674,7 +611,7 @@ toolset_get_target_bin_loa() {
     echo "E/toolset_get_target_bin_loa: Can't determine BUILD_TARGET."
     return 1
   fi
-  echo $BUILD_TARGET
+  echo "$BUILD_TARGET"
 }
 
 ########################################################################
@@ -712,11 +649,12 @@ fcd() {
   local dir
   while true; do
     # exit with ^D
+    # shellcheck disable=SC2010
     dir="$(ls -a1F | grep '[/@]$' | grep -v '^./$' | sed 's/@$//' | fzf --height 40% --reverse --no-multi --preview 'pwd' --preview-window=up,1,border-none --no-info)"
     if [[ -z "${dir}" ]]; then
       break
     elif [[ -d "${dir}" ]]; then
-      cd "${dir}"
+      cd "${dir}" || return 1
     fi
   done
 }
@@ -754,7 +692,7 @@ fhh() {
     else
       # echo "I/Execute"
       echo "$ ${CMD}"
-      history -s $CMD
+      history -s "$CMD"
       eval "${CMD}"
     fi
   fi
@@ -808,7 +746,8 @@ if [[ $OS == Windows* ]]; then
   export HAM_OS=NT
   export HAM_BIN_LOA=nt-x86
   if [ -z "$HOME" ]; then
-    export HOME=$(unxpath "$USERPROFILE")
+    HOME=$(unxpath "$USERPROFILE")
+    export HOME
   fi
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   export HAM_OS=OSX
@@ -851,25 +790,27 @@ if [[ -z $TEMPDIR ]]; then
 fi
 
 if [[ -z "$WORK" ]]; then
-  export WORK=$(nativedir "$HAM_HOME/..")
+  WORK=$(nativedir "$HAM_HOME/..")
   if [ "$HAM_NO_VER_CHECK" != "1" ]; then
     echo "W/WORK not set, set to '$WORK' by default."
   fi
 fi
-export WORK=$(unxpath "$WORK")
+WORK=$(unxpath "$WORK")
+export WORK
 
 # Detect the default number of jobs
 if [[ -z $HAM_NUM_JOBS ]]; then
   if [[ -n $NUMBER_OF_PROCESSORS ]]; then
-    export HAM_NUM_JOBS=$NUMBER_OF_PROCESSORS
+    HAM_NUM_JOBS=$NUMBER_OF_PROCESSORS
   elif [[ -f /proc/cpuinfo ]]; then
-    export HAM_NUM_JOBS=$(grep -c processor /proc/cpuinfo)
+    HAM_NUM_JOBS=$(grep -c processor /proc/cpuinfo)
   elif [[ "$OSTYPE" == "darwin"* ]]; then
-    export HAM_NUM_JOBS=$(sysctl -n machdep.cpu.thread_count)
+    HAM_NUM_JOBS=$(sysctl -n machdep.cpu.thread_count)
   else
-    export HAM_NUM_JOBS=2
+    HAM_NUM_JOBS=2
   fi
 fi
+export HAM_NUM_JOBS
 
 if [[ -z "$HOME" ]]; then
   echo "E/HOME not set !"
