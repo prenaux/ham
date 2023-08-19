@@ -3,13 +3,13 @@ if [ "$1" == "force" ]; then
   if [ "$1" == "silent" ]; then
     shift
   else
-    ALREADY_IMPORTED=`ni-hget HAM_IMPORTS_TOOLSETS $1`
+    ALREADY_IMPORTED=$(ni-hget HAM_IMPORTS_TOOLSETS $1)
     if [[ "$ALREADY_IMPORTED" = "1" ]]; then
       echo "W/ham-toolset-import.sh: toolset already imported '$1', force reimported."
     fi
   fi
 else
-  ALREADY_IMPORTED=`ni-hget HAM_IMPORTS_TOOLSETS $1`
+  ALREADY_IMPORTED=$(ni-hget HAM_IMPORTS_TOOLSETS $1)
   if [[ "$ALREADY_IMPORTED" = "1" ]]; then
     echo "E/ham-toolset-import.sh: toolset already imported '$1'."
     return 1
@@ -18,16 +18,16 @@ fi
 
 FOUND_SETUP_SCRIPT=no
 if [ "$FOUND_SETUP_SCRIPT" == "no" ]; then
-    export DIR="${HAM_HOME}/specs/toolsets/$1"
-    export SETUP_SCRIPT="$DIR/setup-toolset.sh"
-    if [ -f "$SETUP_SCRIPT" ]; then
-        FOUND_SETUP_SCRIPT="from GLOBAL."
-    fi
+  export DIR="${HAM_HOME}/specs/toolsets/$1"
+  export SETUP_SCRIPT="$DIR/setup-toolset.sh"
+  if [ -f "$SETUP_SCRIPT" ]; then
+    FOUND_SETUP_SCRIPT="from GLOBAL."
+  fi
 fi
 
 if [ "$FOUND_SETUP_SCRIPT" == "no" ]; then
-    echo "E/Can't find the toolset '$1'"
-    return 1
+  echo "E/Can't find the toolset '$1'"
+  return 1
 fi
 
 export PATH=$PATH

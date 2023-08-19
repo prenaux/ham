@@ -1,20 +1,23 @@
 #!/bin/bash -e
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 # the help
 usage() {
-    echo ""
-    echo "usage:"
-    echo "  ham-brew-install (reinstall|update|upgrade|up) PACKAGE CHECKFILE (CHECKPKG)"
-    echo ""
-    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-        # sourced...
-        return 1
-    else
-        # regular call
-        exit 1
-    fi
+  echo ""
+  echo "usage:"
+  echo "  ham-brew-install (reinstall|update|upgrade|up) PACKAGE CHECKFILE (CHECKPKG)"
+  echo ""
+  if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+    # sourced...
+    return 1
+  else
+    # regular call
+    exit 1
+  fi
 }
 
 INSTALL=install
@@ -30,24 +33,30 @@ fi
 PKGNAME="$1"
 CHECKFILE="$2"
 if [ -z "$" -o -z "$2" ]; then
-    usage
+  usage
 fi
 
 if [ -z "$3" ]; then
-  PKG_HOME=`ham-brew-installdir "$PKGNAME"`
+  PKG_HOME=$(ham-brew-installdir "$PKGNAME")
 else
-  PKG_HOME=`ham-brew-installdir "$3"`
+  PKG_HOME=$(ham-brew-installdir "$3")
 fi
 # echo "I/PKG_HOME: ${PKG_HOME}"
 
 if [ "$INSTALL" == "upgrade" ]; then
   echo "I/Asked for '$INSTALL', updating brew..."
-  (set -x; ham-brew update)
+  (
+    set -x
+    ham-brew update
+  )
 fi
 
 if [ ! -e "$PKG_HOME/$CHECKFILE" ]; then
   echo "I/Brew $PKGNAME not found, install..."
-  (set -x; ham-brew $INSTALL $PKGNAME)
+  (
+    set -x
+    ham-brew $INSTALL $PKGNAME
+  )
 else
   if [ "$INSTALL" == "install" ]; then
     # If it's already installed and we're just asking to install, we dont run
@@ -56,7 +65,10 @@ else
   fi
 
   echo "I/Brew $PKGNAME already installed, $INSTALL..."
-  (set -x; ham-brew $INSTALL $PKGNAME)
+  (
+    set -x
+    ham-brew $INSTALL $PKGNAME
+  )
 fi
 
 if [ ! -e "$PKG_HOME/$CHECKFILE" ]; then

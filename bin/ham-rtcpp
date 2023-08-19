@@ -1,9 +1,12 @@
 #!/bin/bash
 if [[ -z $HAM_HOME ]]; then
-    echo "E/HAM_HOME not set !"
-    exit 1
+  echo "E/HAM_HOME not set !"
+  exit 1
 fi
 . "$HAM_HOME/bin/ham-bash-lib.sh"
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 export HAM_NO_VER_CHECK=1
-(set -x ; "$HAM_HOME/bin/ham" $*)
+(
+  set -x
+  "$HAM_HOME/bin/ham" $*
+)

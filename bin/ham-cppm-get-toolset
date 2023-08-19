@@ -1,20 +1,23 @@
 #!/bin/bash -e
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 usage() {
-    echo "usage:"
-    echo "  ${0##*/} BUILD_TARGET"
-    echo ""
-    echo "description:"
-    echo "  Prints the name of the C/C++ toolset to use for the specified BUILD_TARGET."
-    echo ""
-    echo "example:"
-    echo "  $ ham-cppm-get-toolset osx-x64"
-    echo "  macos_x64"
-    echo "  $ ham-cppm-get-toolset web-js"
-    echo "  emscripten"
-    exit 1
+  echo "usage:"
+  echo "  ${0##*/} BUILD_TARGET"
+  echo ""
+  echo "description:"
+  echo "  Prints the name of the C/C++ toolset to use for the specified BUILD_TARGET."
+  echo ""
+  echo "example:"
+  echo "  $ ham-cppm-get-toolset osx-x64"
+  echo "  macos_x64"
+  echo "  $ ham-cppm-get-toolset web-js"
+  echo "  emscripten"
+  exit 1
 }
 
 if [ -z "$1" ]; then
@@ -60,8 +63,7 @@ case "$TARGET_BIN_LOA" in
   ios-arm64)
     TOOLSET_NAME=ios
     ;;
-  *)
-    ;;
+  *) ;;
 esac
 
 if [ -z "$TOOLSET_NAME" ]; then

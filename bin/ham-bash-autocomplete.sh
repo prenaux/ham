@@ -7,18 +7,19 @@
 #   fi
 #
 _ham_complete_ls_targets() {
-    DIR=${1:-.}
-    CUR_WORD="$2"
-    (set -e ;
-     cd "$DIR" ;
-     find . -maxdepth 1 -type f -name "*.sh" -perm +111 -exec basename {} \; ;
-     if [[ "$CUR_WORD" != _* ]] && [ -f "$DIR/_ham_project" ]; then
-         ham-ls-targets
-     fi
-     echo "-T"
-     echo "-D"
-     echo "-X"
-    )
+  DIR=${1:-.}
+  CUR_WORD="$2"
+  (
+    set -e
+    cd "$DIR"
+    find . -maxdepth 1 -type f -name "*.sh" -perm +111 -exec basename {} \;
+    if [[ "$CUR_WORD" != _* ]] && [ -f "$DIR/_ham_project" ]; then
+      ham-ls-targets
+    fi
+    echo "-T"
+    echo "-D"
+    echo "-X"
+  )
 }
 
 _ham_autocomplete() {
@@ -26,7 +27,7 @@ _ham_autocomplete() {
 
   # Get the current and previous words in the command line
   cur_word="${COMP_WORDS[COMP_CWORD]}"
-  prev_word="${COMP_WORDS[COMP_CWORD-1]}"
+  prev_word="${COMP_WORDS[COMP_CWORD - 1]}"
 
   # Loop through all words to find -D or -X arguments and store their folders
   local flag=false

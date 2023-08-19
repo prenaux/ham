@@ -1,5 +1,8 @@
 #!/bin/bash -e
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 usage() {
@@ -23,8 +26,10 @@ log_info "Downloading '$URL' to '$OUTFILE'."
 
 # Create the output folder
 OUTDIR=$(dirname "$OUTFILE")
-(set -x ;
- mkdir -p "$OUTDIR")
+(
+  set -x
+  mkdir -p "$OUTDIR"
+)
 errcheck $? ham-dl-file "Can't create output directory '$OUTDIR'."
 
 # Sanitize the path
@@ -40,10 +45,14 @@ if [ -n "$HAM_DL_WGET" ]; then
       fi
       ;;
   esac
-  (set -x ;
-   wget --progress=bar:force:noscroll "$URL" -O"$OUTFILE")
+  (
+    set -x
+    wget --progress=bar:force:noscroll "$URL" -O"$OUTFILE"
+  )
 else
   # Download with curl
-  (set -x ;
-   curl -# -o "$OUTFILE" "$URL")
+  (
+    set -x
+    curl -# -o "$OUTFILE" "$URL"
+  )
 fi

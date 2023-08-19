@@ -1,18 +1,21 @@
 #!/bin/bash -e
-if [[ -z "$HAM_HOME" ]]; then echo "E/ham-cppm-build-check: HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/ham-cppm-build-check: HAM_HOME not set !"
+  exit 1
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 usage() {
-    echo "usage:"
-    echo "  ${0##*/} TOOLSET HDR(path.h|noheader) libname|nolib dllname|nodll (exe_path0 ... exe_pathN)"
-    echo ""
-    echo "example:"
-    echo "  ham-cppm-build-check thrift_cppm noheader thrift_cppm thrift_cppm ham_thriftc"
-    echo ""
-    echo "note:"
-    echo "  Setting HAM_CPPM_FORCE_BUILD to 1 will skip the checks and will always try to build."
-    echo ""
-    exit 1
+  echo "usage:"
+  echo "  ${0##*/} TOOLSET HDR(path.h|noheader) libname|nolib dllname|nodll (exe_path0 ... exe_pathN)"
+  echo ""
+  echo "example:"
+  echo "  ham-cppm-build-check thrift_cppm noheader thrift_cppm thrift_cppm ham_thriftc"
+  echo ""
+  echo "note:"
+  echo "  Setting HAM_CPPM_FORCE_BUILD to 1 will skip the checks and will always try to build."
+  echo ""
+  exit 1
 }
 
 # Build settings
@@ -47,7 +50,7 @@ if [ -z "$LIB_CHECK_PATH" ]; then
 elif [ "$1" == "nolib" ]; then
   LIB_CHECK_PATH=nolib
 else
-  LIB_CHECK_PATH="${HAM_HOME}/libs/`ham-cppm-bin-filepath lib ${LIB_CHECK_PATH}_${BUILD}`"
+  LIB_CHECK_PATH="${HAM_HOME}/libs/$(ham-cppm-bin-filepath lib ${LIB_CHECK_PATH}_${BUILD})"
 fi
 shift
 # echo "I/LIB_CHECK_PATH: $LIB_CHECK_PATH"
@@ -59,7 +62,7 @@ if [ -z "$DLL_CHECK_PATH" ]; then
 elif [ "$1" == "nodll" ]; then
   DLL_CHECK_PATH=nodll
 else
-  DLL_CHECK_PATH="${HAM_HOME}/bin/`ham-cppm-bin-filepath dll ${DLL_CHECK_PATH}_${BUILD}`"
+  DLL_CHECK_PATH="${HAM_HOME}/bin/$(ham-cppm-bin-filepath dll ${DLL_CHECK_PATH}_${BUILD})"
   DLL_CHECK_EXT=${DLL_CHECK_PATH##*.}
   # echo "I/DLL_CHECK_EXT: ${DLL_CHECK_EXT}"
   if [ "$DLL_CHECK_EXT" == "no-dll-platform" ]; then
@@ -80,9 +83,9 @@ esac
 
 EXE_FILES=()
 if [ "$HAM_CPPM_FORCE_BUILD" == "1" ] ||
-     [ "$(check_file $HDR_CHECK_PATH noheader)" == "notfound" ] ||
-     [ "$(check_file $LIB_CHECK_PATH nolib)" == "notfound" ] ||
-     [ "$(check_file $DLL_CHECK_PATH nodll)" == "notfound" ]; then
+  [ "$(check_file $HDR_CHECK_PATH noheader)" == "notfound" ] ||
+  [ "$(check_file $LIB_CHECK_PATH nolib)" == "notfound" ] ||
+  [ "$(check_file $DLL_CHECK_PATH nodll)" == "notfound" ]; then
   SHOULD_BUILD=1
 else
   SHOULD_BUILD=0
@@ -93,7 +96,7 @@ if [ "$SHOULD_BUILD" == "0" ]; then
     EXE_PATH=$(ham-cppm-exe-path $TOOLSET $1)
     EXE_PATH_EXT=$(path_extension "$EXE_PATH")
     if [ "$EXE_PATH_EXT" == "no-exe-platform" ] ||
-         [ "$EXE_PATH_EXT" == "html" ]; then
+      [ "$EXE_PATH_EXT" == "html" ]; then
       # echo "I/Skip non executable EXE_PATH: $EXE_PATH"
       true
     else
@@ -110,7 +113,10 @@ fi
 # echo "I/SHOULD_BUILD: $SHOULD_BUILD"
 
 if [ "$SHOULD_BUILD" == "1" ]; then
-  (set -x ; HAM_NO_VER_CHECK=1 BUILD=$BUILD ham-cppm-build $TOOLSET)
+  (
+    set -x
+    HAM_NO_VER_CHECK=1 BUILD=$BUILD ham-cppm-build $TOOLSET
+  )
 
   FAILED=0
   if [ "$(check_file $HDR_CHECK_PATH noheader)" == "notfound" ]; then

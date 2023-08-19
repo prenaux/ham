@@ -28,7 +28,7 @@
 # WTFPL ~ https://centerkey.com/tree ~ Dem Pilafian #
 #####################################################
 
-test -n "$1" && cd "$1"  # if parameter exists, use as base folder
+test -n "$1" && cd "$1" # if parameter exists, use as base folder
 pwd
 
 ls -R | grep "^[.]/" | sed -e "s/:$//" -e "s/[^\/]*\//-/g" -e "s/^/   |/"

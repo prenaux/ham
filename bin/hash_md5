@@ -1,15 +1,18 @@
 #!/bin/bash
 export HAM_NO_VER_CHECK=1
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 # Put the result of md5 in a variable (it'll be an array) and then print the
 # first element in the array
 case $HAM_OS in
-    NT*)
-        md5=($("$HAM_HOME/bin/$HAM_BIN_LOA/md5sum" "$*"))
-        ;;
-    OSX*)
-        md5=($("md5" -r "$*"))
-        ;;
+  NT*)
+    md5=($("$HAM_HOME/bin/$HAM_BIN_LOA/md5sum" "$*"))
+    ;;
+  OSX*)
+    md5=($("md5" -r "$*"))
+    ;;
 esac
 echo -n $md5

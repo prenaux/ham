@@ -5,39 +5,39 @@ TS_DL_DIR="${HAM_HOME}/toolsets/_dl"
 mkdir -p "${TS_DL_DIR}"
 
 usage() {
-    echo "usage:"
-    echo "  ham-toolset-build (dontpack) NAME LOA VER"
-    echo ""
-    echo "notes:"
-    echo "  'dontpack' will only update the version tag file and"
-    echo "  skip creating the actual archive"
-    echo ""
-    echo "example:"
-    echo "  # Package multiplatform toolset binaries"
-    echo "  ham-toolset-build rclone dist $(ver_date)"
-    echo "  # Package host platform toolset binaries"
-    echo "  ham-toolset-build ffmpeg $HAM_BIN_LOA $(ver_date)"
-    echo "  # Dontpack and test setup-toolset.sh"
-    echo "  ham-toolset-build dontpack zig $HAM_BIN_LOA v0_11_0 && HAM_TOOLSET_DL_URL=none hat zig_default"
-    exit 1
+  echo "usage:"
+  echo "  ham-toolset-build (dontpack) NAME LOA VER"
+  echo ""
+  echo "notes:"
+  echo "  'dontpack' will only update the version tag file and"
+  echo "  skip creating the actual archive"
+  echo ""
+  echo "example:"
+  echo "  # Package multiplatform toolset binaries"
+  echo "  ham-toolset-build rclone dist $(ver_date)"
+  echo "  # Package host platform toolset binaries"
+  echo "  ham-toolset-build ffmpeg $HAM_BIN_LOA $(ver_date)"
+  echo "  # Dontpack and test setup-toolset.sh"
+  echo "  ham-toolset-build dontpack zig $HAM_BIN_LOA v0_11_0 && HAM_TOOLSET_DL_URL=none hat zig_default"
+  exit 1
 }
 
 if [[ "$1" == "dontpack" ]]; then
-    DONT_PACK=yes
-    shift
+  DONT_PACK=yes
+  shift
 fi
 
 if [ -z "$1" ]; then
-    echo "E/Toolset NAME not specified."
-    usage
+  echo "E/Toolset NAME not specified."
+  usage
 fi
 if [ -z "$2" ]; then
-    echo "E/Toolset LOA not specified."
-    usage
+  echo "E/Toolset LOA not specified."
+  usage
 fi
 if [ -z "$3" ]; then
-    echo "E/Toolset VER not specified."
-    usage
+  echo "E/Toolset VER not specified."
+  usage
 fi
 
 TS_NAME=$1
@@ -48,14 +48,14 @@ TS_VER_NAME=${TS_NAME}_${TS_LOA}_${TS_VER}
 TS_VER_FILE_NAME=toolset_${TS_VER_NAME}
 
 if [ ! -d "$TS_DIR" ]; then
-    echo "Can't find toolset folder: ${TS_DIR}"
-    usage
+  echo "Can't find toolset folder: ${TS_DIR}"
+  usage
 fi
 
 set -ex
 cd "$TS_DIR"
 rm -f toolset_${TS_NAME}_*
-echo "${TS_VER_FILE_NAME}" > "${TS_VER_FILE_NAME}"
+echo "${TS_VER_FILE_NAME}" >"${TS_VER_FILE_NAME}"
 
 toolset_unquarantine_dir "$TS_DIR/"
 

@@ -1,6 +1,9 @@
 #!/bin/bash
 export HAM_NO_VER_CHECK=1
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 CMD=("$HAM_HOME/bin/$HAM_BIN_LOA/rg")
@@ -9,12 +12,12 @@ CMD=("${CMD[@]}" --line-number)
 CMD=("${CMD[@]}" --no-ignore)
 CMD=("${CMD[@]}" --smart-case)
 
-HAMGREP_IGNORE="`ham-find-file-up _hamgrep_ignore`"
+HAMGREP_IGNORE="$(ham-find-file-up _hamgrep_ignore)"
 if [[ -e "$HAMGREP_IGNORE" ]]; then
-    echo "I/HAMGREP_IGNORE: $HAMGREP_IGNORE"
-    CMD=("${CMD[@]}" --ignore-file "${HAMGREP_IGNORE}")
+  echo "I/HAMGREP_IGNORE: $HAMGREP_IGNORE"
+  CMD=("${CMD[@]}" --ignore-file "${HAMGREP_IGNORE}")
 else
-    echo "I/NO HAMGREP_IGNORE"
+  echo "I/NO HAMGREP_IGNORE"
 fi
 set -x
 "${CMD[@]}" "$@"

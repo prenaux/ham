@@ -9,13 +9,13 @@ max=5
 # Delay in seconds
 delay=1
 while true; do
-    "$@" && break || {
-        if [[ $n -lt $max ]]; then
-            ((n++))
-            echo "W/Command failed. Attempt $n/$max:"
-            sleep $delay;
-        else
-            ham_exec_fail "E/The command has failed after $n attempts."
-        fi
-    }
+  "$@" && break || {
+    if [[ $n -lt $max ]]; then
+      ((n++))
+      echo "W/Command failed. Attempt $n/$max:"
+      sleep $delay
+    else
+      ham_exec_fail "E/The command has failed after $n attempts."
+    fi
+  }
 done

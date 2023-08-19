@@ -1,33 +1,36 @@
 #!/bin/bash
 export HAM_NO_VER_CHECK=1
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 case $HAM_OS in
-    NT*)
-        # RUN_DEBUGGER could have been already set
-        # by the user or by a toolset.
-        if [ ! -f "$RUN_DEBUGGER" ]; then
-            export RUN_DEBUGGER=$(toolset_find_msvc_devenv)
-            if [ ! -f "$RUN_DEBUGGER" ]; then
-                echo "E/Can't find RUN_DEBUGGER (devenv.exe)"
-                return 1
-            fi
-        fi
-        "$RUN_DEBUGGER" -debugexe "$@"
-        ;;
-    OSX*)
-        PATH="/usr/bin:$PATH" lldb -- "$@"
-        ;;
-    LINUX*)
-        if [ "$HAM_GDB_DONT_RUN" == "1" ]; then
-          gdb --args "$@"
-        else
-          gdb -ex run --args "$@"
-        fi
-        ;;
-    *)
-        echo "E/Toolset: Unsupported host OS"
+  NT*)
+    # RUN_DEBUGGER could have been already set
+    # by the user or by a toolset.
+    if [ ! -f "$RUN_DEBUGGER" ]; then
+      export RUN_DEBUGGER=$(toolset_find_msvc_devenv)
+      if [ ! -f "$RUN_DEBUGGER" ]; then
+        echo "E/Can't find RUN_DEBUGGER (devenv.exe)"
         return 1
-        ;;
+      fi
+    fi
+    "$RUN_DEBUGGER" -debugexe "$@"
+    ;;
+  OSX*)
+    PATH="/usr/bin:$PATH" lldb -- "$@"
+    ;;
+  LINUX*)
+    if [ "$HAM_GDB_DONT_RUN" == "1" ]; then
+      gdb --args "$@"
+    else
+      gdb -ex run --args "$@"
+    fi
+    ;;
+  *)
+    echo "E/Toolset: Unsupported host OS"
+    return 1
+    ;;
 esac

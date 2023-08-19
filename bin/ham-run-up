@@ -1,5 +1,8 @@
 #!/bin/bash -e
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 usage() {
@@ -19,10 +22,13 @@ shift
 
 EXE_PATH=$(ham-find-file-up "$EXE")
 if [ -e "$EXE_PATH" ]; then
-    echo "I/Running '$EXE_PATH'."
-    echo "I/In '$(pwd)'."
-    (set -x ; "$EXE_PATH" "$@")
+  echo "I/Running '$EXE_PATH'."
+  echo "I/In '$(pwd)'."
+  (
+    set -x
+    "$EXE_PATH" "$@"
+  )
 else
-    echo "E/No '$EXE' found in any parent folder."
-    exit 1
+  echo "E/No '$EXE' found in any parent folder."
+  exit 1
 fi

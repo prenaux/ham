@@ -1,7 +1,7 @@
 #!/bin/bash
 if [[ -z "$HAM_HOME" ]]; then
-    echo "E/HAM_HOME not set !"
-    exit 1
+  echo "E/HAM_HOME not set !"
+  exit 1
 fi
 . "$HAM_HOME/bin/ham-bash-lib.sh"
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
@@ -11,11 +11,11 @@ export BUILD=da
 export HAM_TARGET_BIN_LOA=$(toolset_get_target_bin_loa)
 export HAM_IMPORTED_TOOLSETS=default
 if [[ -e ~/_ham_flymake ]]; then
-    . ~/_ham_flymake
+  . ~/_ham_flymake
 fi
 if [[ -z "$HAM_IMPORTED_TOOLSETS" ]]; then
-    echo "E/HAM_IMPORTED_TOOLSETS not set."
-    exit 1
+  echo "E/HAM_IMPORTED_TOOLSETS not set."
+  exit 1
 fi
 . hat $HAM_IMPORTED_TOOLSETS
 time ham $*

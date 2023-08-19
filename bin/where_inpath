@@ -1,23 +1,26 @@
 #!/bin/bash
 export HAM_NO_VER_CHECK=1
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 # Put the result of md5 in a variable (it'll be an array) and then print the
 # first element in the array
 case $HAM_OS in
-    NT*)
-        path=$("type" -p "$*")
-        ;;
-    OSX* | LINUX*)
-        path=$("which" "$*")
-        ;;
-    *)
-        path=$("whereis" "$*")
-        ;;
+  NT*)
+    path=$("type" -p "$*")
+    ;;
+  OSX* | LINUX*)
+    path=$("which" "$*")
+    ;;
+  *)
+    path=$("whereis" "$*")
+    ;;
 esac
 echo -n "$path"
 if [ -z "$path" ]; then
-    exit 1
+  exit 1
 else
-    exit 0
+  exit 0
 fi

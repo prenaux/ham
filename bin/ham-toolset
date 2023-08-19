@@ -1,10 +1,9 @@
 #!/bin/bash
-SCRIPT_SOURCED=$((return 0 2>/dev/null) && echo yes || echo "")
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ALL_ARGS="$@"
 if [[ -z "$HAM_HOME" ]]; then
-    export HAM_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-    echo "W/HAM_HOME not set, set to:" $HAM_HOME
+  export HAM_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  echo "W/HAM_HOME not set, set to:" $HAM_HOME
 fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
@@ -23,7 +22,7 @@ usage() {
 
 HAM_PROJECT_FILE=""
 if [ $# = 0 ] || [ "$1" == "." ]; then
-  FOUND_PROJECT_DIR="`hat-search-ham-project.sh`"
+  FOUND_PROJECT_DIR="$(hat-search-ham-project.sh)"
   if [[ -z "$FOUND_PROJECT_DIR" ]]; then
     log_error "No argument or '.' specified but couldn't find a _ham_project file."
     usage
@@ -31,7 +30,7 @@ if [ $# = 0 ] || [ "$1" == "." ]; then
     export HAM_PROJECT_DIR=${FOUND_PROJECT_DIR}
     HAM_PROJECT_FILE="$(abspath "${FOUND_PROJECT_DIR}/_ham_project")"
   fi
-elif [ -f "$1" ] && [ `basename "$1"` == "_ham_project" ]; then
+elif [ -f "$1" ] && [ $(basename "$1") == "_ham_project" ]; then
   HAM_PROJECT_FILE="$(abspath "$1")"
 elif [ -d "$1" ]; then
   if [ ! -f "$1/_ham_project" ]; then
@@ -54,22 +53,22 @@ fi
 if [ -n "$HAM_PROJECT_FILE" ]; then
   echo "I/Import _ham_project: '$HAM_PROJECT_FILE'."
   . ham-env-clear
-  export HAM_PROJECT_DIR=`dirname "$HAM_PROJECT_FILE"`
+  export HAM_PROJECT_DIR=$(dirname "$HAM_PROJECT_FILE")
   pushd "$HAM_PROJECT_DIR"
   . "$HAM_PROJECT_FILE"
-  HAM_DIE_SHOULD_RETURN=$SCRIPT_SOURCED errcheck $? ham-toolset "Can't import _ham_project." || return 1
+  HAM_DIE_SHOULD_RETURN=yes errcheck $? ham-toolset "Can't import _ham_project." || return 1
   popd
 # Import a list of toolsets
 else
   . ham-env-clear
   # find the _ham_project file
-  FOUND_PROJECT_DIR="`hat-search-ham-project.sh`"
+  FOUND_PROJECT_DIR="$(hat-search-ham-project.sh)"
   if [[ -e "$FOUND_PROJECT_DIR" ]]; then
     log_info "Found _ham_project in '${FOUND_PROJECT_DIR}'"
     export HAM_PROJECT_DIR=${FOUND_PROJECT_DIR}
   fi
   toolset_import_list "$@" || return 1
-  HAM_DIE_SHOULD_RETURN=$SCRIPT_SOURCED errcheck $? ham-toolset "Can't import toolsets: $ALL_ARGS." || return 1
+  HAM_DIE_SHOULD_RETURN=yes errcheck $? ham-toolset "Can't import toolsets: $ALL_ARGS." || return 1
 fi
 
 if [ -z "$HAM_NO_VER_CHECK" ]; then
