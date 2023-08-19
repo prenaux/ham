@@ -261,8 +261,13 @@ path_filename_noext() {
 }
 
 path_extension() {
-  filename=$(basename "$1")
-  echo "${filename##*.}"
+  filename=$1
+  extension="${filename##*.}"
+  if [[ "$extension" == "$filename" ]]; then
+    echo ''
+  else
+    echo "$extension"
+  fi
 }
 
 path_dirname() {

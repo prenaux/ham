@@ -362,7 +362,7 @@
 ;; (regexp file-idx line-idx col-idx(optional) text-idx(optional))
 (makunbound 'aflymake-ham-lint-err-line-patterns-bash)
 (defvar aflymake-ham-lint-err-line-patterns-bash
-  '(("^[ ]*\\(.*\.sh\\):\\([0-9]+\\):\\([0-9]+\\): \\(note\\|warning\\|error\\):[ ]*\\(.*\\)" 1 2 3 5)))
+  '(("^[ ]*\\(.*\\):\\([0-9]+\\):\\([0-9]+\\): \\(note\\|warning\\|error\\):[ ]*\\(.*\\)" 1 2 3 5)))
 
 (defun ham-flymake-ham-lint-bash-init ()
   (aflymake-easy-load 'aflymake-ham-lint-command
@@ -370,3 +370,4 @@
                       'inplace "sh"))
 
 (push '(".+\\.sh$" ham-flymake-ham-lint-bash-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
+(push '(".*[^\\.]*$" ham-flymake-ham-lint-bash-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)

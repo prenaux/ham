@@ -237,7 +237,7 @@ function rust_lint() {
 
 function lint_file() {
   CMD="$1"
-  EXT="${CMD##*.}"
+  EXT=$(path_extension ${CMD})
   case "$EXT" in
     c | cc | cpp | cxx | h | hh | hpp | hxx | inl)
       cpp_lint "$CMD"
@@ -267,7 +267,7 @@ function lint_file() {
       ni_lint "$CMD"
       errcheck $? ni_lint "Single ni file lint failed in '$DIRNAME'."
       ;;
-    sh)
+    sh | "")
       sh_lint "$CMD"
       errcheck $? sh_lint "Single sh file lint failed in '$DIRNAME'."
       ;;
