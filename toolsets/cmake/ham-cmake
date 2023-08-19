@@ -1,0 +1,103 @@
+#!/bin/bash
+
+# archs x86_64-msys
+
+BUILD_SHARED_LIBS=ON
+while getopts 'hcg:da:n:p:srd' flag; do
+  case "${flag}" in
+    h)
+      echo "Cross build script for "
+      echo " "
+      echo "$build [options] application [arguments]"
+      echo " "
+      echo "options:"
+      echo "-h, --help       show brief help"
+      echo "-a, --arch       build arch"
+      echo "-c, --clean      clean up current build cache"
+      echo "-g, --generator  build with cmake generator"
+      echo "-n, --name       build with target name only"
+      echo "-s, --static     build with static libraries"
+      echo "-t, --type       build type (Debug|RelWithDebInfo|Release|MinSizeRel)"
+      echo "-r, --run        run target if possible"
+      echo "-d, --debug      build debug"
+      exit 0
+      ;;
+    c) CLEAR_OPT=1 ;;
+    a) BUILD_ARCH="${OPTARG}" ;;
+    g) BUILD_GENERATOR="${OPTARG}" ;;
+    n) BUILD_NAME="${OPTARG}" ;;
+    p) BUILD_PROJECT="${OPTARG}" ;;
+    s) BUILD_SHARED_LIBS=OFF ;;
+    r) BUILD_RUN=1 ;;
+    d) BUILD_TYPE=Debug ;;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
+if [ -z "$BUILD_ARCH" ]; then
+
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    # linux
+    BUILD_ARCH=$(uname -m)-linux-gnu
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    # Mac OSX
+    BUILD_ARCH=$(uname -m)-darwin
+  elif [[ "$OSTYPE" == "cygwin" ]]; then
+    # POSIX compatibility layer and Linux environment emulation for Windows
+    BUILD_ARCH=$(uname -m)-cygwin
+  elif [[ "$OSTYPE" == "msys" ]]; then
+    # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
+    BUILD_ARCH=$(uname -m)-msys
+  elif [[ "$OSTYPE" == "freebsd"* ]]; then
+    BUILD_ARCH=$(uname -m)-freebsd
+    # ...
+  else
+    echo "unknown platform"
+    exit 1;
+  fi
+fi
+
+BUILD_EXT=da
+if [ -z "$BUILD_TYPE" ]; then
+  BUILD_TYPE=Release
+  BUILD_EXT=ra
+fi
+
+PROJECT_DIR=$(pwd)
+PROJECT_NAME="${PROJECT_DIR##*/}"
+PROJECT_NAME_LOW=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]')
+
+export CMAKE_BUILD_ARCH=$BUILD_ARCH
+export CMAKE_CACHE_DIR="$HOME/_ham/cmake"
+export CMAKE_BUILD_EXT="$BUILD_EXT"
+
+BUILD_DIR="$CMAKE_CACHE_DIR/$BUILD_ARCH-$PROJECT_NAME_LOW-$BUILD_EXT"
+
+if [ "$CLEAR_OPT" ]; then
+  rm -rf $BUILD_DIR
+fi
+
+if [ "$BUILD_ARCH" ]; then
+  TOOLCHAIN_FILE="$HAM_HOME/toolsets/cmake/toolchains/$BUILD_ARCH.cmake"
+  if [ ! -f "$TOOLCHAIN_FILE" ]; then
+    TOOLCHAIN_FILE=""
+  fi
+fi
+
+if [ -z "$BUILD_GENERATOR" ]; then
+  # BUILD_GENERATOR="Ninja"
+  BUILD_GENERATOR="Unix Makefiles"
+fi
+
+cmake -H. -G"$BUILD_GENERATOR" -B"$BUILD_DIR" -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN_FILE" -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+if [ -f "$BUILD_DIR/compile_commands.json" ]; then
+  cp "$BUILD_DIR/compile_commands.json" "$PROJECT_DIR/compile_commands.json"
+fi
+
+if [ $BUILD_NAME ]; then
+  OPT_TARGET="--target $BUILD_NAME"
+fi
+
+cmake --build "$BUILD_DIR" $OPT_TARGET -- -j18

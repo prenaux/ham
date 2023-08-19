@@ -1,0 +1,31 @@
+# base.ham is setup for GCC by default
+
+actions SharedLink {
+}
+
+# actions DllLink bind NEEDLIBS
+# {
+  # $(LINK) $(LINKFLAGS) -fvisibility=hidden -shared -o "$(<)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+# }
+
+# actions together piecemeal Archive
+# {
+  # $(AR) "$(<)" "$(>:T)"
+# }
+
+rule ResourceCompiler {
+  DEPENDS $(<) : $(>) ;
+  Clean clean : $(<) ;
+}
+
+actions DllLink
+{
+  $(LINK) $(LINKFLAGS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)" -Xlinker /implib:"$(<).lib"
+}
+  # ECHO "$(<)" ;
+  # -Xlinker /implib:./clang++-nt-x64/niLang.dll.lib
+
+actions Link bind NEEDLIBS
+{
+  $(LINK) $(LINKFLAGS) $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
+}
