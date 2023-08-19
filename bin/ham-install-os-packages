@@ -1,7 +1,7 @@
 #!/bin/bash
 if [[ -z "$HAM_HOME" ]]; then
-    export HAM_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-    echo "W/HAM_HOME not set, set to:" $HAM_HOME
+  export HAM_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  echo "W/HAM_HOME not set, set to:" $HAM_HOME
 fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
@@ -10,50 +10,52 @@ fi
 TAG="ham-install-os-packages-${HAM_OS}-v23_02_08"
 TAGFILE="$TEMPDIR/ham-install-os-packages-${HAM_OS}-tag.txt"
 
-if [[ `tagfile_status "$TAGFILE" "$TAG"` == "up-to-date" ]]; then
-    echo "I/ham-install-os-packages tagfile is up-to-date."
-    if [ "$1" == "nocheck" ] || [ "$1" == "force" ]; then
-        echo "I/Installing anyway because of 'nocheck' option."
-    else
-        exit 0
-    fi
+if [[ $(tagfile_status "$TAGFILE" "$TAG") == "up-to-date" ]]; then
+  echo "I/ham-install-os-packages tagfile is up-to-date."
+  if [ "$1" == "nocheck" ] || [ "$1" == "force" ]; then
+    echo "I/Installing anyway because of 'nocheck' option."
+  else
+    exit 0
+  fi
 else
-    echo "I/HAM_HOME: ${HAM_HOME}"
-    echo "I/TAGFILE: ${TAGFILE}"
-    echo "I/ham-install-os-packages tagfile is outdated, installing os packages..."
+  echo "I/HAM_HOME: ${HAM_HOME}"
+  echo "I/TAGFILE: ${TAGFILE}"
+  echo "I/ham-install-os-packages tagfile is outdated, installing os packages..."
 fi
 
 case $HAM_OS in
-    NT*)
-        echo "### No extra packages need to be installed on Windows ###"
-        ;;
-    OSX)
-        echo "### Make sure "$HAM_HOME/bin" isn't quarantined ###"
-        toolset_unquarantine_dir "$HAM_HOME/bin"
-        echo "### Installing packages required by ham on OSX (brew) ###"
-        # coreutils is mainly for 'realpath' atm
-        ham-brew install jq yq wget hstr mc ncdu htop coreutils
-        ;;
-    LINUX)
-        if [ $(type apt-get 2>/dev/null | wc -l) = 1 ]; then
-            echo "### Installing packages required by ham on Linux (apt-get) ###"
-            echo "I/Installing apt-get packages"
-            (set -ex ;
-             # autoremove & update fix "E: Unable to correct problems, you have held broken packages."
-             sudo apt -y autoremove ;
-             sudo apt -y update ;
-             # sudo apt -y upgrade ; # Try this if your install seems broken...
-             # install all our required packages
-             sudo NEEDRESTART_MODE=a apt-get -y install software-properties-common build-essential clang lld curl ffmpeg file freeglut3-dev git g++ gcc git htop jq libcurl4-openssl-dev libdw-dev libunwind-dev libsdl2-dev libssl-dev libudev-dev mc mesa-common-dev mesa-utils net-tools ntpdate p7zip-full procps pkg-config python3 python3-pip subversion wget xsltproc)
-        else
-            echo "E/Unsupported LINUX package manager"
-            return 1
-        fi
-        ;;
-    *)
-        echo "E/Toolset: Unsupported host OS"
-        return 1
-        ;;
+  NT*)
+    echo "### No extra packages need to be installed on Windows ###"
+    ;;
+  OSX)
+    echo "### Make sure "$HAM_HOME/bin" isn't quarantined ###"
+    toolset_unquarantine_dir "$HAM_HOME/bin"
+    echo "### Installing packages required by ham on OSX (brew) ###"
+    # coreutils is mainly for 'realpath' atm
+    ham-brew install jq yq wget hstr mc ncdu htop coreutils
+    ;;
+  LINUX)
+    if [ $(type apt-get 2>/dev/null | wc -l) = 1 ]; then
+      echo "### Installing packages required by ham on Linux (apt-get) ###"
+      echo "I/Installing apt-get packages"
+      (
+        set -ex
+        # autoremove & update fix "E: Unable to correct problems, you have held broken packages."
+        sudo apt -y autoremove
+        sudo apt -y update
+        # sudo apt -y upgrade ; # Try this if your install seems broken...
+        # install all our required packages
+        sudo NEEDRESTART_MODE=a apt-get -y install software-properties-common build-essential clang lld curl ffmpeg file freeglut3-dev git g++ gcc git htop jq libcurl4-openssl-dev libdw-dev libunwind-dev libsdl2-dev libssl-dev libudev-dev mc mesa-common-dev mesa-utils net-tools ntpdate p7zip-full procps pkg-config python3 python3-pip subversion wget xsltproc
+      )
+    else
+      echo "E/Unsupported LINUX package manager"
+      return 1
+    fi
+    ;;
+  *)
+    echo "E/Toolset: Unsupported host OS"
+    return 1
+    ;;
 esac
 
 # Update tag file

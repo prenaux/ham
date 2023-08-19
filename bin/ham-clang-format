@@ -1,21 +1,24 @@
 #!/bin/bash -e
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 case $HAM_OS in
-    NT*)
-        export CLANG_FORMAT_EXE_PATH="$HAM_HOME/bin/nt-x86/clang-format.exe"
-        ;;
-    OSX*)
-        export CLANG_FORMAT_EXE_PATH="$HAM_HOME/bin/osx/clang-format"
-        ;;
-    LINUX*)
-        export CLANG_FORMAT_EXE_PATH="$HAM_HOME/bin/lin-x64/clang-format"
-        ;;
-    *)
-        echo "E/Toolset: Unsupported host OS '$HAM_OS'."
-        exit 1
-        ;;
+  NT*)
+    export CLANG_FORMAT_EXE_PATH="$HAM_HOME/bin/nt-x86/clang-format.exe"
+    ;;
+  OSX*)
+    export CLANG_FORMAT_EXE_PATH="$HAM_HOME/bin/osx/clang-format"
+    ;;
+  LINUX*)
+    export CLANG_FORMAT_EXE_PATH="$HAM_HOME/bin/lin-x64/clang-format"
+    ;;
+  *)
+    echo "E/Toolset: Unsupported host OS '$HAM_OS'."
+    exit 1
+    ;;
 esac
 
 "$CLANG_FORMAT_EXE_PATH" "$@"

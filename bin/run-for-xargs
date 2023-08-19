@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ -z "$1" ]; then
-   echo "E/Nothing to run specified."
-   exit 255
+  echo "E/Nothing to run specified."
+  exit 255
 fi
 CMD=$1
 shift

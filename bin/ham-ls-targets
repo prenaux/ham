@@ -1,60 +1,60 @@
 #!/bin/bash
 if [[ -z "$HAM_HOME" ]]; then
-    export HAM_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-    echo "W/HAM_HOME not set, set to:" $HAM_HOME
+  export HAM_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  echo "W/HAM_HOME not set, set to:" $HAM_HOME
 fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 export PATH=${PREV_PATH}:${PATH}
 
 # the help
 usage() {
-    echo "usage: ham-ls-targets (options) filter"
-    echo ""
-    echo "flags:"
-    echo "  -h             This help message"
-    echo "  -v             Print ham's version"
-    echo "  -t target      Add a target to pass to ham. (if none specified: all runnable)"
-    echo "  -T toolset     Add a toolset to import"
-    echo "                 (can be specified multiple times)"
-    echo "  -D directory   Add a toolkit to build - the toolkit should be in $WORK"
-    echo "                 (can be specified multiple times)"
-    echo "  -b             Only includes the targets that are not up to date."
-    echo ""
-    echo "filter:"
-    echo "  all            List all targets."
-    echo "  no_file        List targets that don't look like a file. (default)"
-    echo "  run            List all targets that look like they can be ran."
-    echo "  debug          List all targets that look like they can be debugged."
-    echo "  test           List all targets that look like a test."
-    echo "  raw_all        Shows the ham output directly."
-    echo "  raw_tu         Shows the ham output of the touched & update targets."
-    echo ""
-    echo "example:"
-    echo "  # List all targets that don't look like a file."
-    echo "  ham-ls-targets no_file"
-    echo "  # List all targets that need to be built and that don't look like a file."
-    echo "  ham-ls-targets -b no_file"
-    echo "  # List all runnable targets"
-    echo "  ham-ls-targets run"
-    echo "  # List all the targets in niLang that dont look like a file"
-    echo "  ham-ls-targets -D niLang no_file"
-    echo "  # List all the targets in niLang"
-    echo "  ham-ls-targets -D niLang all"
-    echo "  # List all the tests in niLang"
-    echo "  ham-ls-targets -D niLang test"
-    echo "  # List all the runnable targets in niLang"
-    echo "  ham-ls-targets -D niLang run"
-    echo "  # List all the niScript targets"
-    echo "  ham-ls-targets -D niLang -t niScript all"
-    echo ""
-    exit 1
+  echo "usage: ham-ls-targets (options) filter"
+  echo ""
+  echo "flags:"
+  echo "  -h             This help message"
+  echo "  -v             Print ham's version"
+  echo "  -t target      Add a target to pass to ham. (if none specified: all runnable)"
+  echo "  -T toolset     Add a toolset to import"
+  echo "                 (can be specified multiple times)"
+  echo "  -D directory   Add a toolkit to build - the toolkit should be in $WORK"
+  echo "                 (can be specified multiple times)"
+  echo "  -b             Only includes the targets that are not up to date."
+  echo ""
+  echo "filter:"
+  echo "  all            List all targets."
+  echo "  no_file        List targets that don't look like a file. (default)"
+  echo "  run            List all targets that look like they can be ran."
+  echo "  debug          List all targets that look like they can be debugged."
+  echo "  test           List all targets that look like a test."
+  echo "  raw_all        Shows the ham output directly."
+  echo "  raw_tu         Shows the ham output of the touched & update targets."
+  echo ""
+  echo "example:"
+  echo "  # List all targets that don't look like a file."
+  echo "  ham-ls-targets no_file"
+  echo "  # List all targets that need to be built and that don't look like a file."
+  echo "  ham-ls-targets -b no_file"
+  echo "  # List all runnable targets"
+  echo "  ham-ls-targets run"
+  echo "  # List all the targets in niLang that dont look like a file"
+  echo "  ham-ls-targets -D niLang no_file"
+  echo "  # List all the targets in niLang"
+  echo "  ham-ls-targets -D niLang all"
+  echo "  # List all the tests in niLang"
+  echo "  ham-ls-targets -D niLang test"
+  echo "  # List all the runnable targets in niLang"
+  echo "  ham-ls-targets -D niLang run"
+  echo "  # List all the niScript targets"
+  echo "  ham-ls-targets -D niLang -t niScript all"
+  echo ""
+  exit 1
 }
 
 HAM_CMD="$HAM_HOME/bin/$HAM_BIN_LOA/ham"
 if [[ ! -e "$HAM_CMD" ]]; then
-    echo "E/Can't find ham executable '$HAM_CMD'."
-    echo ""
-    usage
+  echo "E/Can't find ham executable '$HAM_CMD'."
+  echo ""
+  usage
 fi
 
 # By default we show all targets
@@ -63,67 +63,65 @@ ONLY_TARGETS_THAT_NEED_TO_BE_BUILT=no
 # process the arguments
 TARGETS=()
 _ARG_DIRECTORIES=()
-while getopts "T:D:vbt:" OPT
-do
-    case "$OPT" in
-        h)
-            echo "I/help"
-            echo ""
+while getopts "T:D:vbt:" OPT; do
+  case "$OPT" in
+    h)
+      echo "I/help"
+      echo ""
+      usage
+      ;;
+    \?)
+      echo "E/Invalid option"
+      echo ""
+      usage
+      ;;
+    b)
+      ONLY_TARGETS_THAT_NEED_TO_BE_BUILT=yes
+      ;;
+    v)
+      "$HAM_CMD" -v
+      if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        return 0
+      else
+        exit 0
+      fi
+      ;;
+    T)
+      _ARG_TOOLSET="$_ARG_TOOLSET $OPTARG"
+      # echo "_ARG_TOOLSET:" $_ARG_TOOLSET
+      ;;
+    t)
+      TARGETS=(${TARGETS[@]} $OPTARG)
+      # echo "TARGETS:" $TARGETS
+      ;;
+    D)
+      OPTARG=$(ham-url dec "$OPTARG")
+      if [[ "$OPTARG" == ?:/* ]] || [[ "$OPTARG" == /* ]] || [[ "$OPTARG" == .* ]]; then
+        # Explicit path
+        _ARG_DIRECTORY="$OPTARG/sources/"
+        if [[ ! -e "$_ARG_DIRECTORY" ]]; then
+          _ARG_DIRECTORY="$OPTARG"
+          if [[ ! -e "$_ARG_DIRECTORY" ]]; then
+            echo "E/Can't find directory '$_ARG_DIRECTORY'"
             usage
-            ;;
-        \?)
-            echo "E/Invalid option"
-            echo ""
+          fi
+        fi
+      else
+        # Work App path
+        _ARG_DIRECTORY="$WORK/$OPTARG/sources/"
+        if [[ ! -e "$_ARG_DIRECTORY" ]]; then
+          _ARG_DIRECTORY="$WORK/$OPTARG/"
+          if [[ ! -e "$_ARG_DIRECTORY" ]]; then
+            echo "E/Can't find directory '$_ARG_DIRECTORY'"
             usage
-            ;;
-        b)
-          ONLY_TARGETS_THAT_NEED_TO_BE_BUILT=yes
-          ;;
-        v)
-            "$HAM_CMD" -v
-            if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-                return 0
-            else
-                exit 0
-            fi
-            ;;
-        T)
-            _ARG_TOOLSET="$_ARG_TOOLSET $OPTARG"
-            # echo "_ARG_TOOLSET:" $_ARG_TOOLSET
-            ;;
-        t)
-            TARGETS=(${TARGETS[@]} $OPTARG)
-            # echo "TARGETS:" $TARGETS
-            ;;
-        D)
-            OPTARG=`ham-url dec "$OPTARG"`
-            if  [[ "$OPTARG" == ?:/* ]] || [[ "$OPTARG" == /* ]] || [[ "$OPTARG" == .* ]] ;
-            then
-                # Explicit path
-                _ARG_DIRECTORY="$OPTARG/sources/"
-                if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                    _ARG_DIRECTORY="$OPTARG"
-                    if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                        echo "E/Can't find directory '$_ARG_DIRECTORY'"
-                        usage
-                    fi
-                fi
-            else
-                # Work App path
-                _ARG_DIRECTORY="$WORK/$OPTARG/sources/"
-                if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                    _ARG_DIRECTORY="$WORK/$OPTARG/"
-                    if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-                        echo "E/Can't find directory '$_ARG_DIRECTORY'"
-                        usage
-                    fi
-                fi
-            fi
-            _ARG_DIRECTORIES+=("$_ARG_DIRECTORY")
-            ;;
-    esac
+          fi
+        fi
+      fi
+      _ARG_DIRECTORIES+=("$_ARG_DIRECTORY")
+      ;;
+  esac
 done
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
 if [ -z "$TARGETS" ]; then
   TARGETS=(all runnable debuggable)
@@ -138,15 +136,15 @@ fi
 shift
 
 if [[ "$_ARG_TOOLSET" != "" ]]; then
-    . "$HAM_HOME/bin/ham-bash-setenv.sh"
-    export HAM_NO_VER_CHECK=${HAM_NO_VER_CHECK:-1}
-    . ham-toolset $_ARG_TOOLSET > /dev/null
-    errcheck $? ham "Can't setup the '$_ARG_TOOLSET' toolset."
+  . "$HAM_HOME/bin/ham-bash-setenv.sh"
+  export HAM_NO_VER_CHECK=${HAM_NO_VER_CHECK:-1}
+  . ham-toolset $_ARG_TOOLSET >/dev/null
+  errcheck $? ham "Can't setup the '$_ARG_TOOLSET' toolset."
 fi
 
 if [[ -z $HAM_TOOLSET ]]; then
-    echo "E/No toolset set, you can set one with the -T flag or '. ham-toolset' ..."
-    usage
+  echo "E/No toolset set, you can set one with the -T flag or '. ham-toolset' ..."
+  usage
 fi
 
 # pierre: We need to wrap the ham call this way otherwise the grep filtering
@@ -170,84 +168,83 @@ filter_get_target_name_and_sort() {
 }
 
 ham_show_targets_in() {
-    export CWD="`pwd`"
-    export DIR="$1"
-    shift
-    if [[ "$CWD" != "$DIR" ]]; then
-        pushd "$DIR" > /dev/null
-    fi
+  export CWD="$(pwd)"
+  export DIR="$1"
+  shift
+  if [[ "$CWD" != "$DIR" ]]; then
+    pushd "$DIR" >/dev/null
+  fi
 
-    HAM_ARGS=(-n -dm)
-    if [ "$ONLY_TARGETS_THAT_NEED_TO_BE_BUILT" != "yes" ]; then
-      HAM_ARGS=(-a ${HAM_ARGS[@]})
-    fi
+  HAM_ARGS=(-n -dm)
+  if [ "$ONLY_TARGETS_THAT_NEED_TO_BE_BUILT" != "yes" ]; then
+    HAM_ARGS=(-a ${HAM_ARGS[@]})
+  fi
 
-    case "$FILTER" in
-      raw_all)
-        ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}"
-        ;;
-      raw_tu)
-        ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" | grep "touched\|update"
-        ;;
-      all)
-        ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" |
-          filter_get_buildable_targets |
-          filter_get_target_name_and_sort
-        ;;
-      no_file)
-        ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" |
-          filter_get_buildable_targets |
-          filter_get_target_name_and_sort |
-          # exclude targets that look like a file
-          grep -v -e '/' -e '^<.*>' -e '_\(ra\|da\)\.\(dylib\|so\|a\|exe\|lib\|dll\)$'
-        ;;
-      test)
-        ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" |
-          filter_get_buildable_targets |
-          filter_get_target_name_and_sort |
-          # looks like a test?
-          grep -i -e "^test" -e "_test_" -e "_test$" |
-          # exclude trivial Run/Debug dupes
-          grep -v -i -e "^run_" -e "^debug_"
-        ;;
-      run)
-        ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" |
-          filter_get_buildable_targets |
-          filter_get_target_name_and_sort |
-          # looks like a runnable?
-          grep -i -e "^run_" -e "_run$"
-        ;;
-      debug)
-        ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" |
-          filter_get_buildable_targets |
-          filter_get_target_name_and_sort |
-          # looks like a debuggable?
-          grep -i -e "^debug_" -e "_debug$"
-        ;;
-      *)
-        echo "E/Unknown filter '$FILTER'"
-        usage
-        ;;
-    esac
+  case "$FILTER" in
+    raw_all)
+      ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}"
+      ;;
+    raw_tu)
+      ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" | grep "touched\|update"
+      ;;
+    all)
+      ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" |
+        filter_get_buildable_targets |
+        filter_get_target_name_and_sort
+      ;;
+    no_file)
+      ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" |
+        filter_get_buildable_targets |
+        filter_get_target_name_and_sort |
+        # exclude targets that look like a file
+        grep -v -e '/' -e '^<.*>' -e '_\(ra\|da\)\.\(dylib\|so\|a\|exe\|lib\|dll\)$'
+      ;;
+    test)
+      ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" |
+        filter_get_buildable_targets |
+        filter_get_target_name_and_sort |
+        # looks like a test?
+        grep -i -e "^test" -e "_test_" -e "_test$" |
+        # exclude trivial Run/Debug dupes
+        grep -v -i -e "^run_" -e "^debug_"
+      ;;
+    run)
+      ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" |
+        filter_get_buildable_targets |
+        filter_get_target_name_and_sort |
+        # looks like a runnable?
+        grep -i -e "^run_" -e "_run$"
+      ;;
+    debug)
+      ham_call "${HAM_ARGS[@]}" "${TARGETS[@]}" |
+        filter_get_buildable_targets |
+        filter_get_target_name_and_sort |
+        # looks like a debuggable?
+        grep -i -e "^debug_" -e "_debug$"
+      ;;
+    *)
+      echo "E/Unknown filter '$FILTER'"
+      usage
+      ;;
+  esac
 
-    errcheck $? ham "Build in $DIR failed."
+  errcheck $? ham "Build in $DIR failed."
 
-    if [[ "$CWD" != "$DIR" ]]; then
-        popd > /dev/null
-    fi
+  if [[ "$CWD" != "$DIR" ]]; then
+    popd >/dev/null
+  fi
 }
 
-
 if [[ "$_ARG_DIRECTORY" != "" ]]; then
-    for dir in "${_ARG_DIRECTORIES[@]}"; do
-        ham_show_targets_in "$dir"
-    done
+  for dir in "${_ARG_DIRECTORIES[@]}"; do
+    ham_show_targets_in "$dir"
+  done
 else
-    # find the _build.ham file
-    export BUILD_HAM_DIR="`ham-search-build-ham.sh`"
-    if [[ -z "$BUILD_HAM_DIR" ]]; then
-        echo "E/Can't find _build.ham !"
-        exit 1
-    fi
-    ham_show_targets_in "$BUILD_HAM_DIR"
+  # find the _build.ham file
+  export BUILD_HAM_DIR="$(ham-search-build-ham.sh)"
+  if [[ -z "$BUILD_HAM_DIR" ]]; then
+    echo "E/Can't find _build.ham !"
+    exit 1
+  fi
+  ham_show_targets_in "$BUILD_HAM_DIR"
 fi

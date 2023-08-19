@@ -1,31 +1,34 @@
 #!/bin/bash
 export HAM_NO_VER_CHECK=1
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
-CWD=`pwd`
+CWD=$(pwd)
 
 ARCH="$CWD/$1"
 if [ ! -f "$ARCH" ]; then
-    ARCH="$1"
-    if [ ! -f "$ARCH" ]; then
-        echo "Can't find input archive '$ARCH' !"
-        echo "syntax: 7z-fromzip ARCHIVE PASSWORD"
-        exit -1
-    fi
+  ARCH="$1"
+  if [ ! -f "$ARCH" ]; then
+    echo "Can't find input archive '$ARCH' !"
+    echo "syntax: 7z-fromzip ARCHIVE PASSWORD"
+    exit -1
+  fi
 fi
 
 DEST="${ARCH%.*}.7z"
 echo "I/Converting '$ARCH' to '$DEST'."
 if [[ -e $DEST ]]; then
-    echo "Output archive '$DEST' already exist !"
-    exit -1
+  echo "Output archive '$DEST' already exist !"
+  exit -1
 fi
 
 PASSWORD="$2"
 
 # Make the temporary extraction directory
-TMP_DIR=$HOME/_ham/_tmp_ext_`basename $ARCH`
+TMP_DIR=$HOME/_ham/_tmp_ext_$(basename $ARCH)
 mkdir -p $TMP_DIR
 errcheck $? ham "Can't create the temporary directory '$TMP_DIR'."
 
@@ -33,22 +36,22 @@ errcheck $? ham "Can't create the temporary directory '$TMP_DIR'."
 cd $TMP_DIR
 echo "I/Extracting zip file..."
 if [[ "$PASSWORD" == "" ]]; then
-    echo "I/7z -y x $ARCH"
-    7z -y x "$ARCH"
+  echo "I/7z -y x $ARCH"
+  7z -y x "$ARCH"
 else
-    echo "I/7z -p$PASSWORD -y x $ARCH"
-    7z -p$PASSWORD -y x "$ARCH"
+  echo "I/7z -p$PASSWORD -y x $ARCH"
+  7z -p$PASSWORD -y x "$ARCH"
 fi
 errcheck $? ham "Can't extract the zip file '$ARCH'."
 
 # Packing the 7z archive
 echo "I/Packing 7zfile..."
 if [[ $PASSWORD == "" ]]; then
-    echo "I/7z a -mx=6 -ms=on -mhc=on -mtc=off ."
-    7z a -t7z "$DEST" -mx=6 -ms=on -mhc=on -mtc=off .
+  echo "I/7z a -mx=6 -ms=on -mhc=on -mtc=off ."
+  7z a -t7z "$DEST" -mx=6 -ms=on -mhc=on -mtc=off .
 else
-    echo "I/7z a -mx=6 -ms=on -mhc=on -mtc=off -p$PASSWORD ."
-    7z a -t7z "$DEST" -mx=6 -ms=on -mhc=on -mtc=off -p$PASSWORD .
+  echo "I/7z a -mx=6 -ms=on -mhc=on -mtc=off -p$PASSWORD ."
+  7z a -t7z "$DEST" -mx=6 -ms=on -mhc=on -mtc=off -p$PASSWORD .
 fi
 errcheck $? ham "Can't pack the 7z file '$ARCH'."
 

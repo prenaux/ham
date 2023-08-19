@@ -2,69 +2,68 @@
 EXEC_TIME="$(date +%s)"
 PREV_PATH=${PATH}
 if [[ -z "$HAM_HOME" ]]; then
-    export HAM_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-    echo "W/HAM_HOME not set, set to:" $HAM_HOME
+  export HAM_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  echo "W/HAM_HOME not set, set to:" $HAM_HOME
 fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 export PATH=${PREV_PATH}:${PATH}
 
 # the help
 usage() {
-    echo "usage: ham [ options ] targets|scripts..."
-    echo "version:" `"${HAM_CMD}" -v`
-    echo ""
-    echo "ham launch script:"
-    echo "  -h             This help message"
-    echo "  -v             Print ham's executable version"
-    echo "  -X toolkit     Import a toolkit's _ham_project and build it."
-    echo "                 (equivalent to '-T toolkit -D toolkit')."
-    echo "  -D toolkit     Add a toolkit to build - the toolkit should be in $WORK"
-    echo "                 (can be specified multiple times)"
-    echo "  -T toolset     Add a toolset to import"
-    echo "                 (can be specified multiple times)"
-    echo "  -E env=value   Add an envvar to set."
-    echo "  --             Following parameters will be passed to ham directly"
-    echo ""
-    echo "ham process:"
-    "${HAM_CMD}" -? | grep "^[- ]"
-    echo ""
-    echo "example:"
-    echo "  # Make all in the niLang & Vlk toolkits with the current toolsets."
-    echo "  ham -D niLang -D Vlk all"
-    echo "  # Run _build_bootstrap.sh in the niLang toolkit with the current toolsets."
-    echo "  ham -D niLang _build_bootstrap.sh"
-    echo "  # Make niLang for the web-js build target with the niLang toolsets."
-    echo "  BUILD_TARGET=web-js ham -X niLang pass1 all"
-    echo "  # Make the debug version of niLang for the web-js build target with the niLang toolsets"
-    echo "  BUILD_TARGET=web-js BUILD=da ham -X niLang pass1 all"
-    echo "  # Make the release build (ra) of the current toolkit. BUILD=ra is the default if not specified."
-    echo "  ham BUILD=ra all"
-    echo "  # Make all in the current toolkit, displaying all the commands."
-    echo "  ham -- -dx all"
-    echo ""
+  echo "usage: ham [ options ] targets|scripts..."
+  echo "version:" $("${HAM_CMD}" -v)
+  echo ""
+  echo "ham launch script:"
+  echo "  -h             This help message"
+  echo "  -v             Print ham's executable version"
+  echo "  -X toolkit     Import a toolkit's _ham_project and build it."
+  echo "                 (equivalent to '-T toolkit -D toolkit')."
+  echo "  -D toolkit     Add a toolkit to build - the toolkit should be in $WORK"
+  echo "                 (can be specified multiple times)"
+  echo "  -T toolset     Add a toolset to import"
+  echo "                 (can be specified multiple times)"
+  echo "  -E env=value   Add an envvar to set."
+  echo "  --             Following parameters will be passed to ham directly"
+  echo ""
+  echo "ham process:"
+  "${HAM_CMD}" -? | grep "^[- ]"
+  echo ""
+  echo "example:"
+  echo "  # Make all in the niLang & Vlk toolkits with the current toolsets."
+  echo "  ham -D niLang -D Vlk all"
+  echo "  # Run _build_bootstrap.sh in the niLang toolkit with the current toolsets."
+  echo "  ham -D niLang _build_bootstrap.sh"
+  echo "  # Make niLang for the web-js build target with the niLang toolsets."
+  echo "  BUILD_TARGET=web-js ham -X niLang pass1 all"
+  echo "  # Make the debug version of niLang for the web-js build target with the niLang toolsets"
+  echo "  BUILD_TARGET=web-js BUILD=da ham -X niLang pass1 all"
+  echo "  # Make the release build (ra) of the current toolkit. BUILD=ra is the default if not specified."
+  echo "  ham BUILD=ra all"
+  echo "  # Make all in the current toolkit, displaying all the commands."
+  echo "  ham -- -dx all"
+  echo ""
 
-    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-        # sourced...
-        return 1
-    else
-        # regular call
-        exit 1
-    fi
+  if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+    # sourced...
+    return 1
+  else
+    # regular call
+    exit 1
+  fi
 }
-
 
 HAM_CMD="$HAM_HOME/bin/$HAM_BIN_LOA/ham"
 if [[ ! -e "$HAM_CMD" ]]; then
-    echo "E/Can't find ham executable '$HAM_CMD'."
-    echo ""
-    usage
+  echo "E/Can't find ham executable '$HAM_CMD'."
+  echo ""
+  usage
 fi
 
 # Check that there is at least one argument...
 if [ $# = 0 ]; then
-    echo "E/No argument specified"
-    echo ""
-    usage
+  echo "E/No argument specified"
+  echo ""
+  usage
 fi
 
 # process the arguments
@@ -73,94 +72,92 @@ _ARG_DIRECTORIES=()
 _ARG_ENVS=()
 
 process_toolset() {
-    OPTARG="$1"
-    _ARG_TOOLSETS+=("$OPTARG")
+  OPTARG="$1"
+  _ARG_TOOLSETS+=("$OPTARG")
 }
 
 process_directory() {
-    OPTARG=`ham-url dec "$1"`
-    if  [[ "$OPTARG" == ?:/* ]] || [[ "$OPTARG" == /* ]] || [[ "$OPTARG" == .* ]] ;
-    then
-        _ARG_DIRECTORY="$OPTARG"
-        if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-            echo "E/Can't find directory '$_ARG_DIRECTORY'"
-            usage
-        fi
-    else
-        # Work App path
-        _ARG_DIRECTORY="$WORK/$OPTARG/"
-        if [[ ! -e "$_ARG_DIRECTORY" ]]; then
-            echo "E/Can't find directory '$_ARG_DIRECTORY'"
-            usage
-        fi
+  OPTARG=$(ham-url dec "$1")
+  if [[ "$OPTARG" == ?:/* ]] || [[ "$OPTARG" == /* ]] || [[ "$OPTARG" == .* ]]; then
+    _ARG_DIRECTORY="$OPTARG"
+    if [[ ! -e "$_ARG_DIRECTORY" ]]; then
+      echo "E/Can't find directory '$_ARG_DIRECTORY'"
+      usage
     fi
-    _ARG_DIRECTORIES+=("$_ARG_DIRECTORY")
+  else
+    # Work App path
+    _ARG_DIRECTORY="$WORK/$OPTARG/"
+    if [[ ! -e "$_ARG_DIRECTORY" ]]; then
+      echo "E/Can't find directory '$_ARG_DIRECTORY'"
+      usage
+    fi
+  fi
+  _ARG_DIRECTORIES+=("$_ARG_DIRECTORY")
 }
 
 process_env() {
-    _ARG_ENVS+=($1)
+  _ARG_ENVS+=($1)
 }
 
-while getopts "T:D:X:E:vh" OPT
-do
-    case "$OPT" in
-        h)
-            echo "I/help"
-            echo ""
-            usage
-            ;;
-        \?)
-            echo "E/Invalid option"
-            echo ""
-            usage
-            ;;
-        v)
-            log_info "HAM_CMD: ${HAM_CMD}"
-            log_info "VERSION: $("$HAM_CMD" -v)"
-            if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-                return 0
-            else
-                exit 0
-            fi
-            ;;
-        T)
-            process_toolset "$OPTARG"
-            ;;
-        D)
-            process_directory "$OPTARG"
-            ;;
-        X)
-            process_toolset "$OPTARG"
-            process_directory "$OPTARG"
-            ;;
-        E)
-            process_env "$OPTARG"
-            ;;
-        *)
-            echo "E/Unknown option '$OPT'"
-            usage
-            ;;
-    esac
+while getopts "T:D:X:E:vh" OPT; do
+  case "$OPT" in
+    h)
+      echo "I/help"
+      echo ""
+      usage
+      ;;
+    \?)
+      echo "E/Invalid option"
+      echo ""
+      usage
+      ;;
+    v)
+      log_info "HAM_CMD: ${HAM_CMD}"
+      log_info "VERSION: $("$HAM_CMD" -v)"
+      if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        return 0
+      else
+        exit 0
+      fi
+      ;;
+    T)
+      process_toolset "$OPTARG"
+      ;;
+    D)
+      process_directory "$OPTARG"
+      ;;
+    X)
+      process_toolset "$OPTARG"
+      process_directory "$OPTARG"
+      ;;
+    E)
+      process_env "$OPTARG"
+      ;;
+    *)
+      echo "E/Unknown option '$OPT'"
+      usage
+      ;;
+  esac
 done
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
 # echo "_ARG_ENVS: ${_ARG_ENVS[@]}"
 
 if [ "${#_ARG_TOOLSETS[@]}" -gt 0 ]; then
-    . "$HAM_HOME/bin/ham-bash-setenv.sh"
-    export HAM_NO_VER_CHECK=${HAM_NO_VER_CHECK:-1}
-    echo "I/Set toolsets '${_ARG_TOOLSETS[@]}'"
-    # Set envvars
-    for ENV in "${_ARG_ENVS[@]}"; do
-        export "$ENV"
-    done
-    . ham-toolset "${_ARG_TOOLSETS[@]}"
-    errcheck $? ham "Can't setup the '${_ARG_TOOLSETS[@]}' toolset(s)."
+  . "$HAM_HOME/bin/ham-bash-setenv.sh"
+  export HAM_NO_VER_CHECK=${HAM_NO_VER_CHECK:-1}
+  echo "I/Set toolsets '${_ARG_TOOLSETS[@]}'"
+  # Set envvars
+  for ENV in "${_ARG_ENVS[@]}"; do
+    export "$ENV"
+  done
+  . ham-toolset "${_ARG_TOOLSETS[@]}"
+  errcheck $? ham "Can't setup the '${_ARG_TOOLSETS[@]}' toolset(s)."
 fi
 
 if [[ -z "$HAM_TOOLSET" ]]; then
-    echo "E/No toolset set, you can set one with the -T flag or '. ham-toolset' ..."
-    usage
+  echo "E/No toolset set, you can set one with the -T flag or '. ham-toolset' ..."
+  usage
 fi
 
 ham_or_bash() {
@@ -184,71 +181,71 @@ ham_or_bash() {
   # Run ham-validate-targets if there are parameters to pass to it
   HAM_EXEC_DIR="."
   if [ "${#HAM_CMD_PARAMS[@]}" -gt 0 ]; then
-      if [[ ! -f "_build.ham" ]]; then
-        if [[ ! -f "sources/_build.ham" ]]; then
-            log_error "Can't find '_build.ham' and 'sources/_build.ham' in '$(pwd)'."
-            exit 1
-        else
-            HAM_EXEC_DIR="./sources"
-        fi
+    if [[ ! -f "_build.ham" ]]; then
+      if [[ ! -f "sources/_build.ham" ]]; then
+        log_error "Can't find '_build.ham' and 'sources/_build.ham' in '$(pwd)'."
+        exit 1
+      else
+        HAM_EXEC_DIR="./sources"
       fi
+    fi
   fi
 
   # Set envvars
   for ENV in "${_ARG_ENVS[@]}"; do
-      export "$ENV"
+    export "$ENV"
   done
 
   # Execute collected .sh files directly
   for SH_FILE in "${SH_FILES[@]}"; do
-      echo "I/Excuting '${SH_FILE}' in '$(pwd)'."
-      "./$SH_FILE"
-      errcheck $? ham "Script '${SH_FILE}' execution failed in '$(pwd)'."
+    echo "I/Excuting '${SH_FILE}' in '$(pwd)'."
+    "./$SH_FILE"
+    errcheck $? ham "Script '${SH_FILE}' execution failed in '$(pwd)'."
   done
 
   # Run the remaining parameters with $HAM_CMD if there are any
   if [ "${#HAM_CMD_PARAMS[@]}" -gt 0 ]; then
-      if [ -n "$HAM_EXEC_DIR" ]; then
-        cd "$HAM_EXEC_DIR"
-      fi
-      echo "I/'ham ${HAM_CMD_PARAMS[@]}' in '$(pwd)'"
-      case $HAM_OS in
-        NT*)
-          # Disable MSYS2 path translation since ham provides proper windows path
-          # and MSYS2 for some reason mangles absolute paths ('C:/Bla'
-          # becomes 'D:/C:/' - seems like its too hard to check that it has a
-          # drive in the path?)
-          MSYS2_ARG_CONV_EXCL='*' "$HAM_CMD" "${HAM_CMD_PARAMS[@]}"
-          ;;
-        *)
-          "$HAM_CMD" "${HAM_CMD_PARAMS[@]}"
-          ;;
-      esac
-      errcheck $? ham "Ham build in '$DIR' failed."
+    if [ -n "$HAM_EXEC_DIR" ]; then
+      cd "$HAM_EXEC_DIR"
+    fi
+    echo "I/'ham ${HAM_CMD_PARAMS[@]}' in '$(pwd)'"
+    case $HAM_OS in
+      NT*)
+        # Disable MSYS2 path translation since ham provides proper windows path
+        # and MSYS2 for some reason mangles absolute paths ('C:/Bla'
+        # becomes 'D:/C:/' - seems like its too hard to check that it has a
+        # drive in the path?)
+        MSYS2_ARG_CONV_EXCL='*' "$HAM_CMD" "${HAM_CMD_PARAMS[@]}"
+        ;;
+      *)
+        "$HAM_CMD" "${HAM_CMD_PARAMS[@]}"
+        ;;
+    esac
+    errcheck $? ham "Ham build in '$DIR' failed."
   fi
 }
 
 hamIn() {
-    export CWD="`pwd`"
-    export DIR="$1"
-    shift
-    if [[ "$CWD" != "$DIR" ]]; then
-        pushd "$DIR"
-    fi
-    ham_or_bash "$@"
-    errcheck $? ham "Run in '$DIR' failed."
-    if [[ "$CWD" != "$DIR" ]]; then
-        popd > /dev/null
-    fi
+  export CWD="$(pwd)"
+  export DIR="$1"
+  shift
+  if [[ "$CWD" != "$DIR" ]]; then
+    pushd "$DIR"
+  fi
+  ham_or_bash "$@"
+  errcheck $? ham "Run in '$DIR' failed."
+  if [[ "$CWD" != "$DIR" ]]; then
+    popd >/dev/null
+  fi
 }
 
 if [[ "$_ARG_DIRECTORY" != "" ]]; then
-    for dir in "${_ARG_DIRECTORIES[@]}"; do
-        hamIn "$dir" $*
-    done
+  for dir in "${_ARG_DIRECTORIES[@]}"; do
+    hamIn "$dir" $*
+  done
 else
-    hamIn . $*
+  hamIn . $*
 fi
 
-EXEC_TIME="$(($(date +%s)-EXEC_TIME))"
+EXEC_TIME="$(($(date +%s) - EXEC_TIME))"
 echo "...ham ran in ${EXEC_TIME}s..."

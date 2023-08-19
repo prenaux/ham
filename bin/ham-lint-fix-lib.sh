@@ -2,7 +2,7 @@
 export HAM_LINT_ALL_FILENAME="_lint_all_files.txt"
 
 function sh_lint() {
-  toolset_import_once shell_linter > /dev/null
+  toolset_import_once shell_linter >/dev/null
   errcheck $? "$SCRIPT_NAME" "Can't import shell_linter toolset." || return 1
 
   if [ -z "$1" ]; then
@@ -19,8 +19,10 @@ function sh_lint() {
     else
       SHFMT_PARAMS=(-w ${SHFMT_PARAMS[@]})
     fi
-    (set -x ;
-     "$HAM_SHELL_LINTER_DIR/shfmt" ${SHFMT_PARAMS[@]} ${FILES[@]})
+    (
+      set -x
+      "$HAM_SHELL_LINTER_DIR/shfmt" ${SHFMT_PARAMS[@]} ${FILES[@]}
+    )
   fi
 
   if [[ "$NO_LINT" != "yes" ]]; then
@@ -39,23 +41,24 @@ function sh_lint() {
     # mode atm.
     # SHELLCHECK_PARAMS=(--format=diff ${SHELLCHECK_PARAMS[@]})
 
-    (set -x ;
-     "$HAM_SHELL_LINTER_DIR/shellcheck" ${SHELLCHECK_PARAMS[@]} ${FILES[@]})
+    (
+      set -x
+      "$HAM_SHELL_LINTER_DIR/shellcheck" ${SHELLCHECK_PARAMS[@]} ${FILES[@]}
+    )
   fi
 }
 
 function ni_lint() {
-    DIR=`pwd`
-    if [ -z "$1" ]; then
-        FILES=$(find . -name "*.ni" -o -name "*.nip" -o -name "*.niw")
-    else
-        FILES="$@"
-    fi
+  DIR=$(pwd)
+  if [ -z "$1" ]; then
+    FILES=$(find . -name "*.ni" -o -name "*.nip" -o -name "*.niw")
+  else
+    FILES="$@"
+  fi
 
-    for f in $FILES
-    do
-        ni -c "$DIR/$f"
-    done
+  for f in $FILES; do
+    ni -c "$DIR/$f"
+  done
 }
 
 function ham_flymake_lint() {
@@ -71,186 +74,222 @@ function ham_flymake_lint() {
   # but it's not worth it as their's probably edge cases where it won't work
   # and be a pain to track down.
   # FLYMAKE_FILENAME=_${FILENAME%.*}_aflymake.${FILENAME##*.}
-  (set -ex;
-   cd "$DIR"
-   # cp "$FILENAME" "$FLYMAKE_FILENAME"
-   touch "$FILENAME"
-   ham-flymake FLYMAKE=1 CHK_SOURCES="$FILENAME" FLYMAKE_BASEDIR="./" check-syntax
-   # rm "$FLYMAKE_FILENAME"
+  (
+    set -ex
+    cd "$DIR"
+    # cp "$FILENAME" "$FLYMAKE_FILENAME"
+    touch "$FILENAME"
+    ham-flymake FLYMAKE=1 CHK_SOURCES="$FILENAME" FLYMAKE_BASEDIR="./" check-syntax
+    # rm "$FLYMAKE_FILENAME"
   )
 }
 
 function cpp_clang_format_dir() {
-    DIR=$1
-    shift
-    log_info "cpp_clang_format_dir: '$DIR'"
-    (set -e ;
-     find "$DIR" \
-          \( -name '*.c' \
-          -o -name '*.cc' \
-          -o -name '*.cpp' \
-          -o -name '*.cxx' \
-          -o -name '*.h' \
-          -o -name '*.hh' \
-          -o -name '*.hpp' \
-          -o -name '*.hxx' \
-          -o -name '*.inl' \
-          ! -iname '*.idl.inl' \
-          \) -print0 |\
-         xargs -t -0 -n 10 -P ${HAM_NUM_JOBS:-8} run-for-xargs ham-clang-format-cpp $@) || return 1
+  DIR=$1
+  shift
+  log_info "cpp_clang_format_dir: '$DIR'"
+  (
+    set -e
+    find "$DIR" \
+      \( -name '*.c' \
+      -o -name '*.cc' \
+      -o -name '*.cpp' \
+      -o -name '*.cxx' \
+      -o -name '*.h' \
+      -o -name '*.hh' \
+      -o -name '*.hpp' \
+      -o -name '*.hxx' \
+      -o -name '*.inl' \
+      ! -iname '*.idl.inl' \
+      \) -print0 |
+      xargs -t -0 -n 10 -P ${HAM_NUM_JOBS:-8} run-for-xargs ham-clang-format-cpp $@
+  ) || return 1
 }
 
 function cpp_lint() {
-    if [ "$LINT_FORMAT" == "yes" ] || [ "$LINT_FIX" == "yes" ]; then
-        PARAMS=(format)
-    else
-        PARAMS=(dryrun)
-    fi
+  if [ "$LINT_FORMAT" == "yes" ] || [ "$LINT_FIX" == "yes" ]; then
+    PARAMS=(format)
+  else
+    PARAMS=(dryrun)
+  fi
 
-    if [ -z "$1" ]; then
-        DIR=`pwd`
-        cpp_clang_format_dir "$DIR" ${PARAMS[@]}
-    else
-        (set -x;
-         ham-clang-format-cpp ${PARAMS[@]} "$1"
-         ham_flymake_lint "$1")
-    fi
+  if [ -z "$1" ]; then
+    DIR=$(pwd)
+    cpp_clang_format_dir "$DIR" ${PARAMS[@]}
+  else
+    (
+      set -x
+      ham-clang-format-cpp ${PARAMS[@]} "$1"
+      ham_flymake_lint "$1"
+    )
+  fi
 }
 
 function java_clang_format_dir() {
-    DIR=$1
-    shift
-    log_info "java_clang_format_dir: '$DIR'"
-    (set -e ;
-     find "$DIR" \
-          \( -name '*.java' \
-          \) -print0 |\
-         xargs -t -0 -n 10 -P ${HAM_NUM_JOBS:-8} run-for-xargs ham-clang-format-cpp $@) || return 1
+  DIR=$1
+  shift
+  log_info "java_clang_format_dir: '$DIR'"
+  (
+    set -e
+    find "$DIR" \
+      \( -name '*.java' \
+      \) -print0 |
+      xargs -t -0 -n 10 -P ${HAM_NUM_JOBS:-8} run-for-xargs ham-clang-format-cpp $@
+  ) || return 1
 }
 
 function java_lint() {
-    if [ "$LINT_FORMAT" == "yes" ] || [ "$LINT_FIX" == "yes" ]; then
-        PARAMS=(format)
-    else
-        PARAMS=(dryrun)
-    fi
+  if [ "$LINT_FORMAT" == "yes" ] || [ "$LINT_FIX" == "yes" ]; then
+    PARAMS=(format)
+  else
+    PARAMS=(dryrun)
+  fi
 
-    if [ -z "$1" ]; then
-        DIR=`pwd`
-        java_clang_format_dir "$DIR" ${PARAMS[@]}
-    else
-        (set -x;
-         ham-clang-format-cpp ${PARAMS[@]} "$1")
-    fi
+  if [ -z "$1" ]; then
+    DIR=$(pwd)
+    java_clang_format_dir "$DIR" ${PARAMS[@]}
+  else
+    (
+      set -x
+      ham-clang-format-cpp ${PARAMS[@]} "$1"
+    )
+  fi
 }
 
 function js_lint() {
-    toolset_import_once nodejs > /dev/null
-    FIX_OPT=
-    if [ "$LINT_FIX" == "yes" ]; then
-        FIX_OPT=--fix
-    fi
+  toolset_import_once nodejs >/dev/null
+  FIX_OPT=
+  if [ "$LINT_FIX" == "yes" ]; then
+    FIX_OPT=--fix
+  fi
 
-    ESLINT_TARGET="${1:-$LINT_JS_DIR}" # Use $1 or $LINT_JS_DIR
-    ESLINT_TARGET="${ESLINT_TARGET:-./resources/js}" # If not specified default to ./resources/js
-    (set -x; eslint $FIX_OPT --max-warnings=0 --ext .js --ext .jsx --ext .mjs --ext .cjs "$ESLINT_TARGET")
+  ESLINT_TARGET="${1:-$LINT_JS_DIR}"               # Use $1 or $LINT_JS_DIR
+  ESLINT_TARGET="${ESLINT_TARGET:-./resources/js}" # If not specified default to ./resources/js
+  (
+    set -x
+    eslint $FIX_OPT --max-warnings=0 --ext .js --ext .jsx --ext .mjs --ext .cjs "$ESLINT_TARGET"
+  )
 }
 
 function php_lint() {
-    toolset_import_once php > /dev/null
-    if [ "$LINT_FIX" == "yes" ]; then
-        if [ -z "$1" ]; then
-            (set -x; ./tools/php-cs-fixer/vendor/bin/php-cs-fixer fix .)
-        else
-            (set -x; ./tools/php-cs-fixer/vendor/bin/php-cs-fixer fix "$1")
-        fi
-    fi
+  toolset_import_once php >/dev/null
+  if [ "$LINT_FIX" == "yes" ]; then
     if [ -z "$1" ]; then
-        (set -x; ./vendor/bin/phpstan analyse --memory-limit=8000M)
+      (
+        set -x
+        ./tools/php-cs-fixer/vendor/bin/php-cs-fixer fix .
+      )
     else
-        (set -x; ./vendor/bin/phpstan analyse --memory-limit=8000M --error-format=raw "$1")
+      (
+        set -x
+        ./tools/php-cs-fixer/vendor/bin/php-cs-fixer fix "$1"
+      )
     fi
+  fi
+  if [ -z "$1" ]; then
+    (
+      set -x
+      ./vendor/bin/phpstan analyse --memory-limit=8000M
+    )
+  else
+    (
+      set -x
+      ./vendor/bin/phpstan analyse --memory-limit=8000M --error-format=raw "$1"
+    )
+  fi
 }
 
 function rust_lint() {
-    toolset_import_once rust > /dev/null
+  toolset_import_once rust >/dev/null
 
-    # Allow some lints
-    # CLIPPYFLAGS="-A clippy::bool_comparison"
+  # Allow some lints
+  # CLIPPYFLAGS="-A clippy::bool_comparison"
 
-    if [ "$LINT_FIX" == "yes" ]; then
-        # Cargo fix can't be run on a single file...
-        (set -x; cargo clippy --fix --allow-dirty --allow-staged -- $CLIPPYFLAGS)
+  if [ "$LINT_FIX" == "yes" ]; then
+    # Cargo fix can't be run on a single file...
+    (
+      set -x
+      cargo clippy --fix --allow-dirty --allow-staged -- $CLIPPYFLAGS
+    )
+  else
+    # Cargo clippy can't be run on a single file...
+    (
+      set -x
+      cargo clippy -- $CLIPPYFLAGS
+    )
+  fi
+
+  # Format after
+  if [ "$LINT_FORMAT" == "yes" ]; then
+    if [ -z "$1" ]; then
+      (
+        set -x
+        cargo fmt
+      )
     else
-        # Cargo clippy can't be run on a single file...
-        (set -x; cargo clippy -- $CLIPPYFLAGS)
+      (
+        set -x
+        rustfmt "$1"
+      )
     fi
-
-    # Format after
-    if [ "$LINT_FORMAT" == "yes" ]; then
-        if [ -z "$1" ]; then
-            (set -x; cargo fmt)
-        else
-            (set -x; rustfmt "$1")
-        fi
-    fi
+  fi
 }
 
 function lint_file() {
-    CMD="$1"
-    EXT="${CMD##*.}"
-    case "$EXT" in
-        c|cc|cpp|cxx|h|hh|hpp|hxx|inl)
-            cpp_lint "$CMD"
-            errcheck $? cpp_lint "Single cpp file lint failed in '$DIRNAME'."
-            ;;
-        java)
-            java_lint "$CMD"
-            errcheck $? cpp_lint "Single java file lint failed in '$DIRNAME'."
-            ;;
-        cni|cpp2)
-            ham_flymake_lint "$CMD"
-            errcheck $? cpp_lint "Single cpp2 file lint failed in '$DIRNAME'."
-            ;;
-        php)
-            php_lint "$CMD"
-            errcheck $? php_lint "Single php file lint failed in '$DIRNAME'."
-            ;;
-        rs)
-            rust_lint "$CMD"
-            errcheck $? rust_lint "Single rust file lint failed in '$DIRNAME'."
-            ;;
-        js|jsx|mjs|cjs)
-            js_lint "$CMD"
-            errcheck $? js_lint "Single js file lint failed in '$DIRNAME'."
-            ;;
-        ni|nip|niw)
-            ni_lint "$CMD"
-            errcheck $? ni_lint "Single ni file lint failed in '$DIRNAME'."
-            ;;
-        sh)
-            sh_lint "$CMD"
-            errcheck $? sh_lint "Single sh file lint failed in '$DIRNAME'."
-            ;;
-        *)
-            die "Unsupported extension '$EXT' for '$CMD' in '$DIRNAME'."
-            ;;
-    esac
+  CMD="$1"
+  EXT="${CMD##*.}"
+  case "$EXT" in
+    c | cc | cpp | cxx | h | hh | hpp | hxx | inl)
+      cpp_lint "$CMD"
+      errcheck $? cpp_lint "Single cpp file lint failed in '$DIRNAME'."
+      ;;
+    java)
+      java_lint "$CMD"
+      errcheck $? cpp_lint "Single java file lint failed in '$DIRNAME'."
+      ;;
+    cni | cpp2)
+      ham_flymake_lint "$CMD"
+      errcheck $? cpp_lint "Single cpp2 file lint failed in '$DIRNAME'."
+      ;;
+    php)
+      php_lint "$CMD"
+      errcheck $? php_lint "Single php file lint failed in '$DIRNAME'."
+      ;;
+    rs)
+      rust_lint "$CMD"
+      errcheck $? rust_lint "Single rust file lint failed in '$DIRNAME'."
+      ;;
+    js | jsx | mjs | cjs)
+      js_lint "$CMD"
+      errcheck $? js_lint "Single js file lint failed in '$DIRNAME'."
+      ;;
+    ni | nip | niw)
+      ni_lint "$CMD"
+      errcheck $? ni_lint "Single ni file lint failed in '$DIRNAME'."
+      ;;
+    sh)
+      sh_lint "$CMD"
+      errcheck $? sh_lint "Single sh file lint failed in '$DIRNAME'."
+      ;;
+    *)
+      die "Unsupported extension '$EXT' for '$CMD' in '$DIRNAME'."
+      ;;
+  esac
 }
 
 function lint_dir() {
-    LANG=$1
-    DIRNAME=$2
-    if [ ! -d "$DIRNAME" ]; then
-        log_error "'$DIRNAME' is not a directory, after '${LANG}'."
-        return 1
-    fi
-    shift
-    log_info "${LANG}_lint all in '$DIRNAME'."
-    pushd "$DIRNAME" >> /dev/null
-    ${LANG}_lint
-    errcheck $? ${LANG}_lint "${LANG} files lint failed in '$DIRNAME'."
-    popd >> /dev/null
+  LANG=$1
+  DIRNAME=$2
+  if [ ! -d "$DIRNAME" ]; then
+    log_error "'$DIRNAME' is not a directory, after '${LANG}'."
+    return 1
+  fi
+  shift
+  log_info "${LANG}_lint all in '$DIRNAME'."
+  pushd "$DIRNAME" >>/dev/null
+  ${LANG}_lint
+  errcheck $? ${LANG}_lint "${LANG} files lint failed in '$DIRNAME'."
+  popd >>/dev/null
 }
 
 function lint_dir_or_file() {
@@ -267,52 +306,73 @@ function lint_dir_or_file() {
 }
 
 function all_lint() {
-    if [ -z "$1" ]; then
-        log_error "Nothing to lint specified in '$DIRNAME'."
-        return 1
-    fi
+  if [ -z "$1" ]; then
+    log_error "Nothing to lint specified in '$DIRNAME'."
+    return 1
+  fi
 
-    while [ "$1" != "" ]; do
-        CMD="$1"
+  while [ "$1" != "" ]; do
+    CMD="$1"
+    shift
+    if [ -d "$CMD" ]; then
+      log_error "Specified directory '$CMD' should be preceeded by the language to lint."
+      return 1
+    fi
+    case "$CMD" in
+      cpp)
+        (
+          set -e
+          lint_dir_or_file cpp "$1"
+        )
         shift
-        if [ -d "$CMD" ]; then
-          log_error "Specified directory '$CMD' should be preceeded by the language to lint."
-          return 1
-        fi
-        case "$CMD" in
-            cpp)
-                (set -e ; lint_dir_or_file cpp "$1")
-                shift
-                ;;
-            java)
-                (set -e ; lint_dir_or_file java "$1")
-                shift
-                ;;
-            php)
-                (set -e ; lint_dir_or_file php "$1")
-                shift
-                ;;
-            js)
-                (set -e ; lint_dir_or_file js "$1")
-                shift
-                ;;
-            rust)
-                (set -e ; lint_dir_or_file rust "$1")
-                shift
-                ;;
-            ni)
-                (set -e ; lint_dir_or_file ni "$1")
-                shift
-                ;;
-            sh)
-                (set -e ; lint_dir_or_file sh "$1")
-                shift
-                ;;
-            *)
-                lint_file "$CMD"
-                ;;
-        esac
-    done
+        ;;
+      java)
+        (
+          set -e
+          lint_dir_or_file java "$1"
+        )
+        shift
+        ;;
+      php)
+        (
+          set -e
+          lint_dir_or_file php "$1"
+        )
+        shift
+        ;;
+      js)
+        (
+          set -e
+          lint_dir_or_file js "$1"
+        )
+        shift
+        ;;
+      rust)
+        (
+          set -e
+          lint_dir_or_file rust "$1"
+        )
+        shift
+        ;;
+      ni)
+        (
+          set -e
+          lint_dir_or_file ni "$1"
+        )
+        shift
+        ;;
+      sh)
+        (
+          set -e
+          lint_dir_or_file sh "$1"
+        )
+        shift
+        ;;
+      *)
+        lint_file "$CMD"
+        ;;
+    esac
+  done
 }
 
 function ham_lint_fix_usage() {
@@ -396,10 +456,10 @@ function ham_lint_fix_format_sh_main() {
     IFS=$' \n'
     local ALL_FILES=()
     while read -r line; do
-        for word in $line; do
-            ALL_FILES+=("$word")
-        done
-    done < "${HAM_LINT_ALL_FILENAME}"
+      for word in $line; do
+        ALL_FILES+=("$word")
+      done
+    done <"${HAM_LINT_ALL_FILENAME}"
     IFS=$IFS_OLD
     # log_debug "ALL_FILES: ${ALL_FILES[@]}"
 

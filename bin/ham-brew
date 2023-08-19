@@ -1,5 +1,8 @@
 #!/bin/bash -e
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 usage() {
@@ -15,7 +18,7 @@ if [ -z "$1" ]; then
   usage
 fi
 
-BREW_DIR=`ham-brew-installdir prefix`
+BREW_DIR=$(ham-brew-installdir prefix)
 if [ -n "$HAM_LOCAL_HOMEBREW" ]; then
   export HOMEBREW_PREFIX=$BREW_DIR
 fi
@@ -42,12 +45,11 @@ if [ "$1" == "uninstall_brew" ]; then
 fi
 
 case "$HAM_BIN_LOA" in
-  osx-arm64|osx-x64)
-    ;;
+  osx-arm64 | osx-x64) ;;
   lin-x64)
     if [ "$HAM_ENABLE_EXPERIMENTAL_LINUX_BREW" != "1" ]; then
-       echo "E/ham-brew: Linux support is currently experimental. 'export HAM_ENABLE_EXPERIMENTAL_LINUX_BREW=1' to enable it."
-       exit 1
+      echo "E/ham-brew: Linux support is currently experimental. 'export HAM_ENABLE_EXPERIMENTAL_LINUX_BREW=1' to enable it."
+      exit 1
     fi
     ;;
   *)
@@ -61,10 +63,12 @@ if [ ! -e "$BREW_DIR/bin/brew" ]; then
   if [ -n "$HAM_LOCAL_HOMEBREW" ]; then
     # Local brew install
     echo "W/Can't find brew, installing local brew from github..."
-    (set -x ;
-     rm -Rf "$BREW_DIR" ;
-     mkdir -p "$BREW_DIR" ;
-     curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C "$BREW_DIR")
+    (
+      set -x
+      rm -Rf "$BREW_DIR"
+      mkdir -p "$BREW_DIR"
+      curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C "$BREW_DIR"
+    )
   else
     # Vanilla brew install
     echo "W/Can't find brew, installing vanilla brew with https://raw.githubusercontent.com/Homebrew/install/master/install.sh"
@@ -81,17 +85,22 @@ if [ "$1" == "upgrade_brew" ]; then
   shift
 
   # Update & upgrade
-  (set -ex ;
-   "$BREW_DIR/bin/brew" update ;
-   "$BREW_DIR/bin/brew" tap homebrew/cask ;
-   "$BREW_DIR/bin/brew" upgrade ;
-   ham-install-os-packages)
+  (
+    set -ex
+    "$BREW_DIR/bin/brew" update
+    "$BREW_DIR/bin/brew" tap homebrew/cask
+    "$BREW_DIR/bin/brew" upgrade
+    ham-install-os-packages
+  )
 
 else
 
   export HOMEBREW_NO_INSTALL_CLEANUP=1
   export HOMEBREW_NO_ENV_HINTS=1
   export HOMEBREW_NO_AUTO_UPDATE=1
-  (set -x; "$BREW_DIR/bin/brew" "$@")
+  (
+    set -x
+    "$BREW_DIR/bin/brew" "$@"
+  )
 
 fi

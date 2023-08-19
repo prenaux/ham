@@ -1,21 +1,20 @@
 #!/bin/bash
 if [ "$#" -ne 1 ]; then
-    ARGS=( "$@" )
+  ARGS=("$@")
 else
-    if [[ "$1" == http* ]]; then
-        ARGS=( "$@" )
-    else
-        ARGS[0]=$1
-        ARGS[1]="http://$1"
-        ARGS[2]="https://$1"
-        ARGS[3]="http://www.$1"
-        ARGS[4]="https://www.$1"
-    fi
+  if [[ "$1" == http* ]]; then
+    ARGS=("$@")
+  else
+    ARGS[0]=$1
+    ARGS[1]="http://$1"
+    ARGS[2]="https://$1"
+    ARGS[3]="http://www.$1"
+    ARGS[4]="https://www.$1"
+  fi
 fi
 
-for var in "${ARGS[@]}";
-do
-    echo -n "$var -> "
-    curl -s -L -I -o /dev/null -w '%{url_effective}' "$var"
-    echo ""
+for var in "${ARGS[@]}"; do
+  echo -n "$var -> "
+  curl -s -L -I -o /dev/null -w '%{url_effective}' "$var"
+  echo ""
 done

@@ -1,14 +1,17 @@
 #!/bin/bash -e
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 usage() {
-    echo "usage:"
-    echo "  ${0##*/} TOOLSET (HAM_ARGS, default: all)"
-    echo ""
-    echo "example:"
-    echo "  ham-cppm-build thrift_cppm all"
-    exit 1
+  echo "usage:"
+  echo "  ${0##*/} TOOLSET (HAM_ARGS, default: all)"
+  echo ""
+  echo "example:"
+  echo "  ham-cppm-build thrift_cppm all"
+  exit 1
 }
 
 if [ -z "$1" ]; then
@@ -19,7 +22,13 @@ TOOLSET=$1
 shift
 
 if [ -z "$1" ]; then
-  (set -x ; ham -D "${HAM_HOME}/specs/toolsets/${TOOLSET}" -T "${HAM_HOME}/specs/toolsets/${TOOLSET}/_ham_project" all)
+  (
+    set -x
+    ham -D "${HAM_HOME}/specs/toolsets/${TOOLSET}" -T "${HAM_HOME}/specs/toolsets/${TOOLSET}/_ham_project" all
+  )
 else
-  (set -x ; ham -D "${HAM_HOME}/specs/toolsets/${TOOLSET}" -T "${HAM_HOME}/specs/toolsets/${TOOLSET}/_ham_project" "$@")
+  (
+    set -x
+    ham -D "${HAM_HOME}/specs/toolsets/${TOOLSET}" -T "${HAM_HOME}/specs/toolsets/${TOOLSET}/_ham_project" "$@"
+  )
 fi

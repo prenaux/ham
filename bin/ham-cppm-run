@@ -1,14 +1,17 @@
 #!/bin/bash -e
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 usage() {
-    echo "usage:"
-    echo "  ${0##*/} TOOLSET EXE_TARGET_NAME ARGS"
-    echo ""
-    echo "example:"
-    echo "  ham-cppm-run thrift_cppm ham_thriftc --gen cpp thrift/myservice.thrift"
-    exit 1
+  echo "usage:"
+  echo "  ${0##*/} TOOLSET EXE_TARGET_NAME ARGS"
+  echo ""
+  echo "example:"
+  echo "  ham-cppm-run thrift_cppm ham_thriftc --gen cpp thrift/myservice.thrift"
+  exit 1
 }
 
 # Parameters check
