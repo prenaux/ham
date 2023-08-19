@@ -2,8 +2,9 @@
 EXEC_TIME="$(date +%s)"
 PREV_PATH=${PATH}
 if [[ -z "$HAM_HOME" ]]; then
-  export HAM_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-  echo "W/HAM_HOME not set, set to:" $HAM_HOME
+  HAM_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  export HAM_HOME
+  echo "W/HAM_HOME not set, set to: '$HAM_HOME'"
 fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 export PATH=${PREV_PATH}:${PATH}
@@ -11,7 +12,7 @@ export PATH=${PREV_PATH}:${PATH}
 # the help
 usage() {
   echo "usage: ham [ options ] targets|scripts..."
-  echo "version:" $("${HAM_CMD}" -v)
+  echo "version: $("${HAM_CMD}" -v)"
   echo ""
   echo "ham launch script:"
   echo "  -h             This help message"
@@ -96,7 +97,7 @@ process_directory() {
 }
 
 process_env() {
-  _ARG_ENVS+=($1)
+  _ARG_ENVS+=("$1")
 }
 
 while getopts "T:D:X:E:vh" OPT; do
@@ -146,12 +147,15 @@ shift $((OPTIND - 1))
 if [ "${#_ARG_TOOLSETS[@]}" -gt 0 ]; then
   . "$HAM_HOME/bin/ham-bash-setenv.sh"
   export HAM_NO_VER_CHECK=${HAM_NO_VER_CHECK:-1}
+  # shellcheck disable=SC2145
   echo "I/Set toolsets '${_ARG_TOOLSETS[@]}'"
   # Set envvars
   for ENV in "${_ARG_ENVS[@]}"; do
+    # shellcheck disable=SC2163
     export "$ENV"
   done
   . ham-toolset "${_ARG_TOOLSETS[@]}"
+  # shellcheck disable=SC2145
   errcheck $? ham "Can't setup the '${_ARG_TOOLSETS[@]}' toolset(s)."
 fi
 
@@ -193,6 +197,7 @@ ham_or_bash() {
 
   # Set envvars
   for ENV in "${_ARG_ENVS[@]}"; do
+    # shellcheck disable=SC2163
     export "$ENV"
   done
 
@@ -206,8 +211,9 @@ ham_or_bash() {
   # Run the remaining parameters with $HAM_CMD if there are any
   if [ "${#HAM_CMD_PARAMS[@]}" -gt 0 ]; then
     if [ -n "$HAM_EXEC_DIR" ]; then
-      cd "$HAM_EXEC_DIR"
+      cd "$HAM_EXEC_DIR" || return 1
     fi
+    # shellcheck disable=SC2145
     echo "I/'ham ${HAM_CMD_PARAMS[@]}' in '$(pwd)'"
     case $HAM_OS in
       NT*)
@@ -226,24 +232,26 @@ ham_or_bash() {
 }
 
 hamIn() {
-  export CWD="$(pwd)"
-  export DIR="$1"
+  CWD="$(pwd)"
+  DIR="$1"
   shift
   if [[ "$CWD" != "$DIR" ]]; then
-    pushd "$DIR"
+    pushd "$DIR" || return 1
   fi
   ham_or_bash "$@"
   errcheck $? ham "Run in '$DIR' failed."
   if [[ "$CWD" != "$DIR" ]]; then
-    popd >/dev/null
+    popd >/dev/null || return 1
   fi
 }
 
 if [[ "$_ARG_DIRECTORY" != "" ]]; then
   for dir in "${_ARG_DIRECTORIES[@]}"; do
+    # shellcheck disable=SC2048,SC2086
     hamIn "$dir" $*
   done
 else
+  # shellcheck disable=SC2048,SC2086
   hamIn . $*
 fi
 
