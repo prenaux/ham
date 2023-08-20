@@ -12,8 +12,13 @@ case $HAM_OS in
         export HAM_SHELL_LINTER_DIR="${HAM_TOOLSET_DIR}/${HAM_BIN_LOA}"
         pathenv_add "${HAM_SHELL_LINTER_DIR}"
         ;;
+    NT*)
+        toolset_check_and_dl_ver shell_linter nt-x64 v1 || return 1
+        export HAM_SHELL_LINTER_DIR="${HAM_TOOLSET_DIR}/nt-x64"
+        pathenv_add "${HAM_SHELL_LINTER_DIR}"
+        ;;
     *)
-        echo "E/Toolset: Unsupported host OS '$HAM_OS'"
+        complain shell_linter_setup_toolset "Unsupported host OS '$HAM_OS'"
         return 1
         ;;
 esac
