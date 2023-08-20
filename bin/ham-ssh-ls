@@ -1,9 +1,8 @@
 #!/bin/bash -e
 source "$HAM_HOME/bin/ham-bash-lib.sh"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SSH_CONFIG=${SSH_CONFIG:-"$HOME/.ssh/config"}
 if [[ ! -e "${SSH_CONFIG}" ]]; then
   log_error "Can't find SSH_CONFIG: '${SSH_CONFIG}'."
   exit 1
 fi
-cat "$SSH_CONFIG" | grep "Host " | cut -d ' ' -f 2 | sort
+grep <"$SSH_CONFIG" "Host " | cut -d ' ' -f 2 | sort

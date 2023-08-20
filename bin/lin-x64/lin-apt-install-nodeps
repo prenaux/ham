@@ -26,16 +26,14 @@ function install_nodeps() {
   EXTRACT_DIR="${PACKAGE_NAME}-deb"
   MODIFIED_DEB="${PACKAGE_NAME}-nodeps.deb"
 
-  # Download the .deb package
+  # Get the version number
   VERSION=$(sudo apt-cache policy git-svn | grep Candidate | awk '{print $2}')
   # Print the URI for that specific version
   if [[ -z "$URL" ]]; then
     URL=$(apt-get download --print-uris git-svn="$VERSION" 2>&1 | grep "^'" | cut -d"'" -f2)
   fi
-  wget "$URL" -O "$DEB_FILE"
-
-  # Check if the download succeeded
-  if [ $? -ne 0 ]; then
+  # Download the .deb package
+  if ! wget "$URL" -O "$DEB_FILE"; then
     echo "Error downloading package."
     return 1
   fi

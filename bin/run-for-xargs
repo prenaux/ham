@@ -6,4 +6,4 @@ fi
 CMD=$1
 shift
 # xargs only exits on error code 255
-$CMD $@ || exit 255
+"$CMD" "$@" || exit 255

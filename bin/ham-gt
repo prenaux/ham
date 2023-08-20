@@ -20,9 +20,9 @@ fi
 if [ "$1" == "update_cli" ]; then
   (
     set -x
-    pushd "$HAM_HOME"
+    pushd "$HAM_HOME" || exit 1
     npm install -g @withgraphite/graphite-cli@latest
-    popd
+    popd || exit 1
   )
   echo "I/Graphite CLI updated: $("$NODEJS_BIN_DIR/gt" --version)"
   shift

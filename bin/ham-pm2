@@ -1,6 +1,5 @@
 #!/bin/bash
 . "$HAM_HOME/bin/ham-bash-lib.sh"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if [ -z "$PM2_ENV_NAME" ]; then
   echo "I/ham-pm2: Sourcing _ham_project"
@@ -15,7 +14,7 @@ if [ -z "$PM2_ENV_NAME" ]; then
     exit 1
   fi
 
-  if [ -z $(where_inpath pm2) ]; then
+  if [ -z "$(where_inpath pm2)" ]; then
     echo "E/ham-pm2: pm2 command not found, you should add nodejs as a toolset in your _ham_project. We're in '$(pwd)'."
     exit 1
   fi
@@ -77,10 +76,11 @@ elif [ "$1" == start-once ]; then
   fi
   shift
 
-  if [[ $(pm2 info "$PM2_APP_NAME" | grep 'status.*online') ]]; then
+  # shellcheck disable=SC2143
+  if [[ -n "$(pm2 info "$PM2_APP_NAME" | grep 'status.*online')" ]]; then
     echo "I/ham-pm2: '$PM2_APP_NAME' already started and online."
   else
-    echo "I/ham-pm2: '$PM2_APP_NAME' not online, starting cmd: $START_CMD $@"
+    echo "I/ham-pm2: '$PM2_APP_NAME' not online, starting cmd: $START_CMD $*"
     do_pm2_start "$PM2_APP_NAME" "$START_CMD" "$@"
   fi
 elif [ "$1" == restart ]; then
@@ -98,11 +98,12 @@ elif [ "$1" == restart ]; then
   fi
   shift
 
-  if [[ $(pm2 info "$PM2_APP_NAME" | grep 'status.*online') ]]; then
+  # shellcheck disable=SC2143
+  if [[ -n "$(pm2 info "$PM2_APP_NAME" | grep 'status.*online')" ]]; then
     echo "I/ham-pm2: '$PM2_APP_NAME' already started and online, stopping it first."
     pm2 stop "$PM2_APP_NAME"
   fi
-  echo "I/ham-pm2: '$Pm2_APP_NAME' starting cmd: $START_CMD $@"
+  echo "I/ham-pm2: '$PM2_APP_NAME' starting cmd: $START_CMD $*"
   do_pm2_start "$PM2_APP_NAME" "$START_CMD" "$@"
 else
   set -e

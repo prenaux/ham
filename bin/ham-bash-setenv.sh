@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # This is solves problem with tools that really try hard to screw up the
 # environment by reseting the path manually.
 if test -z "$PATH"; then
@@ -59,7 +61,8 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
   export PATH_BACKUP=$PATH
 
   # Sanitize HAM_HOME's path
-  export HAM_HOME=$(abspath "$HAM_HOME")
+  HAM_HOME=$(abspath "$HAM_HOME")
+  export HAM_HOME
 else
   true
 fi

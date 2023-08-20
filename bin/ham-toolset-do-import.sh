@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 if [ "$1" == "force" ]; then
   shift
   if [ "$1" == "silent" ]; then
@@ -33,6 +33,7 @@ if [ "$FOUND_SETUP_SCRIPT" == "no" ]; then
 fi
 
 export PATH=$PATH
+# shellcheck disable=SC1090
 if ! HAM_DIE_SHOULD_RETURN=yes source "$SETUP_SCRIPT"; then
   complain ham-toolset-do-import.sh "Toolset '$1' import failed !"
   return 1

@@ -11,6 +11,7 @@ printable_colours=256
 # Return a colour that contrasts with the given colour
 # Bash only does integer division, so keep it integral
 function contrast_colour {
+  # shellcheck disable=SC2034 # usage of some vars are commented
   local r g b luminance
   colour="$1"
 

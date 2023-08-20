@@ -24,7 +24,7 @@ INSTALL=install
 if [ "$1" == "reinstall" ]; then
   INSTALL=reinstall
   shift
-elif [ "$1" == "upgrade" -o "$1" == "update" -o "$1" == "up" ]; then
+elif [ "$1" == "upgrade" ] || [ "$1" == "update" ] || [ "$1" == "up" ]; then
   # 'upgrade' is the brew command to update a package...
   INSTALL=upgrade
   shift
@@ -32,7 +32,7 @@ fi
 
 PKGNAME="$1"
 CHECKFILE="$2"
-if [ -z "$" -o -z "$2" ]; then
+if [ -z "$PKGNAME" ] || [ -z "$CHECKFILE" ]; then
   usage
 fi
 

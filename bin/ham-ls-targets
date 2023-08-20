@@ -1,7 +1,8 @@
 #!/bin/bash
 if [[ -z "$HAM_HOME" ]]; then
-  export HAM_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-  echo "W/HAM_HOME not set, set to:" $HAM_HOME
+  HAM_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  export HAM_HOME
+  echo "W/HAM_HOME not set, set to: $HAM_HOME"
 fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 export PATH=${PREV_PATH}:${PATH}
@@ -63,7 +64,7 @@ ONLY_TARGETS_THAT_NEED_TO_BE_BUILT=no
 # process the arguments
 TARGETS=()
 _ARG_DIRECTORIES=()
-while getopts "T:D:vbt:" OPT; do
+while getopts "hT:D:vbt:" OPT; do
   case "$OPT" in
     h)
       echo "I/help"
@@ -91,7 +92,7 @@ while getopts "T:D:vbt:" OPT; do
       # echo "_ARG_TOOLSET:" $_ARG_TOOLSET
       ;;
     t)
-      TARGETS=(${TARGETS[@]} $OPTARG)
+      TARGETS=("${TARGETS[@]}" "$OPTARG")
       # echo "TARGETS:" $TARGETS
       ;;
     D)
@@ -123,7 +124,7 @@ while getopts "T:D:vbt:" OPT; do
 done
 shift $((OPTIND - 1))
 
-if [ -z "$TARGETS" ]; then
+if [[ "${#TARGETS[@]}" -eq 0 ]]; then
   TARGETS=(all runnable debuggable)
 fi
 
@@ -138,7 +139,7 @@ shift
 if [[ "$_ARG_TOOLSET" != "" ]]; then
   . "$HAM_HOME/bin/ham-bash-setenv.sh"
   export HAM_NO_VER_CHECK=${HAM_NO_VER_CHECK:-1}
-  . ham-toolset $_ARG_TOOLSET >/dev/null
+  . ham-toolset "$_ARG_TOOLSET" >/dev/null
   errcheck $? ham "Can't setup the '$_ARG_TOOLSET' toolset."
 fi
 
@@ -152,7 +153,7 @@ fi
 ham_call() {
   (
     # set -x ;
-    LOG_FATAL_EXIT=0 "${HAM_CMD}" $*
+    LOG_FATAL_EXIT=0 "${HAM_CMD}" "$@"
   )
 }
 
@@ -168,16 +169,18 @@ filter_get_target_name_and_sort() {
 }
 
 ham_show_targets_in() {
-  export CWD="$(pwd)"
-  export DIR="$1"
+  local CWD
+  CWD="$(pwd)"
+  local DIR
+  DIR="$1"
   shift
   if [[ "$CWD" != "$DIR" ]]; then
-    pushd "$DIR" >/dev/null
+    pushd "$DIR" >/dev/null || exit 1
   fi
 
   HAM_ARGS=(-n -dm)
   if [ "$ONLY_TARGETS_THAT_NEED_TO_BE_BUILT" != "yes" ]; then
-    HAM_ARGS=(-a ${HAM_ARGS[@]})
+    HAM_ARGS=(-a "${HAM_ARGS[@]}")
   fi
 
   case "$FILTER" in
@@ -231,7 +234,7 @@ ham_show_targets_in() {
   errcheck $? ham "Build in $DIR failed."
 
   if [[ "$CWD" != "$DIR" ]]; then
-    popd >/dev/null
+    popd >/dev/null || exit 1
   fi
 }
 
@@ -241,7 +244,7 @@ if [[ "$_ARG_DIRECTORY" != "" ]]; then
   done
 else
   # find the _build.ham file
-  export BUILD_HAM_DIR="$(ham-search-build-ham.sh)"
+  BUILD_HAM_DIR="$(ham-search-build-ham.sh)"
   if [[ -z "$BUILD_HAM_DIR" ]]; then
     echo "E/Can't find _build.ham !"
     exit 1

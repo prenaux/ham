@@ -1,6 +1,5 @@
 #!/bin/bash -e
 source "$HAM_HOME/bin/ham-bash-lib.sh"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 function usage() {
   echo "usage:"
@@ -30,9 +29,10 @@ if [[ "$1" == "tmux" ]]; then
   PARAMS=("${PARAMS[@]}" -t "tmux new -A -s $HOST")
   shift
 fi
-PARAMS=("${PARAMS[@]}" $@)
+PARAMS=("${PARAMS[@]}" "$@")
 
 (
   set -x
+  # shellcheck disable=SC2029 # yes, we want it expended client side (in this script)
   ssh "$HOST" "${PARAMS[@]}"
 )

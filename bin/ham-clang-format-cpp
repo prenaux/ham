@@ -1,7 +1,6 @@
 #!/bin/bash
 #===== PRELUDE BEGIN ===========
-export SCRIPT_NAME=$(basename "$0")
-export SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+SCRIPT_NAME=$(basename "$0")
 if [[ -z "$HAM_HOME" ]]; then
   echo "E/HAM_HOME not set !"
   exit 1
@@ -17,10 +16,10 @@ function usage() {
 
 PARAMS=(-style="file:$HAM_HOME/_clang_format_cpp")
 if [[ "$1" == "dryrun" ]]; then
-  PARAMS=(--dry-run -Werror ${PARAMS[@]})
+  PARAMS=(--dry-run -Werror "${PARAMS[@]}")
   DOS2UNIX=no
 elif [[ "$1" == "format" ]]; then
-  PARAMS=(-i ${PARAMS[@]})
+  PARAMS=(-i "${PARAMS[@]}")
   DOS2UNIX=yes
 else
   log_error "Unknown mode '$1'."
@@ -30,8 +29,8 @@ shift
 
 if [[ "$DOS2UNIX" == "yes" ]]; then
   dos2unix "$@" 2>/dev/null
-  errcheck $? "$SCRIPT_NAME" "dos2unix error: $@."
+  errcheck $? "$SCRIPT_NAME" "dos2unix error: $*."
 fi
 
-ham-clang-format ${PARAMS[@]} "$@"
-errcheck $? "$SCRIPT_NAME" "clang-format error: $@."
+ham-clang-format "${PARAMS[@]}" "$@"
+errcheck $? "$SCRIPT_NAME" "clang-format error: $*."
