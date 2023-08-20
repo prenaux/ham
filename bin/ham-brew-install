@@ -55,7 +55,7 @@ if [ ! -e "$PKG_HOME/$CHECKFILE" ]; then
   echo "I/Brew $PKGNAME not found, install..."
   (
     set -x
-    ham-brew $INSTALL $PKGNAME
+    ham-brew $INSTALL "$PKGNAME"
   )
 else
   if [ "$INSTALL" == "install" ]; then
@@ -67,7 +67,7 @@ else
   echo "I/Brew $PKGNAME already installed, $INSTALL..."
   (
     set -x
-    ham-brew $INSTALL $PKGNAME
+    ham-brew $INSTALL "$PKGNAME"
   )
 fi
 

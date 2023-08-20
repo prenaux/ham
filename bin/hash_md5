@@ -15,4 +15,4 @@ case $HAM_OS in
     md5=($("md5" -r "$*"))
     ;;
 esac
-echo -n $md5
+echo -n "$md5"

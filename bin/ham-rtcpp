@@ -8,5 +8,5 @@ fi
 export HAM_NO_VER_CHECK=1
 (
   set -x
-  "$HAM_HOME/bin/ham" $*
+  "$HAM_HOME/bin/ham" "$@"
 )

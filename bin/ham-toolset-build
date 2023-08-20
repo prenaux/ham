@@ -54,7 +54,7 @@ fi
 
 set -ex
 cd "$TS_DIR"
-rm -f toolset_${TS_NAME}_*
+rm -f toolset_"${TS_NAME}"_*
 echo "${TS_VER_FILE_NAME}" >"${TS_VER_FILE_NAME}"
 
 toolset_unquarantine_dir "$TS_DIR/"
