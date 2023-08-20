@@ -5,22 +5,26 @@ function sh_lint() {
   toolset_import_once shell_linter >/dev/null
   errcheck $? "$SCRIPT_NAME" "Can't import shell_linter toolset." || return 1
 
+  local FILES=()
   if [ -z "$1" ]; then
     # List the shell files in a folder
-    FILES=$("$HAM_SHELL_LINTER_DIR/shfmt" -f .)
+    while IFS='' read -r line; do
+      FILES+=("$line")
+    done < <("$HAM_SHELL_LINTER_DIR/shfmt" -f .)
   else
-    FILES="$@"
+    FILES=("$@")
   fi
 
   if [[ "$LINT_FORMAT" == "yes" ]] || [[ "$LINT_CHECK_FORMAT" == "yes" ]]; then
     local SHFMT_PARAMS=(-i 2 -ci -bn -ln=bash -bn=false)
     if [[ "$LINT_CHECK_FORMAT" == "yes" ]]; then
-      SHFMT_PARAMS=(-d ${SHFMT_PARAMS[@]})
+      SHFMT_PARAMS=(-d "${SHFMT_PARAMS[@]}")
     else
-      SHFMT_PARAMS=(-w ${SHFMT_PARAMS[@]})
+      SHFMT_PARAMS=(-w "${SHFMT_PARAMS[@]}")
     fi
     (
       set -x
+      # shellcheck disable=SC2068
       "$HAM_SHELL_LINTER_DIR/shfmt" ${SHFMT_PARAMS[@]} ${FILES[@]}
     )
   fi
@@ -36,27 +40,33 @@ function sh_lint() {
       # Note: This generates a patch of suggested fixes that could be applied
       # with 'git apply'. Its not perfect though so we dont use it in 'fix'
       # mode atm.
-      SHELLCHECK_PARAMS=(--format=diff ${SHELLCHECK_PARAMS[@]})
+      SHELLCHECK_PARAMS=(--format=diff "${SHELLCHECK_PARAMS[@]}")
     elif [[ "$LINT_VERBOSE" != "yes" ]]; then
-      SHELLCHECK_PARAMS=(--format=gcc ${SHELLCHECK_PARAMS[@]})
+      SHELLCHECK_PARAMS=(--format=gcc "${SHELLCHECK_PARAMS[@]}")
     fi
 
     (
       set -x
+      # shellcheck disable=SC2068
       "$HAM_SHELL_LINTER_DIR/shellcheck" ${SHELLCHECK_PARAMS[@]} ${FILES[@]}
     )
   fi
 }
 
 function ni_lint() {
+  local DIR
   DIR=$(pwd)
+
+  local FILES=()
   if [ -z "$1" ]; then
-    FILES=$(find . -name "*.ni" -o -name "*.nip" -o -name "*.niw")
+    while IFS='' read -r line; do
+      FILES+=("$line")
+    done < <(find . -name "*.ni" -o -name "*.nip" -o -name "*.niw")
   else
-    FILES="$@"
+    FILES=("$@")
   fi
 
-  for f in $FILES; do
+  for f in "${FILES[@]}"; do
     ni -c "$DIR/$f"
   done
 }
@@ -67,7 +77,9 @@ function ham_flymake_lint() {
   fi
 
   # ham-flymake FLYMAKE=1 CHK_SOURCES=_Test_TiledWidget_aflymake.cpp FLYMAKE_BASEDIR=./ check-syntax
-  DIR=$(dirname $1)
+  local DIR
+  DIR=$(dirname "$1")
+  local FILENAME
   FILENAME=$(basename "$1")
   # We can't just rename the file because VScode won't be able to map the file
   # to the original one. We could add a #line directive in the renamed file
@@ -85,6 +97,7 @@ function ham_flymake_lint() {
 }
 
 function cpp_clang_format_dir() {
+  local DIR
   DIR=$1
   shift
   log_info "cpp_clang_format_dir: '$DIR'"
@@ -102,7 +115,7 @@ function cpp_clang_format_dir() {
       -o -name '*.inl' \
       ! -iname '*.idl.inl' \
       \) -print0 |
-      xargs -t -0 -n 10 -P ${HAM_NUM_JOBS:-8} run-for-xargs ham-clang-format-cpp $@
+      xargs -t -0 -n 10 -P "${HAM_NUM_JOBS:-8}" run-for-xargs ham-clang-format-cpp "$@"
   ) || return 1
 }
 
@@ -115,11 +128,11 @@ function cpp_lint() {
 
   if [ -z "$1" ]; then
     DIR=$(pwd)
-    cpp_clang_format_dir "$DIR" ${PARAMS[@]}
+    cpp_clang_format_dir "$DIR" "${PARAMS[@]}"
   else
     (
       set -x
-      ham-clang-format-cpp ${PARAMS[@]} "$1"
+      ham-clang-format-cpp "${PARAMS[@]}" "$1"
       ham_flymake_lint "$1"
     )
   fi
@@ -134,7 +147,7 @@ function java_clang_format_dir() {
     find "$DIR" \
       \( -name '*.java' \
       \) -print0 |
-      xargs -t -0 -n 10 -P ${HAM_NUM_JOBS:-8} run-for-xargs ham-clang-format-cpp $@
+      xargs -t -0 -n 10 -P "${HAM_NUM_JOBS:-8}" run-for-xargs ham-clang-format-cpp "$@"
   ) || return 1
 }
 
@@ -147,11 +160,11 @@ function java_lint() {
 
   if [ -z "$1" ]; then
     DIR=$(pwd)
-    java_clang_format_dir "$DIR" ${PARAMS[@]}
+    java_clang_format_dir "$DIR" "${PARAMS[@]}"
   else
     (
       set -x
-      ham-clang-format-cpp ${PARAMS[@]} "$1"
+      ham-clang-format-cpp "${PARAMS[@]}" "$1"
     )
   fi
 }
@@ -203,19 +216,21 @@ function rust_lint() {
   toolset_import_once rust >/dev/null
 
   # Allow some lints
-  # CLIPPYFLAGS="-A clippy::bool_comparison"
+  local CLIPPYFLAGS
+  CLIPPYFLAGS=()
+  # CLIPPYFLAGS=(-A clippy::bool_comparison ${CLIPPYFLAGS[@]})
 
   if [ "$LINT_FIX" == "yes" ]; then
     # Cargo fix can't be run on a single file...
     (
       set -x
-      cargo clippy --fix --allow-dirty --allow-staged -- $CLIPPYFLAGS
+      cargo clippy --fix --allow-dirty --allow-staged -- "${CLIPPYFLAGS[@]}"
     )
   else
     # Cargo clippy can't be run on a single file...
     (
       set -x
-      cargo clippy -- $CLIPPYFLAGS
+      cargo clippy -- "${CLIPPYFLAGS[@]}"
     )
   fi
 
@@ -236,8 +251,10 @@ function rust_lint() {
 }
 
 function lint_file() {
+  local CMD
   CMD="$1"
-  EXT=$(path_extension ${CMD})
+  local EXT
+  EXT=$(path_extension "${CMD}")
   case "$EXT" in
     c | cc | cpp | cxx | h | hh | hpp | hxx | inl)
       cpp_lint "$CMD"
@@ -288,8 +305,8 @@ function lint_dir() {
   log_info "${LANG}_lint all in '$DIRNAME'."
   (
     cd "$DIRNAME"
-    ${LANG}_lint
-    errcheck $? ${LANG}_lint "${LANG} files lint failed in '$DIRNAME'."
+    "${LANG}_lint"
+    errcheck $? "${LANG}_lint" "${LANG} files lint failed in '$DIRNAME'."
   )
 }
 
@@ -298,9 +315,9 @@ function lint_dir_or_file() {
   DIR_OR_FILENAME=$2
   if [ -d "$DIR_OR_FILENAME" ]; then
     log_info "lint_dir_or_file: $LANG: formatting directory '$DIR_OR_FILENAME'."
-    lint_dir $LANG "$DIR_OR_FILENAME"
+    lint_dir "$LANG" "$DIR_OR_FILENAME"
   elif [ -e "$DIR_OR_FILENAME" ]; then
-    ${LANG}_lint "$DIR_OR_FILENAME"
+    "${LANG}_lint" "$DIR_OR_FILENAME"
   else
     log_warning "lint_dir_or_file: $LANG: '$DIR_OR_FILENAME' doesn't exist."
   fi
@@ -408,7 +425,7 @@ function ham_lint_fix_main() {
       export LINT_VERBOSE=yes
     else
       log_error "Unknown option '$1'."
-      ham_lint_fix_usage || return 1
+      ham_lint_fix_usage
     fi
   done
 
@@ -439,7 +456,7 @@ function ham_lint_fix_format_sh_main() {
   shift
 
   if [[ -n "$1" ]]; then
-    ham_lint_fix_main ${PARAMS[@]} "$@"
+    ham_lint_fix_main "${PARAMS[@]}" "$@"
   else
     local IFS_OLD=$IFS
     IFS=$' \n'
@@ -452,7 +469,7 @@ function ham_lint_fix_format_sh_main() {
     IFS=$IFS_OLD
     # log_debug "ALL_FILES: ${ALL_FILES[@]}"
 
-    ham_lint_fix_main ${PARAMS[@]} "${ALL_FILES[@]}"
+    ham_lint_fix_main "${PARAMS[@]}" "${ALL_FILES[@]}"
   fi
 }
 
