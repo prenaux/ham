@@ -4,4 +4,4 @@ if [[ -z "$HAM_HOME" ]]; then
   exit 1
 fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
-rg --files --glob "$@"
+"$HAM_HOME/bin/$HAM_BIN_LOA/rg" --files --glob "$@"
