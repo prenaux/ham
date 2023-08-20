@@ -32,14 +32,14 @@ function sh_lint() {
     # This is better than disabling SC1091, but oh so slowww :(
     # SHELLCHECK_PARAMS=(-x --source-path="$HAM_HOME" --source-path="$HAM_HOME/bin")
 
-    if [[ "$LINT_VERBOSE" != "yes" ]]; then
+    if [[ "$LINT_DIFF" == "yes" ]]; then
+      # Note: This generates a patch of suggested fixes that could be applied
+      # with 'git apply'. Its not perfect though so we dont use it in 'fix'
+      # mode atm.
+      SHELLCHECK_PARAMS=(--format=diff ${SHELLCHECK_PARAMS[@]})
+    elif [[ "$LINT_VERBOSE" != "yes" ]]; then
       SHELLCHECK_PARAMS=(--format=gcc ${SHELLCHECK_PARAMS[@]})
     fi
-
-    # Note: This generates a patch of suggested fixes that could be applied
-    # with 'git apply'. Its not perfect though so we dont use it in 'fix'
-    # mode atm.
-    # SHELLCHECK_PARAMS=(--format=diff ${SHELLCHECK_PARAMS[@]})
 
     (
       set -x
