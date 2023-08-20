@@ -36,5 +36,5 @@ if [ -z "$EXE_TARGET_NAME" ]; then
 fi
 shift
 
-EXE_PATH="$HAM_HOME/bin/$(ham-cppm-bin-filepath exe ${EXE_TARGET_NAME}_${BUILD})"
+EXE_PATH="$HAM_HOME/bin/$(ham-cppm-bin-filepath exe "${EXE_TARGET_NAME}"_"${BUILD}")"
 echo "$EXE_PATH"

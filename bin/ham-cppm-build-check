@@ -50,7 +50,7 @@ if [ -z "$LIB_CHECK_PATH" ]; then
 elif [ "$1" == "nolib" ]; then
   LIB_CHECK_PATH=nolib
 else
-  LIB_CHECK_PATH="${HAM_HOME}/libs/$(ham-cppm-bin-filepath lib ${LIB_CHECK_PATH}_${BUILD})"
+  LIB_CHECK_PATH="${HAM_HOME}/libs/$(ham-cppm-bin-filepath lib "${LIB_CHECK_PATH}"_"${BUILD}")"
 fi
 shift
 # echo "I/LIB_CHECK_PATH: $LIB_CHECK_PATH"
@@ -62,7 +62,7 @@ if [ -z "$DLL_CHECK_PATH" ]; then
 elif [ "$1" == "nodll" ]; then
   DLL_CHECK_PATH=nodll
 else
-  DLL_CHECK_PATH="${HAM_HOME}/bin/$(ham-cppm-bin-filepath dll ${DLL_CHECK_PATH}_${BUILD})"
+  DLL_CHECK_PATH="${HAM_HOME}/bin/$(ham-cppm-bin-filepath dll "${DLL_CHECK_PATH}"_"${BUILD}")"
   DLL_CHECK_EXT=${DLL_CHECK_PATH##*.}
   # echo "I/DLL_CHECK_EXT: ${DLL_CHECK_EXT}"
   if [ "$DLL_CHECK_EXT" == "no-dll-platform" ]; then
@@ -83,9 +83,9 @@ esac
 
 EXE_FILES=()
 if [ "$HAM_CPPM_FORCE_BUILD" == "1" ] ||
-  [ "$(check_file $HDR_CHECK_PATH noheader)" == "notfound" ] ||
-  [ "$(check_file $LIB_CHECK_PATH nolib)" == "notfound" ] ||
-  [ "$(check_file $DLL_CHECK_PATH nodll)" == "notfound" ]; then
+  [ "$(check_file "$HDR_CHECK_PATH" noheader)" == "notfound" ] ||
+  [ "$(check_file "$LIB_CHECK_PATH" nolib)" == "notfound" ] ||
+  [ "$(check_file "$DLL_CHECK_PATH" nodll)" == "notfound" ]; then
   SHOULD_BUILD=1
 else
   SHOULD_BUILD=0
@@ -93,7 +93,7 @@ fi
 
 if [ "$SHOULD_BUILD" == "0" ]; then
   while [ "$#" -gt 0 ]; do
-    EXE_PATH=$(ham-cppm-exe-path $TOOLSET $1)
+    EXE_PATH=$(ham-cppm-exe-path "$TOOLSET" "$1")
     EXE_PATH_EXT=$(path_extension "$EXE_PATH")
     if [ "$EXE_PATH_EXT" == "no-exe-platform" ] ||
       [ "$EXE_PATH_EXT" == "html" ]; then
@@ -115,21 +115,21 @@ fi
 if [ "$SHOULD_BUILD" == "1" ]; then
   (
     set -x
-    HAM_NO_VER_CHECK=1 BUILD=$BUILD ham-cppm-build $TOOLSET
+    HAM_NO_VER_CHECK=1 BUILD=$BUILD ham-cppm-build "$TOOLSET"
   )
 
   FAILED=0
-  if [ "$(check_file $HDR_CHECK_PATH noheader)" == "notfound" ]; then
+  if [ "$(check_file "$HDR_CHECK_PATH" noheader)" == "notfound" ]; then
     echo "E/ham-cppm-build-check: Can't find build artifact header '$HDR_CHECK_PATH'."
     FAILED=1
   fi
 
-  if [ "$(check_file $LIB_CHECK_PATH nolib)" == "notfound" ]; then
+  if [ "$(check_file "$LIB_CHECK_PATH" nolib)" == "notfound" ]; then
     echo "E/ham-cppm-build-check: Can't find build artifact lib '$LIB_CHECK_PATH'."
     FAILED=1
   fi
 
-  if [ "$(check_file $DLL_CHECK_PATH nodll)" == "notfound" ]; then
+  if [ "$(check_file "$DLL_CHECK_PATH" nodll)" == "notfound" ]; then
     echo "E/ham-cppm-build-check: Can't find build artifact dll '$DLL_CHECK_PATH'."
     FAILED=1
   fi

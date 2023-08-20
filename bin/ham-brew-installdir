@@ -52,7 +52,7 @@ fi
 
 case $KIND in
   prefix)
-    echo $PREFIX
+    echo "$PREFIX"
     ;;
   bin)
     echo "$PREFIX/opt/$PKGNAME"

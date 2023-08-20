@@ -30,8 +30,8 @@ shift
 
 if [[ "$DOS2UNIX" == "yes" ]]; then
   dos2unix "$@" 2>/dev/null
-  errcheck $? $SCRIPT_NAME "dos2unix error: $@."
+  errcheck $? "$SCRIPT_NAME" "dos2unix error: $@."
 fi
 
 ham-clang-format ${PARAMS[@]} "$@"
-errcheck $? $SCRIPT_NAME "clang-format error: $@."
+errcheck $? "$SCRIPT_NAME" "clang-format error: $@."

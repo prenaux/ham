@@ -36,7 +36,7 @@ set -x
 7z x -y "$ARCH" | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
 set +x
 
-if [ ${PIPESTATUS[0]} != 0 ]; then
+if [ "${PIPESTATUS[0]}" != 0 ]; then
   echo "E/Extraction failed !"
   exit 1
 fi

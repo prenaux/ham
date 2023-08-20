@@ -28,5 +28,5 @@ if [ -z "$EXE_TARGET_NAME" ]; then
 fi
 shift
 
-EXE_PATH=$(ham-cppm-exe-path $TOOLSET $EXE_TARGET_NAME)
+EXE_PATH=$(ham-cppm-exe-path "$TOOLSET" "$EXE_TARGET_NAME")
 "$EXE_PATH" "$@"

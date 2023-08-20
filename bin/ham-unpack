@@ -37,7 +37,7 @@ case "$ARCH" in
       set -x
       7z x -y "$ARCH" -o"$OUTDIR"
     )
-    if [ ${PIPESTATUS[0]} != 0 ]; then
+    if [ "${PIPESTATUS[0]}" != 0 ]; then
       log_error "Extraction failed !"
       usage
     fi

@@ -30,9 +30,9 @@ function install_nodeps() {
   VERSION=$(sudo apt-cache policy git-svn | grep Candidate | awk '{print $2}')
   # Print the URI for that specific version
   if [[ -z "$URL" ]]; then
-    URL=$(apt-get download --print-uris git-svn=$VERSION 2>&1 | grep "^'" | cut -d"'" -f2)
+    URL=$(apt-get download --print-uris git-svn="$VERSION" 2>&1 | grep "^'" | cut -d"'" -f2)
   fi
-  wget $URL -O "$DEB_FILE"
+  wget "$URL" -O "$DEB_FILE"
 
   # Check if the download succeeded
   if [ $? -ne 0 ]; then

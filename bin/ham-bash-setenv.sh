@@ -18,7 +18,7 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
   export PATH=$BASH_START_PATH
   case $HAM_OS in
     NT*)
-      pathenv_remove_add "$(unxpath $WINDIR)/System32" after
+      pathenv_remove_add "$(unxpath "$WINDIR")/System32" after
       pathenv_add "$HAM_HOME/bin/nt-x86"
       pathenv_add "$HAM_HOME/toolsets/repos/nt-x86/git/bin"
       pathenv_add "$HAM_HOME/toolsets/repos/nt-x86/git/mingw64/bin"

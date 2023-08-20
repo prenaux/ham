@@ -28,8 +28,8 @@ fi
 PASSWORD="$2"
 
 # Make the temporary extraction directory
-TMP_DIR=$HOME/_ham/_tmp_ext_$(basename $ARCH)
-mkdir -p $TMP_DIR
+TMP_DIR=$HOME/_ham/_tmp_ext_$(basename "$ARCH")
+mkdir -p "$TMP_DIR"
 errcheck $? ham "Can't create the temporary directory '$TMP_DIR'."
 
 # Extract to temporary directory
@@ -40,7 +40,7 @@ if [[ "$PASSWORD" == "" ]]; then
   7z -y x "$ARCH"
 else
   echo "I/7z -p$PASSWORD -y x $ARCH"
-  7z -p$PASSWORD -y x "$ARCH"
+  7z -p"$PASSWORD" -y x "$ARCH"
 fi
 errcheck $? ham "Can't extract the zip file '$ARCH'."
 
@@ -51,14 +51,14 @@ if [[ $PASSWORD == "" ]]; then
   7z a -t7z "$DEST" -mx=6 -ms=on -mhc=on -mtc=off .
 else
   echo "I/7z a -mx=6 -ms=on -mhc=on -mtc=off -p$PASSWORD ."
-  7z a -t7z "$DEST" -mx=6 -ms=on -mhc=on -mtc=off -p$PASSWORD .
+  7z a -t7z "$DEST" -mx=6 -ms=on -mhc=on -mtc=off -p"$PASSWORD" .
 fi
 errcheck $? ham "Can't pack the 7z file '$ARCH'."
 
 # Removing the temporary folder
 echo "I/Removing temporary files..."
 cd ..
-rm -Rf $TMP_DIR
+rm -Rf "$TMP_DIR"
 
 # Done
 echo "Done, packed to $DEST."

@@ -6,4 +6,4 @@ if [[ ! -e "${SSH_CONFIG}" ]]; then
   log_error "Can't find SSH_CONFIG: '${SSH_CONFIG}'."
   exit 1
 fi
-cat $SSH_CONFIG | grep "Host " | cut -d ' ' -f 2 | sort
+cat "$SSH_CONFIG" | grep "Host " | cut -d ' ' -f 2 | sort

@@ -1,7 +1,7 @@
 #!/bin/bash
 if [[ -z "$HAM_HOME" ]]; then
   export HAM_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-  echo "W/HAM_HOME not set, set to:" $HAM_HOME
+  echo "W/HAM_HOME not set, set to:" "$HAM_HOME"
 fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
@@ -28,7 +28,7 @@ case $HAM_OS in
     echo "### No extra packages need to be installed on Windows ###"
     ;;
   OSX)
-    echo "### Make sure "$HAM_HOME/bin" isn't quarantined ###"
+    echo "### Make sure ""$HAM_HOME"/bin" isn't quarantined ###"
     toolset_unquarantine_dir "$HAM_HOME/bin"
     echo "### Installing packages required by ham on OSX (brew) ###"
     # coreutils is mainly for 'realpath' atm

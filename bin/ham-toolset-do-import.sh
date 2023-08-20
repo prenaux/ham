@@ -4,13 +4,13 @@ if [ "$1" == "force" ]; then
   if [ "$1" == "silent" ]; then
     shift
   else
-    ALREADY_IMPORTED=$(ni-hget HAM_IMPORTS_TOOLSETS $1)
+    ALREADY_IMPORTED=$(ni-hget HAM_IMPORTS_TOOLSETS "$1")
     if [[ "$ALREADY_IMPORTED" = "1" ]]; then
       log_warning "ham-toolset-import.sh: toolset already imported '$1', force reimported."
     fi
   fi
 else
-  ALREADY_IMPORTED=$(ni-hget HAM_IMPORTS_TOOLSETS $1)
+  ALREADY_IMPORTED=$(ni-hget HAM_IMPORTS_TOOLSETS "$1")
   if [[ "$ALREADY_IMPORTED" = "1" ]]; then
     complain ham-toolset-import.sh "toolset already imported '$1'."
     return 1
@@ -42,6 +42,6 @@ else
   else
     export HAM_IMPORTED_TOOLSETS="$HAM_IMPORTED_TOOLSETS $1"
   fi
-  ni-hput HAM_IMPORTS_TOOLSETS $1 1
+  ni-hput HAM_IMPORTS_TOOLSETS "$1" 1
   log_info "Imported toolset '$1' ${FOUND_SETUP_SCRIPT}"
 fi
