@@ -286,10 +286,11 @@ function lint_dir() {
   fi
   shift
   log_info "${LANG}_lint all in '$DIRNAME'."
-  pushd "$DIRNAME" >>/dev/null
-  ${LANG}_lint
-  errcheck $? ${LANG}_lint "${LANG} files lint failed in '$DIRNAME'."
-  popd >>/dev/null
+  (
+    cd "$DIRNAME"
+    ${LANG}_lint
+    errcheck $? ${LANG}_lint "${LANG} files lint failed in '$DIRNAME'."
+  )
 }
 
 function lint_dir_or_file() {
@@ -318,58 +319,46 @@ function all_lint() {
       log_error "Specified directory '$CMD' should be preceeded by the language to lint."
       return 1
     fi
+    DIR=$1
     case "$CMD" in
       cpp)
-        (
-          set -e
-          lint_dir_or_file cpp "$1"
-        )
-        shift
+        lint_dir_or_file cpp "$DIR"
+        errcheck $? all_lint "lint_file cpp '$DIR'." || return 1
+        shift # used DIR=$1, so shift
         ;;
       java)
-        (
-          set -e
-          lint_dir_or_file java "$1"
-        )
-        shift
+        lint_dir_or_file java "$DIR"
+        errcheck $? all_lint "lint_file java '$DIR'." || return 1
+        shift # used DIR=$1, so shift
         ;;
       php)
-        (
-          set -e
-          lint_dir_or_file php "$1"
-        )
-        shift
+        lint_dir_or_file php "$DIR"
+        errcheck $? all_lint "lint_file php '$DIR'." || return 1
+        shift # used DIR=$1, so shift
         ;;
       js)
-        (
-          set -e
-          lint_dir_or_file js "$1"
-        )
-        shift
+        lint_dir_or_file js "$DIR"
+        errcheck $? all_lint "lint_file js '$DIR'." || return 1
+        shift # used DIR=$1, so shift
         ;;
       rust)
-        (
-          set -e
-          lint_dir_or_file rust "$1"
-        )
-        shift
+        lint_dir_or_file rust "$DIR"
+        errcheck $? all_lint "lint_file rust '$DIR'." || return 1
+        shift # used DIR=$1, so shift
         ;;
       ni)
-        (
-          set -e
-          lint_dir_or_file ni "$1"
-        )
-        shift
+        lint_dir_or_file ni "$DIR"
+        errcheck $? all_lint "lint_file ni '$DIR'." || return 1
+        shift # used DIR=$1, so shift
         ;;
       sh)
-        (
-          set -e
-          lint_dir_or_file sh "$1"
-        )
-        shift
+        lint_dir_or_file sh "$DIR"
+        errcheck $? all_lint "lint_file sh '$DIR'." || return 1
+        shift # used DIR=$1, so shift
         ;;
       *)
         lint_file "$CMD"
+        errcheck $? all_lint "lint_file '$CMD' failed." || return 1
         ;;
     esac
   done
