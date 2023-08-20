@@ -16,7 +16,8 @@ usage() {
 
 # Build settings
 export BUILD=${BUILD:-ra}
-export BIN_LOA=$(toolset_get_target_bin_loa)
+BIN_LOA=$(toolset_get_target_bin_loa)
+export BIN_LOA
 
 # Parameters check
 TOOLSET=$1

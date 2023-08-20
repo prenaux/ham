@@ -6,7 +6,7 @@ if [[ -z "$HAM_HOME" ]]; then
 fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
-if [ -z $(where_inpath python.exe) ]; then
+if [ -z "$(where_inpath python.exe)" ]; then
   toolset_import_once python_3 >/dev/null
 fi
 

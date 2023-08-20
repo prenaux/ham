@@ -8,15 +8,16 @@ fi
 export FLYMAKE=1
 export HAM_NO_VER_CHECK=1
 export BUILD=da
-export HAM_TARGET_BIN_LOA=$(toolset_get_target_bin_loa)
+HAM_TARGET_BIN_LOA=$(toolset_get_target_bin_loa)
+export HAM_TARGET_BIN_LOA
 export HAM_IMPORTED_TOOLSETS=default
 if [[ -e ~/_ham_flymake ]]; then
-  . ~/_ham_flymake
+  . "$HOME/_ham_flymake"
 fi
 if [[ -z "$HAM_IMPORTED_TOOLSETS" ]]; then
   echo "E/HAM_IMPORTED_TOOLSETS not set."
   exit 1
 fi
 . hat $HAM_IMPORTED_TOOLSETS
-time ham $*
+time ham "$@"
 true

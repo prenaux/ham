@@ -11,7 +11,8 @@ case $HAM_OS in
     # RUN_DEBUGGER could have been already set
     # by the user or by a toolset.
     if [ ! -f "$RUN_DEBUGGER" ]; then
-      export RUN_DEBUGGER=$(toolset_find_msvc_devenv)
+      RUN_DEBUGGER=$(toolset_find_msvc_devenv)
+      export RUN_DEBUGGER
       if [ ! -f "$RUN_DEBUGGER" ]; then
         echo "E/Can't find RUN_DEBUGGER (devenv.exe)"
         return 1

@@ -1,2 +1,2 @@
 #!/bin/sh
-rm -f *_rtcpp.dll *_rtcpp.pdb *_rtcpp.so *_rtcpp.dylib
+rm -f ./*_rtcpp.dll ./*_rtcpp.pdb ./*_rtcpp.so ./*_rtcpp.dylib

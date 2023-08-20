@@ -56,6 +56,7 @@ _ham_autocomplete() {
     completions=$(_ham_complete_ls_targets "." "$cur_word")
   fi
 
+  # shellcheck disable=SC2207
   COMPREPLY=($(compgen -W "$completions" -- "$cur_word"))
 }
 

@@ -4,4 +4,4 @@ if [[ -z "$HAM_HOME" ]]; then
   exit 1
 fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
-ham-run-up _lint.sh $@
+ham-run-up _lint.sh "$@"

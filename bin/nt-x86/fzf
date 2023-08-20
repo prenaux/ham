@@ -1,2 +1,2 @@
 #!/bin/bash
-fzf-run.exe $@
+fzf-run.exe "$@"

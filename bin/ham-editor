@@ -17,15 +17,13 @@ fi
 
 EMACS_CLIENT=$(where_inpath emacsclient)
 if [ -e "$EMACS_CLIENT" ]; then
-  $EMACS_CLIENT -n "$FILEPATH" --alternate-editor="$DEFAULT_EDITOR"
-  if [ $? = 0 ]; then
+  if "$EMACS_CLIENT" -n "$FILEPATH" --alternate-editor="$DEFAULT_EDITOR"; then
     echo "I/Opened '$FILEPATH' with $EMACS_CLIENT"
     exit 0
   fi
 fi
 
-$DEFAULT_EDITOR "$FILEPATH"
-if [ $? = 0 ]; then
+if "$DEFAULT_EDITOR" "$FILEPATH"; then
   echo "I/Edited '$FILEPATH' with $DEFAULT_EDITOR"
   exit 0
 fi

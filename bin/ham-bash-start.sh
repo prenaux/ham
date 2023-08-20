@@ -1,10 +1,11 @@
-if [[ -z $HAM_HOME ]]; then
+#!/bin/bash
+if [[ -z "$HAM_HOME" ]]; then
   echo "E/HAM_HOME not set !"
   exit 1
 fi
 
 if [[ $(pwd) == "/usr" ]]; then
-  cd "$HAM_HOME/.."
+  cd "$HAM_HOME/.." || exit 1
 fi
 
 export BASH_START_PATH=$PATH

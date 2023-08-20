@@ -1,2 +1,2 @@
 #!/bin/bash -ex
-pmset -g assertions | egrep '(PreventUserIdleSystemSleep|PreventUserIdleDisplaySleep)'
+pmset -g assertions | grep -E '(PreventUserIdleSystemSleep|PreventUserIdleDisplaySleep)'

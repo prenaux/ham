@@ -14,12 +14,12 @@ if test -r "$MC_PWD_FILE"; then
   MC_PWD="$(cat "$MC_PWD_FILE")"
   if test -n "$MC_PWD" && test -d "$MC_PWD"; then
     echo "I/Will cd in: $MC_PWD"
-    cd $MC_PWD
-    echo $(pwd)
+    cd "$MC_PWD" || exit 1
+    pwd
   fi
   unset MC_PWD
 fi
 
 rm -f "$MC_PWD_FILE"
 unset MC_PWD_FILE
-echo $(pwd)
+pwd

@@ -14,7 +14,7 @@ if [ ! -f "$ARCH" ]; then
   if [ ! -f "$ARCH" ]; then
     echo "Can't find input archive '$ARCH' !"
     echo "syntax: 7z-fromzip ARCHIVE PASSWORD"
-    exit -1
+    exit 1
   fi
 fi
 
@@ -22,18 +22,18 @@ DEST="${ARCH%.*}.7z"
 echo "I/Converting '$ARCH' to '$DEST'."
 if [[ -e $DEST ]]; then
   echo "Output archive '$DEST' already exist !"
-  exit -1
+  exit 1
 fi
 
 PASSWORD="$2"
 
 # Make the temporary extraction directory
-TMP_DIR=$HOME/_ham/_tmp_ext_$(basename "$ARCH")
+TMP_DIR="$HOME/_ham/_tmp_ext_$(basename "$ARCH")"
 mkdir -p "$TMP_DIR"
 errcheck $? ham "Can't create the temporary directory '$TMP_DIR'."
 
 # Extract to temporary directory
-cd $TMP_DIR
+cd "$TMP_DIR" || exit 1
 echo "I/Extracting zip file..."
 if [[ "$PASSWORD" == "" ]]; then
   echo "I/7z -y x $ARCH"

@@ -9,6 +9,7 @@ max=5
 # Delay in seconds
 delay=1
 while true; do
+  # shellcheck disable=SC2015 # old code, it works, so no touching xD
   "$@" && break || {
     if [[ $n -lt $max ]]; then
       ((n++))
