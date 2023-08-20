@@ -24,8 +24,7 @@ function sh_lint() {
     fi
     (
       set -x
-      # shellcheck disable=SC2068
-      "$HAM_SHELL_LINTER_DIR/shfmt" ${SHFMT_PARAMS[@]} ${FILES[@]}
+      "$HAM_SHELL_LINTER_DIR/shfmt" "${SHFMT_PARAMS[@]}" "${FILES[@]}"
     )
   fi
 
@@ -47,8 +46,7 @@ function sh_lint() {
 
     (
       set -x
-      # shellcheck disable=SC2068
-      "$HAM_SHELL_LINTER_DIR/shellcheck" ${SHELLCHECK_PARAMS[@]} ${FILES[@]}
+      "$HAM_SHELL_LINTER_DIR/shellcheck" "${SHELLCHECK_PARAMS[@]}" "${FILES[@]}"
     )
   fi
 }
