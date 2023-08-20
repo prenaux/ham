@@ -60,17 +60,17 @@ log_success() {
 
 log_error() {
   if [ "$HAM_TERMINAL_SUPPORTS_COLORS" = true ] && [ -z "$NO_COLOR" ]; then
-    echo -e "\033[31mE/$*\033[0m"
+    echo >&2 -e "\033[31mE/$*\033[0m"
   else
-    echo "E/$*"
+    echo >&2 "E/$*"
   fi
 }
 
 log_warning() {
   if [ "$HAM_TERMINAL_SUPPORTS_COLORS" = true ] && [ -z "$NO_COLOR" ]; then
-    echo -e "\033[33mW/$*\033[0m"
+    echo >&2 -e "\033[33mW/$*\033[0m"
   else
-    echo "W/$*"
+    echo >&2 "W/$*"
   fi
 }
 
