@@ -1,0 +1,38 @@
+#!/bin/bash -e
+source "$HAM_HOME/bin/ham-bash-lib.sh"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+function usage() {
+  echo "usage:"
+  echo "  ham-ssh pick|HOST (tmux) (ssh command options)"
+  echo ""
+  echo "  When 'pick' is specified as host a fzf picker is used to pick"
+  echo "  one of the 'ham-ssh-ls' config."
+  exit 1
+}
+
+function pick_host() {
+  ham-ssh-ls | fzf --header "=== Pick a SSH host ==="
+}
+
+if [[ -z "$1" ]]; then
+  usage
+fi
+
+HOST="$1"
+shift
+if [[ "$HOST" == "pick" ]]; then
+  HOST=$(pick_host)
+fi
+
+PARAMS=()
+if [[ "$1" == "tmux" ]]; then
+  PARAMS=("${PARAMS[@]}" -t "tmux new -A -s $HOST")
+  shift
+fi
+PARAMS=("${PARAMS[@]}" $@)
+
+(
+  set -x
+  ssh "$HOST" "${PARAMS[@]}"
+)
