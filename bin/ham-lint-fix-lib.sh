@@ -392,6 +392,7 @@ function ham_lint_fix_usage() {
   echo "  --format        If possible format the specified files."
   echo "  --check-format  Only check if the code would be formatted."
   echo "  --verbose       Use the most verbose output (meant for cli, not tools integration)."
+  echo "  --diff          When available use a diff format for the fixes without applying any."
   echo ""
   echo "examples:"
   echo "  ${SCRIPT_NAME} sources/MyModule/MyThing.cpp"
@@ -421,6 +422,9 @@ function ham_lint_fix_main() {
     elif [ "$1" == "--verbose" ]; then
       shift
       export LINT_VERBOSE=yes
+    elif [ "$1" == "--diff" ]; then
+      shift
+      export LINT_DIFF=yes
     else
       log_error "Unknown option '$1'."
       ham_lint_fix_usage
