@@ -38,6 +38,10 @@
     "key": "ctrl+h ctrl+r",
     "command": "workbench.view.extension.github-pull-requests"
   },
+  {
+    "key": "ctrl+h ctrl+y",
+    "command": "workbench.action.quickOpenTerm"
+  },
 
   /**
    * "Maximize" Panel & Editor.
@@ -180,46 +184,6 @@
   },
 
   /**
-   * Toggle Font Size
-   **/
-  {
-    "key": "ctrl+0",
-    "command": "toggle",
-    "when": "editorTextFocus",
-    "args": {
-      "id": "editorFontSize",
-      "value": [
-        {
-          "editor.fontSize": 14,
-          "editor.lineHeight": 22
-        },
-        {
-          "editor.fontSize": 11,
-          "editor.lineHeight": 0
-        }
-      ]
-    }
-  },
-  {
-    "key": "ctrl+0",
-    "command": "toggle",
-    "when": "terminalFocus",
-    "args": {
-      "id": "terminalFontSize",
-      "value": [
-        {
-          "terminal.integrated.fontSize": 14,
-          "terminal.integrated.lineHeight": 1.2
-        },
-        {
-          "terminal.integrated.fontSize": 11,
-          "terminal.integrated.lineHeight": 0
-        }
-      ]
-    }
-  },
-
-  /**
    * IntelliSense
    **/
   {
@@ -247,25 +211,6 @@
     "key": "escape",
     "command": "notifications.hideToasts",
     "when": "notificationToastsVisible"
-  },
-
-  /**
-   * Better PHPUnit
-   **/
-  {
-    "key": "ctrl+k ctrl+r",
-    "command": "better-phpunit.run",
-    "when": "editorTextFocus && editorLangId == 'php'"
-  },
-  {
-    "key": "ctrl+k ctrl+f",
-    "command": "better-phpunit.run-file",
-    "when": "editorTextFocus && editorLangId == 'php'"
-  },
-  {
-    "key": "ctrl+k ctrl+p",
-    "command": "better-phpunit.run-previous",
-    "when": "editorTextFocus && editorLangId == 'php'"
   },
 
   /**
@@ -347,12 +292,12 @@
     "when": "editorFocus && !config.emacs-mcx.useMetaPrefixMacCmd"
   },
   {
-    "key": "alt+up",
+    "key": "alt+shift+p",
     "command": "editor.action.previousSelectionMatchFindAction",
     "when": "editorFocus"
   },
   {
-    "key": "alt+down",
+    "key": "alt+shift+n",
     "command": "editor.action.nextSelectionMatchFindAction",
     "when": "editorFocus"
   },
