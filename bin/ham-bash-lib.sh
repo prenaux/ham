@@ -330,40 +330,40 @@ current_git_branch() {
   git branch --no-color 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1) /'
 }
 
-update_prompt() {
-  TOOLSET_EXTRA=
-  if [ "$BUILD_JNI" == "1" ]; then
-    TOOLSET_EXTRA=" (jni)"
-  fi
-
+ham_prompt_project_name() {
   if [ -z "$HAM_PROJECT_DIR" ]; then
     PROJECT_NAME=$(basename "$WORK")
   else
     PROJECT_NAME=$(basename "$HAM_PROJECT_DIR")
   fi
+  echo "$PROJECT_NAME"
+}
 
+ham_prompt_build_info() {
+  local USERTAG
   if [ -z "$STY" ]; then
     USERTAG=$USERNAME
   else
     USERTAG="$USERNAME in $STY"
   fi
 
+  local BIN_LOA
   BIN_LOA=$(toolset_get_target_bin_loa "${BUILD_TARGET}")
+  if [ "$BUILD_JNI" == "1" ]; then
+    BIN_LOA="$BIN_LOA (jni)"
+  fi
+
+  local BUILD
   BUILD=${BUILD:-ra}
 
+  echo "$USERTAG,$BIN_LOA,$BUILD"
+}
+
+update_prompt() {
   if test "$TERM_NCOLORS" -ge 8; then
-    # shellcheck disable=SC2153
-    PROMPT="\[\033[35m${PROJECT_NAME}${TOOLSET_EXTRA}\033[0m\] \[\033[32m$(current_git_branch)\033[0m\]\w (\e[38;5;95m$USERTAG\e[0m,\e[38;5;95m$BIN_LOA\e[0m,\e[38;5;95m$BUILD\e[0m) \[\033[0;36m${HAM_IMPORTED_TOOLSETS}\033[0m\]"
-
-    if [ -n "$DEVSERVER" ]; then
-      PROMPT="$PROMPT, \[\033[32m$DEVSERVER\033[0m\]"
-    fi
-
-    if [ -n "$HOSTNAME_LABEL" ]; then
-      PROMPT="\[\033[${HOSTNAME_COLOR:-37}m${HOSTNAME_LABEL}\033[0m\] $PROMPT"
-    fi
+    PROMPT="\[\033[35m\$(ham_prompt_project_name)\033[0m\] \[\033[32m\$(current_git_branch)\033[0m\]\w (\e[38;5;95m\$(ham_prompt_build_info)\e[0m) \[\033[0;36m\${HAM_IMPORTED_TOOLSETS}\033[0m\]"
   else
-    PROMPT="# ${PROJECT_NAME}${TOOLSET_EXTRA} \[$(current_git_branch)\]\w ($USERTAG,$BIN_LOA,$BUILD) ${HAM_IMPORTED_TOOLSETS}"
+    PROMPT="# \$(ham_prompt_project_name) \[\$(current_git_branch)\]\w (\$(ham_prompt_build_info)) \${HAM_IMPORTED_TOOLSETS}"
   fi
 
   export PS1="
@@ -509,6 +509,7 @@ toolset_dl_cleanup() {
 
 toolset_info() {
   echo "=== Ham Info ======================================"
+  # shellcheck disable=SC2153
   echo "TOOLSETS = ${HAM_IMPORTED_TOOLSETS}"
   echo "MAIN TOOLSET = ${HAM_TOOLSET}, NAME: ${HAM_TOOLSET_NAME}, DIR: ${HAM_TOOLSET_DIR}"
   echo -n "TOOLS VERSION = "
