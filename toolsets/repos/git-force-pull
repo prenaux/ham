@@ -1,6 +1,6 @@
 #!/bin/bash -e
 usage() {
-    echo "usage: git-force-pull (nostash) BRANCH"
+    echo "usage: git-force-pull (nostash) (nofetch) BRANCH"
     echo ""
     echo "  Fetch and checkout a clean branch from the specified remote."
     echo ""
@@ -25,6 +25,12 @@ if [ "$1" == "nostash" ]; then
     shift
 fi
 
+FETCH=1
+if [ "$1" == "nofetch" ]; then
+    FETCH=0
+    shift
+fi
+
 if [ $# = 1 ]; then
     ORIGIN=origin
     BRANCH=$1
@@ -36,34 +42,25 @@ fi
 BRANCH=`git-get-branch-name "$BRANCH"`
 echo "I/Force pulling branch '$BRANCH'."
 
-# Make sure we have all the branches in case we're fetching a new branch that
-# doesnt exist yet.
-(set -x ; git fetch $ORIGIN)
-
-# If it's a new branch with need to do a first checkout for it to exist.
 if [ $STASH == 1 ]; then
-    (set -x ;
-     git-stash trydrop git-force-pull ;
-     git-stash push git-force-pull ;
-     git checkout $BRANCH ;
-     git-stash trypop git-force-pull)
+  (set -x;
+   git-stash trydrop git-force-pull ;
+   git-stash push git-force-pull ;
+   git checkout $BRANCH ;
+   git-stash trypop git-force-pull)
 else
-    (set -x ; git checkout $BRANCH)
+  (set -x ;
+   git checkout $BRANCH)
 fi
 
-# Switch to a temp branch so that we can reset our target branch safely.
-CURRENT_BRANCH=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
-if [[ "$CURRENT_BRANCH" != "tmp-git-force-pull" ]]; then
-  if [[ -n "`git branch --list tmp-git-force-pull`" ]]; then
+if [ "`git branch --list tmp-git-force-pull`" ]; then
     (set -x ; git branch -D tmp-git-force-pull)
-  fi
-  (set -x ; git checkout -b tmp-git-force-pull)
 fi
 
-# Move to the remote branch's status.
-(set -x ; git fetch $ORIGIN +$BRANCH:$BRANCH)
-
-# Go back to our branch.
+(set -x ; git checkout -b tmp-git-force-pull)
+if [ $FETCH == 1 ]; then
+    (set -x ; git fetch $ORIGIN +$BRANCH:$BRANCH)
+fi
 if [ $STASH == 1 ]; then
     (set -x ;
      git-stash trydrop git-force-pull ;
@@ -73,6 +70,4 @@ if [ $STASH == 1 ]; then
 else
     (set -x ; git checkout $BRANCH)
 fi
-
-# Remove the temp branch.
 (set -x ; git branch -D tmp-git-force-pull)
