@@ -14,6 +14,13 @@ function pick_host() {
   ham-ssh-ls | fzf --header "=== Pick a SSH host ==="
 }
 
+if where_inpath autossh; then
+  SSH_CMD=autossh
+else
+  SSH_CMD=ssh
+fi
+PARAMS=()
+
 if [[ -z "$1" ]]; then
   usage
 fi
@@ -24,15 +31,22 @@ if [[ "$HOST" == "pick" ]]; then
   HOST=$(pick_host)
 fi
 
-PARAMS=()
 if [[ "$1" == "tmux" ]]; then
   PARAMS=("${PARAMS[@]}" -t "tmux new -A -s $HOST")
   shift
 fi
 PARAMS=("${PARAMS[@]}" "$@")
 
-(
-  set -x
-  # shellcheck disable=SC2029 # yes, we want it expended client side (in this script)
-  ssh "$HOST" "${PARAMS[@]}"
-)
+if [[ "$SSH_CMD" == "autossh" ]]; then
+  (
+    set -x
+    # shellcheck disable=SC2029 # yes, we want it expended client side
+    "$SSH_CMD" -M 0 -o "ServerAliveInterval 3" -o "ServerAliveCountMax 3" "$HOST" "${PARAMS[@]}"
+  )
+else
+  (
+    set -x
+    # shellcheck disable=SC2029 # yes, we want it expended client side
+    "$SSH_CMD" "$HOST" "${PARAMS[@]}"
+  )
+fi
