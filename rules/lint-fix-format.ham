@@ -1,0 +1,40 @@
+DEPENDS lff : lint fix ;
+
+# lffGlob_sh DIR : EXTS
+rule lffGlob {
+  return [ GLOB [ FDirName $(<) ] : "*"$(>) ] ;
+}
+
+# lffLintFiles_sh TARGET : FILES
+rule lffLintFiles_sh {
+  NOTFILE $(<) ;
+  ALWAYS $(<) ;
+  DEPENDS $(<) : $(>) ;
+  DEPENDS lint : $(<) ;
+}
+
+# lffFixFiles_sh TARGET : FILES
+rule lffFixFiles_sh {
+  NOTFILE $(<) ;
+  ALWAYS $(<) ;
+  DEPENDS $(<) : $(>) ;
+  DEPENDS fix : $(<) ;
+}
+
+rule lffFiles_sh {
+  lffFixFiles_sh $(<)_fix : $(>) ;
+  lffLintFiles_sh $(<)_lint : $(>) ;
+  DEPENDS $(<) : $(<)_fix $(<)_lint ;
+}
+
+actions together lffLintFiles_sh {
+  . "$HAM_HOME/bin/ham-bash-lib.sh"
+  . "$HAM_HOME/bin/ham-lint-fix-lib.sh"
+  ham_lint_fix_main --lint --check-format sh "$(>)"
+}
+
+actions together lffFixFiles_sh {
+  . "$HAM_HOME/bin/ham-bash-lib.sh"
+  . "$HAM_HOME/bin/ham-lint-fix-lib.sh"
+  ham_lint_fix_main --fix --format sh "$(>)"
+}

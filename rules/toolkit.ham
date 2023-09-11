@@ -1058,3 +1058,5 @@ Import run.ham ;
 #     TOOLSET
 #----------------------------------------------------------------------
 Import ham-toolset.ham ;
+
+Import lint-fix-format.ham ;
