@@ -1,6 +1,10 @@
 SubDir TOP ;
 
-ushScripts ham-test-thrift ;
+local DIR = [ FDirName $(TOP) $(SUBDIR) ] ;
+# ECHO "... DIR:" $(DIR) ;
+local SH_FILES = [ FGristFiles [ lffGlob $(DIR) : .sh ] ] ;
+# ECHO "... SH_FILES:" $(SH_FILES) ;
+lffFiles_sh lff_ham-test-thrift : $(SH_FILES) ;
 
 if $(TARGET_FEATURE_CONSOLE) {
   SubInclude TOP src_client ;
