@@ -3,14 +3,14 @@
 # This is a simple environment setup to start using ham:
 #   source ./ham/_env.sh
 #
-SCRIPT_SOURCED=$((return 0 2>/dev/null) && echo yes || echo "")
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ -z "$SCRIPT_SOURCED" ]; then
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   echo "W/Should only be used while sourced."
 fi
 
 export HAM_HOME="$SCRIPT_DIR"
-export WORK="$( cd "$SCRIPT_DIR/.." && pwd )"
+WORK="$(cd "$SCRIPT_DIR/.." && pwd)"
+export WORK
 
 #
 # You dont want BASH_START_PATH since it will leak your local machine's
@@ -23,7 +23,7 @@ export WORK="$( cd "$SCRIPT_DIR/.." && pwd )"
 # fi
 
 if [ -z "$EDITOR" ]; then
-    export EDITOR=ham-editor
+  export EDITOR=ham-editor
 fi
 
 # Set the ham environment
