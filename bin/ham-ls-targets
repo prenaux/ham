@@ -125,7 +125,7 @@ done
 shift $((OPTIND - 1))
 
 if [[ "${#TARGETS[@]}" -eq 0 ]]; then
-  TARGETS=(all runnable debuggable)
+  TARGETS=(all runnable debuggable lff)
 fi
 
 # Filter
