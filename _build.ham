@@ -1,0 +1,16 @@
+SubDir TOP ;
+
+local BIN_DIR = [ FDirName $(TOP) bin ] ;
+# ECHO "... BIN_DIR:" $(BIN_DIR) ;
+
+# Recursively get all .sh files inside of bin/ directory
+local SH_FILES = [ FGristFiles [ ListFilesR $(BIN_DIR) : *.sh ] ] ;
+# Add all files at top level of bin/ directory with no file suffix
+SH_FILES += [ FGristFiles [ Match (^[^.]*$) : [ ListFiles $(BIN_DIR) ] ] ] ;
+# Add all .sh files at top level of the repo
+SH_FILES += [ FGristFiles [ ListFiles $(TOP) : *.sh ] ] ;
+# ECHO "... SH_FILES:" $(SH_FILES) ;
+
+lffFiles_sh lff_ham : $(SH_FILES) ;
+
+SubInclude TOP sources ham tests ham-test-thrift ;
