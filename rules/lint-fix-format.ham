@@ -1,8 +1,9 @@
+NOTFILE lff lint fix ;
 DEPENDS lff : lint fix ;
 
-# lffGlob_sh DIR : EXTS
+# lffGlob DIR : EXTS
 rule lffGlob {
-  return [ GLOB [ FDirName $(<) ] : "*"$(>) ] ;
+  return [ FGristFiles [ GLOB [ FDirName $(<) ] : "*"$(>) ] ] ;
 }
 
 # lffLintFiles_sh TARGET : FILES
