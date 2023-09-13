@@ -1,11 +1,6 @@
-MODULE_NAME = ham-test-thrift ;
-if [ SubDirOnce TOP sources ham tests $(MODULE_NAME) ] = 1 { return ; }
-# SubDir TOP ;
+if [ SubDirOnce TOP sources ham tests ham-test-thrift ] = 1 { return ; }
 
-# local DIR = [ FDirName $(TOP) $(SUBDIR) ] ;
-local DIR = [ FDirName $(SUBDIR) ] ;
-# ECHO "... DIR:" $(DIR) ;
-local SH_FILES = [ lffGlob $(DIR) : .sh ] ;
+local SH_FILES = [ lffGlob $(SUBDIR) : .sh ] ;
 # ECHO "... SH_FILES:" $(SH_FILES) ;
 lffFiles_sh lff_ham-test-thrift : $(SH_FILES) ;
 
