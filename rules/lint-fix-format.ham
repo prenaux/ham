@@ -27,14 +27,21 @@ rule lffFiles_sh {
   DEPENDS $(<) : $(<)_fix $(<)_lint ;
 }
 
+SHFMT_PARAMS ?= -i 2 -ci -bn -ln=bash -bn=false ;
+SHELLCHECK_PARAMS ?= --shell=bash --format=gcc ;
+SHELLCHECK_PARAMS += -e SC1091 ; # 'Not following: ... was not specified as input'
+# This is better than disabling SC1091, but oh so slowww :(
+# SHELLCHECK_PARAMS += -x --source-path="$(HAM_HOME)" --source-path="$HAM_HOME/bin" ;
+
 actions together lffLintFiles_sh {
-  . "$HAM_HOME/bin/ham-bash-lib.sh"
-  . "$HAM_HOME/bin/ham-lint-fix-lib.sh"
-  ham_lint_fix_main --lint --check-format sh "$(>)"
+  HAM_NO_VER_CHECK=1 . hat shell_linter > /dev/null
+  set -x
+  "$HAM_SHELL_LINTER_DIR/shfmt" -d $(SHFMT_PARAMS) "$(>)"
+  "$HAM_SHELL_LINTER_DIR/shellcheck" $(SHELLCHECK_PARAMS) "$(>)"
 }
 
 actions together lffFixFiles_sh {
-  . "$HAM_HOME/bin/ham-bash-lib.sh"
-  . "$HAM_HOME/bin/ham-lint-fix-lib.sh"
-  ham_lint_fix_main --fix --format sh "$(>)"
+  HAM_NO_VER_CHECK=1 . hat shell_linter > /dev/null
+  set -x
+  "$HAM_SHELL_LINTER_DIR/shfmt" -w $(SHFMT_PARAMS) "$(>)"
 }
