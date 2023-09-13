@@ -1,14 +1,93 @@
 SubDir TOP ;
 
-local BIN_DIR = [ FDirName $(TOP) bin ] ;
+local BIN_DIR = [ FDirName $(SUBDIR) bin ] ;
 # ECHO "... BIN_DIR:" $(BIN_DIR) ;
 
 # Recursively get all .sh files inside of bin/ directory
 local SH_FILES = [ FGristFiles [ ListFilesR $(BIN_DIR) : *.sh ] ] ;
-# Add all files at top level of bin/ directory with no file suffix
-SH_FILES += [ FGristFiles [ Match (^[^.]*$) : [ ListFiles $(BIN_DIR) ] ] ] ;
+
 # Add all .sh files at top level of the repo
-SH_FILES += [ FGristFiles [ ListFiles $(TOP) : *.sh ] ] ;
+SH_FILES += [ lffGlob $(SUBDIR) : *.sh ] ;
+
+# Manually specify all the bash files from the bin/ directory with no .sh file extension.
+# If a new such file is created in the bin/ directory, it should be manually added to this list.
+# (This list was originally built by running `shfmt -f ./bin` and removing entries with the '.sh' extension)
+SH_FILES_NO_EXTENSION = bin/7z-fromzip
+bin/7z-pack-arch
+bin/7z-pack-dir
+bin/7z-unpack-arch
+bin/curl-find-final-url
+bin/curl-timed
+bin/emacs-filecache-cleanup
+bin/genuuid
+bin/ham
+bin/ham-brew
+bin/ham-brew-fixup
+bin/ham-brew-install
+bin/ham-brew-installdir
+bin/ham-check-file
+bin/ham-clang-format
+bin/ham-clang-format-cpp
+bin/ham-cppm-bin-filepath
+bin/ham-cppm-build
+bin/ham-cppm-build-check
+bin/ham-cppm-exe-path
+bin/ham-cppm-get-toolset
+bin/ham-cppm-run
+bin/ham-dl-file
+bin/ham-editor
+bin/ham-env
+bin/ham-env-clear
+bin/ham-exec-retry
+bin/ham-find-dir-up
+bin/ham-find-file-up
+bin/ham-fix
+bin/ham-flymake
+bin/ham-gdb
+bin/ham-gen-compile-commands
+bin/ham-glob-files
+bin/ham-grep
+bin/ham-grep-for-emacs
+bin/ham-gt
+bin/ham-install-os-packages
+bin/ham-lint
+bin/ham-lint-fix
+bin/ham-ls-targets
+bin/ham-pm2
+bin/ham-rtcpp
+bin/ham-rtcpp-clean
+bin/ham-run-up
+bin/ham-ssh
+bin/ham-ssh-ls
+bin/ham-toolset
+bin/ham-toolset-build
+bin/ham-unpack
+bin/hamx
+bin/hash_md5
+bin/hat
+bin/lin-x64/lin-apt-install-nodeps
+bin/lin-x64/lin-listening
+bin/lin-x64/node
+bin/ls-dir-tree
+bin/ls-file-tree
+bin/mc-wrapper
+bin/ni
+bin/niui
+bin/niw
+bin/nt-x86/emacs
+bin/nt-x86/fzf
+bin/nt-x86/node
+bin/nt-x86/python3
+bin/osx/macos-listening
+bin/osx/macos-remove-from-quarantine
+bin/osx/macos-wake-reason
+bin/osx/macos-what-prevents-sleep
+bin/print-256-colours
+bin/run-for-xargs
+bin/simple-http-server
+bin/where_inpath ;
+SH_FILES += [ FGristFiles $(SH_FILES_NO_EXTENSION) ] ;
+
 # ECHO "... SH_FILES:" $(SH_FILES) ;
 
 lffFiles_sh lff_ham : $(SH_FILES) ;
