@@ -46,10 +46,9 @@ pathenv_add "${HAM_TOOLSET_DIR}"
 # version
 VER="--- xslt_tools ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
+  if ! VER="$VER
 --- xsltproc ---
-$(xsltproc --version | grep xsltproc)"
-  if [ $? != 0 ]; then
+$(xsltproc --version | grep xsltproc)"; then
     echo "E/Can't get xsltproc version."
     return 1
   fi
@@ -58,10 +57,9 @@ export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
 
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
+  if ! VER="$VER
 --- saxon ------
-$(xslt_tools-saxon -version)"
-  if [ $? != 0 ]; then
+$(xslt_tools-saxon -version)"; then
     echo "E/Can't get xslt_tools-saxon version."
     return 1
   fi

@@ -26,9 +26,8 @@ esac
 
 VER="--- windbg ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-WinDebug"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+WinDebug"; then
     echo "E/Can't get version."
     return 1
   fi

@@ -25,13 +25,13 @@ case $HAM_OS in
     # export LC_ALL=en_EN.UTF-8
     ;;
   LINUX*)
-    if [ -z $(where_inpath wine) ]; then
+    if [ -z "$(where_inpath wine)" ]; then
       (
         set -ex
         sudo apt -y update
         sudo apt install -y wine
       )
-      if [ -z $(where_inpath wine) ]; then
+      if [ -z "$(where_inpath wine)" ]; then
         echo "E/Can't find wine after installing it."
         exit 1
       fi
@@ -50,12 +50,11 @@ pathenv_add "${HAM_TOOLSET_DIR}"
 # version
 VER="--- wine ------------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$($WINE_USR_DIR/bin/wine64 --version)
+  if ! VER="$VER
+$("$WINE_USR_DIR"/bin/wine64 --version)
 Wine: $WINE_USR_DIR
-Wine Prefix: $WINEPREFIX"
-  if [ $? != 0 ]; then
-    echo "E/Can't get nicgc version."
+Wine Prefix: $WINEPREFIX"; then
+    echo "E/Can't get wine version."
     return 1
   fi
 fi

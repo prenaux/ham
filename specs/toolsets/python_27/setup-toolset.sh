@@ -43,9 +43,8 @@ esac
 
 VER="--- python_27 ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(python --version 2>&1)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(python --version 2>&1)"; then
     echo "E/Can't get version."
     return 1
   fi

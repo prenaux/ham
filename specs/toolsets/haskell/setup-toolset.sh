@@ -57,10 +57,9 @@ pathenv_add "${HS_STACK_BIN_DIR}"
 # Version checks
 VER="--- haskell ----------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
+  if ! VER="$VER
 GHC: $(hs-stack ghc -- --version)
-STACK: $(hs-stack --numeric-version)"
-  if [ $? != 0 ]; then
+STACK: $(hs-stack --numeric-version)"; then
     echo "E/Can't get version."
     return 1
   fi

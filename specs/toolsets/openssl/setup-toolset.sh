@@ -10,10 +10,12 @@ case $HAM_OS in
   OSX*)
     # Separated for clarity and easier error tracking
     ham-brew-install openssl@3 "bin/openssl" || return 1
-    PREFIX=$(ham-brew-installdir openssl@3 prefix)
-    export OPENSSL_BINDIR=$(ham-brew-installdir openssl@3 bin)
-    export OPENSSL_INCDIR=$(ham-brew-installdir openssl@3 include)
-    export OPENSSL_LIBDIR=$(ham-brew-installdir openssl@3 lib)
+    OPENSSL_BINDIR=$(ham-brew-installdir openssl@3 bin)
+    export OPENSSL_BINDIR
+    OPENSSL_INCDIR=$(ham-brew-installdir openssl@3 include)
+    export OPENSSL_INCDIR
+    OPENSSL_LIBDIR=$(ham-brew-installdir openssl@3 lib)
+    export OPENSSL_LIBDIR
     ;;
   LINUX*)
     export OPENSSL_INCDIR="/usr/include"
@@ -36,7 +38,7 @@ VER="--- openssl ------------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
   ham-check-file "$OPENSSL_INCDIR/openssl/ssl.h"
   errcheck $? $HAM_TOOLSET_NAME "Include check failed." || return 1
-  ham-check-file "$OPENSSL_LIBDIR/$(basename $(ham-cppm-bin-filepath dll ssl))"
+  ham-check-file "$OPENSSL_LIBDIR/$(basename "$(ham-cppm-bin-filepath dll ssl)")"
   errcheck $? $HAM_TOOLSET_NAME "Lib check failed." || return 1
 
   # We check only for existence since openssl_cli doesnt have a version command :(

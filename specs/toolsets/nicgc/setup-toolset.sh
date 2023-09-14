@@ -42,9 +42,8 @@ pathenv_add "${HAM_TOOLSET_DIR}"
 # version
 VER="--- nicgc ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(nicgc -v 2>&1)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(nicgc -v 2>&1)"; then
     echo "E/Can't get nicgc version."
     return 1
   fi

@@ -13,7 +13,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/zig"
 case $HAM_BIN_LOA in
   nt-x86 | lin-x64 | osx-arm64 | osx-x64)
     export ZIG_DIR="${HAM_TOOLSET_DIR}/$HAM_BIN_LOA"
-    toolset_check_and_dl_ver zig $HAM_BIN_LOA v0_10_0 || return 1
+    toolset_check_and_dl_ver zig "$HAM_BIN_LOA" v0_10_0 || return 1
     ;;
   *)
     echo "E/Toolset: Unsupported host OS"
@@ -25,7 +25,8 @@ esac
 case $HAM_BIN_LOA in
   osx-*)
     # Added system sdk path using the xcode command line tool..
-    export MACOS_SDK_PATH=$(xcrun --show-sdk-path)
+    MACOS_SDK_PATH=$(xcrun --show-sdk-path)
+    export MACOS_SDK_PATH
     ;;
 esac
 
@@ -41,9 +42,8 @@ export BUILD_BIN_LOA=$HAM_BIN_LOA
 # version
 VER="--- zig ${HAM_TARGET_BIN_LOA} -------------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(zig version)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(zig version)"; then
     echo "E/Can't get zig version."
     return 1
   fi

@@ -9,7 +9,8 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/php_8"
 case $HAM_OS in
   OSX*)
     export HAM_PHP_VERSION=8.2
-    export PHP_HOME=$(ham-brew-installdir php@$HAM_PHP_VERSION)
+    PHP_HOME=$(ham-brew-installdir php@$HAM_PHP_VERSION)
+    export PHP_HOME
     # freetds, a dependency of php@$HAM_PHP_VERSION, needs brew's curl and for some
     # reason complains about it and fail the install instead of having it
     # as a dependency...
@@ -22,7 +23,7 @@ case $HAM_OS in
     ;;
   LINUX*)
     export HAM_PHP_VERSION=8.2
-    if [ -z $(where_inpath php$HAM_PHP_VERSION) ]; then
+    if [ -z "$(where_inpath "php$HAM_PHP_VERSION")" ]; then
       echo "W/php $HAM_PHP_VERSION not found, trying to install with sudo..."
       (
         set -ex
@@ -55,10 +56,9 @@ pathenv_add "${HAM_TOOLSET_DIR}"
 
 VER="--- php_8 ----------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
+  if ! VER="$VER
 $(php --version)
-$(composer -V)"
-  if [ $? != 0 ]; then
+$(composer -V)"; then
     echo "E/Can't get version."
     return 1
   fi

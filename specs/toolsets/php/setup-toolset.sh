@@ -33,7 +33,8 @@ case $HAM_OS in
     pathenv_add "${HAM_TOOLSET_DIR}"
     ;;
   OSX*)
-    export PHP_HOME=$(ham-brew-installdir php@7.4)
+    PHP_HOME=$(ham-brew-installdir php@7.4)
+    export PHP_HOME
     # freetds, a dependency of php@7.4, needs brew's curl and for some
     # reason complains about it and fail the install instead of having it
     # as a dependency...
@@ -52,13 +53,13 @@ case $HAM_OS in
     export HAM_PHP_FPM_EXE_PATH="$PHP_HOME/sbin/php-fpm"
     ;;
   LINUX*)
-    if [ -z $(where_inpath "php$HAM_PHP_VERSION") ]; then
+    if [ -z "$(where_inpath "php$HAM_PHP_VERSION")" ]; then
       echo "W/php 7.4 not found, trying to install with sudo..."
       (
         set -ex
         sudo apt-get install -y php7.4-common php7.4-mysql php7.4-xml php7.4-xmlrpc php7.4-curl php7.4-gd php7.4-imagick php7.4-cli php7.4-dev php7.4-imap php7.4-mbstring php7.4-opcache php7.4-pgsql php7.4-soap php7.4-sqlite3 php7.4-zip php7.4-intl php7.4-fpm
       ) || return 1
-      if [ -z $(where_inpath "php$HAM_PHP_VERSION") ]; then
+      if [ -z "$(where_inpath "php$HAM_PHP_VERSION")" ]; then
         echo "E/Can't find 'php$HAM_PHP_VERSION' after installation."
         return 1
       fi
@@ -75,10 +76,9 @@ esac
 
 VER="--- php ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
+  if ! VER="$VER
 $(php --version)
-$(composer -V)"
-  if [ $? != 0 ]; then
+$(composer -V)"; then
     echo "E/Can't get version."
     return 1
   fi

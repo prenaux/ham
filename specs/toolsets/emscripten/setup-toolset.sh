@@ -16,7 +16,7 @@ export HAM_TARGET_BIN_LOA=web-js
 # path setup
 case $HAM_OS in
   OSX*)
-    if [ -z $(which emcc) ]; then
+    if [ -z "$(which emcc)" ]; then
       echo "W/Couldn't find emcc, will try to install it with brew."
       xcode-select --install
       ham-brew install emscripten
@@ -37,9 +37,8 @@ esac
 
 VER="--- emscripten ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(emcc --version | grep emcc)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(emcc --version | grep emcc)"; then
     echo "E/Can't get version."
     return 1
   fi

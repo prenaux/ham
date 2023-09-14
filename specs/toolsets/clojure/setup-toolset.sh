@@ -18,9 +18,8 @@ esac
 
 VER="--- clojure --------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-    $(clojure --version)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+    $(clojure --version)"; then
     echo "E/Can't get version."
     return 1
   fi

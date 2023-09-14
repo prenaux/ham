@@ -19,9 +19,8 @@ pathenv_add "$HAM_TOOLSET_DIR"
 
 VER="--- clang_tools ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(clang-tidy --version | grep version)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(clang-tidy --version | grep version)"; then
     echo "E/Can't get version."
     return 1
   fi

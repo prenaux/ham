@@ -29,23 +29,24 @@ case $HAM_OS in
     export ADR_DIR_SDK="${HAM_TOOLSET_DIR}/nt-x86/sdk"
     export GCC_VER=4.9
     # dl if missing
-    if [ ! -e "$ADR_DIR_SDK" -o ! -e "$ADR_DIR_NDK" ]; then
+    if [ ! -e "$ADR_DIR_SDK" ] || [ ! -e "$ADR_DIR_NDK" ]; then
       toolset_dl adr_base adr_base_nt-x86
-      if [ ! -e "$ADR_DIR_SDK" -o ! -e "$ADR_DIR_NDK" ]; then
+      if [ ! -e "$ADR_DIR_SDK" ] || [ ! -e "$ADR_DIR_NDK" ]; then
         echo "adr_base nt-x86 folder doesn't exist in the toolset"
         return 1
       fi
     fi
     ;;
   OSX)
-    export SYSTEM_NAME=$(uname)-$(uname -m)
+    SYSTEM_NAME=$(uname)-$(uname -m)
+    export SYSTEM_NAME
     export ADR_NDK_PREBUILT=${SYSTEM_NAME,,}
     export ADR_DIR_SDK="/usr/local/share/android-sdk"
     export ADR_DIR_NDK="${ADR_DIR_SDK}/ndk/${ADR_NDK_VERSION}"
     chmod +x "${HAM_TOOLSET_DIR}/adr-"*
 
     # Test the SDK
-    if [ ! -d "$ADR_DIR_SDK" -o ! -d "${ADR_DIR_SDK}/platforms/${ADR_SDK_PLATFORM}" ]; then
+    if [ ! -d "$ADR_DIR_SDK" ] || [ ! -d "${ADR_DIR_SDK}/platforms/${ADR_SDK_PLATFORM}" ]; then
       echo "I/Can't find android sdk, installing with brew..."
       ham-brew install --cask android-sdk android-platform-tools
       echo "I/Making sure the Android SDK isn't quarantined..."
@@ -58,7 +59,7 @@ case $HAM_OS in
       sdkmanager --install "ndk;${ADR_NDK_VERSION}" --channel=3
       echo "I/Android SDK and requirements should now be installed."
     fi
-    if [ ! -d "$ADR_DIR_SDK" -o ! -d "${ADR_DIR_SDK}/platforms/${ADR_SDK_PLATFORM}" ]; then
+    if [ ! -d "$ADR_DIR_SDK" ] || [ ! -d "${ADR_DIR_SDK}/platforms/${ADR_SDK_PLATFORM}" ]; then
       echo "adr_base osx can't install the android sdk & ndk & platform"
       return 1
     fi
@@ -98,7 +99,7 @@ export ADR_GCC_OPT=-O2
 
 export ADR_SDK_PLATFORM_DIR="${ADR_DIR_SDK}/platforms/${ADR_SDK_PLATFORM}"
 if [ ! -e "$ADR_SDK_PLATFORM_DIR" ]; then
-  echo "E/Android toolset: can't find SDK platform:" ${ADR_SDK_PLATFORM_DIR}
+  echo "E/Android toolset: can't find SDK platform:" "${ADR_SDK_PLATFORM_DIR}"
   return 1
 fi
 
@@ -121,9 +122,8 @@ export ANDROID_HOME=${ADR_DIR_SDK}
 
 VER="--- adr-clang ------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(clang --version)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(clang --version)"; then
     echo "E/Can't get clang version."
     return 1
   fi

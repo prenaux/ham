@@ -9,9 +9,9 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/java_jdk18"
 case $HAM_OS in
   NT*)
     export JAVA_HOME="${HAM_TOOLSET_DIR}/nt-x86/"
-    if [ ! -e "$JAVA_HOME/bin/java.exe" -o ! -e "$JAVA_HOME/bin/javac.exe" ]; then
+    if [ ! -e "$JAVA_HOME/bin/java.exe" ] || [ ! -e "$JAVA_HOME/bin/javac.exe" ]; then
       toolset_dl java_jdk18 java_jdk18_nt-x86
-      if [ ! -e "$JAVA_HOME/bin/java.exe" -o ! -e "$JAVA_HOME/bin/javac.exe" ]; then
+      if [ ! -e "$JAVA_HOME/bin/java.exe" ] || [ ! -e "$JAVA_HOME/bin/javac.exe" ]; then
         echo "E/nt-x86 folder doesn't exist in the toolset"
         return 1
       fi
@@ -24,9 +24,9 @@ case $HAM_OS in
       return 1
     else
       export JAVA_HOME="${HAM_TOOLSET_DIR}/osx-x64/"
-      if [ ! -e "$JAVA_HOME/bin/java" -o ! -e "$JAVA_HOME/bin/javac" ]; then
+      if [ ! -e "$JAVA_HOME/bin/java" ] || [ ! -e "$JAVA_HOME/bin/javac" ]; then
         toolset_check_and_dl_ver java_jdk18 osx-x64 v1 || return 1
-        if [ ! -e "$JAVA_HOME/bin/java" -o ! -e "$JAVA_HOME/bin/javac" ]; then
+        if [ ! -e "$JAVA_HOME/bin/java" ] || [ ! -e "$JAVA_HOME/bin/javac" ]; then
           echo "E/osx-x64 can't install Java 1.8"
           return 1
         fi
@@ -37,9 +37,9 @@ case $HAM_OS in
     ;;
   LINUX)
     export JAVA_HOME="${HAM_TOOLSET_DIR}/${HAM_BIN_LOA}/"
-    if [ ! -e "$JAVA_HOME/bin/java" -o ! -e "$JAVA_HOME/bin/javac" ]; then
-      toolset_dl java_jdk18 java_jdk18_${HAM_BIN_LOA}
-      if [ ! -e "$JAVA_HOME/bin/java" -o ! -e "$JAVA_HOME/bin/javac" ]; then
+    if [ ! -e "$JAVA_HOME/bin/java" ] || [ ! -e "$JAVA_HOME/bin/javac" ]; then
+      toolset_dl java_jdk18 java_jdk18_"${HAM_BIN_LOA}"
+      if [ ! -e "$JAVA_HOME/bin/java" ] || [ ! -e "$JAVA_HOME/bin/javac" ]; then
         echo "E/nt-x86 folder doesn't exist in the toolset"
         return 1
       fi
@@ -56,12 +56,11 @@ esac
 
 VER="--- java_jdk18 ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
+  if ! VER="$VER
 --- java ---
 $(java -version 2>&1)
 --- javac ---
-$(javac -version 2>&1)"
-  if [ $? != 0 ]; then
+$(javac -version 2>&1)"; then
     echo "E/Can't get Java version."
     return 1
   fi

@@ -51,9 +51,8 @@ pathenv_add "${HAM_TOOLSET_DIR}"
 # version
 VER="--- cg ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(cgc -v 2>&1)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(cgc -v 2>&1)"; then
     echo "E/Can't get cg version."
     return 1
   fi

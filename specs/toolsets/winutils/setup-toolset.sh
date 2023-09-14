@@ -26,10 +26,9 @@ esac
 
 VER="--- winutils ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
+  if ! VER="$VER
 Various Windows utilities: Notepad++, Network Monitor, Sysinternals,
-Process Explorer, Depends, Sniffer, CPU-Z, HexEdit, SumatraPDF, ..."
-  if [ $? != 0 ]; then
+Process Explorer, Depends, Sniffer, CPU-Z, HexEdit, SumatraPDF, ..."; then
     echo "E/Can't get version."
     return 1
   fi

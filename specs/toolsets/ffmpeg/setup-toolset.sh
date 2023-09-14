@@ -13,7 +13,7 @@ case $HAM_OS in
     pathenv_add "${FFMPEG_DIR}"
     ;;
   OSX*)
-    toolset_check_and_dl_ver ffmpeg $HAM_BIN_LOA v4 || return 1
+    toolset_check_and_dl_ver ffmpeg "$HAM_BIN_LOA" v4 || return 1
     export FFMPEG_DIR="${HAM_TOOLSET_DIR}/$HAM_BIN_LOA/"
     pathenv_add "${FFMPEG_DIR}"
     ;;
@@ -31,9 +31,8 @@ pathenv_add "${HAM_TOOLSET_DIR}"
 
 VER="--- ffmpeg ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(ffmpeg 2>&1 | grep 'ffmpeg version')"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(ffmpeg 2>&1 | grep 'ffmpeg version')"; then
     echo "E/Can't get version."
     return 1
   fi

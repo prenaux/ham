@@ -45,7 +45,8 @@ case $HAM_OS in
   OSX*)
     export PYTHON3_VERSION=3.10
     ham-brew-install python@${PYTHON3_VERSION} "bin/python${PYTHON3_VERSION}" || return 1
-    export PYTHON3_HOME=$(ham-brew-installdir python@${PYTHON3_VERSION})
+    PYTHON3_HOME=$(ham-brew-installdir python@${PYTHON3_VERSION})
+    export PYTHON3_HOME
     export PYTHON3_BINDIR="$HOME/Library/Python/${PYTHON3_VERSION}/bin"
     # Might not exist the first time we install python...
     mkdir -p "$PYTHON3_BINDIR"
@@ -66,11 +67,10 @@ pathenv_add "$HAM_TOOLSET_DIR"
 
 VER="--- python3 --------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
+  if ! VER="$VER
 $(python3 --version 2>&1)
 --- pip3 -----------------------------
-$(pip3 --version 2>&1)"
-  if [ $? != 0 ]; then
+$(pip3 --version 2>&1)"; then
     echo "E/Can't get python3 version."
     return 1
   fi

@@ -29,7 +29,7 @@ case $HAM_OS in
       curl --progress-bar -L --tlsv1.2 --proto "=https" --retry 3 https://github.com/DopplerHQ/cli/releases/download/3.38.0/doppler_3.38.0_linux_amd64.deb -O doppler_3.38.0_linux_amd64.deb
       echo "I/Unpacking deb package locally"
       # Assumes dpkg is available
-      dpkg -x doppler_3.38.0_linux_amd64.deb ${DOPPLER_DIR}
+      dpkg -x doppler_3.38.0_linux_amd64.deb "${DOPPLER_DIR}"
       rm doppler_3.38.0_linux_amd64.deb
       if [ ! -f "${DOPPLER_DIR}/usr/bin/doppler" ]; then
         echo "E/Can't install doppler."
@@ -45,9 +45,8 @@ case $HAM_OS in
     ;;
 esac
 
-VER="--- secrets_doppler ------------
-$(doppler --version)"
-if [ $? != 0 ]; then
+if ! VER="--- secrets_doppler ------------
+$(doppler --version)"; then
   echo "E/Can't get Doppler version."
   return 1
 fi

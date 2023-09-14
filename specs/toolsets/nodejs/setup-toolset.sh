@@ -110,15 +110,14 @@ fi
 
 VER="--- nodejs ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
+  if ! VER="$VER
 $(node --version)
 --- npm ---------------------------
 $(npm --version)
 --- yarn --------------------------
 $(yarn --version)
 --- esbuild -----------------------
-$(esbuild --version)"
-  if [ $? != 0 ]; then
+$(esbuild --version)"; then
     echo "E/Can't get version."
     return 1
   fi

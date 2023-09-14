@@ -11,7 +11,7 @@ case $HAM_OS in
     ham-brew-install nginx "bin/nginx"
     ;;
   LINUX*)
-    if [ -z $(where_inpath nginx) ]; then
+    if [ -z "$(where_inpath nginx)" ]; then
       sudo apt -y update
       sudo apt install -y nginx
     fi
@@ -24,9 +24,8 @@ esac
 
 VER="--- nginx ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(nginx -v 2>&1)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(nginx -v 2>&1)"; then
     echo "E/Can't get version."
     return 1
   fi

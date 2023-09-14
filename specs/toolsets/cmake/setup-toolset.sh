@@ -25,9 +25,8 @@ case $HAM_OS in
     ;;
 esac
 
-VER="--- cmake ------------------------
-$(cmake --version | grep "cmake version")"
-if [ $? != 0 ]; then
+if ! VER="--- cmake ------------------------
+$(cmake --version | grep "cmake version")"; then
   echo "E/Can't get version."
   return 1
 fi

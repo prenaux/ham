@@ -41,9 +41,8 @@ pathenv_add "${HAM_TOOLSET_DIR}"
 # version
 VER="--- yasm ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(yasm --version | grep '^yasm')"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(yasm --version | grep '^yasm')"; then
     echo "E/Can't get yasm version."
     return 1
   fi

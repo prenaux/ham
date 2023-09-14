@@ -4,7 +4,8 @@ toolset_import_once xslt_tools || return 1
 case $HAM_OS in
   OSX*)
     # Added system sdk path using the xcode command line tool..
-    export MACOS_SDK_PATH=$(xcrun --show-sdk-path)
+    MACOS_SDK_PATH=$(xcrun --show-sdk-path)
+    export MACOS_SDK_PATH
     ;;
   *)
     echo "E/Toolset: Unsupported host OS"
@@ -23,14 +24,13 @@ export OSPLAT=ARM64
 export BUILD_BIN_LOA=$HAM_BIN_LOA
 
 # finding correct clang compiler dir
-local dir=$(clang --version | grep InstalledDir)
+dir=$(clang --version | grep InstalledDir)
 export CMD_JSON_COMPILER_PATH=${dir#*' '}/
 
 VER="--- macos_arm64 ---------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(clang -arch arm64 --version)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(clang -arch arm64 --version)"; then
     echo "E/Can't get version."
     return 1
   fi

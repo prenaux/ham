@@ -20,7 +20,7 @@ case $HAM_BIN_LOA in
 esac
 
 # check and dl toolset
-toolset_check_and_dl_ver grpc ${BIN_LOA} v22_10_13 || return 1
+toolset_check_and_dl_ver grpc "${BIN_LOA}" v22_10_13 || return 1
 
 # path
 export GRPC_DIST_DIR="${HAM_TOOLSET_DIR}/${BIN_LOA}"

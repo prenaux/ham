@@ -32,9 +32,8 @@ esac
 # version check
 VER="--- solana -----------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(solana --version)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(solana --version)"; then
     echo "E/Can't get Solana version."
     return 1
   fi

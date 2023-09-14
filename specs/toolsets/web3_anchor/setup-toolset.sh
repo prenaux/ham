@@ -5,14 +5,14 @@ toolset_import_once rust || return 1
 export HAM_TOOLSET=WEB3_ANCHOR
 export HAM_TOOLSET_NAME=web3_anchor
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/web3_anchor"
-pathenv_add ${HAM_TOOLSET_DIR}
+pathenv_add "${HAM_TOOLSET_DIR}"
 
 if [ -z "$ANCHOR_REQUIRED_VERSION" ]; then
   complain web3_anchor "ANCHOR_REQUIRED_VERSION not exported."
   return 1
 fi
 
-if [ -z $(where_inpath avm) -o -z $(where_inpath anchor) ]; then
+if [ -z "$(where_inpath avm)" ] || [ -z "$(where_inpath anchor)" ]; then
   echo "I/Installing avm&anchor with cargo..."
   case $HAM_OS in
     LINUX*)
@@ -26,8 +26,8 @@ if [ -z $(where_inpath avm) -o -z $(where_inpath anchor) ]; then
     set -ex
     rustup update
     cargo install --git https://github.com/project-serum/anchor avm --locked
-    avm install $ANCHOR_REQUIRED_VERSION
-    avm use $ANCHOR_REQUIRED_VERSION
+    avm install "$ANCHOR_REQUIRED_VERSION"
+    avm use "$ANCHOR_REQUIRED_VERSION"
   ) || return 1
 fi
 
@@ -37,17 +37,16 @@ if [ "$ANCHOR_CURRENT_VERSION" != "anchor-cli $ANCHOR_REQUIRED_VERSION" ]; then
   (
     set -ex
     rustup update
-    avm install $ANCHOR_REQUIRED_VERSION
-    avm use $ANCHOR_REQUIRED_VERSION
+    avm install "$ANCHOR_REQUIRED_VERSION"
+    avm use "$ANCHOR_REQUIRED_VERSION"
   ) || return 1
 fi
 
 # version check
 VER="--- web3_anchor ------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(anchor --version)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(anchor --version)"; then
     echo "E/Can't get Anchor version."
     return 1
   fi

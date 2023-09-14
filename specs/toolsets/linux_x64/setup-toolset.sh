@@ -30,12 +30,11 @@ else
   export HAM_CPP_TOOLSET_NAME=$HAM_TOOLSET_NAME
 
   # finding correct clang compiler dir
-  local dir=$(clang --version | grep InstalledDir)
+  dir=$(clang --version | grep InstalledDir)
   export CMD_JSON_COMPILER_PATH=${dir#*' '}/
 
-  VER="--- linux_x64 -----------------------
-$(clang -arch x86_64 --version)"
-  if [ $? != 0 ]; then
+  if ! VER="--- linux_x64 -----------------------
+$(clang -arch x86_64 --version)"; then
     echo "E/Can't get version."
     return 1
   fi

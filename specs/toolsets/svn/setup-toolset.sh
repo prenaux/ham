@@ -18,7 +18,7 @@ case $HAM_OS in
     ham-brew-install git-svn "bin/git-svn"
     ;;
   LINUX*)
-    if [ -z $(which svn) ]; then
+    if [ -z "$(which svn)" ]; then
       sudo apt install -y subversion
     fi
     if [[ ! -e "$(git --exec-path)/git-svn" ]]; then
@@ -42,18 +42,16 @@ esac
 pathenv_add "${HAM_TOOLSET_DIR}"
 
 # version check
-VER="--- svn --------------------------
-$(svn --version | grep ", version")"
-if [ $? != 0 ]; then
+if ! VER="--- svn --------------------------
+$(svn --version | grep ", version")"; then
   echo "E/Can't get SVN version."
   return 1
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
 
-VER="--- git-svn ----------------------
-$(git svn --version)"
-if [ $? != 0 ]; then
+if ! VER="--- git-svn ----------------------
+$(git svn --version)"; then
   echo "E/Can't get SVN version."
   return 1
 fi

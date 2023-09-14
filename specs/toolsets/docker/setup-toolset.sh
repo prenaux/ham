@@ -7,7 +7,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/docker"
 
 case "$HAM_BIN_LOA" in
   lin-x64)
-    if [ -z $(where_inpath docker) ]; then
+    if [ -z "$(where_inpath docker)" ]; then
       #
       # See: https://docs.docker.com/engine/installation/linux/ubuntu/#install-using-the-repository
       #
@@ -36,9 +36,8 @@ pathenv_add "$HAM_TOOLSET_DIR"
 
 VER="--- docker ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(docker --version)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(docker --version)"; then
     echo "E/Can't get version."
     return 1
   fi

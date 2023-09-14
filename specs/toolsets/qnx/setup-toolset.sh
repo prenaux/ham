@@ -20,6 +20,8 @@ case $HAM_OS in
       fi
     fi
     export QNX_HOME="${HAM_TOOLSET_DIR}/lin-x64"
+    # shellcheck disable=SC1090
+    # (Disabled check: "warning: ShellCheck can't follow non-constant source.")
     source "${QNX_ENV}"
     ;;
   *)
@@ -30,9 +32,8 @@ esac
 
 VER="--- qnx_660 ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(qcc -V)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(qcc -V)"; then
     echo "E/Can't get version."
     return 1
   fi

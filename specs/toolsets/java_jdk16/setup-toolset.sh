@@ -8,9 +8,9 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/java_jdk16"
 case $HAM_OS in
   NT*)
     export JAVA_HOME="${HAM_TOOLSET_DIR}/nt-x86/"
-    if [ ! -e "$JAVA_HOME/bin/java.exe" -o ! -e "$JAVA_HOME/bin/javac.exe" ]; then
+    if [ ! -e "$JAVA_HOME/bin/java.exe" ] || [ ! -e "$JAVA_HOME/bin/javac.exe" ]; then
       toolset_dl java_jdk16 java_jdk16_nt-x86
-      if [ ! -e "$JAVA_HOME/bin/java.exe" -o ! -e "$JAVA_HOME/bin/javac.exe" ]; then
+      if [ ! -e "$JAVA_HOME/bin/java.exe" ] || [ ! -e "$JAVA_HOME/bin/javac.exe" ]; then
         echo "E/nt-x86 folder doesn't exist in the toolset"
         return 1
       fi
@@ -18,7 +18,8 @@ case $HAM_OS in
     pathenv_add "${JAVA_HOME}/bin"
     ;;
   OSX)
-    export JAVA_HOME=$(/usr/libexec/java_home)
+    JAVA_HOME=$(/usr/libexec/java_home)
+    export JAVA_HOME
     ;;
   LINUX)
     # We only support jdk18 on Linux atm...
@@ -33,12 +34,11 @@ esac
 
 VER="--- java_jdk16 ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
+  if ! VER="$VER
 --- java ---
 $(java -version 2>&1)
 --- javac ---
-$(javac -version 2>&1)"
-  if [ $? != 0 ]; then
+$(javac -version 2>&1)"; then
     echo "E/Can't get Java version."
     return 1
   fi

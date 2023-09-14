@@ -23,7 +23,8 @@ case $HAM_OS in
     ;;
   OSX*)
     ham-brew-install postgresql@10 "bin/postgres"
-    export POSTGRES_DIR="$(ham-brew-installdir postgresql@10)"
+    POSTGRES_DIR="$(ham-brew-installdir postgresql@10)"
+    export POSTGRES_DIR
     pathenv_add "${POSTGRES_DIR}/bin"
     ;;
   LINUX*)
@@ -47,9 +48,8 @@ export POSTGRES_DB_DIR="$WORK/Server/pg"
 
 VER="--- psql -------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(psql --version)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(psql --version)"; then
     echo "E/Can't get version."
     return 1
   fi

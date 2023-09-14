@@ -14,9 +14,8 @@ pathenv_add "${HAM_TOOLSET_DIR}"
 # version
 VER="--- rclone ----------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(rclone --version | grep rclone)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(rclone --version | grep rclone)"; then
     echo "E/Can't get rclone version."
     return 1
   fi

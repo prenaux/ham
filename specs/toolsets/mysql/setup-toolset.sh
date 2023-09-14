@@ -35,9 +35,8 @@ mkdir -p "$MYSQL_DB_DIR/data"
 
 VER="--- mysql ---------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(mysql --version)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(mysql --version)"; then
     echo "E/Can't get version."
     return 1
   fi

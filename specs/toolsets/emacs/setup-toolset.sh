@@ -22,7 +22,7 @@ case $HAM_OS in
     pathenv_add "${EMACS_DIR}/bin"
     ;;
   OSX*)
-    if [ -z $(which emacs)]; then
+    if [ -z "$(which emacs)" ]; then
       echo "W/Couldn't find emacs, trying to install with brew"
       ham-brew install emacs
     fi
@@ -35,9 +35,8 @@ esac
 
 VER="--- emacs ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(emacs --version | grep 'Emacs' | head -n 1)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(emacs --version | grep 'Emacs' | head -n 1)"; then
     echo "E/Can't get version."
     return 1
   fi

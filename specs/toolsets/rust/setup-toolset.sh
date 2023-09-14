@@ -29,10 +29,9 @@ pathenv_add "${HAM_TOOLSET_DIR}"
 # Version checks
 VER="--- rust ----------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
+  if ! VER="$VER
 rustc: $(rustc --version)
-cargo: $(cargo --version)"
-  if [ $? != 0 ]; then
+cargo: $(cargo --version)"; then
     echo "E/Can't get version."
     return 1
   fi

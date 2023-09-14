@@ -37,10 +37,9 @@ esac
 # version check
 VER="--- repos ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
+  if ! VER="$VER
 --- git ---
-$(git --version)"
-  if [ $? != 0 ]; then
+$(git --version)"; then
     echo "E/Can't get Git version."
     return 1
   fi
@@ -52,9 +51,8 @@ HG_PATH=$(where_inpath hg || true)
 if [ -e "$HG_PATH" ]; then
   VER="--- mercurial ---"
   if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-    VER="$VER
-$(hg --version)"
-    if [ $? != 0 ]; then
+    if ! VER="$VER
+$(hg --version)"; then
       echo "E/Can't get Mercurial version."
       return 1
     fi

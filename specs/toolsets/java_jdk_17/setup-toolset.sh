@@ -27,12 +27,11 @@ esac
 
 VER="--- java_jdk_17 ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
+  if ! VER="$VER
 --- java ---
 $(java -version 2>&1)
 --- javac ---
-$(javac -version 2>&1)"
-  if [ $? != 0 ]; then
+$(javac -version 2>&1)"; then
     echo "E/Can't get Java version."
     return 1
   fi

@@ -1,12 +1,12 @@
 #!/bin/bash
 toolset_import_once xslt_tools || return 1
 
-if [ -z $HAM_MSVC_ARCH ]; then
+if [ -z "$HAM_MSVC_ARCH" ]; then
   export HAM_MSVC_ARCH=x64
 fi
 
 TAG=msvc_19_${HAM_MSVC_ARCH}
-echo I/Setting up $TAG
+echo "I/Setting up $TAG"
 
 ########################################################################
 ##  Toolset
@@ -67,8 +67,8 @@ toolset_find_msvc_ide_dir() {
       local prefix_=${vs_versions_typed_prefix[$i]}
       local suffix_=${vs_versions_typed_suffix[$i]}
       local version_=${vs_versions_typed[$i]}
-      for ((ry = ${vs_versions_supported_count}; ry >= 1; ry--)); do
-        local out_version_=$(($version_ + ${ry} - 1))
+      for ((ry = vs_versions_supported_count; ry >= 1; ry--)); do
+        local out_version_=$((version_ + ry - 1))
         local out_dir_="${vs_pf_dir}${prefix_}${out_version_}${suffix_}\\Common7\\IDE"
         # echo "I/ Checking for IDE dir: ${out_dir_}"
         # We check for the devenv.exe file, because the directory may exist
@@ -104,8 +104,10 @@ toolset_find_msvc_devenv() {
   return 0
 }
 
-export MSVC_IDE_DIR=$(toolset_find_msvc_ide_dir)
-export RUN_DEBUGGER=$(toolset_find_msvc_devenv)
+MSVC_IDE_DIR=$(toolset_find_msvc_ide_dir)
+export MSVC_IDE_DIR
+RUN_DEBUGGER=$(toolset_find_msvc_devenv)
+export RUN_DEBUGGER
 export RUN_DEBUGGER_PARAMS=-debugexe
 
 ########################################################################
@@ -155,14 +157,15 @@ pathenv_add "${WINSDKDIR_BIN}"
 pathenv_add "${MSVCDIR_BIN}"
 pathenv_add "${MSVC_IDE_DIR}"
 
-export INCLUDE="$(nativedir \"${WINSDKDIR_INCLUDE}/um\");$(nativedir \"${WINSDKDIR_INCLUDE}/ucrt\");$(nativedir \"${WINSDKDIR_INCLUDE}/shared\");$(nativedir \"${MSVCDIR}/include\")"
-export LIB="$(nativedir \"${WINSDKDIR_LIBS}/um/${HAM_MSVC_ARCH}\");$(nativedir \"${WINSDKDIR_LIBS}/ucrt/${HAM_MSVC_ARCH}\");$(nativedir \"${MSVCDIR}/lib/${HAM_MSVC_ARCH}\")"
+INCLUDE="$(nativedir "${WINSDKDIR_INCLUDE}/um");$(nativedir "${WINSDKDIR_INCLUDE}/ucrt");$(nativedir "${WINSDKDIR_INCLUDE}/shared");$(nativedir "${MSVCDIR}/include")"
+export INCLUDE
+LIB="$(nativedir "${WINSDKDIR_LIBS}/um/${HAM_MSVC_ARCH}");$(nativedir "${WINSDKDIR_LIBS}/ucrt/${HAM_MSVC_ARCH}");$(nativedir "${MSVCDIR}/lib/${HAM_MSVC_ARCH}")"
+export LIB
 
 VER="--- Microsoft Visual C++ 19 ${HAM_MSVC_ARCH} -----------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(cl 2>&1 >/dev/null | grep Optimizing)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(cl 2>&1 >/dev/null | grep Optimizing)"; then
     echo "E/Can't get version."
     return 1
   fi

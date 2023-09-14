@@ -46,9 +46,8 @@ pathenv_add "$HAM_TOOLSET_DIR"
 
 VER="--- aws ---------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(aws --version)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(aws --version)"; then
     echo "E/Can't get aws-cli version."
     return 1
   fi
@@ -58,9 +57,8 @@ $VER"
 
 VER="--- aws-eb ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(aws-eb --version)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(aws-eb --version)"; then
     echo "E/Can't get aws-eb version."
     return 1
   fi

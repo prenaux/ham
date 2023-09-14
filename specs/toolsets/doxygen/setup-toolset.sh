@@ -28,8 +28,7 @@ case $HAM_OS in
       fi
     fi
     pathenv_add "${DOXYGEN_DIR}"
-    VER="$(doxygen_187 --version)"
-    if [ $? != 0 ]; then
+    if ! VER="$(doxygen_187 --version)"; then
       rm -f "$DOXYGEN_DIR/doxygen_187"
     fi
     if [ ! -e "$DOXYGEN_DIR/doxygen_187" ]; then
@@ -44,9 +43,8 @@ esac
 
 VER="--- doxygen -------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  VER="$VER
-$(doxygen_187 --version)"
-  if [ $? != 0 ]; then
+  if ! VER="$VER
+$(doxygen_187 --version)"; then
     echo "E/Can't get version."
     return 1
   fi
