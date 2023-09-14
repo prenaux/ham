@@ -36,13 +36,13 @@ SHELLCHECK_PARAMS += -e SC1091 ; # 'Not following: ... was not specified as inpu
 
 actions together lffLintFiles_sh {
   HAM_NO_VER_CHECK=1 . hat shell_linter > /dev/null
-  set -x
+  set -ex
   "$HAM_SHELL_LINTER_DIR/shfmt" -d $(SHFMT_PARAMS) "$(>)"
   "$HAM_SHELL_LINTER_DIR/shellcheck" $(SHELLCHECK_PARAMS) "$(>)"
 }
 
 actions together lffFixFiles_sh {
   HAM_NO_VER_CHECK=1 . hat shell_linter > /dev/null
-  set -x
+  set -ex
   "$HAM_SHELL_LINTER_DIR/shfmt" -w $(SHFMT_PARAMS) "$(>)"
 }
