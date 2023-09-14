@@ -6,7 +6,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/specs/toolsets/grpc_cppm"
 export HAM_HDRS_GRPC_CPPM="${HAM_TOOLSET_DIR}/github-grpc"
 
 CHECK_HEADER="${HAM_HDRS_GRPC_CPPM}/include/grpc/grpc.h"
-CHECK_DLL="${HAM_HOME}/bin/`ham-cppm-bin-filepath dll grpc_cppm_ra`"
+CHECK_DLL="${HAM_HOME}/bin/$(ham-cppm-bin-filepath dll grpc_cppm_ra)"
 if [ ! -e "$CHECK_DLL" ] || [ ! -e "$CHECK_HEADER" ]; then
   ham-cppm-build grpc_cppm
   if [ ! -e "$CHECK_DLL" ]; then

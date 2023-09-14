@@ -2,12 +2,11 @@
 toolset_import_once xslt_tools || return 1
 
 case $HAM_OS in
-    LINUX)
-        ;;
-    *)
-        echo "E/Toolset: Unsupported host OS"
-        return 1
-        ;;
+  LINUX) ;;
+  *)
+    echo "E/Toolset: Unsupported host OS"
+    return 1
+    ;;
 esac
 
 export OSPLAT=X64
@@ -35,7 +34,7 @@ else
   export CMD_JSON_COMPILER_PATH=${dir#*' '}/
 
   VER="--- linux_x64 -----------------------
-`clang -arch x86_64  --version`"
+$(clang -arch x86_64 --version)"
   if [ $? != 0 ]; then
     echo "E/Can't get version."
     return 1

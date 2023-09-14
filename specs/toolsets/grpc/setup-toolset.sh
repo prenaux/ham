@@ -10,7 +10,7 @@ case $HAM_BIN_LOA in
     # we only have a x64 exe atm
     BIN_LOA=osx-x64
     ;;
-  osx-x86|lin-x64|nt-x86)
+  osx-x86 | lin-x64 | nt-x86)
     BIN_LOA=$HAM_BIN_LOA
     ;;
   *)
@@ -32,7 +32,7 @@ pathenv_add "${HAM_TOOLSET_DIR}"
 VER="--- protobuf --------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
   VER="$VER
-`protoc --version`"
+$(protoc --version)"
   errcheck $? ${HAM_TOOLSET_NAME} "protobuf version check failed." || return 1
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
@@ -41,7 +41,7 @@ $VER"
 VER="--- protoc-gen-js ---------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
   VER="$VER
-Location: `where_inpath protoc-gen-js`"
+Location: $(where_inpath protoc-gen-js)"
   errcheck $? ${HAM_TOOLSET_NAME} "protoc-gen-js location check failed." || return 1
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
@@ -50,7 +50,7 @@ $VER"
 VER="--- protoc-gen-grpc-web ---------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
   VER="$VER
-Location: `where_inpath protoc-gen-grpc-web`"
+Location: $(where_inpath protoc-gen-grpc-web)"
   errcheck $? ${HAM_TOOLSET_NAME} "protoc-gen-grpc-web location check failed." || return 1
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
@@ -59,7 +59,7 @@ $VER"
 VER="--- grpcurl --------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
   VER="$VER
-`grpcurl --version 2>&1`"
+$(grpcurl --version 2>&1)"
   errcheck $? ${HAM_TOOLSET_NAME} "grpcurl version check failed." || return 1
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
@@ -68,7 +68,7 @@ $VER"
 VER="--- grpcwebproxy -----------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
   VER="$VER
-Location: `where_inpath grpcwebproxy`"
+Location: $(where_inpath grpcwebproxy)"
   errcheck $? ${HAM_TOOLSET_NAME}_grpcwebproxy "grpcwebproxy location check failed." || return 1
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS

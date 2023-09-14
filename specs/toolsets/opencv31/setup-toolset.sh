@@ -7,22 +7,22 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/opencv31/"
 
 # path setup
 case $HAM_OS in
-    NT*)
-        export OPENCV31_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-        if [ ! -e "${OPENCV31_DIR}x64/vc14/bin" ]; then
-            toolset_dl opencv31 opencv31_nt-x86
-            if [ ! -e "$OPENCV31_DIR" ]; then
-                echo "E/nt-x86 folder doesn't exist in the toolset"
-                return 1
-            fi
-        fi
-        export OPENCV31_DIR_X64="${OPENCV31_DIR}/x64/vc14/"
-        export OPENCV31_DIR_X86="${OPENCV31_DIR}/x86/vc15/"
-        ;;
-    *)
-        echo "E/Toolset: Unsupported host OS"
+  NT*)
+    export OPENCV31_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
+    if [ ! -e "${OPENCV31_DIR}x64/vc14/bin" ]; then
+      toolset_dl opencv31 opencv31_nt-x86
+      if [ ! -e "$OPENCV31_DIR" ]; then
+        echo "E/nt-x86 folder doesn't exist in the toolset"
         return 1
-        ;;
+      fi
+    fi
+    export OPENCV31_DIR_X64="${OPENCV31_DIR}/x64/vc14/"
+    export OPENCV31_DIR_X86="${OPENCV31_DIR}/x86/vc15/"
+    ;;
+  *)
+    echo "E/Toolset: Unsupported host OS"
+    return 1
+    ;;
 esac
 
 # paths
@@ -36,7 +36,7 @@ export OPENCV30_DIR_INCLUDE=${OPENCV31_DIR_INCLUDE}
 
 VER="--- opencv31 ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-    VER="$VER
+  VER="$VER
 OPENCV31_DIR_INCLUDE=${OPENCV31_DIR_INCLUDE}"
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS

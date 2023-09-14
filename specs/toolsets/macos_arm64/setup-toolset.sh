@@ -2,14 +2,14 @@
 toolset_import_once xslt_tools || return 1
 
 case $HAM_OS in
-    OSX*)
-        # Added system sdk path using the xcode command line tool..
-        export MACOS_SDK_PATH=$(xcrun --show-sdk-path)
-        ;;
-    *)
-        echo "E/Toolset: Unsupported host OS"
-        return 1
-        ;;
+  OSX*)
+    # Added system sdk path using the xcode command line tool..
+    export MACOS_SDK_PATH=$(xcrun --show-sdk-path)
+    ;;
+  *)
+    echo "E/Toolset: Unsupported host OS"
+    return 1
+    ;;
 esac
 
 # toolset
@@ -28,12 +28,12 @@ export CMD_JSON_COMPILER_PATH=${dir#*' '}/
 
 VER="--- macos_arm64 ---------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-    VER="$VER
-`clang -arch arm64 --version`"
-    if [ $? != 0 ]; then
-        echo "E/Can't get version."
-        return 1
-    fi
+  VER="$VER
+$(clang -arch arm64 --version)"
+  if [ $? != 0 ]; then
+    echo "E/Can't get version."
+    return 1
+  fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

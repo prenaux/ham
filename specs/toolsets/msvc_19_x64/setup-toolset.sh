@@ -2,7 +2,7 @@
 toolset_import_once xslt_tools || return 1
 
 if [ -z $HAM_MSVC_ARCH ]; then
-    export HAM_MSVC_ARCH=x64
+  export HAM_MSVC_ARCH=x64
 fi
 
 TAG=msvc_19_${HAM_MSVC_ARCH}
@@ -12,13 +12,13 @@ echo I/Setting up $TAG
 ##  Toolset
 ########################################################################
 case $HAM_OS in
-    NT*)
-        export BUILD_BIN_LOA=nt-${HAM_MSVC_ARCH}
-        ;;
-    *)
-        echo "E/Toolset: Unsupported host OS"
-        return 1
-        ;;
+  NT*)
+    export BUILD_BIN_LOA=nt-${HAM_MSVC_ARCH}
+    ;;
+  *)
+    echo "E/Toolset: Unsupported host OS"
+    return 1
+    ;;
 esac
 
 export HAM_TOOLSET=VISUALC
@@ -117,22 +117,22 @@ export WINSDKDIR="${HAM_TOOLSET_DIR}/nt-x86/winsdk/10"
 
 export WINSDKDIR_BIN="${WINSDKDIR}/bin/${WINSDKVER}/${HAM_MSVC_ARCH}/"
 if [ ! -e "$WINSDKDIR_BIN/fxc.exe" ]; then
-	echo "E/Can't find '$WINSDKDIR/bin/${HAM_MSVC_ARCH}/fxc.exe' in WinSDK for $TAG"
-	return 1
+  echo "E/Can't find '$WINSDKDIR/bin/${HAM_MSVC_ARCH}/fxc.exe' in WinSDK for $TAG"
+  return 1
 fi
 echo "I/Found WindowsSDK in '$WINSDKDIR'"
 export WindowsSdkDir=$WINSDKDIR
 
 export WINSDKDIR_LIBS="${WINSDKDIR}/Lib/${WINSDKVER}"
 if [ ! -e "$WINSDKDIR_LIBS/um/${HAM_MSVC_ARCH}/d3d12.lib" ]; then
-	echo "E/Can't find d3d12.lib in '$WINSDKDIR_LIBS/d3d12.lib' for $TAG"
-	return 1
+  echo "E/Can't find d3d12.lib in '$WINSDKDIR_LIBS/d3d12.lib' for $TAG"
+  return 1
 fi
 
 export WINSDKDIR_INCLUDE="${WINSDKDIR}/include/${WINSDKVER}"
 if [ ! -e "$WINSDKDIR_INCLUDE/um/windows.h" ]; then
-	echo "E/Can't find windows.h in '$WINSDKDIR_INCLUDE/um/windows.h' for $TAG"
-	return 1
+  echo "E/Can't find windows.h in '$WINSDKDIR_INCLUDE/um/windows.h' for $TAG"
+  return 1
 fi
 
 ########################################################################
@@ -141,8 +141,8 @@ fi
 export MSBUILD_DIR="${HAM_TOOLSET_DIR}/nt-x86/2019/BuildTools/MSBuild"
 export MSBUILD_EXE="${MSBUILD_DIR}/Current/Bin/MSBuild.exe"
 if [ ! -e "$MSBUILD_EXE" ]; then
-	echo "E/Can't find '$MSBUILD_EXE'"
-	return 1
+  echo "E/Can't find '$MSBUILD_EXE'"
+  return 1
 fi
 echo "I/Found MSBuild at '$MSBUILD_EXE'"
 
@@ -155,17 +155,17 @@ pathenv_add "${WINSDKDIR_BIN}"
 pathenv_add "${MSVCDIR_BIN}"
 pathenv_add "${MSVC_IDE_DIR}"
 
-export INCLUDE="`nativedir \"${WINSDKDIR_INCLUDE}/um\"`;`nativedir \"${WINSDKDIR_INCLUDE}/ucrt\"`;`nativedir \"${WINSDKDIR_INCLUDE}/shared\"`;`nativedir \"${MSVCDIR}/include\"`"
-export LIB="`nativedir \"${WINSDKDIR_LIBS}/um/${HAM_MSVC_ARCH}\"`;`nativedir \"${WINSDKDIR_LIBS}/ucrt/${HAM_MSVC_ARCH}\"`;`nativedir \"${MSVCDIR}/lib/${HAM_MSVC_ARCH}\"`"
+export INCLUDE="$(nativedir \"${WINSDKDIR_INCLUDE}/um\");$(nativedir \"${WINSDKDIR_INCLUDE}/ucrt\");$(nativedir \"${WINSDKDIR_INCLUDE}/shared\");$(nativedir \"${MSVCDIR}/include\")"
+export LIB="$(nativedir \"${WINSDKDIR_LIBS}/um/${HAM_MSVC_ARCH}\");$(nativedir \"${WINSDKDIR_LIBS}/ucrt/${HAM_MSVC_ARCH}\");$(nativedir \"${MSVCDIR}/lib/${HAM_MSVC_ARCH}\")"
 
 VER="--- Microsoft Visual C++ 19 ${HAM_MSVC_ARCH} -----------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-    VER="$VER
-`cl 2>&1 >/dev/null | grep Optimizing`"
-    if [ $? != 0 ]; then
-        echo "E/Can't get version."
-        return 1
-    fi
+  VER="$VER
+$(cl 2>&1 >/dev/null | grep Optimizing)"
+  if [ $? != 0 ]; then
+    echo "E/Can't get version."
+    return 1
+  fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

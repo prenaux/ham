@@ -15,34 +15,34 @@ export HAM_TARGET_BIN_LOA=web-js
 
 # path setup
 case $HAM_OS in
-    OSX*)
-        if [ -z `which emcc` ]; then
-            echo "W/Couldn't find emcc, will try to install it with brew."
-            xcode-select --install
-            ham-brew install emscripten
-        fi
-        pathenv_add "${HAM_TOOLSET_DIR}"
-        export BUILD_BIN_LOA=$HAM_BIN_LOA
-        ;;
-    LINUX*)
-        HAM_ENABLE_EXPERIMENTAL_LINUX_BREW=1 ham-brew-install emscripten "bin/emcc"
-        pathenv_add "${HAM_TOOLSET_DIR}"
-        export BUILD_BIN_LOA=$HAM_BIN_LOA
-        ;;
-    *)
-        echo "E/Toolset: Unsupported host OS"
-        return 1
-        ;;
+  OSX*)
+    if [ -z $(which emcc) ]; then
+      echo "W/Couldn't find emcc, will try to install it with brew."
+      xcode-select --install
+      ham-brew install emscripten
+    fi
+    pathenv_add "${HAM_TOOLSET_DIR}"
+    export BUILD_BIN_LOA=$HAM_BIN_LOA
+    ;;
+  LINUX*)
+    HAM_ENABLE_EXPERIMENTAL_LINUX_BREW=1 ham-brew-install emscripten "bin/emcc"
+    pathenv_add "${HAM_TOOLSET_DIR}"
+    export BUILD_BIN_LOA=$HAM_BIN_LOA
+    ;;
+  *)
+    echo "E/Toolset: Unsupported host OS"
+    return 1
+    ;;
 esac
 
 VER="--- emscripten ------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-    VER="$VER
-`emcc --version | grep emcc`"
-    if [ $? != 0 ]; then
-        echo "E/Can't get version."
-        return 1
-    fi
+  VER="$VER
+$(emcc --version | grep emcc)"
+  if [ $? != 0 ]; then
+    echo "E/Can't get version."
+    return 1
+  fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
