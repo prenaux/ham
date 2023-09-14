@@ -1,0 +1,6 @@
+if [ SubDirOnce TOP specs  ] = 1 { return ; }
+
+# Recursively get all .sh files
+local SH_FILES = [ FGristFiles [ ListFilesR [ FDirName $(SUBDIR) toolsets ] : setup-toolset.sh ] ] ;
+
+lffFiles_sh lff_ham-specs : $(SH_FILES) ;
