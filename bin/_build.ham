@@ -1,0 +1,87 @@
+if [ SubDirOnce TOP bin ] = 1 { return ; }
+
+# Recursively get all .sh files
+local SH_FILES = [ FGristFiles [ ListFilesR $(SUBDIR) : *.sh ] ] ;
+
+# Manually specify all the bash files with no .sh file extension.
+# If a new such file is created, it should be manually added to this list.
+# (This list was originally built by running `shfmt -f .` and removing entries with the '.sh' extension)
+SH_FILES_NO_EXTENSION = 7z-fromzip
+7z-pack-arch
+7z-pack-dir
+7z-unpack-arch
+curl-find-final-url
+curl-timed
+emacs-filecache-cleanup
+genuuid
+ham
+ham-brew
+ham-brew-fixup
+ham-brew-install
+ham-brew-installdir
+ham-check-file
+ham-clang-format
+ham-clang-format-cpp
+ham-cppm-bin-filepath
+ham-cppm-build
+ham-cppm-build-check
+ham-cppm-exe-path
+ham-cppm-get-toolset
+ham-cppm-run
+ham-dl-file
+ham-editor
+ham-env
+ham-env-clear
+ham-exec-retry
+ham-find-dir-up
+ham-find-file-up
+ham-fix
+ham-flymake
+ham-gdb
+ham-gen-compile-commands
+ham-glob-files
+ham-grep
+ham-grep-for-emacs
+ham-gt
+ham-install-os-packages
+ham-lint
+ham-lint-fix
+ham-ls-targets
+ham-pm2
+ham-rtcpp
+ham-rtcpp-clean
+ham-run-up
+ham-ssh
+ham-ssh-ls
+ham-toolset
+ham-toolset-build
+ham-unpack
+hamx
+hash_md5
+hat
+lin-x64/lin-apt-install-nodeps
+lin-x64/lin-listening
+lin-x64/node
+ls-dir-tree
+ls-file-tree
+mc-wrapper
+ni
+niui
+niw
+nt-x86/emacs
+nt-x86/fzf
+nt-x86/node
+nt-x86/python3
+osx/macos-listening
+osx/macos-remove-from-quarantine
+osx/macos-wake-reason
+osx/macos-what-prevents-sleep
+print-256-colours
+run-for-xargs
+simple-http-server
+where_inpath ;
+SH_FILES += [ FGristFiles $(SUBDIR)/$(SH_FILES_NO_EXTENSION) ] ;
+
+# ECHO "... bin/ SH_FILES:" $(SH_FILES) ;
+
+lffFiles_sh lff_ham-bin : $(SH_FILES) ;
