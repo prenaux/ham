@@ -1,4 +1,4 @@
-if [ SubDirOnce TOP toolsets grpc_cppm ] = 1 { return ; }
+if [ SubDirOnce TOP specs toolsets grpc_cppm ] = 1 { return ; }
 
 # XXX: Should be in some specific Link_grpc_cppm rule...
 if $(LINUX) {

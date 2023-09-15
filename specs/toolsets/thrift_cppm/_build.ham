@@ -1,4 +1,4 @@
-if [ SubDirOnce TOP toolsets thrift_cppm ] = 1 { return ; }
+if [ SubDirOnce TOP specs toolsets thrift_cppm ] = 1 { return ; }
 
 ECHO "... THRIFT_CPPM ..." ;
 

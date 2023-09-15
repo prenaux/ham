@@ -5,8 +5,10 @@ SH_FILES += [ lffGlob $(SUBDIR) : *.sh ] ;
 
 # ECHO "... SH_FILES:" $(SH_FILES) ;
 
-lffFiles_sh lff_ham : $(SH_FILES) ;
+lffFiles_sh lff_ham-top : $(SH_FILES) ;
 
 SubInclude TOP bin ;
+
+SubInclude TOP specs ;
 
 SubInclude TOP sources ham tests ham-test-thrift ;
