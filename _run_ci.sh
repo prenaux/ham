@@ -9,6 +9,12 @@ echo "I/Build ham"
   ./build-"${HAM_BIN_LOA}".sh
 )
 
+echo "I/Run ham linter"
+(
+  set -x
+  ham lint
+)
+
 echo "I/Run ham tests"
 (
   set -x

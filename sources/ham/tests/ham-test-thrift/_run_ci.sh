@@ -7,6 +7,7 @@ cd "$SCRIPT_DIR"
 (
   set -ex
   ham-cppm-build thrift_cppm
+  ham lint
   ./_build_thrift.sh
   ./_run_cpp_tests.sh
 )
