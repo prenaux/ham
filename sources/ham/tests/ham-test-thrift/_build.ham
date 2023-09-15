@@ -1,10 +1,10 @@
-if [ SubDirOnce TOP sources ham tests ham-test-thrift ] = 1 { return ; }
+SubDir TOP ;
 
 local SH_FILES = [ lffGlob $(SUBDIR) : .sh ] ;
 # ECHO "... SH_FILES:" $(SH_FILES) ;
 lffFiles_sh lff_ham-test-thrift : $(SH_FILES) ;
 
 if $(TARGET_FEATURE_CONSOLE) {
-  SubInclude TOP sources ham tests ham-test-thrift src_client ;
-  SubInclude TOP sources ham tests ham-test-thrift src_server ;
+  SubInclude TOP src_client ;
+  SubInclude TOP src_server ;
 }

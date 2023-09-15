@@ -1,4 +1,4 @@
-if [ SubDirOnce TOP sources ham tests ham-test-thrift src_server ] = 1 { return ; }
+if [ SubDirOnce TOP src_server ] = 1 { return ; }
 
 tkDefTool ham-test-thrift-server : 1.0.0 ;
 hamToolsetHdrs boost_cppm : ham ;
