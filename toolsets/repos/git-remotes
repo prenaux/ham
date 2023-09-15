@@ -1,14 +1,14 @@
 #!/bin/bash
 usage() {
-    echo "usage: git-remotes ls"
-    echo ""
-    echo "  List all git remotes."
-    echo ""
-    echo "usage: git-remotes (regular git arguments)"
-    echo ""
-    echo "  Execute the specified git command for all remotes,"
-    echo "  replacing __REMOTE__ by the remote name."
-    exit 1
+  echo "usage: git-remotes ls"
+  echo ""
+  echo "  List all git remotes."
+  echo ""
+  echo "usage: git-remotes (regular git arguments)"
+  echo ""
+  echo "  Execute the specified git command for all remotes,"
+  echo "  replacing __REMOTE__ by the remote name."
+  exit 1
 }
 
 if [ -z "$1" ]; then
@@ -16,11 +16,14 @@ if [ -z "$1" ]; then
 fi
 
 if [ "$1" == "ls" ]; then
-    shift
-    git remote -v
+  shift
+  git remote -v
 else
-    for REMOTE in `git remote`; do
-        ARGS="${@/__REMOTE__/$REMOTE}"
-        (set -x ; git $ARGS)
-    done
+  for REMOTE in $(git remote); do
+    ARGS="${@/__REMOTE__/$REMOTE}"
+    (
+      set -x
+      git $ARGS
+    )
+  done
 fi

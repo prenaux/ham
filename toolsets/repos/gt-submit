@@ -2,12 +2,14 @@
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 usage() {
-    echo "usage: ${0##*/}"
-    echo ""
-    echo "  'ham-gt submit stack'."
-    exit 1
+  echo "usage: ${0##*/}"
+  echo ""
+  echo "  'ham-gt submit stack'."
+  exit 1
 }
 
-(set -x;
- gt-restack ;
- ham-gt stack submit)
+(
+  set -x
+  gt-restack
+  ham-gt stack submit
+)

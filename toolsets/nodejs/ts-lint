@@ -2,15 +2,15 @@
 . ham-bash-lib.sh
 
 case $HAM_OS in
-    NT*)
-        TSC="${HAM_HOME}/toolsets/nodejs/nt-x86/tsc"
-        ;;
-    OSX*)
-        TSC="${HAM_HOME}/toolsets/nodejs/osx-x86/bin/tsc"
-        ;;
-    *)
-        echo "E/Toolset: Unsupported host OS"
-        exit 1
-        ;;
+  NT*)
+    TSC="${HAM_HOME}/toolsets/nodejs/nt-x86/tsc"
+    ;;
+  OSX*)
+    TSC="${HAM_HOME}/toolsets/nodejs/osx-x86/bin/tsc"
+    ;;
+  *)
+    echo "E/Toolset: Unsupported host OS"
+    exit 1
+    ;;
 esac
 ${TSC} --noEmit --newline LF --module commonjs --moduleResolution 'node' "$@" && echo "TypeScript Lint: No Errors."

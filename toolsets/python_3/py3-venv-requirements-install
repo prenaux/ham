@@ -5,4 +5,7 @@ errcheck $? "py3-venv-check failed."
 export PIP_DISABLE_PIP_VERSION_CHECK=1
 
 echo "I/Installing py3_requirements.txt"
-(set -x ; pip3 install -r py3_requirements.txt)
+(
+  set -x
+  pip3 install -r py3_requirements.txt
+)

@@ -2,22 +2,22 @@
 . ham-bash-lib.sh
 
 case $HAM_OS in
-    NT*) ;;
-    OSX*) ;;
-    *)
-        echo "E/Toolset: Unsupported host OS"
-        exit 1
-        ;;
+  NT*) ;;
+  OSX*) ;;
+  *)
+    echo "E/Toolset: Unsupported host OS"
+    exit 1
+    ;;
 esac
 
 if [ ! -e "$POSTGRES_DB_DIR/pg_hba.conf" ]; then
-    mkdir -p "$POSTGRES_DB_DIR"
-    errcheck $? git_repos "Can't create postgres db data folder '${POSTGRES_DB_DIR}'."
+  mkdir -p "$POSTGRES_DB_DIR"
+  errcheck $? git_repos "Can't create postgres db data folder '${POSTGRES_DB_DIR}'."
 
-    echo "# Initializing postgres DB at '${POSTGRES_DB_DIR}'..."
-    initdb -D "$POSTGRES_DB_DIR" -E 'UTF-8' --lc-collate='C' --lc-ctype='C' -U postgres -A trust -W
-    errcheck $? git_repos "Can't initialize the postgres db at '${POSTGRES_DB_DIR}'."
-    echo "# Done."
+  echo "# Initializing postgres DB at '${POSTGRES_DB_DIR}'..."
+  initdb -D "$POSTGRES_DB_DIR" -E 'UTF-8' --lc-collate='C' --lc-ctype='C' -U postgres -A trust -W
+  errcheck $? git_repos "Can't initialize the postgres db at '${POSTGRES_DB_DIR}'."
+  echo "# Done."
 else
-    echo "# The Postgres DB is already initialized at '${POSTGRES_DB_DIR}'."
+  echo "# The Postgres DB is already initialized at '${POSTGRES_DB_DIR}'."
 fi

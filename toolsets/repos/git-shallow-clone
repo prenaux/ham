@@ -1,34 +1,36 @@
 #!/bin/bash -e
 usage() {
-    echo "usage: git-shallow-clone branch_name repo_url dest_folder"
-    echo ""
-    echo "  Does a shallow clone of the specified repo."
-    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-        # sourced...
-        return 1
-    else
-        # regular call
-        exit 1
-    fi
+  echo "usage: git-shallow-clone branch_name repo_url dest_folder"
+  echo ""
+  echo "  Does a shallow clone of the specified repo."
+  if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+    # sourced...
+    return 1
+  else
+    # regular call
+    exit 1
+  fi
 }
 
 REPO_URL="$1"
 if [ -z "$REPO_URL" ]; then
-    echo "E/Repository URL not specified."
-    usage
+  echo "E/Repository URL not specified."
+  usage
 fi
 
 BRANCH="$2"
 if [ -z "$BRANCH" ]; then
-    echo "E/Branch not specified."
-    usage
+  echo "E/Branch not specified."
+  usage
 fi
 
 DEST="$3"
 if [ -z "$DEST" ]; then
-    echo "E/Destination folder name not specified."
-    usage
+  echo "E/Destination folder name not specified."
+  usage
 fi
 
-(set -x ;
- git clone --depth 1 --single-branch --branch "$BRANCH" "$REPO_URL" "$DEST")
+(
+  set -x
+  git clone --depth 1 --single-branch --branch "$BRANCH" "$REPO_URL" "$DEST"
+)

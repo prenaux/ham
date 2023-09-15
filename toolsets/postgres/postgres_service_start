@@ -1,16 +1,15 @@
 #!/bin/bash
 # Starts Postgres as a Service, only for windows
 case $HAM_OS in
-    NT*)
-        ;;
-    *)
-        echo "E/Toolset: Unsupported host OS"
-        exit 1
-        ;;
+  NT*) ;;
+  *)
+    echo "E/Toolset: Unsupported host OS"
+    exit 1
+    ;;
 esac
 
 if [ ! -e "$POSTGRES_DB_DIR/pg_hba.conf" ]; then
-    postgres_initdb
+  postgres_initdb
 fi
 
 pg_ctl register -N postgres_talansoft -U "NT AUTHORITY\NetworkService" -S auto -D "$POSTGRES_DB_DIR" -l "$POSTGRES_DB_DIR/server.log"

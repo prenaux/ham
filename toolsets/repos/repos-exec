@@ -2,55 +2,55 @@
 . ham-bash-lib.sh
 
 usage() {
-    echo "usage: repos-exec repos_list (-x|-s) [ commands ]"
-    echo ""
-    echo "  Executes a bash command in the repositories."
-    echo ""
-    echo "  repos_list: If a directory is passed as repo_list we'll switch to"
-    echo "  that folder and use 'repos-list-cwd'."
-    echo ""
-    echo "  If '-x' is specified commands will be executed concurrently."
-    echo "  If '-s' is specified commands will be executed sequentially."
-    echo ""
-    echo "  The commands are executed verbatim with each repo as the CWD."
-    echo ""
+  echo "usage: repos-exec repos_list (-x|-s) [ commands ]"
+  echo ""
+  echo "  Executes a bash command in the repositories."
+  echo ""
+  echo "  repos_list: If a directory is passed as repo_list we'll switch to"
+  echo "  that folder and use 'repos-list-cwd'."
+  echo ""
+  echo "  If '-x' is specified commands will be executed concurrently."
+  echo "  If '-s' is specified commands will be executed sequentially."
+  echo ""
+  echo "  The commands are executed verbatim with each repo as the CWD."
+  echo ""
 
-    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-        # sourced...
-        return 1
-    else
-        # regular call
-        exit 1
-    fi
+  if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+    # sourced...
+    return 1
+  else
+    # regular call
+    exit 1
+  fi
 }
 
 # Check that there is at least one argument...
 if [ $# = 0 -o "$1" == "-h" -o "$2" == "-h" ]; then
-    if [ $# = 0 ]; then
-        log_error "No argument specified"
-        echo ""
-    fi
-    usage
+  if [ $# = 0 ]; then
+    log_error "No argument specified"
+    echo ""
+  fi
+  usage
 fi
 
 # Fetch the list of repos
 if [[ -d "$1/.git" ]]; then
-    log_info "'$1' is git repo, running in it directly."
-    REPOS_SINGLE_GIT_DIR="$(abspath $1)"
-    shift
+  log_info "'$1' is git repo, running in it directly."
+  REPOS_SINGLE_GIT_DIR="$(abspath $1)"
+  shift
 elif [[ -d "$1" ]]; then
-    log_info "repos_list '$1' is a directory, switching to it and using repos-list-cwd."
-    cd "$1"
-    pwd
-    shift
-    REPOS_CWD=`repos-list-cwd`
+  log_info "repos_list '$1' is a directory, switching to it and using repos-list-cwd."
+  cd "$1"
+  pwd
+  shift
+  REPOS_CWD=$(repos-list-cwd)
 elif [[ -f "$1" ]]; then
-    REPOS_CWD=`cat "$1"`
-    REPOS_CWD=$(eval echo \"$REPOS_CWD\")
-    shift
+  REPOS_CWD=$(cat "$1")
+  REPOS_CWD=$(eval echo \"$REPOS_CWD\")
+  shift
 else
-    log_warning "repos_list isn't a file, assuming its a command and using repos-list-cwd instead."
-    REPOS_CWD=`repos-list-cwd`
+  log_warning "repos_list isn't a file, assuming its a command and using repos-list-cwd instead."
+  REPOS_CWD=$(repos-list-cwd)
 fi
 
 # Detect concurrent mode
@@ -66,12 +66,12 @@ case "$1" in
     shift
     ;;
   # Based on command
-  "git-update"|"git-force-pull")
+  "git-update" | "git-force-pull")
     log_info "Running concurrently based on command '$1'"
     CONCURRENT='y'
     ;;
   # Based on command
-  "git-log"|"git-status")
+  "git-log" | "git-status")
     log_info "Running sequentially based on command '$1'"
     CONCURRENT='n'
     ;;
@@ -84,44 +84,44 @@ esac
 log_info "repos-exec: $@"
 
 if [[ -n "$REPOS_SINGLE_GIT_DIR" ]]; then
-    ARG="$REPOS_SINGLE_GIT_DIR"
-    log_info "===== Single Repo '$ARG' ====="
-    pushd "$ARG" > /dev/null
-    if [ ! -z "$1" ]; then
-        if [ $CONCURRENT == 'y' ]; then
-            $@ &
-        else
-            $@
-            echo ""
-        fi
+  ARG="$REPOS_SINGLE_GIT_DIR"
+  log_info "===== Single Repo '$ARG' ====="
+  pushd "$ARG" >/dev/null
+  if [ ! -z "$1" ]; then
+    if [ $CONCURRENT == 'y' ]; then
+      $@ &
+    else
+      $@
+      echo ""
     fi
-    popd > /dev/null
+  fi
+  popd >/dev/null
 else
-    # Check that they are all git directories
-    for ARG in $REPOS_CWD; do
-        if [ ! -d $ARG/.git ]; then
-            log_error "Not a git directory: '$ARG'"
-            ERR_NOTGITDIR=1
-        fi
-    done
-    if [ ! -d $ARG ]; then
-        exit 1
+  # Check that they are all git directories
+  for ARG in $REPOS_CWD; do
+    if [ ! -d $ARG/.git ]; then
+      log_error "Not a git directory: '$ARG'"
+      ERR_NOTGITDIR=1
     fi
+  done
+  if [ ! -d $ARG ]; then
+    exit 1
+  fi
 
-    # Run the commands
-    for ARG in $REPOS_CWD; do
-        log_info "===== Repo '$ARG' ====="
-        pushd "$ARG" > /dev/null
-        if [ ! -z "$1" ]; then
-            if [ $CONCURRENT == 'y' ]; then
-                $@ &
-            else
-                $@
-                echo ""
-            fi
-        fi
-        popd > /dev/null
-    done
+  # Run the commands
+  for ARG in $REPOS_CWD; do
+    log_info "===== Repo '$ARG' ====="
+    pushd "$ARG" >/dev/null
+    if [ ! -z "$1" ]; then
+      if [ $CONCURRENT == 'y' ]; then
+        $@ &
+      else
+        $@
+        echo ""
+      fi
+    fi
+    popd >/dev/null
+  done
 fi
 
 wait

@@ -4,13 +4,16 @@ py3-venv-check
 errcheck $? "py3-venv-check failed."
 export PIP_DISABLE_PIP_VERSION_CHECK=1
 
-(set -x ; pip3 install "$@")
+(
+  set -x
+  pip3 install "$@"
+)
 errcheck $? "pip3 install failed."
 
 # Update py3_pip_install.txt
-echo "$@" >> py3_pip_install.txt
+echo "$@" >>py3_pip_install.txt
 cp py3_pip_install.txt _py3_pip_install.txt
-cat _py3_pip_install.txt | sort | uniq > py3_pip_install.txt
+cat _py3_pip_install.txt | sort | uniq >py3_pip_install.txt
 rm _py3_pip_install.txt
 
 py3-venv-requirements-freeze

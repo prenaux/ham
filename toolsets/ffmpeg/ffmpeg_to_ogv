@@ -3,7 +3,7 @@
 SRC="$1"
 DST="$2"
 if [ -z "$DST" ]; then
-    DST="${SRC%.*}.ogv"
+  DST="${SRC%.*}.ogv"
 fi
 set -ex
 ffmpeg -i "$SRC" -codec:v libtheora -qscale:v 7 -codec:a libvorbis -qscale:a 5 "$DST"

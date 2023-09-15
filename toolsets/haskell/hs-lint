@@ -1,10 +1,10 @@
 #!/bin/bash
 if [ -z "$1" -o -d "$1" ]; then
-    DIR="${1:-.}"
-    echo "I/Linting folder '$DIR'"
-    find "$DIR" -name "*.hs" -exec echo {} \; -exec hs-lint-file {} \;
+  DIR="${1:-.}"
+  echo "I/Linting folder '$DIR'"
+  find "$DIR" -name "*.hs" -exec echo {} \; -exec hs-lint-file {} \;
 else
-    # Note: Echo only for debugging since stdout is used as-is in emacs
-    # echo "I/Indenting '$1'"
-    hs-lint-file "$@"
+  # Note: Echo only for debugging since stdout is used as-is in emacs
+  # echo "I/Indenting '$1'"
+  hs-lint-file "$@"
 fi

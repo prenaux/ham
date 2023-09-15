@@ -1,19 +1,19 @@
 #!/bin/bash
 help() {
-    echo "usage: git-clone-lfs REPO_URL LOCAL_DIR_NAME"
-    echo ""
-    echo "  Git clone lfs repo."
-    echo ""
-    echo "  Makes sure lfs is installed and do initial download quicker than"
-    echo "  the default lfs clone using git lfs pull."
-    exit 1
+  echo "usage: git-clone-lfs REPO_URL LOCAL_DIR_NAME"
+  echo ""
+  echo "  Git clone lfs repo."
+  echo ""
+  echo "  Makes sure lfs is installed and do initial download quicker than"
+  echo "  the default lfs clone using git lfs pull."
+  exit 1
 }
 
 if [ -z "$1" ]; then
-    help
+  help
 fi
 if [ -z "$2" ]; then
-    help
+  help
 fi
 
 set -ex

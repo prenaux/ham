@@ -1,13 +1,13 @@
 #!/bin/bash
 if [ "$1" = "doit" ]; then
-    git checkout master
-    git ls-files > keep-these.txt
-    git filter-branch --force --index-filter \
-        "git rm  --ignore-unmatch --cached -qr . ; cat $PWD/keep-these.txt | xargs git reset -q \$GIT_COMMIT --" \
-        --prune-empty --tag-name-filter cat -- --all
+  git checkout master
+  git ls-files >keep-these.txt
+  git filter-branch --force --index-filter \
+    "git rm  --ignore-unmatch --cached -qr . ; cat $PWD/keep-these.txt | xargs git reset -q \$GIT_COMMIT --" \
+    --prune-empty --tag-name-filter cat -- --all
 else
-    echo "# Type 'git-rewrite-history-with-latest-files doit' to rewrite the history"
-    echo "# of the repo with only the history of the files in the master branch."
-    echo "# Once its done type 'git-rewrite-history-with-latest-files-cleanup-after'"
-    echo "# to cleanup the repository."
+  echo "# Type 'git-rewrite-history-with-latest-files doit' to rewrite the history"
+  echo "# of the repo with only the history of the files in the master branch."
+  echo "# Once its done type 'git-rewrite-history-with-latest-files-cleanup-after'"
+  echo "# to cleanup the repository."
 fi

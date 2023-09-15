@@ -3,36 +3,36 @@
 PACKAGE_CLASS=${2}
 APK_PATH=${1}
 if [ -z "${APK_PATH}" -o -z "${PACKAGE_CLASS}" ]; then
-    echo "E/Syntax: adr-install-apk APK_PATH PACKAGE_CLASS"
-    exit 1
+  echo "E/Syntax: adr-install-apk APK_PATH PACKAGE_CLASS"
+  exit 1
 fi
 if [ ! -e "${APK_PATH}" ]; then
-    echo "E/Can't find apk: '${APK_PATH}' !"
-    exit 1
+  echo "E/Can't find apk: '${APK_PATH}' !"
+  exit 1
 fi
-APK_NAME=`basename "${APK_PATH}"`
+APK_NAME=$(basename "${APK_PATH}")
 echo "# APK_NAME: ${APK_NAME}"
-APK_PREV_MD5=`adb shell "cat //sdcard/${APK_NAME}.md5"`
+APK_PREV_MD5=$(adb shell "cat //sdcard/${APK_NAME}.md5")
 echo "# APK_PREV_MD5: ${APK_PREV_MD5}"
-APK_MD5=`md5sum -b "${APK_PATH}" | cut -b-32`
+APK_MD5=$(md5sum -b "${APK_PATH}" | cut -b-32)
 echo "# APK_MD5: ${APK_MD5}"
-PACKAGE_INSTALLED=`adb shell pm list packages | grep "${PACKAGE_CLASS}"`
+PACKAGE_INSTALLED=$(adb shell pm list packages | grep "${PACKAGE_CLASS}")
 echo "# PACKAGE_INSTALLED: ${PACKAGE_INSTALLED}"
 
 if [ "${PACKAGE_INSTALLED}" != "package:${PACKAGE_CLASS}" ]; then
-    echo "'${PACKAGE_CLASS}' is not installed."
-    # Clear the md5 to force installation
-    APK_MD5=""
+  echo "'${PACKAGE_CLASS}' is not installed."
+  # Clear the md5 to force installation
+  APK_MD5=""
 else
-    echo "'${PACKAGE_CLASS}' is already installed."
+  echo "'${PACKAGE_CLASS}' is already installed."
 fi
 
 if [ ! -z "${APK_PREV_MD5}" -a "${APK_MD5}" == "${APK_PREV_MD5}" ]; then
-    echo "'${APK_NAME}' is up-to-date."
+  echo "'${APK_NAME}' is up-to-date."
 else
-    echo "'${APK_NAME}' is not up-to-date."
-    adb install -r "${1}"
-    errcheck $? "Can't install ${APK_NAME} on the device !"
-    adb shell "echo ${APK_MD5} > //sdcard/${APK_NAME}.md5"
-    errcheck $? "Can't put ${APK_NAME}.md5 on the device !"
+  echo "'${APK_NAME}' is not up-to-date."
+  adb install -r "${1}"
+  errcheck $? "Can't install ${APK_NAME} on the device !"
+  adb shell "echo ${APK_MD5} > //sdcard/${APK_NAME}.md5"
+  errcheck $? "Can't put ${APK_NAME}.md5 on the device !"
 fi

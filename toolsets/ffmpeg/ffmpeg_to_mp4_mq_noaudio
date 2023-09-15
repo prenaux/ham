@@ -3,7 +3,7 @@
 SRC="$1"
 DST="$2"
 if [ -z "$DST" ]; then
-    DST="${SRC%.*}_mq_noaudio.mp4"
+  DST="${SRC%.*}_mq_noaudio.mp4"
 fi
 set -ex
 ffmpeg -i "$SRC" -c:v libx264 -preset medium -crf 31 -an -b:a 128k "$DST"

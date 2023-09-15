@@ -1,16 +1,16 @@
 #!/bin/bash
 # textedit_dir DIRECTORY FILE
 . ham-bash-lib.sh
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 case $HAM_OS in
-    NT*)
-        "${DIR}/nt-x86/SciTE.exe" "$2"
-        ;;
-    OSX*)
-        open -e "$2"
-        ;;
-    *)
-        echo "E/Toolset: Unsupported host OS"
-        return 1
-        ;;
+  NT*)
+    "${DIR}/nt-x86/SciTE.exe" "$2"
+    ;;
+  OSX*)
+    open -e "$2"
+    ;;
+  *)
+    echo "E/Toolset: Unsupported host OS"
+    return 1
+    ;;
 esac

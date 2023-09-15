@@ -1,4 +1,4 @@
 #!/bin/bash
 . "$HAM_HOME/bin/ham-bash-lib.sh"
-git tag aws_deploy_`tag_date`
+git tag aws_deploy_$(tag_date)
 aws-eb deploy $*

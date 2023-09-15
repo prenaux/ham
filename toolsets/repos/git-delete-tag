@@ -1,19 +1,19 @@
 #!/bin/bash
 help() {
-    echo "usage: git-delete-tag tag_name (remote - origin by default)"
-    echo ""
-    echo "  Deletes the specified tag locally and remotely."
-    exit 1
+  echo "usage: git-delete-tag tag_name (remote - origin by default)"
+  echo ""
+  echo "  Deletes the specified tag locally and remotely."
+  exit 1
 }
 if [ -z "$1" ]; then
-   help
+  help
 fi
 
 TAG_NAME="$1"
 REMOTE_NAME="$2"
 if [ -z "$REMOTE_NAME" ]; then
-   REMOTE_NAME=origin
+  REMOTE_NAME=origin
 fi
 
-git tag --delete $TAG_NAME && \
-    git push --delete $REMOTE_NAME $TAG_NAME
+git tag --delete $TAG_NAME &&
+  git push --delete $REMOTE_NAME $TAG_NAME

@@ -2,18 +2,22 @@
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 usage() {
-    echo "usage: ${0##*/} (retrack)"
-    echo ""
-    echo "  'ham-gt downstack track' track the current branch and its parent."
-    echo ""
-    echo "  Use 'ham-gt branch untrack' first to reset the branch's tracking."
-    exit 1
+  echo "usage: ${0##*/} (retrack)"
+  echo ""
+  echo "  'ham-gt downstack track' track the current branch and its parent."
+  echo ""
+  echo "  Use 'ham-gt branch untrack' first to reset the branch's tracking."
+  exit 1
 }
 
 if [ "$1" == "retrack" ]; then
-  (set -x ;
-   ham-gt branch untrack)
+  (
+    set -x
+    ham-gt branch untrack
+  )
 fi
 
-(set -x ;
- ham-gt downstack track)
+(
+  set -x
+  ham-gt downstack track
+)

@@ -1,41 +1,41 @@
 #!/bin/bash
 usage() {
-    SCRIPT_NAME=`basename "$0"`
-    cat <<EOF
+  SCRIPT_NAME=$(basename "$0")
+  cat <<EOF
 Usage: $SCRIPT_NAME json|hash|branch|branch_changes|branch_change_count
 EOF
-    exit 1
+  exit 1
 }
 if [ "$1" == "-h" ] || [ "$1" == "-?" ] || [ "$1" == "--help" ]; then
-    usage
+  usage
 fi
 
-HEAD_HASH=`git show --quiet HEAD --pretty=format:"%h"`
-HEAD_DATE_UTC_FILE=`date -u +"%Y%m%d_%H%M%SZ"`
-HEAD_DATE_UTC_ISO=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
-CURRENT_BRANCH=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
-TAG=`echo ${HEAD_DATE_UTC_FILE}_${CURRENT_BRANCH}_${HEAD_HASH}`
+HEAD_HASH=$(git show --quiet HEAD --pretty=format:"%h")
+HEAD_DATE_UTC_FILE=$(date -u +"%Y%m%d_%H%M%SZ")
+HEAD_DATE_UTC_ISO=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+CURRENT_BRANCH=$(git branch --no-color 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+TAG=$(echo ${HEAD_DATE_UTC_FILE}_${CURRENT_BRANCH}_${HEAD_HASH})
 
 # see: https://git-scm.com/docs/pretty-formats
 if [ "$1" == "json" ]; then
-    TZ=UTC git show --date=iso --quiet HEAD --pretty=format:"{\"hash\":\"${TAG}\", \"hash\":\"%h\", \"author\":\"%cn\", \"commit date\":\"${HEAD_DATE_UTC_ISO}\", \"commit subject\": \"%s\", \"branch\":\"${CURRENT_BRANCH}\"}"
+  TZ=UTC git show --date=iso --quiet HEAD --pretty=format:"{\"hash\":\"${TAG}\", \"hash\":\"%h\", \"author\":\"%cn\", \"commit date\":\"${HEAD_DATE_UTC_ISO}\", \"commit subject\": \"%s\", \"branch\":\"${CURRENT_BRANCH}\"}"
 elif [ "$1" == "hash" ]; then
-    echo ${TAG}
+  echo ${TAG}
 elif [ "$1" == "current_branch" ] || [ "$1" == "branch" ]; then
-    echo ${CURRENT_BRANCH}
+  echo ${CURRENT_BRANCH}
 elif [ "$1" == "current_branch_changes" ] || [ "$1" == "branch_changes" ]; then
-    status=$(git status --porcelain)
-    num_added=$(echo "$status" | grep -c -E '^A| A|\?\?')
-    num_modified=$(echo "$status" | grep -c -E '^M| M|MM|M ')
-    num_deleted=$(echo "$status" | grep -c -E '^D| D')
-    num_moved=$(echo "$status" | grep -c -E '^R| R')
-    echo "${num_modified}M,${num_added}A,${num_deleted}D,${num_moved}R,${CURRENT_BRANCH}"
+  status=$(git status --porcelain)
+  num_added=$(echo "$status" | grep -c -E '^A| A|\?\?')
+  num_modified=$(echo "$status" | grep -c -E '^M| M|MM|M ')
+  num_deleted=$(echo "$status" | grep -c -E '^D| D')
+  num_moved=$(echo "$status" | grep -c -E '^R| R')
+  echo "${num_modified}M,${num_added}A,${num_deleted}D,${num_moved}R,${CURRENT_BRANCH}"
 elif [ "$1" == "current_branch_change_count" ] || [ "$1" == "branch_change_count" ]; then
-    num_changes=$(git status -s | wc -l | tr -d '[:blank:]')
-    echo "${CURRENT_BRANCH} has $num_changes changes"
+  num_changes=$(git status -s | wc -l | tr -d '[:blank:]')
+  echo "${CURRENT_BRANCH} has $num_changes changes"
 elif [ -z "$1" ]; then
-    TZ=UTC git show --date=iso --quiet HEAD --pretty=format:"tag: ${TAG}%nhash: %h%nauthor: \"%cn\"%ncommitDate: \"${HEAD_DATE_UTC_ISO}\"%ncommitSubject: \"%s\"%nbranch: ${CURRENT_BRANCH}%n"
+  TZ=UTC git show --date=iso --quiet HEAD --pretty=format:"tag: ${TAG}%nhash: %h%nauthor: \"%cn\"%ncommitDate: \"${HEAD_DATE_UTC_ISO}\"%ncommitSubject: \"%s\"%nbranch: ${CURRENT_BRANCH}%n"
 else
-    echo "E/Unknown parameter(s): $@"
-    usage
+  echo "E/Unknown parameter(s): $@"
+  usage
 fi

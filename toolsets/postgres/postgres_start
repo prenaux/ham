@@ -1,17 +1,15 @@
 #!/bin/bash
 case $HAM_OS in
-    NT*)
-        ;;
-    OSX*)
-        ;;
-    *)
-        echo "E/Toolset: Unsupported host OS"
-        exit 1
-        ;;
+  NT*) ;;
+  OSX*) ;;
+  *)
+    echo "E/Toolset: Unsupported host OS"
+    exit 1
+    ;;
 esac
 
 if [ ! -e "$POSTGRES_DB_DIR/pg_hba.conf" ]; then
-    postgres_initdb
+  postgres_initdb
 fi
 
 pg_ctl -D "$POSTGRES_DB_DIR" -l "$POSTGRES_DB_DIR/server.log" start

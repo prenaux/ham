@@ -1,14 +1,17 @@
 #!/bin/bash
 if [ -e "$HOME/.local/bin/hindent" ]; then
-    # echo "I/Found hindent in ~/.local/bin"
-    HS_STACK_BIN_DIR="$HOME/.local/bin"
+  # echo "I/Found hindent in ~/.local/bin"
+  HS_STACK_BIN_DIR="$HOME/.local/bin"
 else
-    # echo "I/No hindent in ~/.local/bin, using hat..."
-    export HAM_NO_VER_CHECK=1
-    if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
-    if [[ "$HAM_TOOLSET_NAME" != "haskell" ]]; then
-        . "$HAM_HOME/bin/ham-toolset" haskell > /dev/null
-    fi
+  # echo "I/No hindent in ~/.local/bin, using hat..."
+  export HAM_NO_VER_CHECK=1
+  if [[ -z "$HAM_HOME" ]]; then
+    echo "E/HAM_HOME not set !"
+    exit 1
+  fi
+  if [[ "$HAM_TOOLSET_NAME" != "haskell" ]]; then
+    . "$HAM_HOME/bin/ham-toolset" haskell >/dev/null
+  fi
 fi
 
 "${HS_STACK_BIN_DIR}/hindent" "$@"

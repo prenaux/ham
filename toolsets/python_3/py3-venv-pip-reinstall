@@ -6,11 +6,14 @@ export PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # Update py3_pip_install.txt
 if [ ! -e "py3_pip_install.txt" ]; then
-    echo "E/No py3_pip_install.txt found."
-    exit 1
+  echo "E/No py3_pip_install.txt found."
+  exit 1
 fi
 
-(set -x ; pip3 install -r "py3_pip_install.txt")
+(
+  set -x
+  pip3 install -r "py3_pip_install.txt"
+)
 errcheck $? "pip3 install failed."
 
 py3-venv-requirements-freeze

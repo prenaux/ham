@@ -5,5 +5,5 @@ errcheck $? "py3-venv-check failed."
 export PIP_DISABLE_PIP_VERSION_CHECK=1
 
 echo "I/Generating py3_requirements.txt"
-pip3 freeze > py3_requirements.txt
+pip3 freeze >py3_requirements.txt
 echo "I/Done, see py3_requirements.txt"

@@ -1,39 +1,39 @@
 #!/bin/bash
 usage() {
-    echo "usage: svn-ignore-update directory"
-    echo "  Apply the _svnignore_r & _svnignore_this in the specified directory."
-    echo ""
-    echo "  _svnignore_r contains the patterns that must be applied to all the subdirectories."
-    echo "  _svnignore_this contains the patterns that must be applied only to specified directory."
-    echo ""
-    echo "  Not that _svnignore_this overrides completely _svnignore_r for the specified directory,"
-    echo "  so patterns must be duplicated in both ignore list if required."
-    echo ""
-    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-        # sourced...
-        return 1
-    else
-        # regular call
-        exit 1
-    fi
+  echo "usage: svn-ignore-update directory"
+  echo "  Apply the _svnignore_r & _svnignore_this in the specified directory."
+  echo ""
+  echo "  _svnignore_r contains the patterns that must be applied to all the subdirectories."
+  echo "  _svnignore_this contains the patterns that must be applied only to specified directory."
+  echo ""
+  echo "  Not that _svnignore_this overrides completely _svnignore_r for the specified directory,"
+  echo "  so patterns must be duplicated in both ignore list if required."
+  echo ""
+  if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+    # sourced...
+    return 1
+  else
+    # regular call
+    exit 1
+  fi
 }
 
 DEST="$1"
 if [ -z "$DEST" ]; then
-    echo "E/SVN folder not specified."
-    usage
+  echo "E/SVN folder not specified."
+  usage
 fi
 
 SVN_IGNORE_R="$DEST/_svnignore_r"
 if [ ! -e "$SVN_IGNORE_R" ]; then
-    echo "E/'$SVN_IGNORE_R' not found"
-    usage
+  echo "E/'$SVN_IGNORE_R' not found"
+  usage
 fi
 
 SVN_IGNORE_THIS="$DEST/_svnignore_this"
 if [ ! -e "$SVN_IGNORE_THIS" ]; then
-    echo "E/'$SVN_IGNORE_THIS' not found"
-    usage
+  echo "E/'$SVN_IGNORE_THIS' not found"
+  usage
 fi
 
 echo "I/Apply _svnignore_r & _svnignore_this"

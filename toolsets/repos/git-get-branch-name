@@ -27,8 +27,8 @@ fi
 
 BRANCH=$1
 if [[ $BRANCH == *":"* ]]; then
-  ORIGIN=`echo "$BRANCH" | cut -d ":" -f 1`
-  BRANCH=`echo "$BRANCH" | cut -d ":" -f 2`
+  ORIGIN=$(echo "$BRANCH" | cut -d ":" -f 1)
+  BRANCH=$(echo "$BRANCH" | cut -d ":" -f 2)
 fi
 
 output_and_done() {
@@ -41,19 +41,17 @@ output_and_done() {
 }
 
 case "$BRANCH" in
-  main-branch|main_branch|master-branch|master_branch)
-    if [ `git rev-parse --verify main 2>/dev/null` ]
-    then
+  main-branch | main_branch | master-branch | master_branch)
+    if [ $(git rev-parse --verify main 2>/dev/null) ]; then
       output_and_done main
     fi
-    if [ `git rev-parse --verify master 2>/dev/null` ]
-    then
+    if [ $(git rev-parse --verify master 2>/dev/null) ]; then
       output_and_done master
     fi
     echo "cant_find_main_branch"
     ;;
-  current-branch|current_branch|.)
-    CURRENT_BRANCH=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+  current-branch | current_branch | .)
+    CURRENT_BRANCH=$(git branch --no-color 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
     output_and_done "$CURRENT_BRANCH"
     ;;
   *)

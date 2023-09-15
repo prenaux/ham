@@ -24,7 +24,7 @@ if [ -z "$1" ]; then
   echo "I/=== Last 15 commits ==="
   git --no-pager log --all --decorate --oneline -15 --graph "${FORMAT[@]}"
 else
-  BRANCH=`git-get-branch-name "$1"`
+  BRANCH=$(git-get-branch-name "$1")
   echo "I/Status:"
   git-status
   echo "I/Logging branch '$BRANCH'."

@@ -2,42 +2,48 @@
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 usage() {
-    echo "usage: ${0##*/} BRANCH_NAME(usually main or master) ORIGIN(default:origin)"
-    echo ""
-    echo "  Move the BRANCH_NAME branch to the current HEAD (that's the currently checked out branch),"
-    echo "  then checkout BRANCH_NAME and finally push it to origin."
-    echo ""
-    exit 1
+  echo "usage: ${0##*/} BRANCH_NAME(usually main or master) ORIGIN(default:origin)"
+  echo ""
+  echo "  Move the BRANCH_NAME branch to the current HEAD (that's the currently checked out branch),"
+  echo "  then checkout BRANCH_NAME and finally push it to origin."
+  echo ""
+  exit 1
 }
 
 if [ -z "$1" ]; then
-    echo "E/No branch name specified."
-    usage
+  echo "E/No branch name specified."
+  usage
 fi
 
-BRANCH_NAME=`git-check-branch-or-commit "$1"`
+BRANCH_NAME=$(git-check-branch-or-commit "$1")
 if [ $? == 1 ]; then
   echo "E/Can't find branch '$1'."
   usage
 fi
 
-ORIGIN_BRANCH_NAME=`git-check-branch-or-commit "${2:-origin}:${BRANCH_NAME}"`
+ORIGIN_BRANCH_NAME=$(git-check-branch-or-commit "${2:-origin}:${BRANCH_NAME}")
 if [ $? == 1 ]; then
   echo "E/Can't get origin branch name '${2:-origin}:${BRANCH_NAME}'."
   usage
 fi
 
 echo "I/Fetching and rebasing on '$ORIGIN_BRANCH_NAME'"
-(set -ex ;
- git fetch --all ;
- git-rebase $ORIGIN_BRANCH_NAME)
+(
+  set -ex
+  git fetch --all
+  git-rebase $ORIGIN_BRANCH_NAME
+)
 
 echo "I/Moving '$BRANCH_NAME' to HEAD"
-(set -ex ;
- git push $ORIGIN --force-with-lease ;
- git-move-branch $BRANCH_NAME)
+(
+  set -ex
+  git push $ORIGIN --force-with-lease
+  git-move-branch $BRANCH_NAME
+)
 
 echo "I/Checking out '$BRANCH_NAME' and pushing to '$ORIGIN'"
-(set -ex ;
- git checkout $BRANCH_NAME ;
- git push $ORIGIN)
+(
+  set -ex
+  git checkout $BRANCH_NAME
+  git push $ORIGIN
+)

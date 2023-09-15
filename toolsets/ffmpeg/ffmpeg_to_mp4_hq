@@ -3,7 +3,7 @@
 SRC="$1"
 DST="$2"
 if [ -z "$DST" ]; then
-    DST="${SRC%.*}_hq.mp4"
+  DST="${SRC%.*}_hq.mp4"
 fi
 set -ex
 ffmpeg -i "$SRC" -c:v libx264 -preset slow -crf 24 -c:a mp3 -b:a 192k "$DST"

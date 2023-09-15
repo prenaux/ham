@@ -1,18 +1,18 @@
 #!/bin/bash -e
 usage() {
-    echo "usage: git-force-pull (nostash) (nofetch) BRANCH"
-    echo ""
-    echo "  Fetch and checkout a clean branch from the specified remote."
-    echo ""
-    echo "  BRANCH can be 'current_branch' or '.' to specify the branch currently checked-out."
+  echo "usage: git-force-pull (nostash) (nofetch) BRANCH"
+  echo ""
+  echo "  Fetch and checkout a clean branch from the specified remote."
+  echo ""
+  echo "  BRANCH can be 'current_branch' or '.' to specify the branch currently checked-out."
 
-    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-        # sourced...
-        return 1
-    else
-        # regular call
-        exit 1
-    fi
+  if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+    # sourced...
+    return 1
+  else
+    # regular call
+    exit 1
+  fi
 }
 
 if [ -z "$1" ]; then
@@ -21,53 +21,74 @@ fi
 
 STASH=1
 if [ "$1" == "nostash" ]; then
-    STASH=0
-    shift
+  STASH=0
+  shift
 fi
 
 FETCH=1
 if [ "$1" == "nofetch" ]; then
-    FETCH=0
-    shift
+  FETCH=0
+  shift
 fi
 
 if [ $# = 1 ]; then
-    ORIGIN=origin
-    BRANCH=$1
+  ORIGIN=origin
+  BRANCH=$1
 else
-    ORIGIN=$1
-    BRANCH=$2
+  ORIGIN=$1
+  BRANCH=$2
 fi
 
-BRANCH=`git-get-branch-name "$BRANCH"`
+BRANCH=$(git-get-branch-name "$BRANCH")
 echo "I/Force pulling branch '$BRANCH'."
 
 if [ $STASH == 1 ]; then
-  (set -x;
-   git-stash trydrop git-force-pull ;
-   git-stash push git-force-pull ;
-   git checkout $BRANCH ;
-   git-stash trypop git-force-pull)
+  (
+    set -x
+    git-stash trydrop git-force-pull
+    git-stash push git-force-pull
+    git checkout $BRANCH
+    git-stash trypop git-force-pull
+  )
 else
-  (set -x ;
-   git checkout $BRANCH)
+  (
+    set -x
+    git checkout $BRANCH
+  )
 fi
 
-if [ "`git branch --list tmp-git-force-pull`" ]; then
-    (set -x ; git branch -D tmp-git-force-pull)
+if [ "$(git branch --list tmp-git-force-pull)" ]; then
+  (
+    set -x
+    git branch -D tmp-git-force-pull
+  )
 fi
 
-(set -x ; git checkout -b tmp-git-force-pull)
+(
+  set -x
+  git checkout -b tmp-git-force-pull
+)
 if [ $FETCH == 1 ]; then
-    (set -x ; git fetch $ORIGIN +$BRANCH:$BRANCH)
+  (
+    set -x
+    git fetch $ORIGIN +$BRANCH:$BRANCH
+  )
 fi
 if [ $STASH == 1 ]; then
-    (set -x ;
-     git-stash trydrop git-force-pull ;
-     git-stash push git-force-pull ;
-     git checkout $BRANCH ;
-     git-stash trypop git-force-pull)
+  (
+    set -x
+    git-stash trydrop git-force-pull
+    git-stash push git-force-pull
+    git checkout $BRANCH
+    git-stash trypop git-force-pull
+  )
 else
-    (set -x ; git checkout $BRANCH)
+  (
+    set -x
+    git checkout $BRANCH
+  )
 fi
-(set -x ; git branch -D tmp-git-force-pull)
+(
+  set -x
+  git branch -D tmp-git-force-pull
+)

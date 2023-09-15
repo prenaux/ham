@@ -2,14 +2,14 @@
 . ham-bash-lib.sh
 
 usage() {
-    echo "usage: git-update (nofetch) BRANCH (ORIGIN_BRANCH)"
-    echo ""
-    echo "  Fetch all, checkout BRANCH then rebase on ORIGIN_BRANCH. Automatically abort the rebase if there are any conflict."
-    echo ""
-    echo "  BRANCH can be 'current_branch' or '.' to specify the branch currently checked-out."
-    echo "  ORIGIN_BRANCH is 'origin:BRANCH' if not specified."
-    echo ""
-    exit 1
+  echo "usage: git-update (nofetch) BRANCH (ORIGIN_BRANCH)"
+  echo ""
+  echo "  Fetch all, checkout BRANCH then rebase on ORIGIN_BRANCH. Automatically abort the rebase if there are any conflict."
+  echo ""
+  echo "  BRANCH can be 'current_branch' or '.' to specify the branch currently checked-out."
+  echo "  ORIGIN_BRANCH is 'origin:BRANCH' if not specified."
+  echo ""
+  exit 1
 }
 
 REPO_NAME=$(basename $(git rev-parse --show-toplevel))
@@ -24,37 +24,44 @@ if [ -z "$1" ]; then
   echo "E/BRANCH not specified."
   usage
 fi
-BRANCH=`git-get-branch-name "$1"`
+BRANCH=$(git-get-branch-name "$1")
 shift
 
 if [ -z "$1" ]; then
-  ORIGIN_BRANCH=`git-get-branch-name "origin:$BRANCH"`
+  ORIGIN_BRANCH=$(git-get-branch-name "origin:$BRANCH")
 else
-  ORIGIN_BRANCH=`git-get-branch-name "$1"`
+  ORIGIN_BRANCH=$(git-get-branch-name "$1")
   shift
 fi
 log_info "Updating '$REPO_NAME' by rebasing '$BRANCH' onto '$ORIGIN_BRANCH'."
 
 if [ "$DO_FETCH" = "1" ]; then
-  (set -x ;
-   git fetch --prune --all)
+  (
+    set -x
+    git fetch --prune --all
+  )
 fi
 
-(set -x ;
- git checkout "$BRANCH" ;
- git-rebase "$ORIGIN_BRANCH")
+(
+  set -x
+  git checkout "$BRANCH"
+  git-rebase "$ORIGIN_BRANCH"
+)
 
 function in_rebase() {
-    g=$(git rev-parse --git-dir)
-    if [ -d "$g/rebase-merge" ] || [ -d "$g/rebase-apply" ]; then
-        return 0
-    else
-        return 1
-    fi
+  g=$(git rev-parse --git-dir)
+  if [ -d "$g/rebase-merge" ] || [ -d "$g/rebase-apply" ]; then
+    return 0
+  else
+    return 1
+  fi
 }
 if in_rebase; then
   log_error "Repo '$REPO_NAME' update failed, rebase aborted because of conflicts."
-  (set -x ; git rebase --abort)
+  (
+    set -x
+    git rebase --abort
+  )
   exit 1
 else
   log_success "Repo '$REPO_NAME' update done, rebase succeeded."

@@ -2,13 +2,13 @@
 . ham-bash-lib.sh
 
 usage() {
-    echo "usage: repos-update REPOS_LIST BRANCH"
-    echo ""
-    echo "  Fetch all concurrenctly and then git-update each repo."
-    echo ""
-    echo "example:"
-    echo "  repos-update . current_branch"
-    exit 1
+  echo "usage: repos-update REPOS_LIST BRANCH"
+  echo ""
+  echo "  Fetch all concurrenctly and then git-update each repo."
+  echo ""
+  echo "example:"
+  echo "  repos-update . current_branch"
+  exit 1
 }
 
 REPOS_LIST="$1"
@@ -28,9 +28,15 @@ else
 fi
 
 log_info "Fetching..."
-(set -x ; repos-exec "$REPOS_LIST" -x git fetch --all)
+(
+  set -x
+  repos-exec "$REPOS_LIST" -x git fetch --all
+)
 
 log_info "Updating..."
-(set -x ; repos-exec "$REPOS_LIST" git-update nofetch "$BRANCH")
+(
+  set -x
+  repos-exec "$REPOS_LIST" git-update nofetch "$BRANCH"
+)
 
 log_info "Done."

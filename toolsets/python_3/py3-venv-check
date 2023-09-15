@@ -1,19 +1,19 @@
 #!/bin/bash
 . ham-bash-lib.sh
 if [ -z "$VIRTUAL_ENV" ]; then
-    echo "E/No VIRTUAL_ENV currently set."
-    exit 1
+  echo "E/No VIRTUAL_ENV currently set."
+  exit 1
 fi
 
-CWD=`pwd`
+CWD=$(pwd)
 CURRENT_VENV=$(nativedir "$VIRTUAL_ENV")
 EXPECTED_VENV=$(nativedir "$CWD/venv/")
 
 if [ ! -d "$EXPECTED_VENV" ]; then
-    echo "E/EXPECTED_VENV: $EXPECTED_VENV folder doesnt exist."
-    exit 1
+  echo "E/EXPECTED_VENV: $EXPECTED_VENV folder doesnt exist."
+  exit 1
 fi
 
 if [ "$CURRENT_VENV" != "$EXPECTED_VENV" ]; then
-    echo "E/Unexpected current venv. Got '$CURRENT_VENV' but expected '$EXPECTED_VENV'"
+  echo "E/Unexpected current venv. Got '$CURRENT_VENV' but expected '$EXPECTED_VENV'"
 fi

@@ -3,7 +3,7 @@
 SRC="$1"
 DST="$2"
 if [ -z "$DST" ]; then
-    DST="${SRC%.*}.flac"
+  DST="${SRC%.*}.flac"
 fi
 set -ex
 ffmpeg -i "$SRC" -acodec flac "$DST"

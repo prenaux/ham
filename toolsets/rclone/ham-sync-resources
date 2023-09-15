@@ -1,92 +1,95 @@
 #!/bin/bash
 export HAM_NO_VER_CHECK=1
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 # the help
 usage() {
-    echo ""
-    echo "usage: ham-sync-resources project dir command (doit)"
-    echo ""
-    echo "  ham-rclone is used to sync the resources, it expects a rclone.conf"
-    echo "  with a config for the specified project name."
-    echo ""
-    echo "command:"
-    echo "  pull   Pull data from the server to the local data folder."
-    echo "  push   Push data from the local data folder to the server."
-    echo ""
-    echo "  pull_delete  Pull data from the server to the local data folder,"
-    echo "               deletes from the local copy any file not present."
-    echo "               on the server"
-    echo "  push_delete  Push data from the local data folder to the server,"
-    echo "               deletes from the server any file not present locally."
-    echo ""
-    echo "  ls     List the files currently on the server."
-    echo ""
-    echo "example:"
-    echo "  # Get the new data from the server (dry run)"
-    echo "  ham-sync-resources Playground_202010 . pull"
-    echo "  # Get the new data from the server"
-    echo "  ham-sync-resources Playground_202010 . pull doit"
-    echo "  # Push the new data from the server (dry run)"
-    echo "  ham-sync-resources Playground_202010 . push"
-    echo "  # Push the new data from the server"
-    echo "  ham-sync-resources Playground_202010 . push doit"
-    echo ""
+  echo ""
+  echo "usage: ham-sync-resources project dir command (doit)"
+  echo ""
+  echo "  ham-rclone is used to sync the resources, it expects a rclone.conf"
+  echo "  with a config for the specified project name."
+  echo ""
+  echo "command:"
+  echo "  pull   Pull data from the server to the local data folder."
+  echo "  push   Push data from the local data folder to the server."
+  echo ""
+  echo "  pull_delete  Pull data from the server to the local data folder,"
+  echo "               deletes from the local copy any file not present."
+  echo "               on the server"
+  echo "  push_delete  Push data from the local data folder to the server,"
+  echo "               deletes from the server any file not present locally."
+  echo ""
+  echo "  ls     List the files currently on the server."
+  echo ""
+  echo "example:"
+  echo "  # Get the new data from the server (dry run)"
+  echo "  ham-sync-resources Playground_202010 . pull"
+  echo "  # Get the new data from the server"
+  echo "  ham-sync-resources Playground_202010 . pull doit"
+  echo "  # Push the new data from the server (dry run)"
+  echo "  ham-sync-resources Playground_202010 . push"
+  echo "  # Push the new data from the server"
+  echo "  ham-sync-resources Playground_202010 . push doit"
+  echo ""
 
-    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-        # sourced...
-        return 1
-    else
-        # regular call
-        exit 1
-    fi
+  if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+    # sourced...
+    return 1
+  else
+    # regular call
+    exit 1
+  fi
 }
 
 SYNC_PROJECT=$1
 shift
 if [[ -z "$SYNC_PROJECT" ]]; then
-    echo "E/Project not specified."
-    usage
-    exit 1
+  echo "E/Project not specified."
+  usage
+  exit 1
 fi
 
 SYNC_DIR=$1
 shift
 if [[ -z "$SYNC_DIR" ]]; then
-    echo "E/Dir not specified."
-    usage
-    exit 1
+  echo "E/Dir not specified."
+  usage
+  exit 1
 fi
 
 SYNC_COMMAND=$1
 shift
 if [[ -z "$SYNC_COMMAND" ]]; then
-    echo "E/Command not specified."
-    usage
-    exit 1
+  echo "E/Command not specified."
+  usage
+  exit 1
 fi
 
 if [[ "$1" == "doit" ]]; then
-    echo "I/Do it."
-    DOIT="yes"
-    shift
+  echo "I/Do it."
+  DOIT="yes"
+  shift
 else
-    DOIT=""
+  DOIT=""
 fi
 
 # Local & destination folders
-BASE_LOCAL_DIR="`pwd`/src"
+BASE_LOCAL_DIR="$(pwd)/src"
 if [[ -e "$BASE_LOCAL_DIR/_sync_data" ]]; then
-  BASE_LOCAL_DIR="`pwd`/src"
+  BASE_LOCAL_DIR="$(pwd)/src"
 else
-  BASE_LOCAL_DIR="`pwd`/data"
+  BASE_LOCAL_DIR="$(pwd)/data"
 fi
 
 if [ "$SYNC_DIR" == "." ]; then
-    LOCAL_DIR="${BASE_LOCAL_DIR}"
+  LOCAL_DIR="${BASE_LOCAL_DIR}"
 else
-    LOCAL_DIR="${BASE_LOCAL_DIR}/${SYNC_DIR}"
+  LOCAL_DIR="${BASE_LOCAL_DIR}/${SYNC_DIR}"
 fi
 BASE_REMOTE_DIR="/ham_sync/$SYNC_PROJECT"
 REMOTE_DIR="${BASE_REMOTE_DIR}/${SYNC_DIR}"
@@ -94,22 +97,22 @@ REMOTE_DIR="${BASE_REMOTE_DIR}/${SYNC_DIR}"
 # Validate using _sync_data
 SYNC_DATA_PATH="$BASE_LOCAL_DIR/_sync_data"
 if [[ ! -e "$SYNC_DATA_PATH" ]]; then
-    echo "E/Couldn't find '$SYNC_DATA_PATH' which is required to make sure that you're syncing the right folder."
-    exit 1
+  echo "E/Couldn't find '$SYNC_DATA_PATH' which is required to make sure that you're syncing the right folder."
+  exit 1
 fi
-SYNC_DATA_SYNC_PROJECT=`head -1 "$SYNC_DATA_PATH"`
+SYNC_DATA_SYNC_PROJECT=$(head -1 "$SYNC_DATA_PATH")
 if [[ "$SYNC_DATA_SYNC_PROJECT" != "# $SYNC_PROJECT" ]]; then
-    echo "E/_sync_data project name doesnt match, expecting '# $SYNC_PROJECT', but _sync_data says '$SYNC_DATA_SYNC_PROJECT'."
-    echo "I/The _sync_data file should use the rclone filter file format with the commented project name as the first line."
-    echo "I/See: https://rclone.org/filtering/#filter-from-read-filtering-patterns-from-a-file"
-    exit 1
+  echo "E/_sync_data project name doesnt match, expecting '# $SYNC_PROJECT', but _sync_data says '$SYNC_DATA_SYNC_PROJECT'."
+  echo "I/The _sync_data file should use the rclone filter file format with the commented project name as the first line."
+  echo "I/See: https://rclone.org/filtering/#filter-from-read-filtering-patterns-from-a-file"
+  exit 1
 fi
 
 echo "I/Sync Project: $SYNC_PROJECT"
 
 PARAMS=()
 if [[ "$SYNC_COMMAND" != "arch_"* ]]; then
-    PARAMS=("${PARAMS[@]}" --filter-from "$SYNC_DATA_PATH")
+  PARAMS=("${PARAMS[@]}" --filter-from "$SYNC_DATA_PATH")
 fi
 # PARAMS=("${PARAMS[@]}" --fast-list)
 # PARAMS=("${PARAMS[@]}" --max-age 1h)
@@ -119,98 +122,126 @@ PARAMS=("${PARAMS[@]}" --transfers=${HAM_SYNC_NUM_TRANSFERS:-16})
 PARAMS=("${PARAMS[@]}" --stats 60s)
 PARAMS=("${PARAMS[@]}" -v)
 if [ "$DOIT" != "yes" ]; then
-    PARAMS=("${PARAMS[@]}" --dry-run)
+  PARAMS=("${PARAMS[@]}" --dry-run)
 else
-    PARAMS=("${PARAMS[@]}" --progress)
+  PARAMS=("${PARAMS[@]}" --progress)
 fi
 
 arch_init() {
-    export ARCH_NAME=$1
-    if [ -z "$ARCH_NAME" ]; then
-        echo "E/Archive name not specified."
-        usage
-    fi
-    shift
-    export ARCH_VERTAG=$1
-    if [ -z "$ARCH_VERTAG" ]; then
-        echo "E/Archive version tag not specified."
-        usage
-    fi
-    shift
-    export ARCH_FN="$LOCAL_DIR/_arch_${ARCH_NAME}_${ARCH_VERTAG}.7z"
-    export ARCH_DIR="$LOCAL_DIR/arch-${ARCH_NAME}"
+  export ARCH_NAME=$1
+  if [ -z "$ARCH_NAME" ]; then
+    echo "E/Archive name not specified."
+    usage
+  fi
+  shift
+  export ARCH_VERTAG=$1
+  if [ -z "$ARCH_VERTAG" ]; then
+    echo "E/Archive version tag not specified."
+    usage
+  fi
+  shift
+  export ARCH_FN="$LOCAL_DIR/_arch_${ARCH_NAME}_${ARCH_VERTAG}.7z"
+  export ARCH_DIR="$LOCAL_DIR/arch-${ARCH_NAME}"
 
-    echo "I/ARCH_FN: $ARCH_FN"
-    echo "I/ARCH_DIR: $ARCH_DIR"
-    echo "I/ARCH_VERTAG: $ARCH_VERTAG"
+  echo "I/ARCH_FN: $ARCH_FN"
+  echo "I/ARCH_DIR: $ARCH_DIR"
+  echo "I/ARCH_VERTAG: $ARCH_VERTAG"
 }
 
 case "$SYNC_COMMAND" in
-    push)
-        echo "I/Pushing from data to server..."
-        (set -x; ham-rclone copy "${PARAMS[@]}" "$LOCAL_DIR" "$SYNC_PROJECT:$REMOTE_DIR")
-        ;;
-    push_delete)
-        echo "I/Pushing from data to server, and deleting files removed locally from the server..."
-        (set -x; ham-rclone sync "${PARAMS[@]}" "$LOCAL_DIR" "$SYNC_PROJECT:$REMOTE_DIR")
-        ;;
-    pull)
-        echo "I/Pulling from server to local data folder..."
-        (set -x; ham-rclone copy "${PARAMS[@]}" "$SYNC_PROJECT:$REMOTE_DIR" "$LOCAL_DIR")
-        ;;
-    pull_delete)
-        echo "I/Pulling from server to local data folder, and deleting local files that have been removed from the server..."
-        (set -x; ham-rclone sync "${PARAMS[@]}" "$SYNC_PROJECT:$REMOTE_DIR" "$LOCAL_DIR")
-        ;;
-    ls)
-        echo "I/Listing files on the remote..."
-        (set -x;
-         ham-rclone ls "$SYNC_PROJECT:$REMOTE_DIR")
-        ;;
-    arch_make)
-        echo "I/Making archive..."
-        arch_init $1 $2
-        (set -x ; 7z-pack-arch "$ARCH_FN" "$ARCH_DIR" "$ARCH_VERTAG")
-        ;;
-    arch_push)
-        echo "I/Push an archive..."
-        arch_init $1 $2
-        if [ -e "$ARCH_FN" ]; then
-            echo "I/Archive already exist."
-        else
-            echo "I/Making archive..."
-            (set -x ; 7z-pack-arch "$ARCH_FN" "$ARCH_DIR" "$ARCH_VERTAG")
-        fi
-        echo "I/Pushing to server..."
-        BASENAME=`basename "$ARCH_FN"`
-        (set -x; ham-rclone copy "${PARAMS[@]}" "$LOCAL_DIR/$BASENAME" "$SYNC_PROJECT:$REMOTE_DIR")
-        ;;
-    arch_pull)
-        echo "I/Pull an archive..."
-        arch_init $1 $2
-        ARCH_TAG_FN="$ARCH_DIR/arch_tag_${ARCH_VERTAG}"
-        echo "I/ARCH_TAG_FN: $ARCH_TAG_FN"
-        if [ -e "$ARCH_TAG_FN" ]; then
-            echo "I/Archive already downloaded and unpacked, nothing to do."
-        else
-            if [ -e "$ARCH_FN" ]; then
-                echo "I/Archive already downloaded."
-            else
-                echo "I/Getting archive..."
-                BASENAME=`basename "$ARCH_FN"`
-                (set -x; ham-rclone copy "${PARAMS[@]}"  "$SYNC_PROJECT:$REMOTE_DIR/$BASENAME" "$LOCAL_DIR")
-            fi
-            echo "I/Unpacking archive..."
-            (set -x ;
-             rm -Rf "$ARCH_DIR" ;
-             7z-unpack-arch "$ARCH_FN" "$ARCH_DIR" "$ARCH_VERTAG" ;
-             rm "$ARCH_FN")
-        fi
-        ;;
-    *)
-        echo "E/Unknown command '$SYNC_COMMAND'"
-        usage
-        ;;
+  push)
+    echo "I/Pushing from data to server..."
+    (
+      set -x
+      ham-rclone copy "${PARAMS[@]}" "$LOCAL_DIR" "$SYNC_PROJECT:$REMOTE_DIR"
+    )
+    ;;
+  push_delete)
+    echo "I/Pushing from data to server, and deleting files removed locally from the server..."
+    (
+      set -x
+      ham-rclone sync "${PARAMS[@]}" "$LOCAL_DIR" "$SYNC_PROJECT:$REMOTE_DIR"
+    )
+    ;;
+  pull)
+    echo "I/Pulling from server to local data folder..."
+    (
+      set -x
+      ham-rclone copy "${PARAMS[@]}" "$SYNC_PROJECT:$REMOTE_DIR" "$LOCAL_DIR"
+    )
+    ;;
+  pull_delete)
+    echo "I/Pulling from server to local data folder, and deleting local files that have been removed from the server..."
+    (
+      set -x
+      ham-rclone sync "${PARAMS[@]}" "$SYNC_PROJECT:$REMOTE_DIR" "$LOCAL_DIR"
+    )
+    ;;
+  ls)
+    echo "I/Listing files on the remote..."
+    (
+      set -x
+      ham-rclone ls "$SYNC_PROJECT:$REMOTE_DIR"
+    )
+    ;;
+  arch_make)
+    echo "I/Making archive..."
+    arch_init $1 $2
+    (
+      set -x
+      7z-pack-arch "$ARCH_FN" "$ARCH_DIR" "$ARCH_VERTAG"
+    )
+    ;;
+  arch_push)
+    echo "I/Push an archive..."
+    arch_init $1 $2
+    if [ -e "$ARCH_FN" ]; then
+      echo "I/Archive already exist."
+    else
+      echo "I/Making archive..."
+      (
+        set -x
+        7z-pack-arch "$ARCH_FN" "$ARCH_DIR" "$ARCH_VERTAG"
+      )
+    fi
+    echo "I/Pushing to server..."
+    BASENAME=$(basename "$ARCH_FN")
+    (
+      set -x
+      ham-rclone copy "${PARAMS[@]}" "$LOCAL_DIR/$BASENAME" "$SYNC_PROJECT:$REMOTE_DIR"
+    )
+    ;;
+  arch_pull)
+    echo "I/Pull an archive..."
+    arch_init $1 $2
+    ARCH_TAG_FN="$ARCH_DIR/arch_tag_${ARCH_VERTAG}"
+    echo "I/ARCH_TAG_FN: $ARCH_TAG_FN"
+    if [ -e "$ARCH_TAG_FN" ]; then
+      echo "I/Archive already downloaded and unpacked, nothing to do."
+    else
+      if [ -e "$ARCH_FN" ]; then
+        echo "I/Archive already downloaded."
+      else
+        echo "I/Getting archive..."
+        BASENAME=$(basename "$ARCH_FN")
+        (
+          set -x
+          ham-rclone copy "${PARAMS[@]}" "$SYNC_PROJECT:$REMOTE_DIR/$BASENAME" "$LOCAL_DIR"
+        )
+      fi
+      echo "I/Unpacking archive..."
+      (
+        set -x
+        rm -Rf "$ARCH_DIR"
+        7z-unpack-arch "$ARCH_FN" "$ARCH_DIR" "$ARCH_VERTAG"
+        rm "$ARCH_FN"
+      )
+    fi
+    ;;
+  *)
+    echo "E/Unknown command '$SYNC_COMMAND'"
+    usage
+    ;;
 esac
 
 echo "I/Done"

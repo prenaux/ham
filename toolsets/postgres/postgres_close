@@ -1,13 +1,11 @@
 #!/bin/bash
 case $HAM_OS in
-    NT*)
-        ;;
-    OSX*)
-        ;;
-    *)
-        echo "E/Toolset: Unsupported host OS"
-        exit 1
-        ;;
+  NT*) ;;
+  OSX*) ;;
+  *)
+    echo "E/Toolset: Unsupported host OS"
+    exit 1
+    ;;
 esac
 
 pg_ctl -D "$POSTGRES_DB_DIR" stop -s -m fast

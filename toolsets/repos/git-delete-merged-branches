@@ -5,55 +5,62 @@
 # standard git thing, so the pre-push hook has to handle that envvar.
 export SKIP_GIT_PRE_PUSH_HOOK=yes
 
-CURRENT_GIT_BRANCH=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+CURRENT_GIT_BRANCH=$(git branch --no-color 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
 MAIN_BRANCH_NAME=main
 if [ "$CURRENT_GIT_BRANCH" != "$MAIN_BRANCH_NAME" ]; then
-    MAIN_BRANCH_NAME=master
-    if [ "$CURRENT_GIT_BRANCH" != "$MAIN_BRANCH_NAME" ]; then
-        echo "E/Currently on '$CURRENT_GIT_BRANCH' branch, merged branches can only be deleted from the main or master branch."
-        echo "E/Do 'git checkout $MAIN_BRANCH_NAME' first."
-        exit 1
-    fi
+  MAIN_BRANCH_NAME=master
+  if [ "$CURRENT_GIT_BRANCH" != "$MAIN_BRANCH_NAME" ]; then
+    echo "E/Currently on '$CURRENT_GIT_BRANCH' branch, merged branches can only be deleted from the main or master branch."
+    echo "E/Do 'git checkout $MAIN_BRANCH_NAME' first."
+    exit 1
+  fi
 fi
 if [ "$1" == "noprune" ]; then
-    echo "# SKIPPED: git fetch --prune origin"
-    shift
+  echo "# SKIPPED: git fetch --prune origin"
+  shift
 else
-    echo "# git fetch --prune origin"
-    (set -x ; git fetch --prune origin)
+  echo "# git fetch --prune origin"
+  (
+    set -x
+    git fetch --prune origin
+  )
 fi
 
 if [[ "$1" == "doit_local" || "$1" == "doit_remote" ]]; then
-    DOIT_SPECIFIED=yes
+  DOIT_SPECIFIED=yes
 fi
 
 echo "# Local branches..."
 LOCAL_BRANCHES=$(git branch --merged $MAIN_BRANCH_NAME | grep -v develop | grep -v $MAIN_BRANCH_NAME | sed -E "s|^ *origin/||g" | sed -E "s|\*||g")
-for branch in $LOCAL_BRANCHES
-do
-    if [ "$1" == "doit_local" ]; then
-        echo "I/Deleting local branch '$branch'."
-        (set -x ; git branch -d $branch)
-    else
-        echo "I/Would delete local branch '$branch'."
-    fi
+for branch in $LOCAL_BRANCHES; do
+  if [ "$1" == "doit_local" ]; then
+    echo "I/Deleting local branch '$branch'."
+    (
+      set -x
+      git branch -d $branch
+    )
+  else
+    echo "I/Would delete local branch '$branch'."
+  fi
 done
 if [ "$1" == "doit_local" ]; then
-    shift
+  shift
 fi
 
 echo "# Remote branches..."
 REMOTE_BRANCHES=$(git branch -r --merged $MAIN_BRANCH_NAME | grep origin | grep -v develop | grep -v $MAIN_BRANCH_NAME | sed -E "s|^ *origin/||g" | sed -E "s|\*||g")
-for branch in $REMOTE_BRANCHES
-do
-    if [ "$1" == "doit_remote" ]; then
-        echo "I/Deleting remote branch '$branch'."
-        (set -x ; git push origin $branch --delete)
-    else
-        echo "I/Would delete remote branch '$branch'."
-    fi
+for branch in $REMOTE_BRANCHES; do
+  if [ "$1" == "doit_remote" ]; then
+    echo "I/Deleting remote branch '$branch'."
+    (
+      set -x
+      git push origin $branch --delete
+    )
+  else
+    echo "I/Would delete remote branch '$branch'."
+  fi
 done
 
 if [[ "$DOIT_SPECIFIED" != "yes" ]]; then
-    echo "# Type 'git-delete-merged-branches doit_local/remote' to remove the branches listed above."
+  echo "# Type 'git-delete-merged-branches doit_local/remote' to remove the branches listed above."
 fi

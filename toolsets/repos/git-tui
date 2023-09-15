@@ -1,10 +1,10 @@
 #!/bin/bash -e
 usage() {
-    echo "usage: git-tui DIRECTORY (default to .)"
-    echo ""
-    echo "  Open a Git TUI in the specified directory."
-    echo ""
-    exit 1
+  echo "usage: git-tui DIRECTORY (default to .)"
+  echo ""
+  echo "  Open a Git TUI in the specified directory."
+  echo ""
+  exit 1
 }
 
 PARAM_DIR=${1:-.}
@@ -19,7 +19,7 @@ fi
 
 if [ ! -d "$DIR/.git" ]; then
   cd "$DIR"
-  DOT_GIT_UP=`ham-find-dir-up .git`
+  DOT_GIT_UP=$(ham-find-dir-up .git)
   if [[ ! -z "$DOT_GIT_UP" && -d "$DOT_GIT_UP" ]]; then
     DIR="$DOT_GIT_UP"
   else
@@ -38,7 +38,7 @@ if [ ! -d "$DIR/.git" ]; then
         cd "$repo"
         changes=$(git-head-info branch_changes)
         REPOS_WITH_CHANGES+=("${repo}\t (status: ${changes})")
-        cd - > /dev/null
+        cd - >/dev/null
       done
 
       # Pass the list to fzf and get the selected folder
@@ -53,15 +53,15 @@ fi
 
 DARKMODE=1
 if [[ "$(uname -s)" == "Darwin" ]]; then
-    if [[ "$(defaults read -g AppleInterfaceStyle 2> /dev/null)" == "Dark" ]]; then
-        DARKMODE=1
-        echo "I/Detected darkmode."
-    else
-        DARKMODE=0
-        echo "I/Detected lightmode."
-    fi
+  if [[ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" == "Dark" ]]; then
+    DARKMODE=1
+    echo "I/Detected darkmode."
+  else
+    DARKMODE=0
+    echo "I/Detected lightmode."
+  fi
 else
-    echo "I/Defaulting to darkmode."
+  echo "I/Defaulting to darkmode."
 fi
 
 PARAMS=()
@@ -71,6 +71,8 @@ else
   PARAMS=("${PARAMS[@]}" -ucf "$HAM_HOME/toolsets/repos/lazygit/lightmode.yml")
 fi
 
-(set -x ;
- cd "$DIR" ;
- "lazygit" "${PARAMS[@]}")
+(
+  set -x
+  cd "$DIR"
+  "lazygit" "${PARAMS[@]}"
+)

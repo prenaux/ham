@@ -1,15 +1,18 @@
 #!/bin/bash
 export HAM_NO_VER_CHECK=1
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
 if [[ "$HAM_TOOLSET_NAME" != "haskell" ]]; then
-    . "$HAM_HOME/bin/ham-toolset" haskell > /dev/null
+  . "$HAM_HOME/bin/ham-toolset" haskell >/dev/null
 fi
 
 if [ "$HAM_BIN_LOA" == "osx-arm64" ]; then
-    export PATH="/opt/homebrew/opt/llvm@12/bin:$PATH"
-    export LDFLAGS="-L/opt/homebrew/opt/llvm@12/lib"
-    export CPPFLAGS="-I/opt/homebrew/opt/llvm@12/include"
-    /opt/homebrew/bin/stack --compiler ghc-8.10.7 --system-ghc "$@"
+  export PATH="/opt/homebrew/opt/llvm@12/bin:$PATH"
+  export LDFLAGS="-L/opt/homebrew/opt/llvm@12/lib"
+  export CPPFLAGS="-I/opt/homebrew/opt/llvm@12/include"
+  /opt/homebrew/bin/stack --compiler ghc-8.10.7 --system-ghc "$@"
 else
-    stack "$@"
+  stack "$@"
 fi

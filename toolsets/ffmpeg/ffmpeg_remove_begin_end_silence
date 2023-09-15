@@ -9,7 +9,7 @@
 SRC="$1"
 DST="$2"
 if [ -z "$DST" ]; then
-    DST="${SRC%.*}_nosilence.wav"
+  DST="${SRC%.*}_nosilence.wav"
 fi
 set -ex
 ffmpeg -i "${SRC}" -af "silenceremove=start_periods=1:start_silence=0.1:start_threshold=-50dB,areverse,silenceremove=start_periods=1:start_silence=0.1:start_threshold=-50dB,areverse" "$DST"

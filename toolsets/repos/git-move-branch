@@ -13,23 +13,24 @@ case "$1" in
     ;;
 esac
 
-SRC=`git-check-branch-or-commit "$1"`
+SRC=$(git-check-branch-or-commit "$1")
 if [ $? == 1 ]; then
   echo "E/Can't find source branch '$1'."
   usage
 fi
 
-DEST=`git-check-branch-or-commit "${2:-HEAD}"`
+DEST=$(git-check-branch-or-commit "${2:-HEAD}")
 if [ $? == 1 ]; then
   echo "E/Can't find destination branch/commit '$2'."
   usage
 fi
 
-SRC_COMMIT=`git rev-parse --verify --short=8 "$SRC"`
-DEST_COMMIT=`git rev-parse --verify --short=8 "$DEST"`
+SRC_COMMIT=$(git rev-parse --verify --short=8 "$SRC")
+DEST_COMMIT=$(git rev-parse --verify --short=8 "$DEST")
 
 echo "I/Moving '$SRC' ($SRC_COMMIT) to point to '$DEST' ($DEST_COMMIT)."
-(set -ex ;
- # Move the branch
- git branch -f $SRC $DEST
+(
+  set -ex
+  # Move the branch
+  git branch -f $SRC $DEST
 )

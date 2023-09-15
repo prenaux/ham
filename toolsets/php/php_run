@@ -1,40 +1,40 @@
 #!/bin/bash -e
 if [ -z "$PHP_INI" ]; then
-    case $HAM_OS in
-        NT*)
-            if [ -e "./config/nt/php.ini" ]; then
-                PHP_INI="./config/nt/php.ini"
-            fi
-            ;;
-        OSX*)
-            if [ -e "./config/osx/php.ini" ]; then
-                PHP_INI="./config/osx/php.ini"
-            fi
-            ;;
-        LINUX*)
-            if [ -e "./config/linux/php.ini" ]; then
-                PHP_INI="./config/linux/php.ini"
-            fi
-            ;;
-        *)
-            echo "E/Toolset: Unsupported host OS"
-            return 1
-            ;;
-    esac
+  case $HAM_OS in
+    NT*)
+      if [ -e "./config/nt/php.ini" ]; then
+        PHP_INI="./config/nt/php.ini"
+      fi
+      ;;
+    OSX*)
+      if [ -e "./config/osx/php.ini" ]; then
+        PHP_INI="./config/osx/php.ini"
+      fi
+      ;;
+    LINUX*)
+      if [ -e "./config/linux/php.ini" ]; then
+        PHP_INI="./config/linux/php.ini"
+      fi
+      ;;
+    *)
+      echo "E/Toolset: Unsupported host OS"
+      return 1
+      ;;
+  esac
 
-    if [ ! -e "$PHP_INI" ]; then
-        if [ -e "./php.ini" ]; then
-            PHP_INI=./php.ini
-        elif [ -e "./config/php.ini" ]; then
-            PHP_INI=./config/php.ini
-        fi
+  if [ ! -e "$PHP_INI" ]; then
+    if [ -e "./php.ini" ]; then
+      PHP_INI=./php.ini
+    elif [ -e "./config/php.ini" ]; then
+      PHP_INI=./config/php.ini
     fi
+  fi
 fi
 
 if [ -z "$PHP_INI" ]; then
-    set -x
-    php "$@"
+  set -x
+  php "$@"
 else
-    set -x
-    php -c "$PHP_INI" "$@"
+  set -x
+  php -c "$PHP_INI" "$@"
 fi

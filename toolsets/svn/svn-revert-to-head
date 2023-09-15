@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ "$1" = "doit" ]; then
-    svn revert . -R
+  svn revert . -R
 else
-    svn status | grep -v '^?'
-    echo "# Type 'svn-revert-to-head doit' to reset the files listed above to the server's version."
+  svn status | grep -v '^?'
+  echo "# Type 'svn-revert-to-head doit' to reset the files listed above to the server's version."
 fi
