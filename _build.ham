@@ -5,7 +5,7 @@ SH_FILES += [ lffGlob $(SUBDIR) : *.sh ] ;
 
 # ECHO "... SH_FILES:" $(SH_FILES) ;
 
-lffFiles_sh lff_ham-top : $(SH_FILES) ;
+lffFiles_sh lff_ham-root : $(SH_FILES) ;
 
 SubInclude TOP bin ;
 
