@@ -1,0 +1,15 @@
+if [ SubDirOnce TOP toolsets ] = 1 { return ; }
+
+echo "... SUBDIR: " $(SUBDIR) ;
+
+# Grab all files from one subdirectory below 'toolsets/' which do not have a '.' in their name
+# i.e. 'toolsets/nodejs/ham-node' will match, but 'toolsets/nodejs/ham-node.js' will not.
+
+local IGNORE_PATTERNS = *.*   # Remove any files with a dot in them
+repos-list-cwd            # This is a niScript file (in repos/ subdir)
+hs-lint-file              # This is a Perl file (in haskell/ subdir)
+dot-ghci-example ;        # This is an example Haskell ghci conf file (in haskell/ subdir)
+
+local SH_FILES = [ FGristFiles [ ListFiles [ ListDirs $(SUBDIR) ] : * : $(IGNORE_PATTERNS) ] ] ;
+
+lffFiles_sh lff_ham-toolsets : $(SH_FILES) ;
