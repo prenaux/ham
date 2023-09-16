@@ -12,7 +12,9 @@
              (format "%s %s"
                      (shell-quote-argument ham-fix-executable)
                      (shell-quote-argument (buffer-file-name)))))
-      (progn (message "ham-fix SUCCEEDED")
-             (revert-buffer t t t))
+      (progn
+        (message "ham-fix SUCCEEDED")
+        (revert-buffer t t t)
+        (aflymake-mode-or-syntax-check))
     (progn
       (message "ham-fix FAILED"))))
