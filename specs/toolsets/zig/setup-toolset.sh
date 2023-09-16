@@ -11,7 +11,11 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/zig"
 
 # path setup
 case $HAM_BIN_LOA in
-    nt-x86|lin-x64|osx-arm64|osx-x64)
+    osx-arm64)
+        export ZIG_DIR="${HAM_TOOLSET_DIR}/$HAM_BIN_LOA"
+        toolset_check_and_dl_ver zig $HAM_BIN_LOA v0_11_0 || return 1
+        ;;
+    nt-x86|lin-x64|osx-x64)
         export ZIG_DIR="${HAM_TOOLSET_DIR}/$HAM_BIN_LOA"
         toolset_check_and_dl_ver zig $HAM_BIN_LOA v0_10_0 || return 1
         ;;
