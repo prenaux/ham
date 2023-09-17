@@ -370,4 +370,4 @@
                       'inplace "sh"))
 
 (push '(".+\\.sh$" ham-flymake-ham-lint-bash-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
-(push '(".*[^\\.]*$" ham-flymake-ham-lint-bash-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
+(push '("^[0-9a-zA-Z-_]+[^\\.]*$" ham-flymake-ham-lint-bash-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
