@@ -939,6 +939,16 @@ BEG and END (region to sort)."
 
  ;; alias y to yes and n to no
  (defalias 'yes-or-no-p 'y-or-n-p)
+
+ ;; clear the *Messages* buffer
+ (defun ni-clear-messages-buffer ()
+   "Clear and recreate the *Messages* buffer."
+   (interactive)
+   (let ((messages-buffer (get-buffer "*Messages*")))
+     (when messages-buffer
+       (kill-buffer messages-buffer)))
+   (message "Messages buffer cleared.")
+   (view-echo-area-messages))
 )
 
 ;;;======================================================================
