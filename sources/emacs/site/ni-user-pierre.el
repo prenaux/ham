@@ -241,7 +241,7 @@ If the new path's directories does not exist, create them."
      backupFilePath))
 
  (defun ham-hash-file-md5 (fpath)
-   (agl-bash-cmd-to-string (concat "hash_md5 \"" fpath "\"")))
+   (md5 fpath))
 
  (defun ni-backup-current-file-handler ()
    (let ((destBackupFileName (ni-backup-file-name buffer-file-name)))

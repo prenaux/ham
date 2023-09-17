@@ -251,6 +251,9 @@
   (concat (getenv "WORK") "/ham/bin/ham-lint")
   "The ham-lint executable to use for syntax checking.")
 
+(Windows
+ (setq aflymake-ham-lint-executable (concat (getenv "WORK") "/ham/bin/ham-lint.cmd")))
+
 ;; TODO add some options for eslint CLI
 (defun aflymake-ham-lint-command (filename)
   "Construct a command that flymake can use to run eslint on a file."

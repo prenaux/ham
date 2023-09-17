@@ -9,4 +9,5 @@ if errorlevel 1 (
     exit /b 1
 )
 
-bash.exe "%~dp0\hash_md5" %*
+bash.exe "%~dp0\ham-fix" %*
+
