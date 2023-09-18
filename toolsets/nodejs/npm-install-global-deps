@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 . ham-bash-lib.sh
 
 if [ "$1" = "force" ]; then
