@@ -47,13 +47,13 @@ if [ $STASH == 1 ]; then
     set -x
     git-stash trydrop git-force-pull
     git-stash push git-force-pull
-    git checkout $BRANCH
+    git checkout "$BRANCH"
     git-stash trypop git-force-pull
   )
 else
   (
     set -x
-    git checkout $BRANCH
+    git checkout "$BRANCH"
   )
 fi
 
@@ -71,7 +71,7 @@ fi
 if [ $FETCH == 1 ]; then
   (
     set -x
-    git fetch $ORIGIN +$BRANCH:$BRANCH
+    git fetch "$ORIGIN" "+$BRANCH:$BRANCH"
   )
 fi
 if [ $STASH == 1 ]; then
@@ -79,13 +79,13 @@ if [ $STASH == 1 ]; then
     set -x
     git-stash trydrop git-force-pull
     git-stash push git-force-pull
-    git checkout $BRANCH
+    git checkout "$BRANCH"
     git-stash trypop git-force-pull
   )
 else
   (
     set -x
-    git checkout $BRANCH
+    git checkout "$BRANCH"
   )
 fi
 (

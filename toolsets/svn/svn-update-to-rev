@@ -7,7 +7,6 @@ REL_DIR=$(realpath --relative-to="$ROOT_DIR" "$CURR_DIR")
 ROOT_URL=$(svn info --show-item repos-root-url)
 CURR_URL="$ROOT_URL/$REL_DIR"
 REV=$1
-REV_NEXT=$((REV + 1))
 shift
 
 # echo "I/Root URL: ${ROOT_URL}"
@@ -22,13 +21,13 @@ if [ -z "$REV" ]; then
   exit 1
 else
   echo "I/Updating to revision $REV"
-  svn log --revision $REV
+  svn log --revision "$REV"
   if [ "$1" = "doit" ]; then
     svn up -r"$REV"
     echo "# Run 'svn commit' to commit the revert changes."
   else
     echo "I/List of changes vs current rev."
-    svn diff -r $REV --summarize
+    svn diff -r "$REV" --summarize
     echo "# Run 'svn-update-to-rev $REV doit' update to revision $REV."
   fi
 fi

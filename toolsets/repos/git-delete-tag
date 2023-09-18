@@ -15,5 +15,5 @@ if [ -z "$REMOTE_NAME" ]; then
   REMOTE_NAME=origin
 fi
 
-git tag --delete $TAG_NAME &&
-  git push --delete $REMOTE_NAME $TAG_NAME
+git tag --delete "$TAG_NAME" &&
+  git push --delete "$REMOTE_NAME" "$TAG_NAME"

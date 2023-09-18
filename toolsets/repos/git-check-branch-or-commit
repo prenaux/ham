@@ -11,7 +11,7 @@ if [ -z "$1" ]; then
 fi
 
 BRANCH_NAME=$(git-get-branch-name "$1")
-if [ $(git rev-parse --verify "$BRANCH_NAME" 2>/dev/null) ]; then
+if [ "$(git rev-parse --verify "$BRANCH_NAME" 2>/dev/null)" ]; then
   echo "$BRANCH_NAME"
   exit 0
 else

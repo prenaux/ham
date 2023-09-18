@@ -33,19 +33,19 @@ fi
 
 output_and_done() {
   if [ -n "$ORIGIN" ]; then
-    echo $ORIGIN/$1
+    echo "$ORIGIN/$1"
   else
-    echo $1
+    echo "$1"
   fi
   exit 0
 }
 
 case "$BRANCH" in
   main-branch | main_branch | master-branch | master_branch)
-    if [ $(git rev-parse --verify main 2>/dev/null) ]; then
+    if [ "$(git rev-parse --verify main 2>/dev/null)" ]; then
       output_and_done main
     fi
-    if [ $(git rev-parse --verify master 2>/dev/null) ]; then
+    if [ "$(git rev-parse --verify master 2>/dev/null)" ]; then
       output_and_done master
     fi
     echo "cant_find_main_branch"

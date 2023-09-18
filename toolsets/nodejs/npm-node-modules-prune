@@ -12,7 +12,7 @@
 # Prunes common files that are unnecessarily published in npm packages
 # when people don't configure `.npmignore` or package.json's `files`
 
-echo "Before: "$(du -hs .)
+echo "Before: ""$(du -hs .)"
 
 # Common unneeded files
 find . -type d -name node_modules -prune -exec find {} -type f \( \
@@ -78,4 +78,4 @@ find . -type d -name node_modules -prune -exec find {} -type d \( \
   -name .nyc_output \
   \) -print0 \; | xargs -0 rm -rf
 
-echo "After: "$(du -hs .)
+echo "After: ""$(du -hs .)"

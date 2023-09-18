@@ -1,2 +1,2 @@
 #!/bin/bash -ex
-svn add $(svn status . | awk '/^[?]/{print $2}')
+svn add "$(svn status . | awk '/^[?]/{print $2}')"

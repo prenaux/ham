@@ -5,7 +5,8 @@ export VIRTUAL_ENV_DISABLE_PROMPT=true
 unset VIRTUAL_ENV
 unset VIRTUAL_ENV_PROMPT
 
-export PY3_VENV_BASE_DIR="$(abspath .)"
+PY3_VENV_BASE_DIR="$(abspath .)"
+export PY3_VENV_BASE_DIR
 case $HAM_OS in
   NT*)
     export PY3_VENV_BIN_DIR="${PY3_VENV_BASE_DIR}/venv/Scripts"
@@ -32,10 +33,11 @@ fi
 # Pierre: We do the activation ourselves because on Windows the builtin script
 # is broken when running in bash. Also its so simple that it really doesn't need
 # the potential flakiness.
-export VIRTUAL_ENV="$(abspath "./venv")"
+VIRTUAL_ENV="$(abspath "./venv")"
+export VIRTUAL_ENV
 export VIRTUAL_ENV_PROMPT="ham-py3-venv"
 
-pathenv_add "$(abspath ${PY3_VENV_BIN_DIR})"
+pathenv_add "$(abspath "${PY3_VENV_BIN_DIR}")"
 
 if [ "$PY3_VENV_REQUIREMENTS_SHOULD_INSTALL" == "yes" ]; then
   py3-venv-pip-reinstall || return 1

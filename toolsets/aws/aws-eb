@@ -1,6 +1,6 @@
 #!/bin/bash
 case $HAM_OS in
   *)
-    eb $@
+    eb "$@"
     ;;
 esac

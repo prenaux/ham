@@ -3,6 +3,6 @@ for BRANCH in $(git branch -a | grep remotes | grep -v HEAD | grep -v master); d
   echo "I/Tracking branch ${BRANCH}"
   (
     set -x
-    git branch --track ${BRANCH#remotes/origin/} ${BRANCH}
+    git branch --track "${BRANCH#remotes/origin/}" "${BRANCH}"
   )
 done

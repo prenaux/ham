@@ -20,10 +20,13 @@ if [ "$1" == "ls" ]; then
   git remote -v
 else
   for REMOTE in $(git remote); do
-    ARGS="${@/__REMOTE__/$REMOTE}"
+    ARGS=()
+    for ARG_IN in "$@"; do
+      ARGS+=("${ARG_IN/__REMOTE__/$REMOTE}")
+    done
     (
       set -x
-      git $ARGS
+      git "${ARGS[@]}"
     )
   done
 fi

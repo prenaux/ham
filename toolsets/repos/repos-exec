@@ -25,7 +25,7 @@ usage() {
 }
 
 # Check that there is at least one argument...
-if [ $# = 0 -o "$1" == "-h" -o "$2" == "-h" ]; then
+if [ $# = 0 ] || [ "$1" == "-h" ] || [ "$2" == "-h" ]; then
   if [ $# = 0 ]; then
     log_error "No argument specified"
     echo ""
@@ -36,7 +36,7 @@ fi
 # Fetch the list of repos
 if [[ -d "$1/.git" ]]; then
   log_info "'$1' is git repo, running in it directly."
-  REPOS_SINGLE_GIT_DIR="$(abspath $1)"
+  REPOS_SINGLE_GIT_DIR="$(abspath "$1")"
   shift
 elif [[ -d "$1" ]]; then
   log_info "repos_list '$1' is a directory, switching to it and using repos-list-cwd."
@@ -46,7 +46,7 @@ elif [[ -d "$1" ]]; then
   REPOS_CWD=$(repos-list-cwd)
 elif [[ -f "$1" ]]; then
   REPOS_CWD=$(cat "$1")
-  REPOS_CWD=$(eval echo \"$REPOS_CWD\")
+  REPOS_CWD=$(eval echo \""$REPOS_CWD"\")
   shift
 else
   log_warning "repos_list isn't a file, assuming its a command and using repos-list-cwd instead."
@@ -81,17 +81,17 @@ case "$1" in
     ;;
 esac
 
-log_info "repos-exec: $@"
+log_info "repos-exec: $*"
 
 if [[ -n "$REPOS_SINGLE_GIT_DIR" ]]; then
   ARG="$REPOS_SINGLE_GIT_DIR"
   log_info "===== Single Repo '$ARG' ====="
   pushd "$ARG" >/dev/null
-  if [ ! -z "$1" ]; then
+  if [ -n "$1" ]; then
     if [ $CONCURRENT == 'y' ]; then
-      $@ &
+      "$@" &
     else
-      $@
+      "$@"
       echo ""
     fi
   fi
@@ -99,12 +99,12 @@ if [[ -n "$REPOS_SINGLE_GIT_DIR" ]]; then
 else
   # Check that they are all git directories
   for ARG in $REPOS_CWD; do
-    if [ ! -d $ARG/.git ]; then
+    if [ ! -d "$ARG/.git" ]; then
       log_error "Not a git directory: '$ARG'"
-      ERR_NOTGITDIR=1
+      #ERR_NOTGITDIR=1
     fi
   done
-  if [ ! -d $ARG ]; then
+  if [ ! -d "$ARG" ]; then
     exit 1
   fi
 
@@ -112,11 +112,11 @@ else
   for ARG in $REPOS_CWD; do
     log_info "===== Repo '$ARG' ====="
     pushd "$ARG" >/dev/null
-    if [ ! -z "$1" ]; then
+    if [ -n "$1" ]; then
       if [ $CONCURRENT == 'y' ]; then
-        $@ &
+        "$@" &
       else
-        $@
+        "$@"
         echo ""
       fi
     fi

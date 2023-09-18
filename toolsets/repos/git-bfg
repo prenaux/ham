@@ -4,5 +4,5 @@ export HAM_NO_VER_CHECK=1
 toolset_check_and_dl_ver repos jars v1 || return 1
 (
   set -x
-  java -jar "${HAM_HOME}/toolsets/repos/jars/bfg-1.12.3.jar" $@
+  java -jar "${HAM_HOME}/toolsets/repos/jars/bfg-1.12.3.jar" "$@"
 )

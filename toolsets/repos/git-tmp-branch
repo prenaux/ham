@@ -21,4 +21,4 @@ if [ $# != 2 ]; then
 fi
 
 git --fetch all &&
-  git checkout -b tmp-$2 $1/$2
+  git checkout -b "tmp-$2" "$1/$2"

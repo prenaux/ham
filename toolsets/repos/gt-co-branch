@@ -26,7 +26,7 @@ fi
   set -x
   # Ignore error since we want to reapply the stash if its fails or we cancel it
   set +e
-  ham-gt branch checkout $1
+  ham-gt branch checkout "$1"
   ham-gt upstack restack
 )
 

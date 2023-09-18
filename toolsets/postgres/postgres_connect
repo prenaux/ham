@@ -3,6 +3,6 @@ if [ -z "$1" ]; then
   echo "E/No connection name specified, use one of the following:"
   postgres_pass list
 else
-  PSQL_COMMAND=$(postgres_pass print-psql $1)
+  PSQL_COMMAND=$(postgres_pass print-psql "$1")
   exec $PSQL_COMMAND
 fi

@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ -z "$1" -o -d "$1" ]; then
+if [ -z "$1" ] || [ -d "$1" ]; then
   DIR="${1:-.}"
   echo "I/Indenting folder '$DIR'"
   find "$DIR" -name "*.hs" -exec echo {} \; -exec hs-indent-file {} \;

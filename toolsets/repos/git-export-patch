@@ -34,22 +34,22 @@ fi
 
 case $COMMAND in
   master)
-    git format-patch master --full-index --stdout >$FILE
+    git format-patch master --full-index --stdout >"$FILE"
     errcheck $? git_patch "Couldn't export git master patch"
     echo "I/Patch exported to '$FILE'"
-    ls -lah $FILE
+    ls -lah "$FILE"
     ;;
   diff)
-    git diff --binary >$FILE
+    git diff --binary >"$FILE"
     errcheck $? git_patch "Couldn't export git diff patch"
     echo "I/Patch exported to '$FILE'"
-    ls -lah $FILE
+    ls -lah "$FILE"
     ;;
   staged)
-    git diff --cached --binary >$FILE
+    git diff --cached --binary >"$FILE"
     errcheck $? git_patch "Couldn't export git patch of staged files"
     echo "I/Patch exported to '$FILE'"
-    ls -lah $FILE
+    ls -lah "$FILE"
     ;;
   check)
     git apply --check "$FILE"

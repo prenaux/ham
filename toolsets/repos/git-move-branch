@@ -32,5 +32,5 @@ echo "I/Moving '$SRC' ($SRC_COMMIT) to point to '$DEST' ($DEST_COMMIT)."
 (
   set -ex
   # Move the branch
-  git branch -f $SRC $DEST
+  git branch -f "$SRC" "$DEST"
 )

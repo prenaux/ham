@@ -16,5 +16,5 @@ if [ -z "$REMOTE_NAME" ]; then
   REMOTE_NAME=origin
 fi
 
-git checkout -b $BRANCH_NAME &&
-  git push -u $REMOTE_NAME $BRANCH_NAME
+git checkout -b "$BRANCH_NAME" &&
+  git push -u "$REMOTE_NAME" "$BRANCH_NAME"

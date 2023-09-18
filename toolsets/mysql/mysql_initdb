@@ -19,13 +19,15 @@ if [ ! -f "$MYSQL_DB_DIR/data/mysql/db.MYD" ]; then
   fi
 
   if [ ! -e "$MYSQL_DB_DIR/my.cnf" ]; then
-    echo [mysqld] >"$MYSQL_DB_DIR/my.cnf"
-    echo basedir=$(nativedir "$MYSQL_DB_DIR") >>"$MYSQL_DB_DIR/my.cnf"
-    echo datadir=$(nativedir "$MYSQL_DB_DIR/data") >>"$MYSQL_DB_DIR/my.cnf"
-    echo character_set_server = utf8 >>"$MYSQL_DB_DIR/my.cnf"
-    echo collation_server = utf8_general_ci >>"$MYSQL_DB_DIR/my.cnf"
-    echo "# bind-address = 0.0.0.0" >>"$MYSQL_DB_DIR/my.cnf"
-    echo port = 3306 >>"$MYSQL_DB_DIR/my.cnf"
+    {
+      echo [mysqld]
+      echo basedir="$(nativedir "$MYSQL_DB_DIR")"
+      echo datadir="$(nativedir "$MYSQL_DB_DIR/data")"
+      echo character_set_server = utf8
+      echo collation_server = utf8_general_ci
+      echo "# bind-address = 0.0.0.0"
+      echo port = 3306
+    } >"$MYSQL_DB_DIR/my.cnf"
   fi
 
   echo "# Initializing mysql DB at '${MYSQL_DB_DIR}/data'..."

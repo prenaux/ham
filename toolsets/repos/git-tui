@@ -20,7 +20,7 @@ fi
 if [ ! -d "$DIR/.git" ]; then
   cd "$DIR"
   DOT_GIT_UP=$(ham-find-dir-up .git)
-  if [[ ! -z "$DOT_GIT_UP" && -d "$DOT_GIT_UP" ]]; then
+  if [[ -n "$DOT_GIT_UP" && -d "$DOT_GIT_UP" ]]; then
     DIR="$DOT_GIT_UP"
   else
     REPOS_LIST=$(repos-list-cwd)
@@ -45,6 +45,7 @@ if [ ! -d "$DIR/.git" ]; then
       SELECTED_REPO=$(printf '%b\n' "${REPOS_WITH_CHANGES[@]}" | fzf)
 
       # Extract and print the folder path from the selected item
+      # shellcheck disable=SC2001
       DIR=$(echo "$SELECTED_REPO" | sed 's/\t (status: [^)]*)//')
       echo "I/Selected '$DIR'."
     fi

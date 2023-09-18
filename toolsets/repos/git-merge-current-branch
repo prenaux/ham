@@ -31,19 +31,19 @@ echo "I/Fetching and rebasing on '$ORIGIN_BRANCH_NAME'"
 (
   set -ex
   git fetch --all
-  git-rebase $ORIGIN_BRANCH_NAME
+  git-rebase "$ORIGIN_BRANCH_NAME"
 )
 
 echo "I/Moving '$BRANCH_NAME' to HEAD"
 (
   set -ex
-  git push $ORIGIN --force-with-lease
-  git-move-branch $BRANCH_NAME
+  git push "$ORIGIN" --force-with-lease
+  git-move-branch "$BRANCH_NAME"
 )
 
 echo "I/Checking out '$BRANCH_NAME' and pushing to '$ORIGIN'"
 (
   set -ex
-  git checkout $BRANCH_NAME
-  git push $ORIGIN
+  git checkout "$BRANCH_NAME"
+  git push "$ORIGIN"
 )

@@ -24,7 +24,7 @@ fi
 
 (
   set -x
-  ham-gt dsg $@
+  ham-gt dsg "$@"
   ham-gt stack restack
 )
 

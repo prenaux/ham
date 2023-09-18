@@ -13,4 +13,4 @@ BRANCH=$(git-get-branch-name "$1")
 shift
 
 echo "I/Rebasing on '$BRANCH'."
-git rebase --autostash $BRANCH $*
+git rebase --autostash "$BRANCH" "$@"

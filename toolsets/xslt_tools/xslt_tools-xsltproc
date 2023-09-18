@@ -3,9 +3,9 @@
 args=()
 for PARAM in "$@"; do
   if [ "${PARAM:0:1}" == "-" ]; then
-    args+=(${PARAM})
+    args+=("${PARAM}")
   else
-    args+=(\"${PARAM}\")
+    args+=(\""${PARAM}"\")
   fi
 done
 echo xsltproc "${args[@]}" | bash -

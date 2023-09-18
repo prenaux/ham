@@ -7,7 +7,7 @@ if [ "$1" == "-version" ]; then
     echo "E/Can't get Saxon version."
     exit 1
   else
-    echo $VERSION
+    echo "$VERSION"
     exit 0
   fi
 elif [ -z "$1" ]; then

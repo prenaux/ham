@@ -14,15 +14,15 @@ HEAD_HASH=$(git show --quiet HEAD --pretty=format:"%h")
 HEAD_DATE_UTC_FILE=$(date -u +"%Y%m%d_%H%M%SZ")
 HEAD_DATE_UTC_ISO=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 CURRENT_BRANCH=$(git branch --no-color 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
-TAG=$(echo ${HEAD_DATE_UTC_FILE}_${CURRENT_BRANCH}_${HEAD_HASH})
+TAG="${HEAD_DATE_UTC_FILE}_${CURRENT_BRANCH}_${HEAD_HASH}"
 
 # see: https://git-scm.com/docs/pretty-formats
 if [ "$1" == "json" ]; then
   TZ=UTC git show --date=iso --quiet HEAD --pretty=format:"{\"hash\":\"${TAG}\", \"hash\":\"%h\", \"author\":\"%cn\", \"commit date\":\"${HEAD_DATE_UTC_ISO}\", \"commit subject\": \"%s\", \"branch\":\"${CURRENT_BRANCH}\"}"
 elif [ "$1" == "hash" ]; then
-  echo ${TAG}
+  echo "${TAG}"
 elif [ "$1" == "current_branch" ] || [ "$1" == "branch" ]; then
-  echo ${CURRENT_BRANCH}
+  echo "${CURRENT_BRANCH}"
 elif [ "$1" == "current_branch_changes" ] || [ "$1" == "branch_changes" ]; then
   status=$(git status --porcelain)
   num_added=$(echo "$status" | grep -c -E '^A| A|\?\?')
@@ -36,6 +36,6 @@ elif [ "$1" == "current_branch_change_count" ] || [ "$1" == "branch_change_count
 elif [ -z "$1" ]; then
   TZ=UTC git show --date=iso --quiet HEAD --pretty=format:"tag: ${TAG}%nhash: %h%nauthor: \"%cn\"%ncommitDate: \"${HEAD_DATE_UTC_ISO}\"%ncommitSubject: \"%s\"%nbranch: ${CURRENT_BRANCH}%n"
 else
-  echo "E/Unknown parameter(s): $@"
+  echo "E/Unknown parameter(s): $*"
   usage
 fi

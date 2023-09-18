@@ -37,7 +37,7 @@ for branch in $LOCAL_BRANCHES; do
     echo "I/Deleting local branch '$branch'."
     (
       set -x
-      git branch -d $branch
+      git branch -d "$branch"
     )
   else
     echo "I/Would delete local branch '$branch'."
@@ -54,7 +54,7 @@ for branch in $REMOTE_BRANCHES; do
     echo "I/Deleting remote branch '$branch'."
     (
       set -x
-      git push origin $branch --delete
+      git push origin "$branch" --delete
     )
   else
     echo "I/Would delete remote branch '$branch'."

@@ -2,7 +2,7 @@
 . ham-bash-lib.sh
 PACKAGE_CLASS=${2}
 APK_PATH=${1}
-if [ -z "${APK_PATH}" -o -z "${PACKAGE_CLASS}" ]; then
+if [ -z "${APK_PATH}" ] || [ -z "${PACKAGE_CLASS}" ]; then
   echo "E/Syntax: adr-install-apk APK_PATH PACKAGE_CLASS"
   exit 1
 fi
@@ -27,7 +27,7 @@ else
   echo "'${PACKAGE_CLASS}' is already installed."
 fi
 
-if [ ! -z "${APK_PREV_MD5}" -a "${APK_MD5}" == "${APK_PREV_MD5}" ]; then
+if [ -n "${APK_PREV_MD5}" ] && [ "${APK_MD5}" == "${APK_PREV_MD5}" ]; then
   echo "'${APK_NAME}' is up-to-date."
 else
   echo "'${APK_NAME}' is not up-to-date."

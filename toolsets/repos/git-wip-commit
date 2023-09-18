@@ -10,6 +10,7 @@ if [[ -z $(git status --porcelain) ]] &&
 fi
 
 echo -e "wip - $(arch_datez)\n\n$(git-status)" >"$TEMPFILE"
+#shellcheck disable=SC2320
 errcheck $? git-wip-commit "Can't get commit message." || exit 1
 
 log_info "Commit message:"

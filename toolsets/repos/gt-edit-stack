@@ -24,7 +24,7 @@ fi
 
 (
   set -x
-  ham-gt downstack edit $@
+  ham-gt downstack edit "$@"
   ham-gt stack restack
 )
 

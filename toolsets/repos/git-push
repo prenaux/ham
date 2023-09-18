@@ -31,5 +31,5 @@ git-status short
 echo "I/Pushing branch '$BRANCH'."
 (
   set -x
-  git push --force-with-lease $ORIGIN $BRANCH
+  git push --force-with-lease "$ORIGIN" "$BRANCH"
 )

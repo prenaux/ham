@@ -16,7 +16,7 @@ set -ex
 # Basic
 basic_waveform() {
   ffmpeg -i "$SRC" \
-    -f lavfi -i color=c=black:s=$RES -filter_complex "[0:a]compand,showwavespic=s=$RES:colors=white[fg];[1:v][fg]overlay=format=auto" \
+    -f lavfi -i "color=c=black:s=$RES" -filter_complex "[0:a]compand,showwavespic=s=$RES:colors=white[fg];[1:v][fg]overlay=format=auto" \
     -frames:v 1 "$DST"
 }
 

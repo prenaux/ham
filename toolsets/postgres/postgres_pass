@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 ${HAM_HOME}/toolsets/postgres/pgpass.py $@
+python3 "${HAM_HOME}/toolsets/postgres/pgpass.py" "$@"

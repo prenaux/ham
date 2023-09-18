@@ -22,12 +22,12 @@ if [ -z "$REV" ]; then
   exit 1
 else
   echo "I/Reverting to revision $REV"
-  svn log --revision $REV:$REV_NEXT
+  svn log --revision "$REV:$REV_NEXT"
   if [ "$1" = "doit" ]; then
-    svn merge -r HEAD:$REV "${CURR_URL}" .
+    svn merge -r "HEAD:$REV" "${CURR_URL}" .
     echo "# Run 'svn commit' to commit the revert changes."
   else
-    svn merge --dry-run -r HEAD:$REV "${CURR_URL}" .
+    svn merge --dry-run -r "HEAD:$REV" "${CURR_URL}" .
     echo "# Run 'svn-revert-to-rev $REV doit' create the changes to revert to revision $REV."
   fi
 fi

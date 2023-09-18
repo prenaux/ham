@@ -117,8 +117,8 @@ fi
 # PARAMS=("${PARAMS[@]}" --fast-list)
 # PARAMS=("${PARAMS[@]}" --max-age 1h)
 PARAMS=("${PARAMS[@]}" --stats-one-line)
-PARAMS=("${PARAMS[@]}" --checkers=${HAM_SYNC_NUM_CHECKERS:-24})
-PARAMS=("${PARAMS[@]}" --transfers=${HAM_SYNC_NUM_TRANSFERS:-16})
+PARAMS=("${PARAMS[@]}" --checkers="${HAM_SYNC_NUM_CHECKERS:-24}")
+PARAMS=("${PARAMS[@]}" --transfers="${HAM_SYNC_NUM_TRANSFERS:-16}")
 PARAMS=("${PARAMS[@]}" --stats 60s)
 PARAMS=("${PARAMS[@]}" -v)
 if [ "$DOIT" != "yes" ]; then
@@ -186,7 +186,7 @@ case "$SYNC_COMMAND" in
     ;;
   arch_make)
     echo "I/Making archive..."
-    arch_init $1 $2
+    arch_init "$1" "$2"
     (
       set -x
       7z-pack-arch "$ARCH_FN" "$ARCH_DIR" "$ARCH_VERTAG"
@@ -194,7 +194,7 @@ case "$SYNC_COMMAND" in
     ;;
   arch_push)
     echo "I/Push an archive..."
-    arch_init $1 $2
+    arch_init "$1" "$2"
     if [ -e "$ARCH_FN" ]; then
       echo "I/Archive already exist."
     else
@@ -213,7 +213,7 @@ case "$SYNC_COMMAND" in
     ;;
   arch_pull)
     echo "I/Pull an archive..."
-    arch_init $1 $2
+    arch_init "$1" "$2"
     ARCH_TAG_FN="$ARCH_DIR/arch_tag_${ARCH_VERTAG}"
     echo "I/ARCH_TAG_FN: $ARCH_TAG_FN"
     if [ -e "$ARCH_TAG_FN" ]; then

@@ -12,7 +12,7 @@ usage() {
   exit 1
 }
 
-REPO_NAME=$(basename $(git rev-parse --show-toplevel))
+REPO_NAME=$(basename "$(git rev-parse --show-toplevel)")
 
 DO_FETCH=1
 if [ "$1" = "nofetch" ]; then
