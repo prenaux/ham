@@ -1,6 +1,6 @@
 #!/bin/bash -e
 echo "I/Setup ham environment"
-. hat repos default
+. hat repos default shell_linter
 
 echo "I/Build ham"
 (
