@@ -15,15 +15,20 @@ usage() {
   echo "  with a config for the specified project name."
   echo ""
   echo "command:"
-  echo "  pull   Pull data from the server to the local data folder."
-  echo "  push   Push data from the local data folder to the server."
+  echo "  pull_keep    Pull data from the server to the local data folder."
+  echo "  push_keep    Push data from the local data folder to the server."
   echo ""
   echo "  pull_delete  Pull data from the server to the local data folder,"
   echo "               deletes from the local copy any file not present."
-  echo "               on the server"
+  echo "               on the server. Deleted files are moved to a backup_sync"
+  echo "               folder on the destination."
   echo "  push_delete  Push data from the local data folder to the server,"
   echo "               deletes from the server any file not present locally."
+  echo "               Deleted files are moved to a backup_sync folder on the"
+  echo "               destination."
   echo ""
+  echo "  pull   Alias for pull_delete."
+  echo "  push   Alias for push_delete."
   echo "  ls     List the files currently on the server."
   echo ""
   echo "example:"
@@ -88,10 +93,14 @@ fi
 
 if [ "$SYNC_DIR" == "." ]; then
   LOCAL_DIR="${BASE_LOCAL_DIR}"
+  BACKUP_LOCAL_DIR="${BASE_LOCAL_DIR}_backup_sync"
 else
   LOCAL_DIR="${BASE_LOCAL_DIR}/${SYNC_DIR}"
+  BACKUP_LOCAL_DIR="${BASE_LOCAL_DIR}_backup_sync/${SYNC_DIR}"
 fi
+
 BASE_REMOTE_DIR="/ham_sync/$SYNC_PROJECT"
+BACKUP_REMOTE_DIR="/ham_sync/${SYNC_PROJECT}_backup_sync/${SYNC_DIR}"
 REMOTE_DIR="${BASE_REMOTE_DIR}/${SYNC_DIR}"
 
 # Validate using _sync_data
@@ -149,32 +158,32 @@ arch_init() {
 }
 
 case "$SYNC_COMMAND" in
-  push)
+  push_keep)
     echo "I/Pushing from data to server..."
     (
       set -x
       ham-rclone copy "${PARAMS[@]}" "$LOCAL_DIR" "$SYNC_PROJECT:$REMOTE_DIR"
     )
     ;;
-  push_delete)
+  push_delete | push)
     echo "I/Pushing from data to server, and deleting files removed locally from the server..."
     (
       set -x
-      ham-rclone sync "${PARAMS[@]}" "$LOCAL_DIR" "$SYNC_PROJECT:$REMOTE_DIR"
+      ham-rclone sync "${PARAMS[@]}" --backup-dir "$SYNC_PROJECT:${BACKUP_REMOTE_DIR}" "$LOCAL_DIR" "$SYNC_PROJECT:$REMOTE_DIR"
     )
     ;;
-  pull)
+  pull_keep)
     echo "I/Pulling from server to local data folder..."
     (
       set -x
       ham-rclone copy "${PARAMS[@]}" "$SYNC_PROJECT:$REMOTE_DIR" "$LOCAL_DIR"
     )
     ;;
-  pull_delete)
+  pull_delete | pull)
     echo "I/Pulling from server to local data folder, and deleting local files that have been removed from the server..."
     (
       set -x
-      ham-rclone sync "${PARAMS[@]}" "$SYNC_PROJECT:$REMOTE_DIR" "$LOCAL_DIR"
+      ham-rclone sync "${PARAMS[@]}" --backup-dir "${BACKUP_LOCAL_DIR}" "$SYNC_PROJECT:$REMOTE_DIR" "$LOCAL_DIR"
     )
     ;;
   ls)
