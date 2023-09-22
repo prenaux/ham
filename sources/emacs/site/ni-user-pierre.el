@@ -401,13 +401,15 @@ If the new path's directories does not exist, create them."
 
  (add-hook 'goto-line-preview-before-hook
    (lambda ()
-     (setq --goto-line-linum-mode-was-active (bound-and-true-p linum-mode))
-     (linum-mode 1)))
+     (IsNotTerminal
+       (setq --goto-line-linum-mode-was-active (bound-and-true-p linum-mode))
+       (linum-mode 1))))
 
  (add-hook 'goto-line-preview-after-hook
    (lambda ()
-     (if (not --goto-line-linum-mode-was-active)
-       (linum-mode -1))))
+     (IsNotTerminal
+       (if (not --goto-line-linum-mode-was-active)
+         linum-mode -1))))
 )
 
 ;;;======================================================================
