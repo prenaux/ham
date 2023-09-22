@@ -77,6 +77,7 @@ EMSCRIPTEN_LINKER_SETTINGS =
 
 ### "Debug" (da) build flags ###
 JSCC_DBG_ARGS = $(STRICT_ALIASING_FLAGS) ;
+# we use -g2 by default, -g3 # Allows source level debugging in Chrome but creates huge WASM
 JSCC_DBG_ARGS += -O1 -g2 $(EMSCRIPTEN_COMPILATION_SETTINGS) ;
 
 ### Optimized (ra) build flags ###
@@ -87,9 +88,11 @@ JSCC_OPT_ARGS += -O2 $(EMSCRIPTEN_COMPILATION_SETTINGS) ;
 LINKFLAGS += $(EMSCRIPTEN_LINKER_SETTINGS) ;
 if $(DEBUG) = 1 {
   LINKFLAGS += $(JSCC_DBG_ARGS)
-    -s ASSERTIONS=1
+    -sASSERTIONS=1
     -sERROR_ON_WASM_CHANGES_AFTER_LINK
+    -sDEMANGLE_SUPPORT=1
     -sWASM_BIGINT
+    # -sSAFE_HEAP=1 # Incompatible with ERROR_ON_WASM_CHANGES_AFTER_LINK
   ;
 }
 else {
