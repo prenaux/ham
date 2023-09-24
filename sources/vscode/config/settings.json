@@ -1,35 +1,44 @@
 {
   /*
 
-  Extensions:
+  Common:
     - Atishay-Jain.All-Autocomplete: Auto complete from all opened files
-    - bmewburn.vscode-intelephense-client: PHP Intelephense
-    - bradlc.vscode-tailwindcss: Tailwind CSS IntelliSense
-    - brokenprogrammer.paragraphjump: Jump to the next/previous paragraph
-    - calebporzio.better-phpunit: Better PHPUnit
     - EditorConfig.EditorConfig: EditorConfig for VS Code
-    - elazarcoh.cpp2-syntax: Cpp2 Syntax Highlighting
     - Gruntfuggly.triggertaskonsave: Trigger Task on Save
     - heaths.vscode-guid: Insert GUID
-    - IronGeek.vscode-env: Env File Syntax Highlighting
-    - JuanBlanco.solidity: Solidity Language Support
-    - junstyle.php-cs-fixer: php cs fixer
-    - MehediDracula.php-namespace-resolver: PHP Namespace Resolver
-    - mloskot.vscode-boost-jam: Boost Jam Language Support
-    - monkeygroover.vscode-squirrel-lang: Squirrel Language Support
-    - mrkou47.thrift-syntax-support: Thrift Syntax Support
     - mrmlnc.vscode-duplicate: Duplicate Selection
-    - ms-vscode-remote.remote-ssh: Remote - SSH development
     - ms-vscode.hexeditor: Hex Editor
-    - rebornix.toggle: Toggle
     - ryuta46.multi-command: Multi Command - automatically assigned to Alt-X
     - sleistner.vscode-fileutils: File Utils
     - stkb.rewrap: Rewrap - automatically assigned to Alt-Q
     - tuttieee.emacs-mcx: Awesome Emacs Keymap
+
+  Languages:
+    - IronGeek.vscode-env: Env File Syntax Highlighting
+    - elazarcoh.cpp2-syntax: Cpp2 Syntax Highlighting
+    - JuanBlanco.solidity: Solidity Language Support
+    - mloskot.vscode-boost-jam: Boost Jam Language Support
+    - monkeygroover.vscode-squirrel-lang: Squirrel Language Support
+    - mrkou47.thrift-syntax-support: Thrift Syntax Support
+
+  Webdev:
+    - bradlc.vscode-tailwindcss: Tailwind CSS IntelliSense
+
+  PHP:
+    - junstyle.php-cs-fixer: php cs fixer
+    - MehediDracula.php-namespace-resolver: PHP Namespace Resolver
+    - bmewburn.vscode-intelephense-client: PHP Intelephense
+
+  macOS:
     - vadimcn.vscode-lldb: LLDB Debugger
-    - viveksjain.remreload: Automatically reload remote SSH window on timeout
+
+  Themes:
     - wesbos.theme-cobalt2: Cobalt2 Theme Official
     - whizkydee.material-palenight-theme: Palenight Theme
+
+  Only on local installs:
+    - ms-vscode-remote.remote-ssh: Remote - SSH development
+    - viveksjain.remreload: Automatically reload remote SSH window on timeout
 
   To Edit the Keybindings:
     Alt+X / Cmd+Shift+P: Keyboard Shortcuts (JSON)
@@ -51,6 +60,7 @@
   "editor.snippetSuggestions": "top",
   "editor.detectIndentation": false,
   "window.nativeFullScreen": false,
+  "window.commandCenter": false,
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "workbench.sideBar.location": "right",
