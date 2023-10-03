@@ -559,4 +559,10 @@
       ]
     }
   },
+
+  // fuzzy search with popup
+  {
+    "key": "ctrl+h ctrl+s",
+    "command": "fuzzySearch.activeTextEditorWithCurrentSelection",
+  },
 ]
