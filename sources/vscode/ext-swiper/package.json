@@ -2,7 +2,7 @@
   "name": "ham-tools",
   "displayName": "ham-tools",
   "description": "Ham Tools for VSCode",
-  "version": "0.2.2",
+  "version": "0.2.4",
   "publisher": "prenaux",
   "author": {
     "name": "Pierre Renaux",
