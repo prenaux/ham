@@ -1,45 +1,23 @@
-# swiper
+# Ham Tools
 
-Fuzzy search lines in current window.
-
-Supports regex, negate, match highting, case sensitive search.
-
-a copy of emacs swiper: the thing I missed most in vscode.
-
-Search `"swiper !not Test"` matches a line with `SWiPeR Test` without mentions of `not` string.
-
-![DEMO](./img/swiper-silver.gif)
-
-## Dev
-
-```
-cd $HAM_HOME/sources/vscode/ext-swiper
-. hat
-npm install
-# Open the extension's directory in VS Code
-code .
-```
-
-- Press F5 or go to Run > Start Debugging in VS Code.
-- This will open a new VS Code window titled [Extension Development Host] where the extension is loaded.
-
-
-## Installation
-
-Install this extension.
+Various tools to work with [Ham](https://github.com/prenaux/ham). You can find it in the [VSCode marketplace](https://marketplace.visualstudio.com/items?itemName=prenaux.ham-tools).
 
 ## Commands
 
-`swiper.swiper-word-at-cursor` search the current word at cursor.
+- `ham.swiper-word-at-cursor`: search the current word at cursor.
+- `ham.swiper`: search the last value tried.
 
-`swiper.swiper` search the last value tried.
+## ham.swiper
 
-## Quick tutorial
+A copy of emacs swiper, the thing I missed the most in vscode. Supports regex,
+negate, match highting, case sensitive search.
+
+Search `"swiper !not Test"` matches a line with `SWiPeR Test` without mentions
+of `not` string.
 
 Invoke command `Swiper: Swiper Search/Resume` and start typing.
 
-basic rules:
-
+Basic rules:
 1. Search either literal string e.g. `abc` or javascript regex `/.../`.
 2. Search strings separated by space are AND-ed together. e.g. "a b" matched lines with "a" and "b" on the same line.
 3. Search string prefixed with `!` negates the search, "a !b" matches lines with "a" but not "b". Use regex `/\!/` if you want to match `"!"` literal string.
@@ -69,43 +47,36 @@ a B # matches "aB", "AB"
 
 ## Configuration
 
-You can configure this extension via `command palette` (F1 on my machine) -> `Preferences: Open User Settings (JSON)`, add the following snippet to the open configuration file:
+- `ham.swiper.selectMatch`: (default true) controls if the picked match is selected. Set to false, cursor jumps to the end of the match word.
 
-```json
-  ...
-  "swiper.selectMatch": false
-}
+## Dev
+
+Setup:
+```
+cd $HAM_HOME/sources/vscode/ext-swiper
+. hat
+npm install
 ```
 
-**Configuration points of this extension**
+- Open the extension's directory in VS Code
+- Press F5 or go to Run > Start Debugging in VS Code.
+- This will open a new VS Code window titled [Extension Development Host] where the extension is loaded.
 
-- `swiper.selectMatch` (default true), controls if the picked match is selected. Set to false, cursor jumps to the end of the match word.
-
-## Motivation
-
-I come from emacs to VScode, vscode is awesome, but misses a few features i do daily in emacs. This is one of them.
-
-More on my motivation: [medium link](https://medium.com/@wenhoujx/vscode-productivity-quick-narrow-down-to-the-searched-line-1f8052acac0b?source=friends_link&sk=995200d35ae6570c186c3322be2816c7)
-
-I wrote a [blog](https://medium.com/@wenhoujx/boot-productivity-with-vscode-tasks-c98fa0f8b567?source=friends_link&sk=1b435e151d2982a2e1c53ff5dcdba5b1) that covers achieving some my other emacs workflows in VScode.
-
-## TODO
-
-- [x] somehow test on non-macOS?
-- [x] search all file in the workspace.
-    >  Use VScode search feature.
-- [x] if upper case char typed, turn to case sensitive search for that subSearchString.
-    > Done
-- [x] do not save tmp file for unsaved buffer.
-
-## misc
-
-[publish URL](https://marketplace.visualstudio.com/manage/publishers/wenhoujx)
-
-## dev guide
-
-```sh
-# make whatever change, bump package.json
-vsce package
-# then release to the vscode marketplace publish page.
+Packaging and Publishing (cf https://code.visualstudio.com/api/working-with-extensions/publishing-extension#vsce):
 ```
+npm install -g @vscode/vsce
+vsce package && vsce publish
+```
+
+You'll need a Personal Acces Token to publish:
+- Get ready for a process that'd make every bureaucrats proud
+- Create an org: https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/create-organization?view=azure-devops
+- Get the token: https://code.visualstudio.com/api/working-with-extensions/publishing-extension#get-a-personal-access-token
+- Note that the documentation says that you must create a publisher, that will
+  likely fail with a 403. But you dont actually need to create a publisher
+  just use your personal access token just make sure to use the same org name
+  as you used to create the token.
+
+## Credits
+
+Started as a fork of the [Swiper](https://github.com/wenhoujx/swiper) extension.
