@@ -3,16 +3,16 @@
   "displayName": "swiper",
   "description": "Emacs style swiper fuzzy search buffer/window",
   "version": "2.0.11",
-  "publisher": "wenhoujx",
+  "publisher": "prenaux",
   "author": {
-    "name": "Wenshuai Hou",
-    "email": "wenhoujx@gmail.com"
+    "name": "Pierre Renaux",
+    "email": "pierre@talansoft.com"
   },
   "license": "MIT",
-  "homepage": "https://github.com/wenhoujx/swiper",
+  "homepage": "https://github.com/prenaux/ham",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wenhoujx/swiper"
+    "url": "https://github.com/prenaux/ham"
   },
   "icon": "img/swiper-icon.jpeg",
   "engines": {
@@ -22,25 +22,29 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:swiper.swiper",
-    "onCommand:swiper.swiper.swiper-word-at-cursor"
+    "onCommand:ham.swiper",
+    "onCommand:ham.swiper.swiper-word-at-cursor"
+  ],
+  "extensionKind": [
+    "ui",
+    "workspace"
   ],
   "main": "./extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "swiper.swiper",
+        "command": "ham.swiper",
         "title": "Swiper Search/Resume",
-        "category": "Swiper"
+        "category": "Ham Swiper"
       },
       {
-        "command": "swiper.swiper-word-at-cursor",
+        "command": "ham.swiper-word-at-cursor",
         "title": "Swiper Search at Cursor",
-        "category": "Swiper"
+        "category": "Ham Swiper"
       }
     ],
     "configuration": {
-      "title": "Swiper",
+      "title": "Ham Swiper",
       "properties": {
         "swiper.selectMatch": {
           "type": "boolean",

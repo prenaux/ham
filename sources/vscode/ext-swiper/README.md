@@ -10,6 +10,20 @@ Search `"swiper !not Test"` matches a line with `SWiPeR Test` without mentions o
 
 ![DEMO](./img/swiper-silver.gif)
 
+## Dev
+
+```
+cd $HAM_HOME/sources/vscode/ext-swiper
+. hat
+npm install
+# Open the extension's directory in VS Code
+code .
+```
+
+- Press F5 or go to Run > Start Debugging in VS Code.
+- This will open a new VS Code window titled [Extension Development Host] where the extension is loaded.
+
+
 ## Installation
 
 Install this extension.
@@ -91,7 +105,7 @@ I wrote a [blog](https://medium.com/@wenhoujx/boot-productivity-with-vscode-task
 ## dev guide
 
 ```sh
-# make whatever change, bump package.json 
+# make whatever change, bump package.json
 vsce package
 # then release to the vscode marketplace publish page.
 ```
