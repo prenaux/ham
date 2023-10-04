@@ -74,8 +74,8 @@ You'll need a Personal Acces Token to publish:
 - Get the token: https://code.visualstudio.com/api/working-with-extensions/publishing-extension#get-a-personal-access-token
 - Note that the documentation says that you must create a publisher, that will
   likely fail with a 403. But you dont actually need to create a publisher
-  just use your personal access token just make sure to use the same org name
-  as you used to create the token.
+  just use your personal access token and make sure to use the same org name
+  as you used when creating the token.
 
 ## Credits
 
