@@ -2,54 +2,56 @@ const vscode = require('vscode');
 
 const isDebug = false
 
+const MATCH_BORDER_STYLE_ACTIVE = 'solid';
+const MATCH_BORDER_STYLE_OTHERS = 'none none solid none'; // 'none none solid none';
+
 // TODO: not sure how to select the best list of colors according to the theme.
 const styles = [
   vscode.window.createTextEditorDecorationType(
     {
-      border: "solid",
+      borderStyle: MATCH_BORDER_STYLE_ACTIVE,
       borderWidth: 'medium',
-      borderColor: "red",
-      backgroundColor: "pink"
+      borderColor: "orange",
     }
   ),
   vscode.window.createTextEditorDecorationType(
     {
-      border: "solid",
+      borderStyle: MATCH_BORDER_STYLE_OTHERS,
       borderWidth: 'medium',
-      borderColor: "red"
+      borderColor: "orange"
     }
   ),
   vscode.window.createTextEditorDecorationType(
     {
-      border: "solid",
+      borderStyle: MATCH_BORDER_STYLE_OTHERS,
       borderWidth: 'medium',
       borderColor: "cyan"
     }
   ),
   vscode.window.createTextEditorDecorationType(
     {
-      border: "solid",
+      borderStyle: MATCH_BORDER_STYLE_OTHERS,
       borderWidth: 'medium',
       borderColor: "green"
     }
   ),
   vscode.window.createTextEditorDecorationType(
     {
-      border: "solid",
+      borderStyle: MATCH_BORDER_STYLE_OTHERS,
       borderWidth: 'medium',
       borderColor: "yellow"
     }
   ),
   vscode.window.createTextEditorDecorationType(
     {
-      border: "solid",
+      borderStyle: MATCH_BORDER_STYLE_OTHERS,
       borderWidth: 'medium',
       borderColor: "BlueViolet"
     }
   ),
   vscode.window.createTextEditorDecorationType(
     {
-      border: "solid",
+      borderStyle: MATCH_BORDER_STYLE_OTHERS,
       borderWidth: 'medium',
       borderColor: "Fuchsia"
     }
