@@ -48,6 +48,8 @@
  (global-set-key [(control left)] 'backward-word)
  (global-set-key '[(control up)] 'backward-paragraph)
  (global-set-key '[(control down)] 'forward-paragraph)
+ (global-set-key '[(meta up)] 'backward-paragraph)
+ (global-set-key '[(meta down)] 'forward-paragraph)
  (global-set-key (key "ESC <up>") 'backward-paragraph)
  (global-set-key (key "ESC <down>") 'forward-paragraph)
 
