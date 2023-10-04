@@ -12,7 +12,7 @@
     - sleistner.vscode-fileutils: File Utils
     - stkb.rewrap: Rewrap - automatically assigned to Alt-Q
     - tuttieee.emacs-mcx: Awesome Emacs Keymap
-    - jacobdufault.fuzzy-search: Fuzzy Search
+    - prenaux.ham-tools: Ham Tools
 
   Languages:
     - IronGeek.vscode-env: Env File Syntax Highlighting

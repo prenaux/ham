@@ -560,9 +560,20 @@
     }
   },
 
-  // fuzzy search with popup
+
+  /**
+   * Better search
+   **/
+  {
+    "key": "ctrl+s",
+    // "command": "fuzzySearch.activeTextEditorWithCurrentSelection",
+    "command": "ham.swiper-word-at-cursor",
+    // "command": "actions.findWithSelection"
+  },
   {
     "key": "ctrl+h ctrl+s",
-    "command": "fuzzySearch.activeTextEditorWithCurrentSelection",
+    // "command": "fuzzySearch.activeTextEditorWithCurrentSelection",
+    "command": "ham.swiper-word-at-cursor",
+    "command": "actions.findWithSelection"
   },
 ]
