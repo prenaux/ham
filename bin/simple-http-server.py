@@ -7,6 +7,7 @@ import subprocess
 import sys
 import time
 import zipfile
+import hashlib
 from http.server import SimpleHTTPRequestHandler
 from threading import Lock
 from urllib.parse import parse_qs
@@ -19,12 +20,15 @@ parser.add_argument('-p', '--port', type=int, default=8123, help='The port to li
 parser.add_argument('-l', '--log', default=None, help='The log file to store opened files.')
 parser.add_argument('-z', '--zip', default=None, help='The zip file to store accessed files.')
 parser.add_argument('-x', '--hamx', action='store_true', help='When a hamx query param is specified run an hamx before loading the page.')
+parser.add_argument('-e', '--etag', action='store_true', help='Send an ETag for all files served.')
 
 # Parse the arguments
 args = parser.parse_args()
 
 mode = args.mode
-print("I/Mode: " + mode)
+print("I/mode: " + mode)
+print("I/hamx: " + str(args.hamx))
+print("I/etag: " + str(args.etag))
 
 dir = args.dir
 if (not os.path.isdir(dir)):
@@ -86,6 +90,27 @@ class CommandExecutionError(Exception):
         super().__init__(message)
 
 class RequestHandler(SimpleHTTPRequestHandler):
+    etag_cache = {}
+
+    def get_file_etag(self, path):
+        """Get the SHA-1 hash of a file's contents, using a cache."""
+        if os.path.isfile(path):
+            last_modified = os.path.getmtime(path)
+
+            if path in self.etag_cache:
+                cached_last_modified, cached_etag = self.etag_cache[path]
+                if cached_last_modified == last_modified:
+                    return cached_etag
+
+            with open(path, 'rb') as f:
+                file_content = f.read()
+                sha1_hash = hashlib.sha1(file_content).hexdigest()
+                etag = '"%s"' % sha1_hash
+                self.etag_cache[path] = (last_modified, etag)
+                return etag
+
+        return None
+
     def do_GET_hamx(self, command):
         try:
             # Send the hamx command running message
@@ -233,6 +258,11 @@ else { e.style.display = 'none'; }
         if mode == "crossOriginIsolation":
             self.send_header('Cross-Origin-Opener-Policy', 'same-origin')
             self.send_header('Cross-Origin-Embedder-Policy', 'require-corp')
+
+        if args.etag and os.path.isfile(path):
+            etag = self.get_file_etag(path)
+            self.send_header('ETag', etag)
+            self.log_message(f'ETag "{path}": {etag}')
 
         SimpleHTTPRequestHandler.end_headers(self)
 
