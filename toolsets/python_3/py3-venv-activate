@@ -40,7 +40,9 @@ export VIRTUAL_ENV_PROMPT="ham-py3-venv"
 pathenv_add "$(abspath "${PY3_VENV_BIN_DIR}")"
 
 if [ "$PY3_VENV_REQUIREMENTS_SHOULD_INSTALL" == "yes" ]; then
-  py3-venv-pip-reinstall || return 1
+  # Run requirements-install first so any package versions in the "py3_requirements.txt" lockfile are respected
   py3-venv-requirements-install || return 1
+  # Then run pip-reinstall to add any new packages missing from the lockfile, regenerating the lockfile in the process
+  py3-venv-pip-reinstall || return 1
   unset PY3_VENV_REQUIREMENTS_SHOULD_INSTALL
 fi
