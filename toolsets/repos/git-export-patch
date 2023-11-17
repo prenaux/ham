@@ -6,6 +6,7 @@ help() {
   echo "git-export-patch command (file.patch)"
   echo ""
   echo "commands:"
+  echo "  commit: Creates a patch from the specified commit range."
   echo "  diff: Creates a patch with the current (unstaged) changes"
   echo "  staged: Creates a patch with the currently staged changes"
   echo "  master: Creates a patch with everything that is on top of master"
@@ -26,6 +27,23 @@ DIRNAME=$(basename "$PWD")
 
 COMMAND=$1
 shift
+case $COMMAND in
+  commit)
+    START_COMMIT=$1
+    if [ -z "$START_COMMIT" ]; then
+      log_error "START not specified."
+      exit 1
+    fi
+    shift
+    END_COMMIT=$1
+    if [ -z "$END_COMMIT" ]; then
+      log_error "END not specified."
+      exit 1
+    fi
+    shift
+    ;;
+esac
+
 FILE=$1
 shift
 if [ -z "$FILE" ]; then
@@ -33,32 +51,42 @@ if [ -z "$FILE" ]; then
 fi
 
 case $COMMAND in
+  commit)
+    (set -x ;
+     git format-patch ${START_COMMIT}^..${END_COMMIT} --full-index --stdout >"$FILE")
+    errcheck $? git_patch "Couldn't export git commit patch"
+    echo "I/Patch exported to '$FILE'"
+    ls -lah "$FILE"
+    ;;
   master)
-    git format-patch master --full-index --stdout >"$FILE"
+    (set -x ;
+     git format-patch master --full-index --stdout >"$FILE")
     errcheck $? git_patch "Couldn't export git master patch"
     echo "I/Patch exported to '$FILE'"
     ls -lah "$FILE"
     ;;
   diff)
-    git diff --binary >"$FILE"
+    (set -x ;
+     git diff --binary >"$FILE")
     errcheck $? git_patch "Couldn't export git diff patch"
     echo "I/Patch exported to '$FILE'"
     ls -lah "$FILE"
     ;;
   staged)
-    git diff --cached --binary >"$FILE"
+    (set -x ;
+     git diff --cached --binary >"$FILE")
     errcheck $? git_patch "Couldn't export git patch of staged files"
     echo "I/Patch exported to '$FILE'"
     ls -lah "$FILE"
     ;;
   check)
-    git apply --check "$FILE"
+    (set -x ; git apply --check "$FILE")
     errcheck $? git_patch "Patch check failed."
-    git apply --index "$FILE"
+    (set -x ; git apply --index "$FILE")
     errcheck $? git_patch "Patch index failed."
     ;;
   view)
-    git apply --stat "$FILE"
+    (set -x ; git apply --stat "$FILE")
     errcheck $? git_patch "Patch view failed."
     ;;
   *)

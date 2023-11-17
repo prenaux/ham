@@ -1,2 +1,2 @@
-#!/bin/bash
+#!/bin/bash -ex
 git apply --reject --ignore-space-change --ignore-whitespace "$1"
