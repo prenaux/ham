@@ -21,9 +21,11 @@ if [ $? == 1 ]; then
   usage
 fi
 
-ORIGIN_BRANCH_NAME=$(git-check-branch-or-commit "${2:-origin}:${BRANCH_NAME}")
+ORIGIN=${2:-origin}
+
+ORIGIN_BRANCH_NAME=$(git-check-branch-or-commit "${ORIGIN}:${BRANCH_NAME}")
 if [ $? == 1 ]; then
-  echo "E/Can't get origin branch name '${2:-origin}:${BRANCH_NAME}'."
+  echo "E/Can't get origin branch name '${ORIGIN}:${BRANCH_NAME}'."
   usage
 fi
 
