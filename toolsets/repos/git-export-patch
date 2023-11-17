@@ -52,41 +52,58 @@ fi
 
 case $COMMAND in
   commit)
-    (set -x ;
-     git format-patch ${START_COMMIT}^..${END_COMMIT} --full-index --stdout >"$FILE")
+    (
+      set -x
+      git format-patch "${START_COMMIT}"^.."${END_COMMIT}" --full-index --stdout >"$FILE"
+    )
     errcheck $? git_patch "Couldn't export git commit patch"
     echo "I/Patch exported to '$FILE'"
     ls -lah "$FILE"
     ;;
   master)
-    (set -x ;
-     git format-patch master --full-index --stdout >"$FILE")
+    (
+      set -x
+      git format-patch master --full-index --stdout >"$FILE"
+    )
     errcheck $? git_patch "Couldn't export git master patch"
     echo "I/Patch exported to '$FILE'"
     ls -lah "$FILE"
     ;;
   diff)
-    (set -x ;
-     git diff --binary >"$FILE")
+    (
+      set -x
+      git diff --binary >"$FILE"
+    )
     errcheck $? git_patch "Couldn't export git diff patch"
     echo "I/Patch exported to '$FILE'"
     ls -lah "$FILE"
     ;;
   staged)
-    (set -x ;
-     git diff --cached --binary >"$FILE")
+    (
+      set -x
+      git diff --cached --binary >"$FILE"
+    )
     errcheck $? git_patch "Couldn't export git patch of staged files"
     echo "I/Patch exported to '$FILE'"
     ls -lah "$FILE"
     ;;
   check)
-    (set -x ; git apply --check "$FILE")
+    (
+      set -x
+      git apply --check "$FILE"
+    )
     errcheck $? git_patch "Patch check failed."
-    (set -x ; git apply --index "$FILE")
+    (
+      set -x
+      git apply --index "$FILE"
+    )
     errcheck $? git_patch "Patch index failed."
     ;;
   view)
-    (set -x ; git apply --stat "$FILE")
+    (
+      set -x
+      git apply --stat "$FILE"
+    )
     errcheck $? git_patch "Patch view failed."
     ;;
   *)
