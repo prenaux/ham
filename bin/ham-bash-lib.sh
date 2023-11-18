@@ -22,13 +22,16 @@ if [[ $OS == Windows* ]]; then
   # On Windows both Emacs & the regular terminal seem to work fine with 8 colors...
   export TERM_NCOLORS=8
 else
-  if test -t 1; then
-    if [[ $(which tput) ]] && [[ -z "$TERM_NCOLORS" || "$TERM_NCOLORS" -eq 0 ]]; then
-      TERM_NCOLORS=$(tput colors)
-      export TERM_NCOLORS
-    fi
-  fi
   export TERM_NCOLORS=${TERM_NCOLORS:-0}
+  if [ $TERM_NCOLORS -eq 0 ]; then
+    case "$TERM" in
+      xterm-color|*-256color) TERM_NCOLORS=256 ;;
+      xterm|*-88color) TERM_NCOLORS=88 ;;
+      *)
+        # Unknown, stays at zero
+      ;;
+    esac
+  fi
 fi
 
 ########################################################################
