@@ -29,6 +29,12 @@ CLANG_CPP_ARGS +=
   -Werror=c++11-narrowing
 ;
 
+if $(C++VERSION) >= 20 {
+  CLANG_CPP_ARGS +=
+    -Wno-ambiguous-reversed-operator
+  ;
+}
+
 LINKFLAGS +=
   -fvisibility=hidden
   -ffunction-sections
