@@ -101,6 +101,7 @@
  (global-set-key (kbd "M-/") (make-ni-expand))
 
  ;; ni-comment-dwim
+ (global-set-key "\C-c\C-c" 'ni-comment-dwim)
  (global-set-key (kbd "C-;") 'ni-comment-dwim)
  (global-set-key (kbd "M-;") 'ni-comment-dwim)
  ;; shift-down comments the current line and goes down
@@ -184,8 +185,6 @@
  (global-set-key (kbd "C-s") 'ni-swiper-isearch)
  ;; emacs' isearch
  (global-set-key (kbd "C-S-s") 'isearch-forward)
- ;; swiper at point
- (global-set-key (kbd "C-;") 'swiper-thing-at-point)
 
 ;;;======================================================================
 ;;; ni-user-pierre.el
