@@ -20,15 +20,15 @@ FORMAT=(--pretty=format:'%C(yellow)%h%Cgreen%d %Creset%s (%Cblue%an%Creset - %Cr
 LOG_COUNT=${LOG_COUNT:-10}
 
 if [ -z "$1" ]; then
-  echo "I/=== Status ==="
+  log_info "Status:"
   git-status short
-  echo "I/=== Last ${LOG_COUNT} commits ==="
+  log_info "Last ${LOG_COUNT} commits"
   git --no-pager log --all --decorate --oneline -${LOG_COUNT} --graph "${FORMAT[@]}"
 else
   BRANCH=$(git-get-branch-name "$1")
-  echo "I/Status:"
+  log_info "Status:"
   git-status
-  echo "I/Logging branch '$BRANCH'."
+  log_info "Logging branch '$BRANCH'."
   shift
   ORIGIN="$1"
   if [ "$ORIGIN" == "origin" ] || [ "$ORIGIN" == "." ]; then

@@ -1,6 +1,6 @@
 #!/bin/bash -e
 usage() {
-  echo "usage: git-status (head|short|full|diff)"
+  echo "usage: git-status (head|short|full|diff|tui)"
   echo ""
   echo "  Default to 'short' if no mode is specified."
   exit 1
@@ -12,17 +12,28 @@ MODE="${1:-short}"
 if [[ "$MODE" == "full" ]]; then
   git status
 elif [[ "$MODE" == "short" ]]; then
+  FORMAT=(--pretty=format:'%C(yellow)%h%Cgreen%d %Creset%s (%Cblue%an%Creset - %Cred%ad%Creset)' --date=short)
   git-head-info branch_changes
+  git --no-pager log --decorate --oneline -3 --graph "${FORMAT[@]}"
+  echo ""
   git status -s
 elif [[ "$MODE" == "head" ]]; then
   git-head-info branch_changes
 elif [[ "$MODE" == "diff" ]]; then
-  echo "I/=== Status Diffs ==="
+  log_info "=== Status Diffs ==="
   git --no-pager diff
-  echo "I/=== Status Summary ==="
+  log_info "=== Status Summary ==="
   git-head-info branch_changes
   git status -s
+elif [[ "$MODE" == "tui" ]]; then
+  STATUS=$(git status -s)
+  if [ -z "$STATUS" ]; then
+    log_info "No changes"
+    git-head-info branch_changes
+  else
+    git-tui
+  fi
 else
-  echo "E/Unknown mode '$MODE'."
+  log_error "Unknown mode '$MODE'."
   usage
 fi

@@ -2,12 +2,12 @@
 . ham-bash-lib.sh
 
 usage() {
-  echo "usage: repos-exec repos_list (-x|-s) [ commands ]"
+  echo "usage: repos-exec (-x|-s) [ commands ]"
   echo ""
   echo "  Executes a bash command in the repositories."
   echo ""
-  echo "  repos_list: If a directory is passed as repo_list we'll switch to"
-  echo "  that folder and use 'repos-list-cwd'."
+  echo "  \$REPO_LIST: If a directory is set as REPO_LIST we'll switch to"
+  echo "  that folder and use 'repos-list-cwd'. Defaults to \$WORK."
   echo ""
   echo "  If '-x' is specified commands will be executed concurrently."
   echo "  If '-s' is specified commands will be executed sequentially."
@@ -34,20 +34,17 @@ if [ $# = 0 ] || [ "$1" == "-h" ] || [ "$2" == "-h" ]; then
 fi
 
 # Fetch the list of repos
-if [[ -d "$1/.git" ]]; then
-  log_info "'$1' is git repo, running in it directly."
-  REPOS_SINGLE_GIT_DIR="$(abspath "$1")"
-  shift
-elif [[ -d "$1" ]]; then
-  log_info "repos_list '$1' is a directory, switching to it and using repos-list-cwd."
-  cd "$1"
-  pwd
-  shift
+REPOS_LIST=${REPOS_LIST:-$WORK}
+if [[ -d "$REPOS_LIST/.git" ]]; then
+  log_info "'$REPOS_LIST' is git repo, running in it directly."
+  REPOS_SINGLE_GIT_DIR="$(abspath "$REPOS_LIST")"
+elif [[ -d "$REPOS_LIST" ]]; then
+  log_info "repos_list '$REPOS_LIST' is a directory, switching to it and using repos-list-cwd."
+  cd "$REPOS_LIST"
   REPOS_CWD=$(repos-list-cwd)
-elif [[ -f "$1" ]]; then
-  REPOS_CWD=$(cat "$1")
+elif [[ -f "$REPOS_LIST" ]]; then
+  REPOS_CWD=$(cat "$REPOS_LIST")
   REPOS_CWD=$(eval echo \""$REPOS_CWD"\")
-  shift
 else
   log_warning "repos_list isn't a file, assuming its a command and using repos-list-cwd instead."
   REPOS_CWD=$(repos-list-cwd)
@@ -71,7 +68,7 @@ case "$1" in
     CONCURRENT='y'
     ;;
   # Based on command
-  "git-log" | "git-status")
+  "git-log" | "git-status" | "git-tui")
     log_info "Running sequentially based on command '$1'"
     CONCURRENT='n'
     ;;
