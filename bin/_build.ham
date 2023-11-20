@@ -42,7 +42,6 @@ ham-gen-compile-commands
 ham-glob-files
 ham-grep
 ham-grep-for-emacs
-ham-gt
 ham-install-os-packages
 ham-lint
 ham-lint-fix

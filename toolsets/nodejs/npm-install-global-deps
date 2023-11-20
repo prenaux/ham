@@ -32,7 +32,6 @@ npm install --force -g \
   esbuild \
   yarn \
   pm2 \
-  @withgraphite/graphite-cli \
   browserify
 
 echo "I/Installing regular packages..."
