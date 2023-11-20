@@ -76,9 +76,10 @@ EMSCRIPTEN_LINKER_SETTINGS =
 ;
 
 ### "Debug" (da) build flags ###
-# We use -g2 by default, -g3 allows source level debugging in Chrome but creates huge WASM.
+# -g2 preserve the function names.
+# -g3 allows source level debugging in Chrome but creates a much bigger output.
 # To debug in Chrome see https://public.3.basecamp.com/p/PCFwmQyEA3qxpcWRgaYD9cjR
-EMSCRIPTEN_DEBUG_LEVEL ?= 2 ;
+EMSCRIPTEN_DEBUG_LEVEL ?= 3 ;
 ECHO "I/EMSCRIPTEN_DEBUG_LEVEL:" $(EMSCRIPTEN_DEBUG_LEVEL) ;
 JSCC_DBG_ARGS = $(STRICT_ALIASING_FLAGS) ;
 JSCC_DBG_ARGS += -O1 -g$(EMSCRIPTEN_DEBUG_LEVEL) $(EMSCRIPTEN_COMPILATION_SETTINGS) ;
