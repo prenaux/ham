@@ -1,6 +1,6 @@
 #!/bin/bash -e
 usage() {
-  echo "usage: git-status (head|short|full|diff|tui)"
+  echo "usage: git-status (head|short|short_log|full|diff|tui)"
   echo ""
   echo "  Default to 'short' if no mode is specified."
   exit 1
@@ -8,10 +8,14 @@ usage() {
 
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
-MODE="${1:-short}"
+MODE="${1:-short_log}"
 if [[ "$MODE" == "full" ]]; then
   git status
 elif [[ "$MODE" == "short" ]]; then
+  FORMAT=(--pretty=format:'%C(yellow)%h%Cgreen%d %Creset%s (%Cblue%an%Creset - %Cred%ad%Creset)' --date=short)
+  git-head-info branch_changes
+  git status -s
+elif [[ "$MODE" == "short_log" ]]; then
   FORMAT=(--pretty=format:'%C(yellow)%h%Cgreen%d %Creset%s (%Cblue%an%Creset - %Cred%ad%Creset)' --date=short)
   git-head-info branch_changes
   git --no-pager log --decorate --oneline -3 --graph "${FORMAT[@]}"
