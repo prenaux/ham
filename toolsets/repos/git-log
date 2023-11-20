@@ -1,6 +1,6 @@
 #!/bin/bash -e
 usage() {
-  echo "usage: git-log (current_branch|.) (origin|.)"
+  echo "usage: git-log (-LOG_COUNT) (current_branch|.) (origin|.)"
   echo ""
   echo "examples:"
   echo "  # Print all branches' commit graph"
@@ -19,15 +19,28 @@ usage() {
 FORMAT=(--pretty=format:'%C(yellow)%h%Cgreen%d %Creset%s (%Cblue%an%Creset - %Cred%ad%Creset)' --date=short)
 LOG_COUNT=${LOG_COUNT:-10}
 
+if [ "${1:0:1}" = "-" ]; then
+  if echo "$1" | grep -qE '^-[0-9]+$'; then
+    LOG_COUNT=${1#-}
+    shift
+  fi
+fi
+
+PAGER=--no-pager
+if [ "$LOG_COUNT" == "0" ]; then
+  PAGER=
+  LOG_COUNT=100000
+fi
+
 if [ -z "$1" ]; then
   log_info "Status:"
   git-status short
-  log_info "Last ${LOG_COUNT} commits"
-  git --no-pager log --all --decorate --oneline -${LOG_COUNT} --graph "${FORMAT[@]}"
+  log_info "Last ${LOG_COUNT} commits:"
+  git $PAGER log --all --decorate --oneline -${LOG_COUNT} --graph "${FORMAT[@]}"
 else
   BRANCH=$(git-get-branch-name "$1")
   log_info "Status:"
-  git-status
+  git-status short
   log_info "Logging branch '$BRANCH'."
   shift
   ORIGIN="$1"
@@ -36,9 +49,9 @@ else
     echo "I/Default origin '$ORIGIN'."
   fi
   if [ -z "$ORIGIN" ]; then
-    git log --decorate --oneline --graph --first-parent "${FORMAT[@]}" "$BRANCH" "$@"
+    git $PAGER log --decorate --oneline -${LOG_COUNT} --graph --first-parent "${FORMAT[@]}" "$BRANCH" "$@"
   else
     shift
-    git log --decorate --oneline --graph --first-parent "${FORMAT[@]}" "$BRANCH" "$ORIGIN/$BRANCH" "$@"
+    git $PAGER log --decorate --oneline -${LOG_COUNT} --graph --first-parent "${FORMAT[@]}" "$BRANCH" "$ORIGIN/$BRANCH" "$@"
   fi
 fi
