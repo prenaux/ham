@@ -17,12 +17,13 @@ usage() {
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 FORMAT=(--pretty=format:'%C(yellow)%h%Cgreen%d %Creset%s (%Cblue%an%Creset - %Cred%ad%Creset)' --date=short)
+LOG_COUNT=${LOG_COUNT:-10}
 
 if [ -z "$1" ]; then
   echo "I/=== Status ==="
   git-status short
-  echo "I/=== Last 15 commits ==="
-  git --no-pager log --all --decorate --oneline -15 --graph "${FORMAT[@]}"
+  echo "I/=== Last ${LOG_COUNT} commits ==="
+  git --no-pager log --all --decorate --oneline -${LOG_COUNT} --graph "${FORMAT[@]}"
 else
   BRANCH=$(git-get-branch-name "$1")
   echo "I/Status:"
