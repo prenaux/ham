@@ -23,13 +23,13 @@ if [[ $OS == Windows* ]]; then
   export TERM_NCOLORS=8
 else
   export TERM_NCOLORS=${TERM_NCOLORS:-0}
-  if [ $TERM_NCOLORS -eq 0 ]; then
+  if [ "$TERM_NCOLORS" -eq 0 ]; then
     case "$TERM" in
-      xterm-color|*-256color) TERM_NCOLORS=256 ;;
-      xterm|*-88color) TERM_NCOLORS=88 ;;
+      xterm-color | *-256color) TERM_NCOLORS=256 ;;
+      xterm | *-88color) TERM_NCOLORS=88 ;;
       *)
         # Unknown, stays at zero
-      ;;
+        ;;
     esac
   fi
 fi
