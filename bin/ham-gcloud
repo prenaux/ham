@@ -1,0 +1,16 @@
+#!/bin/bash
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+export HAM_NO_VER_CHECK=1
+. ham-toolset gcloud >/dev/null
+
+if [ ! -f "$GCLOUD_BIN_DIR/gcloud" ]; then
+  log_error "'$GCLOUD_BIN_DIR/gcloud' not found."
+  exit 1
+fi
+
+"$GCLOUD_BIN_DIR/gcloud" "$@"

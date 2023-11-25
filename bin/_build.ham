@@ -37,6 +37,7 @@ ham-find-dir-up
 ham-find-file-up
 ham-fix
 ham-flymake
+ham-gcloud
 ham-gdb
 ham-gen-compile-commands
 ham-glob-files
