@@ -2,7 +2,7 @@
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 usage() {
-  echo "usage: ${0##*/} BRANCH_NAME(usually main or master) ORIGIN(default:origin)"
+  echo "usage: ${0##*/} BRANCH_NAME(usually main_branch) ORIGIN(default:origin)"
   echo ""
   echo "  Move the BRANCH_NAME branch to the current HEAD (that's the currently checked out branch),"
   echo "  then checkout BRANCH_NAME and finally push it to origin."
@@ -29,23 +29,9 @@ if [ $? == 1 ]; then
   usage
 fi
 
-echo "I/Fetching and rebasing on '$ORIGIN_BRANCH_NAME'"
 (
   set -ex
-  git fetch --all
-  git-rebase "$ORIGIN_BRANCH_NAME"
-)
-
-echo "I/Moving '$BRANCH_NAME' to HEAD"
-(
-  set -ex
-  git push "$ORIGIN" --force-with-lease
-  git-move-branch "$BRANCH_NAME"
-)
-
-echo "I/Checking out '$BRANCH_NAME' and pushing to '$ORIGIN'"
-(
-  set -ex
+  git-move-branch "$BRANCH_NAME" HEAD
   git checkout "$BRANCH_NAME"
   git push "$ORIGIN"
 )
