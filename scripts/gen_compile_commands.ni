@@ -32,25 +32,29 @@ function main() {
   else
   {
     local key = "  SRC_ABSPATH="
+    local clang = "clang"
+    local clangp = "clang++"
     local pwd = "`pwd`"
     local abs = "${SRC_ABSPATH}"
-
     while (f.Tell() != f.size) {
       local line = f.ReadStringLine();
-      if (line.StartsWith(key)) {
+      line = line.trimleft();
+      local _args = line.split(" ");
+      if (_args.len() > 0) {
+        foreach(i, a in _args) {
+          a = a.replace("\\\"","")
+          _args[i] = a.replace("\"","")
+        }
         local obj = {}
-        local abs_path = line.after(key)
-        abs_path = abs_path.replace(pwd,dir)
-        abs_path = abs_path.replace("\"","")
         obj["directory"] <- dir
-        local command = f.ReadStringLine();
-        command = command.replace(abs,abs_path)
-        obj["command"] <- command
-        obj["file"] <- abs_path
+        obj["arguments"] <- _args
+        // obj["command"] <- line
+        obj["file"] <- dir + _args[_args.len() - 1]
+        ::println("line -> " + ::json.toString(obj))
         arr.append(obj)
       }
     }
   }
-  ::json.toFile(arr,"compile_commands.json",true)
+::json.toFile(arr,"compile_commands.json",true)
   ::println("Done, wrote compile_commands.json.")
 }
