@@ -70,6 +70,8 @@
   "editor.minimap.enabled": false,
   "editor.rulers": [80],
   "editor.autoClosingBrackets": "never",
+  "editor.autoClosingQuotes": "never",
+  "editor.autoSurround": "never",
   "editor.inlineSuggest.enabled": true,
   "editor.tabSize": 2,
   "workbench.editor.wrapTabs": true,
@@ -83,6 +85,8 @@
     "activityBarBadge.foreground": "#777f",
     "badge.background": "#0000",
     "badge.foreground": "#777f",
+    "tree.indentGuidesStroke": "#ff3300",
+    "tree.inactiveIndentGuidesStroke": "#444444",
   },
   "zenMode.fullScreen": false,
   "zenMode.centerLayout": false,
@@ -94,6 +98,9 @@
     "comments": true,
     "strings": true
   },
+  // Use custom dialogs which gets rid of the abnoxious bouncing dock icon on
+  // macOS. Also seems to just handle remote server reconnection better.
+  "workbench.dialogs.customEnabled": true,
 
   /**
     * Silence The Noise
