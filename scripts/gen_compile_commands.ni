@@ -31,25 +31,20 @@ function main() {
   }
   else
   {
-    local key = "  SRC_ABSPATH="
-    local clang = "clang"
-    local clangp = "clang++"
-    local pwd = "`pwd`"
-    local abs = "${SRC_ABSPATH}"
     while (f.Tell() != f.size) {
       local line = f.ReadStringLine();
       line = line.trimleft();
       local _args = line.split(" ");
       if (_args.len() > 0) {
-        foreach(i, a in _args) {
-          a = a.replace("\\\"","")
-          _args[i] = a.replace("\"","")
-        }
         local obj = {}
         obj["directory"] <- dir
-        obj["arguments"] <- _args
-        // obj["command"] <- line
-        obj["file"] <- dir + _args[_args.len() - 1]
+        // obj["arguments"] <- _args
+        obj["command"] <- line
+        local file = _args[_args.len() - 1].replace("\"","");
+        if (!file.startswith("/")) {
+          file = dir + file;
+        }
+        obj["file"] <- file;
         ::println("line -> " + ::json.toString(obj))
         arr.append(obj)
       }
