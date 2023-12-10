@@ -18,13 +18,14 @@ WORKDIR /Work
 RUN git clone --depth 1 https://github.com/prenaux/ham.git
 ENV HAM_HOME=/Work/ham
 
+# Print ham version
+WORKDIR $HAM_HOME
+RUN git log -3 --oneline
+
 # ham-install-os-packages
 RUN $HAM_HOME/bin/ham-install-os-packages
 
 # download ham toolsets
-RUN mkdir /Work/bootstrap-docker
-WORKDIR /Work/bootstrap-docker
-COPY ./bootstrap-docker/ham-bootstrap.sh /Work/bootstrap-docker
-RUN ./ham-bootstrap.sh
+RUN $HAM_HOME/bin/ham-toolset repos rclone default
 
 CMD ["echo", "I/ham-base docker image."]
