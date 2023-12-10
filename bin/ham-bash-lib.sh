@@ -13,7 +13,7 @@ if [[ -z $EDITOR ]]; then
   export EDITOR=ham-editor
 fi
 if [[ -z "$HAM_TOOLSET_DL_URL" ]]; then
-  export HAM_TOOLSET_DL_URL=https://cdn2.talansoft.com/ftp/toolsets
+  export HAM_TOOLSET_DL_URL=https://f001.backblazeb2.com/file/cdn-ts/toolsets
 fi
 
 if [[ $OS == Windows* ]]; then
