@@ -375,6 +375,7 @@
 
 ;;*** Dockerfile ********************************************************
 (require 'dockerfile-mode)
+(add-to-list 'auto-mode-alist '("\\.dockerfile\\'" . dockerfile-mode))
 
 ;;*** Solidity **********************************************************
 (autoload 'solidity-mode "solidity-mode" nil t)
