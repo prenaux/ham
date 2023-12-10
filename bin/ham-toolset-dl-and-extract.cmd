@@ -54,7 +54,7 @@ if exist "%DLFILENAME%" (
     popd
 ) else (
     echo I/Trying download from %ARCH_URL%
-    curl -o "%DLFILENAME%" "%ARCH_URL%"
+    curl -L -o "%DLFILENAME%" "%ARCH_URL%"
     if errorlevel 1 (
         echo E/Download failed !
         popd
