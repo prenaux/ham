@@ -28,8 +28,7 @@ case $HAM_OS in
     if [ -z "$(where_inpath wine)" ]; then
       (
         set -ex
-        sudo apt -y update
-        sudo apt install -y wine
+        ham-apt-get-install wine
       )
       if [ -z "$(where_inpath wine)" ]; then
         echo "E/Can't find wine after installing it."

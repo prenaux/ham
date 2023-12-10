@@ -29,9 +29,9 @@ case $HAM_OS in
     ;;
   LINUX*)
     if [ -z "$(which psql)" ]; then
-      sudo apt install -y postgresql-client
+      ham-apt-get-install postgresql-client
       if [ -z "$(which psql)" ]; then
-        echo "E/Brew postgresql@10 install failed."
+        echo "E/ham-apt-get-install postgresql-client install failed."
         return 1
       fi
     fi

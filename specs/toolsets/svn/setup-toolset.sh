@@ -19,14 +19,14 @@ case $HAM_OS in
     ;;
   LINUX*)
     if [ -z "$(which svn)" ]; then
-      sudo apt install -y subversion
+      ham-apt-get-install subversion
     fi
     if [[ ! -e "$(git --exec-path)/git-svn" ]]; then
       # This is GITHUB_ACTION workaround because they seem to have
       # bypassed regular install to coerce a more recent git version which
       # result in the git-svn dependency check failing.
       # 1) We install the actual dependencies
-      sudo apt install -y git libsvn-perl libyaml-perl libterm-readkey-perl
+      ham-apt-get-install git libsvn-perl libyaml-perl libterm-readkey-perl
       # 2) Install git-svn without checking any dependencies AND we have
       #    to force the dl URL because even that is custom in the github
       #    action

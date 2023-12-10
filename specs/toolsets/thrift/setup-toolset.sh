@@ -12,7 +12,7 @@ case $HAM_OS in
     ;;
   LINUX*)
     if [ ! -e "$(where_inpath thrift)" ]; then
-      sudo apt-get -y install thrift-compiler
+      ham-apt-get-install thrift-compiler
       if [ ! -e "$(where_inpath thrift)" ]; then
         echo "E/Can't find thrift after thrift-compiler install."
         return 1

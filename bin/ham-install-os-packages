@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 if [[ -z "$HAM_HOME" ]]; then
   HAM_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
   export HAM_HOME
@@ -42,20 +42,20 @@ case $HAM_OS in
       (
         set -ex
         # autoremove & update fix "E: Unable to correct problems, you have held broken packages."
-        sudo apt -y autoremove
-        sudo apt -y update
+        sudo apt-get -y autoremove
+        sudo apt-get -y update
         # sudo apt -y upgrade ; # Try this if your install seems broken...
         # install all our required packages
-        sudo NEEDRESTART_MODE=a apt-get -y install software-properties-common build-essential clang lld curl ffmpeg file freeglut3-dev git g++ gcc git htop jq libcurl4-openssl-dev libdw-dev libunwind-dev libsdl2-dev libssl-dev libudev-dev mc mesa-common-dev mesa-utils net-tools ntpdate p7zip-full procps pkg-config python3 python3-pip subversion wget xsltproc autossh
+        ham-apt-get-install software-properties-common build-essential clang lld curl ffmpeg file freeglut3-dev git g++ gcc git htop jq libcurl4-openssl-dev libdw-dev libunwind-dev libsdl2-dev libssl-dev libudev-dev mc mesa-common-dev mesa-utils net-tools ntpdate p7zip-full procps pkg-config python3 python3-pip subversion wget xsltproc autossh
       )
     else
       echo "E/Unsupported LINUX package manager"
-      return 1
+      exit 1
     fi
     ;;
   *)
     echo "E/Toolset: Unsupported host OS"
-    return 1
+    exit 1
     ;;
 esac
 

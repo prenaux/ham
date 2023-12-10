@@ -18,7 +18,7 @@ if [ -z "$(where_inpath avm)" ] || [ -z "$(where_inpath anchor)" ]; then
     LINUX*)
       (
         set -ex
-        sudo apt-get -y install pkg-config libssl-dev
+        ham-apt-get-install pkg-config libssl-dev
       )
       ;;
   esac

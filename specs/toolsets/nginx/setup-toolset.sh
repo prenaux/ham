@@ -12,8 +12,7 @@ case $HAM_OS in
     ;;
   LINUX*)
     if [ -z "$(where_inpath nginx)" ]; then
-      sudo apt -y update
-      sudo apt install -y nginx
+      ham-apt-get-install nginx
     fi
     ;;
   *)
