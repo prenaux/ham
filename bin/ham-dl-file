@@ -53,6 +53,6 @@ else
   # Download with curl
   (
     set -x
-    curl -# -o "$OUTFILE" "$URL"
+    curl -# -L -o "$OUTFILE" "$URL"
   )
 fi
