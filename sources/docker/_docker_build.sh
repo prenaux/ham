@@ -23,12 +23,12 @@ usage() {
 
 DOCKER_PARAMS=()
 if [ "$1" == "quiet" ]; then
-  DOCKER_PARAMS=("${PARAMS[@]}" --q)
+  DOCKER_PARAMS=("${DOCKER_PARAMS[@]}" --q)
   shift
 fi
 
 if [ "$1" == "nocache" ]; then
-  DOCKER_PARAMS=("${PARAMS[@]}" --no-cache)
+  DOCKER_PARAMS=("${DOCKER_PARAMS[@]}" --no-cache)
   shift
 fi
 
@@ -64,17 +64,23 @@ function build_image() {
     usage
   fi
 
+  PARAMS=("${DOCKER_PARAMS[@]}")
+  if [ "$IMAGE_NAME" != "ham-base" ]; then
+    PARAMS=("${PARAMS[@]}" --pull=false)
+  fi
+
   log_info "Building '$IMAGE_NAME' image with tag '$TAG_NAME'."
   (set -x ;
    # DOCKER_OPTS: https://stackoverflow.com/questions/24991136/docker-build-could-not-resolve-archive-ubuntu-com-apt-get-fails-to-install-a
    export DOCKER_OPTS="--dns 8.8.8.8 --dns 8.8.4.4" ;
-   docker build "${DOCKER_PARAMS[@]}" -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${TAG_NAME} -f "${DOCKERFILE_PATH}" .)
+   docker build "${PARAMS[@]}" -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${TAG_NAME} -f "${DOCKERFILE_PATH}" .)
   log_info "Successfully built '$IMAGE_NAME' image with tag '$TAG_NAME'."
 }
 
 if [ "$IMAGE_NAME" == "all" ]; then
   log_info "Building all the images..."
   build_image ham-base
+  build_image ham-tall-stack
 else
   build_image "$IMAGE_NAME"
 fi
