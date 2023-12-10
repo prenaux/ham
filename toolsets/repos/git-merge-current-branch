@@ -23,12 +23,6 @@ fi
 
 ORIGIN=${2:-origin}
 
-ORIGIN_BRANCH_NAME=$(git-check-branch-or-commit "${ORIGIN}:${BRANCH_NAME}")
-if [ $? == 1 ]; then
-  echo "E/Can't get origin branch name '${ORIGIN}:${BRANCH_NAME}'."
-  usage
-fi
-
 (
   set -ex
   git-move-branch "$BRANCH_NAME" HEAD
