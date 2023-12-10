@@ -12,7 +12,7 @@ toolset_import_once repos docker > /dev/null
 cd "${SCRIPT_DIR}"
 
 usage() {
-  echo "usage: ${0##*/} (quiet) command TAG_NAME image_name|all"
+  echo "usage: ${0##*/} (quiet) command TAG_NAME image_name"
   echo ""
   echo "example:"
   echo "  ./${0##*/} latest all"
@@ -29,6 +29,11 @@ fi
 
 if [ "$1" == "nocache" ]; then
   DOCKER_PARAMS=("${DOCKER_PARAMS[@]}" --no-cache)
+  shift
+fi
+
+if [ "$1" == "push" ]; then
+  PUSH_IMAGE="yes"
   shift
 fi
 
@@ -74,15 +79,7 @@ function build_image() {
    # DOCKER_OPTS: https://stackoverflow.com/questions/24991136/docker-build-could-not-resolve-archive-ubuntu-com-apt-get-fails-to-install-a
    export DOCKER_OPTS="--dns 8.8.8.8 --dns 8.8.4.4" ;
    docker build "${PARAMS[@]}" -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${TAG_NAME} -f "${DOCKERFILE_PATH}" .)
-  log_info "Successfully built '$IMAGE_NAME' image with tag '$TAG_NAME'."
+  log_success "Successfully built '$IMAGE_NAME' image with tag '$TAG_NAME'."
 }
 
-if [ "$IMAGE_NAME" == "all" ]; then
-  log_info "Building all the images..."
-  build_image ham-base
-  build_image ham-tall-stack
-else
-  build_image "$IMAGE_NAME"
-fi
-
-log_info "Done."
+build_image "$IMAGE_NAME"
