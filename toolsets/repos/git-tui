@@ -23,21 +23,21 @@ if [ ! -d "$DIR/.git" ]; then
   if [[ -n "$DOT_GIT_UP" && -d "$DOT_GIT_UP" ]]; then
     DIR="$DOT_GIT_UP"
   else
+    echo "I/Not in a git repo, looking in the subfolders..."
     REPOS_LIST=$(repos-list-cwd)
     if [ -z "$REPOS_LIST" ]; then
       echo "E/Directory '$DIR' is not a git repo and none of its subfolder are one either."
       usage
-    # Show a directory picker. Don't show it on Windows since piping in fzf
-    # doesn't work correctly there.
-    elif [[ "$HAM_OS" != "NT" ]]; then
+    else
       # Create an array to store the list of repositories and changes
       REPOS_WITH_CHANGES=()
 
       # Loop through the repositories and store the number of changes
       for repo in $REPOS_LIST; do
         cd "$repo"
-        changes=$(git-head-info branch_changes)
-        REPOS_WITH_CHANGES+=("${repo}\t (status: ${changes})")
+        CHANGES=$(git-head-info branch_changes)
+        echo "I/Status of $repo: ${CHANGES}"
+        REPOS_WITH_CHANGES+=("${repo}\t (status: ${CHANGES})")
         cd - >/dev/null
       done
 
