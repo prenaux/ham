@@ -32,6 +32,8 @@ CLANG_CPP_ARGS +=
 if $(C++VERSION) >= 20 {
   CLANG_CPP_ARGS +=
     -Wno-ambiguous-reversed-operator
+    # Spits out an absurd amount of pointless pedantic warnings
+    -Wno-deprecated-builtins
   ;
 }
 
