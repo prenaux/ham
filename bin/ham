@@ -185,13 +185,19 @@ ham_or_bash() {
   # Run ham-validate-targets if there are parameters to pass to it
   HAM_EXEC_DIR="."
   if [ "${#HAM_CMD_PARAMS[@]}" -gt 0 ]; then
-    if [[ ! -f "_build.ham" ]]; then
-      if [[ ! -f "sources/_build.ham" ]]; then
-        log_error "Can't find '_build.ham' and 'sources/_build.ham' in '$(pwd)'."
-        exit 1
-      else
-        HAM_EXEC_DIR="./sources"
-      fi
+    if [[ -f "_build.ham" ]]; then
+      HAM_EXEC_DIR="."
+    elif [[ -f "sources/_build.ham" ]]; then
+      HAM_EXEC_DIR="./sources"
+    elif [[ -f "../_build.ham" ]]; then
+      HAM_EXEC_DIR=".."
+    elif [[ -f "../../_build.ham" ]]; then
+      HAM_EXEC_DIR="../.."
+    elif [[ -f "../../../_build.ham" ]]; then
+      HAM_EXEC_DIR="../../.."
+    else
+      log_error "Can't find '_build.ham', 'sources/_build.ham' or a near parent of '$(pwd)'."
+      exit 1
     fi
   fi
 

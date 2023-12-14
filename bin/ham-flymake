@@ -18,6 +18,13 @@ if [[ -z "$HAM_IMPORTED_TOOLSETS" ]]; then
   echo "E/HAM_IMPORTED_TOOLSETS not set."
   exit 1
 fi
-. hat $HAM_IMPORTED_TOOLSETS
+
+source_without_args() {
+  local fileToSource="$1"
+  shift
+  source "$fileToSource"
+}
+source_without_args hat
+
 time ham "$@"
 true
