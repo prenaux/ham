@@ -11,6 +11,7 @@ CMD=("${CMD[@]}" -M 500)
 CMD=("${CMD[@]}" --line-number)
 CMD=("${CMD[@]}" --no-ignore)
 CMD=("${CMD[@]}" --smart-case)
+CMD=("${CMD[@]}" --hidden)
 
 HAMGREP_IGNORE="$(ham-find-file-up _hamgrep_ignore)"
 if [[ -e "$HAMGREP_IGNORE" ]]; then
