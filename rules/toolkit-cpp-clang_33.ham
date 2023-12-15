@@ -61,6 +61,11 @@ if $(CLANG_SANITIZE) = 1 {
   ECHO "I/Building with -fsanitize=address" ;
 }
 
+# Clang 15 removes std::unary_function. This macro puts it back... for now.
+CLANG_CC_ARGS +=
+  -D_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION
+;
+
 CLANG_CC_ARGS +=
   -Wno-deprecated-declarations
   -Wno-gnu-inline-cpp-without-extern
