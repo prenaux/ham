@@ -41,10 +41,10 @@ if [ -z "$3" ]; then
 else
   PKG_HOME=$(ham-brew-installdir "$3")
 fi
-# echo "I/PKG_HOME: ${PKG_HOME}"
+# log_info "PKG_HOME: ${PKG_HOME}"
 
 if [ "$INSTALL" == "upgrade" ]; then
-  echo "I/Asked for '$INSTALL', updating brew..."
+  log_info "Asked for '$INSTALL', updating brew..."
   (
     set -x
     ham-brew update
@@ -52,7 +52,7 @@ if [ "$INSTALL" == "upgrade" ]; then
 fi
 
 if [ ! -e "$PKG_HOME/$CHECKFILE" ]; then
-  echo "I/Brew $PKGNAME not found, install..."
+  log_info "Brew $PKGNAME not found, install..."
   (
     set -x
     ham-brew $INSTALL "$PKGNAME"
@@ -64,7 +64,7 @@ else
     exit 0
   fi
 
-  echo "I/Brew $PKGNAME already installed, $INSTALL..."
+  log_info "Brew $PKGNAME already installed, $INSTALL..."
   (
     set -x
     ham-brew $INSTALL "$PKGNAME"
@@ -72,6 +72,6 @@ else
 fi
 
 if [ ! -e "$PKG_HOME/$CHECKFILE" ]; then
-  echo "I/Brew $PKGNAME install failed."
+  log_error "Brew $PKGNAME install failed, couldn't find '$PKG_HOME/$CHECKFILE'."
   exit 1
 fi
