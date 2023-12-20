@@ -140,7 +140,7 @@ else if $(OSX) {
   -framework MetalKit
   -framework QuartzCore
   -framework Security
-  -lstdc++ -lpthread -ldl ;
+  -lpthread -ldl ;
 }
 
 CCFLAGS   += $(CLANG_CC_ARGS) ;
