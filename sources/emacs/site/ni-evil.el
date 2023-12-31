@@ -4,23 +4,25 @@
 (require 'evil)
 (evil-mode 1)
 
-(defun ni-evil-jk ()
-  (interactive)
-  (let* ((initial-key ?j)
-         (final-key ?k)
-         (timeout 0.5)
-         (event (read-event nil nil timeout)))
-    (if event
-        ;; timeout met
-        (if (and (characterp event) (= event final-key))
-            (evil-normal-state)
-          (insert initial-key)
-          (push event unread-command-events))
-      ;; timeout exceeded
-      (insert initial-key))))
-
-(define-key evil-insert-state-map (kbd "j") 'ni-evil-jk)
-(define-key evil-motion-state-map (kbd "TAB") nil)
-(define-key evil-visual-state-map (kbd "y") 'kill-ring-save)
 (setq evil-search-wrap nil)
-(setq evil-search-module 'evil-search)
+(define-key evil-visual-state-map (kbd "y") 'kill-ring-save)
+(evil-select-search-module 'evil-search-module 'evil-search)
+
+;; Relative line numbers
+(defvar ni-rel-line-current-line-number 0)
+
+(setq linum-format 'ni-rel-line-numbers)
+
+(defun ni-rel-line-numbers (line-number)
+  (let ((test2 (- line-number ni-rel-line-current-line-number)))
+    (propertize
+     (number-to-string (cond ((<= test2 0) (* -1 test2))
+                             ((> test2 0) test2)))
+     'face 'linum)))
+
+(defadvice linum-update (around ni-rel-line-update)
+  (let ((ni-rel-line-current-line-number (line-number-at-pos)))
+    ad-do-it))
+(ad-activate 'linum-update)
+
+(global-linum-mode t)
