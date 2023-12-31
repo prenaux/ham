@@ -1,9 +1,9 @@
-;;; evil-digraphs.el --- Digraphs
+;;; evil-digraphs.el --- Digraphs -*- lexical-binding: t -*-
 
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.14
+;; Version: 1.15.0
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -25,9 +25,9 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with Evil.  If not, see <http://www.gnu.org/licenses/>.
 
-(require 'evil-vars)
-
 ;;; Code:
+
+(require 'evil-vars)
 
 (defgroup evil-digraphs nil
   "Digraph support based on RFC 1345."
@@ -41,9 +41,7 @@ a cons cell of the digraph and its character replacement,
 where the digraph is a list of two characters.
 See also `evil-digraphs-table'."
   :type '(alist :key-type (list character character)
-                :value-type character)
-  :require 'evil-digraphs
-  :group 'evil-digraphs)
+                :value-type character))
 
 (defconst evil-digraphs-table
   '(((?N ?U) . ?\x00)
@@ -718,7 +716,9 @@ See also `evil-digraphs-table'."
     ((?V ??) . ?\x1e7c)
     ((?v ??) . ?\x1e7d)
     ((?W ?!) . ?\x1e80)
+    ((?W ?`) . ?\x1e80)
     ((?w ?!) . ?\x1e81)
+    ((?w ?`) . ?\x1e81)
     ((?W ?') . ?\x1e82)
     ((?w ?') . ?\x1e83)
     ((?W ?:) . ?\x1e84)
@@ -752,7 +752,9 @@ See also `evil-digraphs-table'."
     ((?U ?2) . ?\x1ee6)
     ((?u ?2) . ?\x1ee7)
     ((?Y ?!) . ?\x1ef2)
+    ((?Y ?`) . ?\x1ef2)
     ((?y ?!) . ?\x1ef3)
+    ((?y ?`) . ?\x1ef3)
     ((?Y ?2) . ?\x1ef6)
     ((?y ?2) . ?\x1ef7)
     ((?Y ??) . ?\x1ef8)
@@ -788,7 +790,9 @@ See also `evil-digraphs-table'."
     ((?9 ?\") . ?\x201f)
     ((?/ ?-) . ?\x2020)
     ((?/ ?=) . ?\x2021)
+    ((?o ?o) . ?\x2022)
     ((?. ?.) . ?\x2025)
+    ((?, ?.) . ?\x2026)
     ((?% ?0) . ?\x2030)
     ((?1 ?') . ?\x2032)
     ((?2 ?') . ?\x2033)
@@ -835,6 +839,8 @@ See also `evil-digraphs-table'."
     ((?W ?=) . ?\x20a9)
     ((?= ?e) . ?\x20ac)
     ((?E ?u) . ?\x20ac)
+    ((?= ?R) . ?\x20bd)
+    ((?= ?P) . ?\x20bd)
     ((?o ?C) . ?\x2103)
     ((?c ?o) . ?\x2105)
     ((?o ?F) . ?\x2109)
@@ -1708,16 +1714,16 @@ This includes all digraphs defined in RFC 1345,
 as well as miscellaneous digraphs for multi-byte characters.
 See also `evil-digraphs-table-user'.")
 
+;;;###autoload
 (defun evil-digraph (digraph)
   "Convert DIGRAPH to character or list representation.
 If DIGRAPH is a list (CHAR1 CHAR2), return the corresponding character;
 if DIGRAPH is a character, return the corresponding list.
 Searches in `evil-digraphs-table-user' and `evil-digraphs-table'."
   (if (listp digraph)
-      (let* ((char1 (car digraph))
-             (char2 (cadr digraph)))
-        (or (cdr (assoc (list char1 char2) evil-digraphs-table-user))
-            (cdr (assoc (list char1 char2) evil-digraphs-table))
+      (or (cdr (assoc digraph evil-digraphs-table-user))
+          (cdr (assoc digraph evil-digraphs-table))
+          (cl-destructuring-bind (char1 char2) digraph
             (unless (eq char1 char2)
               (or (cdr (assoc (list char2 char1) evil-digraphs-table-user))
                   (cdr (assoc (list char2 char1) evil-digraphs-table))))))

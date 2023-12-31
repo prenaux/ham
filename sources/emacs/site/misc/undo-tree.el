@@ -3,7 +3,7 @@
 ;; Copyright (C) 2009-2013  Free Software Foundation, Inc
 
 ;; Author: Toby Cubitt <toby-undo-tree@dr-qubit.org>
-;; Version: 0.6.4
+;; Version: 0.6.5
 ;; Keywords: convenience, files, undo, redo, history, tree
 ;; URL: http://www.dr-qubit.org/emacs.php
 ;; Repository: http://www.dr-qubit.org/git/undo-tree.git
@@ -3177,6 +3177,24 @@ signaling an error if file is not found."
       (undo-tree-visualizer-quit))))
 
 
+(defun undo-tree-show-help ()
+  (let ((msg (if (and (fboundp 'undo-tree-minibuffer-help-dynamic)
+		      undo-tree-minibuffer-help-dynamic)
+		 () ; TODO: look at keymap
+	       (concat "d = toggle diffs, "
+		       "s = toggle selection, "
+		       "t = toggle timestamps, "
+		       "q = quit at current history point, "
+		       "<ctrl> q = abort"))))
+	;  TODO: (if undo-tree-show-help-in-visualize-buffer
+	  ; (save-excursion
+	  ; move to lowest visible line
+	  ; insert this text instead of messaging
+	  ; only if we haven't just printed another message
+	  ; with user-error or user-friendly
+    (if (current-message) ()
+      (message msg))))
+
 
 (defun undo-tree-draw-tree (undo-tree)
   ;; Draw undo-tree in current buffer starting from NODE (or root if nil).
@@ -3184,6 +3202,8 @@ signaling an error if file is not found."
 		  (undo-tree-current undo-tree)
 		(undo-tree-root undo-tree))))
     (erase-buffer)
+    (setq undo-tree-visualizer-needs-extending-down nil
+	  undo-tree-visualizer-needs-extending-up nil)
     (undo-tree-clear-visualizer-data undo-tree)
     (undo-tree-compute-widths node)
     ;; lazy drawing starts vertically centred and displaced horizontally to
@@ -3222,7 +3242,16 @@ signaling an error if file is not found."
        (or undo-tree-visualizer-needs-extending-up
 	   (undo-tree-root undo-tree))))
     ;; highlight current node
-    (undo-tree-draw-node (undo-tree-current undo-tree) 'current)))
+    (undo-tree-draw-node (undo-tree-current undo-tree) 'current))
+
+  (if (and (fboundp 'undo-tree-show-minibuffer-help)
+	   undo-tree-show-minibuffer-help)
+      (progn (remove-hook 'post-command-hook
+			  'undo-tree-show-help
+			  "local-to-buffer")
+	     (add-hook 'post-command-hook
+		       'undo-tree-show-help
+		       "at-end" "local-to-buffer"))))
 
 
 (defun undo-tree-extend-down (node &optional bottom)
@@ -4098,6 +4127,54 @@ specifies `saved', and a negative prefix argument specifies
   "Toggle mode to select nodes in undo-tree visualizer."
   :lighter "Select"
   :keymap undo-tree-visualizer-selection-mode-map
+
+
+;; In visualizer selection mode:
+
+;; <up>  p  C-p  (`undo-tree-visualizer-select-previous')
+;;   Select previous node.
+
+;; <down>  n  C-n  (`undo-tree-visualizer-select-next')
+;;   Select next node.
+
+;; <left>  b  C-b  (`undo-tree-visualizer-select-left')
+;;   Select left sibling node.
+
+;; <right>  f  C-f  (`undo-tree-visualizer-select-right')
+;;   Select right sibling node.
+
+;; <pgup>  M-v
+;;   Select node 10 above.
+
+;; <pgdown>  C-v
+;;   Select node 10 below.
+
+;; <enter>  (`undo-tree-visualizer-set')
+;;   Set state to selected node and exit selection mode.
+
+;; s  (`undo-tree-visualizer-mode')
+;;   Exit selection mode.
+
+;; t  (`undo-tree-visualizer-toggle-timestamps')
+;;   Toggle display of time-stamps.
+
+;; d  (`undo-tree-visualizer-toggle-diff')
+;;   Toggle diff display.
+
+;; q  (`undo-tree-visualizer-quit')
+;;   Quit undo-tree-visualizer.
+
+;; C-q  (`undo-tree-visualizer-abort')
+;;   Abort undo-tree-visualizer.
+
+;; ,  <
+;;   Scroll left.
+
+;; .  >
+;;   Scroll right.
+
+
+
   :group undo-tree
   (cond
    ;; enable selection mode

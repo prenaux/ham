@@ -31,7 +31,7 @@
 
 ;; This is a small script to update Evil's version at certain places:
 ;;
-;;  - topic of the IRC channel #evil-mode in irc.freenode.net
+;;  - topic of the IRC channel #evil-mode in irc.libera.chat
 ;;  - EmacsWiki page
 ;;  - header of all source files
 ;;  - the ELPA package file
@@ -72,7 +72,7 @@
   (let ((erc-nick evilupdate-irc-nick)
         (erc-autojoin-channels-alist nil)
         (auth-sources nil))
-    (erc-tls :server "irc.freenode.net" :port "6697" :nick evilupdate-irc-nick)
+    (erc-tls :server "irc.libera.chat" :port "6697" :nick evilupdate-irc-nick)
     (add-hook 'erc-join-hook
               (lambda ()
                 (let (case-fold-search)
@@ -142,13 +142,14 @@ match group."
   (shell-command (concat "thunderbird -compose \"newsgroups=gmane.emacs.vim-emulation,preselectid=id2,subject='[ANN] Evil version " evilupdate-version " released',body='"
                          "Evil version " evilupdate-version " has been released.
 
-The stable version can be installed from MELPA stable [1].
-The latest development version is available from MELPA [2].
+The stable version can be installed from MELPA stable [1] and NonGNU ELPA [2].
+The latest development version is available from MELPA [3].
 
 The Evil developers.
 
 [1] http://stable.melpa.org
-[2] http://melpa.org
+[2] https://elpa.nongnu.org/nongnu/evil.html
+[3] http://melpa.org
 '\"")))
 
 (defun evilupdate-update (version nonews)

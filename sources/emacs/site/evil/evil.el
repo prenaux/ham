@@ -1,4 +1,4 @@
-;;; evil.el --- extensible vi layer
+;;; evil.el --- Extensible vi layer  -*- lexical-binding: t; -*-
 
 ;; The following list of authors was kept up to date until the beginning of
 ;; 2017, when evil moved under new maintainers. For authors since then, please
@@ -51,12 +51,16 @@
 ;;      Xiao Hanyu <xiaohanyu1988 at gmail.com>
 ;;      York Zhao <yzhao at telecor.com>
 
+;; The following line is included for NonGNU ELPA's build script:
+;; Maintainer: Tom Dalziel <tom.dalziel@gmail.com>
+
 ;; Maintainers: The emacs-evil team. <https://github.com/orgs/emacs-evil/people>
 ;;      To get in touch, please use the bug tracker or the
 ;;      mailing list (see below).
 ;; Created: 2011-03-01
-;; Version: 1.2.14
-;; Keywords: emulation, vim
+;; Version: 1.15.0
+;; Package-Requires: ((emacs "24.1") (cl-lib "0.5") (goto-chg "1.6"))
+;; Keywords: emulations
 ;; URL: https://github.com/emacs-evil/evil
 ;;      Repository: https://github.com/emacs-evil/evil.git
 ;;      EmacsWiki: http://www.emacswiki.org/emacs/Evil
@@ -107,18 +111,22 @@
 ;;      (require 'evil)
 ;;      (evil-mode 1)
 ;;
-;; Evil requires undo-tree.el for linear undo and undo branches:
+;; Evil requires undo-redo (Emacs 28), undo-fu or undo-tree for redo
+;; functionality.  Otherwise, Evil uses regular Emacs undo.
 ;;
-;;      http://www.emacswiki.org/emacs/UndoTree
-;;
-;; Otherwise, Evil uses regular Emacs undo.
+;;     https://codeberg.org/ideasman42/emacs-undo-fu
+;;     https://melpa.org/#/undo-fu
+;;     https://gitlab.com/tsc25/undo-tree
+;;     https://elpa.gnu.org/packages/undo-tree.html
 ;;
 ;; Evil requires `goto-last-change' and `goto-last-change-reverse'
 ;; function for the corresponding motions g; g, as well as the
 ;; last-change-register `.'. One package providing these functions is
 ;; goto-chg.el:
 ;;
-;;     http://www.emacswiki.org/emacs/GotoChg
+;;     https://github.com/emacs-evil/goto-chg
+;;     https://melpa.org/#/goto-chg
+;;     https://elpa.nongnu.org/nongnu/goto-chg.html
 ;;
 ;; Without this package the corresponding motions will raise an error.
 
@@ -132,7 +140,6 @@
 (require 'evil-macros)
 (require 'evil-search)
 (require 'evil-ex)
-(require 'evil-digraphs)
 (require 'evil-types)
 (require 'evil-commands)
 (require 'evil-jumps)

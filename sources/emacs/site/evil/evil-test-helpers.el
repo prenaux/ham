@@ -1,9 +1,9 @@
-;;; evil-test-helpers.el --- unit test helpers for Evil -*- coding: utf-8 -*-
+;;; evil-test-helpers.el --- unit test helpers for Evil -*- coding: utf-8; lexical-binding: t -*-
 
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
-;; Package-Requires: ((evil "1.2.14"))
-;; Version: 1.2.14
+;; Package-Requires: ((evil "1.15.0"))
+;; Version: 1.15.0
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -68,6 +68,11 @@
   "Marker for Visual end.")
 (make-variable-buffer-local 'evil-test-visual-end)
 
+(defvaralias 'evil-test-select-enable-clipboard
+  (if (boundp 'select-enable-clipboard)
+      'select-enable-clipboard
+    'x-select-enable-clipboard))
+
 (defmacro evil-test-buffer (&rest body)
   "Execute FORMS in a temporary buffer.
 The following optional keywords specify the buffer's properties:
@@ -127,7 +132,7 @@ raised.  Remaining forms are evaluated as-is.
                     ',visual ,visual-start ,visual-end))
            (kill-ring kill-ring)
            (kill-ring-yank-pointer kill-ring-yank-pointer)
-           x-select-enable-clipboard
+           evil-test-select-enable-clipboard
            message-log-max)
        (unwind-protect
            (save-window-excursion
@@ -135,7 +140,6 @@ raised.  Remaining forms are evaluated as-is.
                ;; necessary for keyboard macros to work
                (switch-to-buffer-other-window (current-buffer))
                (buffer-enable-undo)
-               (undo-tree-mode 1)
                ;; parse remaining forms
                ,@(mapcar
                   #'(lambda (form)
@@ -163,17 +167,15 @@ raised.  Remaining forms are evaluated as-is.
                                  `(execute-kbd-macro
                                    (apply #'vconcat
                                           (mapcar #'listify-key-sequence
-                                                  (mapcar #'eval ',form)))))
+                                                  (list ,@form)))))
                                 ((memq (car-safe form) '(kbd vconcat))
                                  `(execute-kbd-macro ,form))
-                                (t
-                                 form))))
+                                (t form))))
                           (if error-symbol
                               `(should-error ,result :type ',error-symbol)
                             result))))
                   body)))
-         (and (buffer-name buffer)
-              (kill-buffer buffer))))))
+         (when (buffer-name buffer) (kill-buffer buffer))))))
 
 (defmacro evil-test-selection (string &optional end-string
                                       before-predicate after-predicate)

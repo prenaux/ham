@@ -1,9 +1,9 @@
-;;; evil-keybindings.el --- Add some Evil keybindings to other modules
+;;; evil-keybindings.el --- Add some Evil keybindings to other modules -*- lexical-binding: t -*-
 
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.14
+;; Version: 1.15.0
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -75,7 +75,7 @@
 ;;; Info
 
 (evil-add-hjkl-bindings Info-mode-map 'motion
-  "0" 'evil-digit-argument-or-evil-beginning-of-line
+  "0" 'evil-beginning-of-line
   (kbd "\M-h") 'Info-help   ; "h"
   "\C-t" 'Info-history-back ; "l"
   "\C-o" 'Info-history-back
@@ -104,7 +104,7 @@
      (evil-define-key 'normal ibuffer-mode-map
        "j" 'evil-next-line
        "k" 'evil-previous-line
-       "RET" 'ibuffer-visit-buffer)))
+       (kbd "RET") 'ibuffer-visit-buffer)))
 
 ;;; ag.el
 (eval-after-load 'ag
