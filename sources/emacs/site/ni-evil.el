@@ -8,6 +8,9 @@
 (define-key evil-visual-state-map (kbd "y") 'kill-ring-save)
 (evil-select-search-module 'evil-search-module 'evil-search)
 
+(GNUEmacsMin28
+  (evil-set-undo-system 'undo-redo))
+
 ;; Relative line numbers
 (defvar ni-rel-line-current-line-number 0)
 
