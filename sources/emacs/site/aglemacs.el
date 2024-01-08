@@ -1,6 +1,5 @@
 (provide 'aglemacs)
 (require 'ni-base)
-(require 'diminish)
 
 ;;;======================================================================
 ;;; Files handling...

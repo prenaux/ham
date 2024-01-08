@@ -18,6 +18,7 @@
 (add-to-list 'load-path (concat ENV_DEVENV_EMACS_SCRIPTS "/misc"))
 (require 'emacs-type)
 (require 's)
+(require 'diminish)
 
 ;;;======================================================================
 ;;; Version & Conditional exec macros
