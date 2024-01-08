@@ -471,6 +471,12 @@ If the new path's directories does not exist, create them."
  (add-to-list 'load-path (concat (getenv "HAM_HOME") "/sources/emacs/site/php-mode"))
  (autoload 'php-mode "php-mode" nil t)
  (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
+
+ ;; Unbind TAB in modes that hijack it and thus break dabbrev/autocomplete with TAB
+ (defun ni-unbind-tab-hook ()
+  "Revert TAB key binding."
+  (local-unset-key [tab]))
+ (add-hook 'php-mode-hook 'ni-unbind-tab-hook)
 )
 
 ;;;======================================================================
