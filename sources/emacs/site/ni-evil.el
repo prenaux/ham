@@ -46,3 +46,33 @@
   (ad-activate 'linum-update)
 
   (global-linum-mode t))
+
+;;=================================================================
+;; Leader key
+;;=================================================================
+(require 'general)
+(general-create-definer tyrant-def
+  :states '(normal insert motion emacs)
+  :keymaps 'override
+  :prefix "SPC"
+  :non-normal-prefix "M-SPC")
+(tyrant-def "" nil)
+
+(general-def universal-argument-map
+  "SPC u" 'universal-argument-more)
+
+(tyrant-def
+  "f" 'ni-file-cache-find-file-at-point
+  "d" 'direxjump-to-project-file
+  "j" 'ham-grep-regexp-current-dir
+  "k" 'ham-grep-work-regexp
+  "g" 'fzf-git-files
+  "s" 'ni-swiper-isearch
+  "w" 'save-buffer
+  "b" 'ivy-switch-buffer
+  "B" 'ibuffer
+  "x" 'counsel-M-x
+  "." (lambda () (interactive)
+        (ni-counsel-rg-match
+          nil pierre-search-file-patterns))
+  )
