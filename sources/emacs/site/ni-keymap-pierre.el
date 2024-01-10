@@ -301,4 +301,8 @@
  (global-set-key (kbd "C-<wheel-down>") nil)
  (global-set-key (kbd "C-<wheel-up>") nil)
 
+ ;; Map M-Esc & C-Esc to escape
+ (global-set-key (kbd "M-<escape>") 'keyboard-escape-quit)
+ (global-set-key (kbd "C-<escape>") 'keyboard-escape-quit)
+
  )
