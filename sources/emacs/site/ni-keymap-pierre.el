@@ -60,8 +60,6 @@
  ;; Forward/Backward word under point
  (global-set-key (key "M-p") 'agl-search-word-backward)
  (global-set-key (key "M-n") 'agl-search-word-forward)
- (global-set-key '[(meta up)] 'agl-search-word-backward)
- (global-set-key '[(meta down)] 'agl-search-word-forward)
 
  (global-set-key (key "C-h C-r") 'revert-buffer)
 
