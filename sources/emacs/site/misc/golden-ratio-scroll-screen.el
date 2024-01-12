@@ -91,7 +91,10 @@
   :type 'hook)
 
 (defface golden-ratio-scroll-highlight-line-face
-  '((t (:background "cadetblue4" :foreground "white" :weight bold)))
+  `((t (,@(and (>= emacs-major-version 27) '(:extend t))
+        :background "cadetblue4"
+        :foreground "white"
+        :weight bold)))
   "Font Lock mode face used to highlight line.
  (borrowed from etags-select.el)"
   :group 'golden-ratio-scroll-screen)
@@ -113,12 +116,12 @@
 (defvar golden-ratio-scroll-screen-previous-point (point-marker))
 
 ;;;###autoload
-(defun golden-ratio-scroll-screen-up()
+(defun golden-ratio-scroll-screen-up(&optional arg)
   "scroll half screen up"
   (interactive)
   (let ((old-marker golden-ratio-scroll-screen-previous-point)
-        (bol-before-jump (point-at-bol))
-        (eol-before-jump (1+ (point-at-eol)))
+        (bol-before-jump (line-beginning-position))
+        (eol-before-jump (1+ (line-end-position)))
         (scroll-line-cnt (round (/ (window-text-height)
                                    golden-ratio-scroll-screen-ratio))))
     (setq golden-ratio-scroll-screen-previous-point (point-marker))
@@ -138,17 +141,17 @@
        (car golden-ratio-scroll-highlight-delay)))
     (when (member golden-ratio-scroll-highlight-flag '(after both))
       (golden-ratio-scroll-highlight
-       (point-at-bol) (1+ (point-at-eol))
+       (line-beginning-position) (1+ (line-end-position))
        (cdr golden-ratio-scroll-highlight-delay)))
     (run-hooks 'golden-ratio-scroll-screen-down-hook)))
 
 ;;;###autoload
-(defun golden-ratio-scroll-screen-down()
+(defun golden-ratio-scroll-screen-down(&optional arg)
   "scroll half screen down"
   (interactive)
   (let ((old-marker golden-ratio-scroll-screen-previous-point)
-        (bol-before-jump (point-at-bol))
-        (eol-before-jump (1+ (point-at-eol)))
+        (bol-before-jump (line-beginning-position))
+        (eol-before-jump (1+ (line-end-position)))
         (scroll-line-cnt (round (/ (window-text-height)
                                    golden-ratio-scroll-screen-ratio))))
     (setq golden-ratio-scroll-screen-previous-point (point-marker))
@@ -168,7 +171,7 @@
        (car golden-ratio-scroll-highlight-delay)))
     (when (member golden-ratio-scroll-highlight-flag '(after both))
       (golden-ratio-scroll-highlight
-       (point-at-bol) (1+ (point-at-eol))
+       (line-beginning-position) (1+ (line-end-position))
        (cdr golden-ratio-scroll-highlight-delay))))
   (run-hooks 'golden-ratio-scroll-screen-up-hook))
 

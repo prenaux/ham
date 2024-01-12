@@ -2,6 +2,7 @@
 (NotBatchMode
 
  (require 'bind-key)
+ (require 'golden-ratio-scroll-screen)
 
 ;;;======================================================================
 ;;; aglemacs.el
@@ -72,8 +73,8 @@
  (global-set-key (key "C-h C-0") 'erase-buffer)
 
  ;; PgUp/Dn
- (global-set-key (kbd "C-v") 'scroll-up-command)
- (global-set-key (kbd "M-v") 'scroll-down-command)
+ (global-set-key (kbd "C-v") 'golden-ratio-scroll-screen-up)
+ (global-set-key (kbd "M-v") 'golden-ratio-scroll-screen-down)
 
  ;; Scroll one line at a time
  (global-set-key (quote [C-M-down]) (quote scroll-up-line))
