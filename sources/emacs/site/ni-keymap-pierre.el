@@ -28,6 +28,10 @@
   (global-set-key [(control left)] 'backward-word)
  )
 
+ ;; Disable C-z which will put emacs in the bg, drives you to insanity if you
+ ;; miss hit it.
+ (global-unset-key (kbd "C-z"))
+
  ;; ibuffer
  (global-set-key (key "C-x C-b") 'ibuffer)
 
@@ -200,6 +204,7 @@
  ;; Expand region
  (require 'expand-region)
  (bind-key* "M-A" 'er/expand-region) ;; M-S-a
+ (bind-key* "C-@" 'er/expand-region) ;; M-S-a
 
  ;; Previous/Next errors
  (define-key global-map "\M-1" 'aflymake-goto-next-error)
