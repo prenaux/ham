@@ -128,15 +128,16 @@ if [[ "$SYNC_COMMAND" != "arch_"* ]]; then
 fi
 # PARAMS=("${PARAMS[@]}" --fast-list)
 # PARAMS=("${PARAMS[@]}" --max-age 1h)
+# dont considered a file changed if there's only a 2s diff, thats the accuracy of the FAT filesystem
+PARAMS=("${PARAMS[@]}" --modify-window 2s)
 PARAMS=("${PARAMS[@]}" --stats-one-line)
 PARAMS=("${PARAMS[@]}" --checkers="${HAM_SYNC_NUM_CHECKERS:-24}")
 PARAMS=("${PARAMS[@]}" --transfers="${HAM_SYNC_NUM_TRANSFERS:-16}")
 PARAMS=("${PARAMS[@]}" --stats 60s)
 PARAMS=("${PARAMS[@]}" -v)
+PARAMS=("${PARAMS[@]}" --progress)
 if [ "$DOIT" != "yes" ]; then
   PARAMS=("${PARAMS[@]}" --dry-run)
-else
-  PARAMS=("${PARAMS[@]}" --progress)
 fi
 
 arch_init() {
