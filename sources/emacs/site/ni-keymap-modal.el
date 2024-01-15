@@ -6,6 +6,11 @@
 (require 'zygospore)
 (require 'move-text)
 
+;; expand-region-smart-cursor moves the cursor at the end of the selection
+;; when the region expands beyond the initial starting point which allows us
+;; to expand it down from there.
+(setq expand-region-smart-cursor t)
+
 (defun ni-modal-start-from-new-line ()
   (interactive)
   (move-end-of-line nil)
@@ -106,16 +111,18 @@ move the cursor by ARG lines."
   ("?" isearch-backward)
   ("n" isearch-repeat-forward)
   ("N" isearch-repeat-backward)
-  ("f" avy-goto-word-1)
-  ("F" jump-char-forward)
+  ("f" jump-char-forward)
+  ("F" jump-char-backward)
+  ("d" avy-goto-word-1)
+  ("D" avy-goto-char)
 
   ;; Visual selection
   ("m" set-mark-command)
   ("w" er/expand-region)
   ("W" ni-select-current-line-and-forward-line)
   ("R" string-rectangle)
-  ("[" er/mark-inside-pairs) ;; expand the region to add the pairs, [w
-  ("'" er/mark-inside-quotes) ;; expand the region to add the quots, 'w
+  ("'" er/mark-inside-quotes)
+  ("\"" er/mark-outside-quotes)
 
   ;; Macros
   ("(" kmacro-start-macro)
