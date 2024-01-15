@@ -1,3 +1,5 @@
+;; Copyright (C) 2012-2023  Free Software Foundation, Inc  -*- lexical-binding: t; -*-
+
 (let* ((current-directory (file-name-directory load-file-name))
        (features-directory (expand-file-name ".." current-directory))
        (project-directory (expand-file-name ".." features-directory)))
@@ -22,6 +24,7 @@
  (transient-mark-mode 1)
  (cua-mode 0)
  (setq er--show-expansion-message t)
+ (setq expand-region-smart-cursor nil)
  (setq set-mark-default-inactive nil)
  (deactivate-mark))
 
