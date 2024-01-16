@@ -1,14 +1,20 @@
 (provide 'ni-keymap-ham-keys)
 (require 'golden-ratio-scroll-screen)
 (require 'jump-char)
-(require 'goto-chg)
 (require 'zygospore)
 (require 'move-text)
 (require 'expand-region)
 (require 'ryo-modal)
 
-;; Make sure our prefix key is unbound
-(global-unset-key (key "M-,"))
+;; To be able to navigate around
+(require 'smartrep)
+(require 'back-button)
+(back-button-mode 1)
+(diminish 'back-button-mode)
+
+;; Unbind our prefix keys
+(global-unset-key (kbd "M-,"))
+(global-unset-key (kbd "M-g"))
 
 ;; Our prefixes, default is 'M-<edit>' & 'M-, <command>'
 (defconst ham-keys-edit-key-prefix "M-")
@@ -46,9 +52,6 @@
                  `(ham-keys-leader ,(car pair) ',(cadr pair)))
                pairs)))
 
-;; Use the same history ring for isearch and swiper
-(defvaralias 'swiper-history 'regexp-search-ring)
-
 ;; expand-region-smart-cursor moves the cursor at the end of the selection
 ;; when the region expands beyond the initial starting point which allows us
 ;; to expand it down from there.
@@ -70,6 +73,18 @@
   (interactive)
   (if mark-active (delete-region (region-beginning) (region-end)))
   (message "Insert mode actived"))
+
+(defun ni-modal-delete-word-or-kill-region (arg)
+  "Kill active region if active"
+  (interactive "p")
+  (if mark-active
+    (kill-region (region-beginning) (region-end))
+    (delete-region ;; we dont want the word in the kill-ring
+      (point)
+      (progn
+        (forward-word arg)
+        (point)))
+    ))
 
 (defun ni-modal-delete-char-or-kill-region (arg)
   "Kill active region if active"
@@ -122,7 +137,9 @@ move the cursor by ARG lines."
   ;; Commands
   ("p" counsel-M-x)
 
-  ;; Movement
+  ;; Movement. Built on top of basic arrow movements.
+  ;; arrows: move by characters
+  ;; alt+arrows: move by words left/right and by paragraph up/down
   ("y" backward-word)
   ("o" forward-word)
   ("u" forward-paragraph)
@@ -133,65 +150,51 @@ move the cursor by ARG lines."
   ("j" next-line)
   ("k" previous-line)
 
-  ("I" mc/mark-previous-like-this)
-  ("U" mc/mark-next-like-this)
-  ("Y" mc/mark-all-like-this)
-  ("O" mc/edit-ends-of-lines)
-
-  ("L" agl-search-word-forward)
-  ("H" agl-search-word-backward)
-  ("J" move-text-down)
-  ("K" move-text-up)
-
   ("e" move-end-of-line)
+  ("E" exchange-point-and-mark)
   ("a" beginning-of-line)
   ("A" back-to-indentation)
 
-  ;; so that we can hammer M-g M-g quickly
-  ("g M-g" ni-goto-matching-bracket)
-  ("g g" ni-goto-matching-bracket)
-  ("g a" beginning-of-buffer)
-  ("g l" goto-line-preview)
-  ("g m" pop-to-mark-command)
-  ("g e" end-of-buffer)
-  ("<" goto-last-change)
-  (">" goto-last-change-reverse)
+  ("f" avy-goto-char)
 
-  ("{" golden-ratio-scroll-screen-down)
-  ("}" golden-ratio-scroll-screen-up)
+  ("." back-button-local-backward)
+  (">" back-button-local-forward)
+
+  ;; Goto locations
+  ("g a" beginning-of-buffer)
+  ("g e" end-of-buffer)
+  ("g l" goto-line-preview)
+  ("g g" ni-goto-matching-bracket)
+  ("g M-g" ni-goto-matching-bracket)
+  ("g ." ni-modal-fif-at-point)
+
+  ;; Multi cursors
+  ("D" mc/mark-previous-like-this)
+  ("d" mc/mark-next-like-this)
 
   ;; Editing
   ("z" undo)
   ("x" ni-modal-delete-char-or-kill-region)
+  ("X" ni-modal-delete-word-or-kill-region)
   ("c" kill-ring-save)
   ("v" yank)
   ("V" yank-pop)
-  ("b" ni-modal-start-from-new-line :exit t)
-  ("B" ni-modal-start-from-new-top-line :exit t)
   ("q" indent-region)
   ("Q" fill-paragraph)
   (";" ni-modal-comment-region-or-line-and-go-down)
   (":" ni-modal-uncomment-region-or-line-and-go-up)
+  ("b" ni-modal-start-from-new-line :exit t)
+  ("B" ni-modal-start-from-new-top-line :exit t)
 
   ;; Searching
   ("s" ni-swiper-isearch)
   ("*" swiper-thing-at-point)
-  ("/" isearch-forward)
-  ("?" isearch-backward)
-  ("n" isearch-repeat-forward)
-  ("N" isearch-repeat-backward)
-  ("f" jump-char-forward)
-  ("F" jump-char-backward)
-  ("d" avy-goto-word-1)
-  ("D" avy-goto-char)
 
   ;; Visual selection
   ("m" set-mark-command)
   ("w" er/expand-region)
   ("W" ni-select-current-line-and-forward-line)
   ("R" string-rectangle)
-  ("'" er/mark-inside-quotes)
-  ("\"" er/mark-outside-quotes)
 
   ;; Macros
   ("(" kmacro-start-macro)
@@ -200,21 +203,22 @@ move the cursor by ARG lines."
   )
 
 (ham-keys-def-leader
+  ("p" counsel-M-x)
   ("r" revert-buffer)
 
   ("f" ni-file-cache-find-file-at-point)
   ("F" find-file)
+  ("o" ivy-switch-buffer)
+  ("O" ibuffer)
   ("d" direx:jump-to-project-file)
   ("j" ham-grep-regexp-current-dir)
   ("u" ham-grep-work-regexp)
+  ("h" qrr)
   ("g" fzf-git-files)
-  ("." ni-modal-fif-at-point)
 
-  ("w" save-buffer)
-  ("W" save-some-buffers)
+  ("s" save-buffer)
+  ("S" save-some-buffers)
   ("k" kill-buffer)
-  ("b" ivy-switch-buffer)
-  ("B" ibuffer)
 
   ("1" zygospore-toggle-delete-other-windows)
   ("2" split-window-below)
@@ -227,7 +231,7 @@ move the cursor by ARG lines."
 )
 
 ;; Separate global key setups for special cases
-(global-set-key (kbd "M-.") (make-ni-expand))
+(global-set-key (kbd "M-/") (make-ni-expand))
 
 ;; Modal mode toggles
 (global-set-key (kbd "C-h C-v") 'ryo-modal-mode)
@@ -236,7 +240,10 @@ move the cursor by ARG lines."
 
 ;; Modal only keys
 (ryo-modal-keys
-  ("r" ni-modal-insert-or-change-region :exit t))
+  ("r" ni-modal-insert-or-change-region :exit t)
+  ("b" ni-modal-start-from-new-line :exit t)
+  ("B" ni-modal-start-from-new-top-line :exit t)
+  )
 
 (define-global-minor-mode ryo-global-mode ryo-modal-mode
   (lambda ()
