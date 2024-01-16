@@ -694,14 +694,6 @@ If the new path's directories does not exist, create them."
   )
 
 ;;;======================================================================
-;;; Keymap
-;;;======================================================================
-(NotBatchMode
- (agl-begin-time-block "pierre-keymap")
- (require 'ni-keymap-pierre)
-)
-
-;;;======================================================================
 ;;; FZF
 ;;;======================================================================
 (NotBatchMode
@@ -717,3 +709,54 @@ If the new path's directories does not exist, create them."
     fzf/position-bottom t
     fzf/window-height 15)
 )
+
+;;;======================================================================
+;;; Misc stuff
+;;;=====================================================================
+(setq pierre-search-file-patterns
+  '( ;; ham
+     "*.ham"
+     ;; C/C++
+     "*.c" "*.cc" "*.cpp" "*.cpp2" "*.c2" "*.cni" "*.inl" "*.h" "*.hh" "*.hpp" "*.hpp2" "*.h2" ;; "cxx" "hxx"
+     ;; ObjC/C++
+     "*.m" "*.mm"
+     ;; niScript
+     "*.ni" "*.nip" "*.niw"
+     ;; java / kotlin / scala / clojurs
+     "*.java" "*.kt" "*.scala" "*.cj"
+     ;; bash
+     "*.sh"
+     ;; python
+     "*.py"
+     ;; elisp
+     "*.el"
+     ;; Rust
+     "*.rs"
+     ;; Haskell
+     "*.hs"
+     ;; Web
+     "*.js" ".mjs" ".cjs" "*.css" "*.html"
+     ;; Text / Markdown
+     "*.txt" "*.md"
+     ;; Erlang
+     "*.erl"
+     ;; Ruby
+     "*.rb"
+     ;; Asciidoc
+     "*.adoc"
+     ;; Configs/Structure
+     "*.json" "*.xml" "*.toml" "*.yml" "*.yaml"
+     ;; Makefiles
+     "Makefile"
+     ;; exclude
+     "!*.min.*"
+     "!**/_idl/**"
+     "!_*_JNI.cpp"
+     "!_*_ModuleDef.cpp"))
+
+(setq pierre-search-all-dirs
+  '("."
+     (concat ENV_WORK "/niLang/")
+     (concat ENV_WORK "/ham/")
+     (concat ENV_WORK "/Vlk/")
+     (concat ENV_WORK "/Playground/")))

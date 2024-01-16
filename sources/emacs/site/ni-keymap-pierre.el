@@ -1,8 +1,9 @@
 (provide 'ni-keymap-pierre)
-(NotBatchMode
 
+(NotBatchMode
  (require 'bind-key)
  (require 'golden-ratio-scroll-screen)
+ (require 'expand-region)
 
 ;;;======================================================================
 ;;; aglemacs.el
@@ -202,9 +203,9 @@
  (bind-key* "M-a" 'ni-goto-matching-bracket)
 
  ;; Expand region
- (require 'expand-region)
  (bind-key* "M-A" 'er/expand-region) ;; M-S-a
- (bind-key* "C-@" 'er/expand-region) ;; M-S-a
+ (IsNotTerminal ;; breaks C-space in terminal
+   (bind-key* "C-@" 'er/expand-region)) ;; M-S-a
 
  ;; Previous/Next errors
  (define-key global-map "\M-1" 'aflymake-goto-next-error)
@@ -231,54 +232,6 @@
  (global-set-key [remap keyboard-quit] 'keyboard-escape-quit)
 
  (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
-
- (setq pierre-search-file-patterns
-   '( ;; ham
-      "*.ham"
-      ;; C/C++
-      "*.c" "*.cc" "*.cpp" "*.cpp2" "*.c2" "*.cni" "*.inl" "*.h" "*.hh" "*.hpp" "*.hpp2" "*.h2" ;; "cxx" "hxx"
-      ;; ObjC/C++
-      "*.m" "*.mm"
-      ;; niScript
-      "*.ni" "*.nip" "*.niw"
-      ;; java / kotlin / scala / clojurs
-      "*.java" "*.kt" "*.scala" "*.cj"
-      ;; bash
-      "*.sh"
-      ;; python
-      "*.py"
-      ;; elisp
-      "*.el"
-      ;; Rust
-      "*.rs"
-      ;; Haskell
-      "*.hs"
-      ;; Web
-      "*.js" ".mjs" ".cjs" "*.css" "*.html"
-      ;; Text / Markdown
-      "*.txt" "*.md"
-      ;; Erlang
-      "*.erl"
-      ;; Ruby
-      "*.rb"
-      ;; Asciidoc
-      "*.adoc"
-      ;; Configs/Structure
-      "*.json" "*.xml" "*.toml" "*.yml" "*.yaml"
-      ;; Makefiles
-      "Makefile"
-      ;; exclude
-      "!*.min.*"
-      "!**/_idl/**"
-      "!_*_JNI.cpp"
-      "!_*_ModuleDef.cpp"))
-
- (setq pierre-search-all-dirs
-   '("."
-      (concat ENV_WORK "/niLang/")
-      (concat ENV_WORK "/ham/")
-      (concat ENV_WORK "/Vlk/")
-      (concat ENV_WORK "/Playground/")))
 
  ;; ham-grep starting in current directory, prompt for it
  (global-set-key "\C-h\C-j" 'ham-grep-regexp-current-dir)
