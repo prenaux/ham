@@ -4,6 +4,7 @@
 (require 'zygospore)
 (require 'move-text)
 (require 'expand-region)
+(require 'bind-key) ;; Use bind key for now
 (require 'ryo-modal)
 
 ;; To be able to navigate around
@@ -12,22 +13,36 @@
 (back-button-mode 1)
 (diminish 'back-button-mode)
 
+;; expand-region-smart-cursor moves the cursor at the end of the selection
+;; when the region expands beyond the initial starting point which allows us
+;; to expand it down from there.
+(setq expand-region-smart-cursor t)
+
 ;; Unbind our prefix keys
 (global-unset-key (kbd "M-,"))
-(global-unset-key (kbd "M-g"))
+(global-unset-key (kbd "M-/"))
 
-;; Our prefixes, default is 'M-<edit>' & 'M-, <command>'
-(defconst ham-keys-edit-key-prefix "M-")
-(defconst ham-keys-edit-key-ryo-prefix "")
-(defconst ham-keys-leader-key-prefix "M-, ")
-(defconst ham-keys-leader-key-ryo-prefix ", ")
+;; We use bind-key for now, maybe a minor mode would be cleaner though. We
+;; keep this here for reference as a TODO of sort.
+(DontExecute
+  (defvar ham-keys-minor-mode-map
+    (make-sparse-keymap)
+    "ham-keys-minor-mode keymap.")
+
+  (define-minor-mode ham-keys-minor-mode
+    "A minor mode so that my key settings override annoying major modes."
+    :init-value t
+    :lighter " ham-keys")
+  )
 
 (defun ham-keys-edit (aKey aCommand &optional noryo noglobal)
   "Add the edit prefix to STRING."
   (unless noglobal
-    (global-set-key (key (concat ham-keys-edit-key-prefix aKey)) aCommand))
+    (bind-key* (concat "M-" aKey) aCommand))
+  (unless noglobal
+    (bind-key* (concat "C-M-" aKey) aCommand))
   (unless noryo
-    (ryo-modal-key (concat ham-keys-edit-key-ryo-prefix aKey) aCommand))
+    (ryo-modal-key aKey aCommand))
   )
 
 (defmacro ham-keys-def-edit (&rest pairs)
@@ -37,44 +52,46 @@
                  `(ham-keys-edit ,(car pair) ',(cadr pair)))
                pairs)))
 
-(defun ham-keys-leader (aKey aCommand &optional noryo noglobal)
+(defun ham-keys-leader (aLeader aKey aCommand &optional noryo noglobal)
   "Add the leader prefix to STRING."
   (unless noglobal
-    (global-set-key (key (concat ham-keys-leader-key-prefix aKey)) aCommand))
+    (bind-key* (concat "M-" aLeader " " aKey) aCommand))
+  (unless noglobal
+    (bind-key* (concat "C-M-" aLeader " C-M-" aKey) aCommand))
   (unless noryo
-    (ryo-modal-key (concat ham-keys-leader-key-ryo-prefix aKey) aCommand))
+    (ryo-modal-key (concat aLeader " " aKey) aCommand))
   )
 
-(defmacro ham-keys-def-leader (&rest pairs)
+(defmacro ham-keys-def-leader (aLeader &rest pairs)
   "Define multiple leader keybindings."
   `(progn
      ,@(mapcar (lambda (pair)
-                 `(ham-keys-leader ,(car pair) ',(cadr pair)))
+                 `(ham-keys-leader ,aLeader ,(car pair) ',(cadr pair)))
                pairs)))
 
-;; expand-region-smart-cursor moves the cursor at the end of the selection
-;; when the region expands beyond the initial starting point which allows us
-;; to expand it down from there.
-(setq expand-region-smart-cursor t)
-
-(defun ni-modal-start-from-new-line ()
+(defun ham-keys-start-from-new-line ()
   (interactive)
   (move-end-of-line nil)
   (newline)
   (indent-for-tab-command))
 
-(defun ni-modal-start-from-new-top-line ()
+(defun ham-keys-start-from-new-top-line ()
   (interactive)
   (previous-line)
-  (ni-modal-start-from-new-line))
+  (ham-keys-start-from-new-line))
 
-(defun ni-modal-insert-or-change-region ()
+(defun ham-keys-insert-or-change-region ()
   "Kill active region if active"
   (interactive)
   (if mark-active (delete-region (region-beginning) (region-end)))
   (message "Insert mode actived"))
 
-(defun ni-modal-delete-word-or-kill-region (arg)
+(defun ham-keys-insert-mode-activated ()
+  "Notifies that the insert mode has been activated"
+  (interactive)
+  (message "Insert mode actived"))
+
+(defun ham-keys-delete-word-or-kill-region (arg)
   "Kill active region if active"
   (interactive "p")
   (if mark-active
@@ -86,7 +103,7 @@
         (point)))
     ))
 
-(defun ni-modal-delete-char-or-kill-region (arg)
+(defun ham-keys-delete-char-or-kill-region (arg)
   "Kill active region if active"
   (interactive "p")
   (if mark-active
@@ -105,12 +122,12 @@ move the cursor by ARG lines."
     (set-mark-command nil))
   (forward-line arg))
 
-(defun ni-modal-fif-at-point ()
+(defun ham-keys-fif-at-point ()
   (interactive)
   (ni-counsel-rg-match
     nil pierre-search-file-patterns))
 
-(defun ni-modal-comment-region-or-line-and-go-down (arg)
+(defun ham-keys-comment-region-or-line-and-go-down (arg)
   "Kill active region if active"
   (interactive "p")
   (if mark-active
@@ -122,7 +139,7 @@ move the cursor by ARG lines."
       (back-to-indentation)))
   )
 
-(defun ni-modal-uncomment-region-or-line-and-go-up (arg)
+(defun ham-keys-uncomment-region-or-line-and-go-up (arg)
   "Kill active region if active"
   (interactive "p")
   (if mark-active
@@ -133,116 +150,143 @@ move the cursor by ARG lines."
       (next-line -1)))
   )
 
+(defun ham-keys-keyboard-quit ()
+  (interactive)
+  (mc/keyboard-quit)
+  (keyboard-escape-quit))
+
 (ham-keys-def-edit
   ;; Commands
   ("p" counsel-M-x)
+  ("g" ham-keys-keyboard-quit)
+  )
 
-  ;; Movement. Built on top of basic arrow movements.
-  ;; arrows: move by characters
-  ;; alt+arrows: move by words left/right and by paragraph up/down
-  ("y" backward-word)
-  ("o" forward-word)
-  ("u" forward-paragraph)
-  ("i" backward-paragraph)
-
+(ham-keys-def-edit
+  ;; Inverted T Movement.
+  ("i" previous-line)
+  ("j" backward-char)
+  ("k" next-line)
   ("l" forward-char)
+
+  ("u" backward-word)
+  ("o" forward-word)
+
+  ("h" forward-paragraph)
+  ("y" backward-paragraph)
+  )
+
+(DontExecute ham-keys-def-edit
+  ;; HJKL Movement.
   ("h" backward-char)
   ("j" next-line)
   ("k" previous-line)
+  ("l" forward-char)
 
-  ("e" move-end-of-line)
-  ("E" exchange-point-and-mark)
-  ("a" beginning-of-line)
-  ("A" back-to-indentation)
-
-  ("f" avy-goto-char)
-
-  ("." back-button-local-backward)
-  (">" back-button-local-forward)
-
-  ;; Goto locations
-  ("g a" beginning-of-buffer)
-  ("g e" end-of-buffer)
-  ("g l" goto-line-preview)
-  ("g g" ni-goto-matching-bracket)
-  ("g M-g" ni-goto-matching-bracket)
-  ("g ." ni-modal-fif-at-point)
-
-  ;; Multi cursors
-  ("D" mc/mark-previous-like-this)
-  ("d" mc/mark-next-like-this)
-
-  ;; Editing
-  ("z" undo)
-  ("x" ni-modal-delete-char-or-kill-region)
-  ("X" ni-modal-delete-word-or-kill-region)
-  ("c" kill-ring-save)
-  ("v" yank)
-  ("V" yank-pop)
-  ("q" indent-region)
-  ("Q" fill-paragraph)
-  (";" ni-modal-comment-region-or-line-and-go-down)
-  (":" ni-modal-uncomment-region-or-line-and-go-up)
-  ("b" ni-modal-start-from-new-line :exit t)
-  ("B" ni-modal-start-from-new-top-line :exit t)
-
-  ;; Searching
-  ("s" ni-swiper-isearch)
-  ("*" swiper-thing-at-point)
-
-  ;; Visual selection
-  ("m" set-mark-command)
-  ("w" er/expand-region)
-  ("W" ni-select-current-line-and-forward-line)
-  ("R" string-rectangle)
-
-  ;; Macros
-  ("(" kmacro-start-macro)
-  (")" kmacro-end-macro)
-  ("t" kmacro-end-and-call-macro)
+  ("y" backward-word)
+  ("u" forward-paragraph)
+  ("i" backward-paragraph)
+  ("o" forward-word)
   )
 
-(ham-keys-def-leader
-  ("p" counsel-M-x)
+(ham-keys-def-edit
+  ;; Non-arrow key movements
+  ("6" beginning-of-line)
+  ("7" back-to-indentation)
+  ("8" move-end-of-line)
+
+  ;; Searching
+  ("n" ni-swiper-isearch)
+
+  ;; Multi cursors
+  ("m" mc/mark-next-like-this)
+  ("S-m" mc/mark-previous-like-this)
+
+  ;; Editing
+  ("q" indent-region)
+  ("S-q" fill-paragraph)
+  ("w" agl-backward-delete-word)
+  ("e" agl-delete-word)
+
+  ("a" ni-select-current-line-and-forward-line)
+  ("s" ham-keys-start-from-new-line)
+  ("S-s" ham-keys-start-from-new-top-line)
+  ("d" delete-char)
+
+  ("z" undo)
+  ("x" ham-keys-delete-char-or-kill-region)
+  ("c" kill-ring-save)
+  ("v" yank)
+  ("S-v" yank-pop)
+
+  ("b" ham-keys-comment-region-or-line-and-go-down)
+  ("S-b" ham-keys-uncomment-region-or-line-and-go-up)
+
+  ;; Visual selection
+  ("t" set-mark-command)
+  ("r" er/expand-region)
+  ("S-r" er/contract-region)
+
+  ;; Macros
+  ("9" kmacro-start-macro)
+  ("0" kmacro-end-macro)
+  (";" kmacro-end-and-call-macro)
+
+  ;; Splits
+  ("1" other-window)
+  ("2" split-window-below)
+  ("3" split-window-right)
+  ("4" delete-window)
+)
+
+(ham-keys-def-leader "/"
+  ;; Goto locations
+  ("y" beginning-of-buffer)
+  ("h" end-of-buffer)
+  ("l" goto-line-preview)
+  ("/" ni-goto-matching-bracket)
+  ("g" ham-keys-fif-at-point)
+  ("v" avy-goto-char)
+  ("," back-button-local-backward)
+  ("." back-button-local-forward)
+  )
+
+(ham-keys-def-leader ","
   ("r" revert-buffer)
 
-  ("f" ni-file-cache-find-file-at-point)
-  ("F" find-file)
-  ("o" ivy-switch-buffer)
-  ("O" ibuffer)
+  ("o" ni-file-cache-find-file-at-point)
+  ("b" ivy-switch-buffer)
   ("d" direx:jump-to-project-file)
+
   ("j" ham-grep-regexp-current-dir)
   ("u" ham-grep-work-regexp)
   ("h" qrr)
-  ("g" fzf-git-files)
 
   ("s" save-buffer)
-  ("S" save-some-buffers)
+  ("S-s" save-some-buffers) ;; Save all buffers
   ("k" kill-buffer)
 
   ("1" zygospore-toggle-delete-other-windows)
-  ("2" split-window-below)
-  ("3" split-window-right)
-  ("0" delete-window)
-  ("m" other-window)
 
   ("c" aflymake-mode-or-syntax-check)
   ("v" ham-fix-current-buffer)
+
+  ("n" universal-argument)
+
+  ("m" mc/mark-all-like-this)
 )
 
 ;; Separate global key setups for special cases
-(global-set-key (kbd "M-/") (make-ni-expand))
+(bind-key* (kbd "C-/") (make-ni-expand))
 
 ;; Modal mode toggles
 (global-set-key (kbd "C-h C-v") 'ryo-modal-mode)
 (global-set-key (kbd "M-SPC") 'ryo-modal-mode)
-(global-set-key (kbd "<escape>") 'ryo-modal-mode)
+;; (global-set-key (kbd "<escape>") 'ryo-modal-mode)
 
 ;; Modal only keys
 (ryo-modal-keys
-  ("r" ni-modal-insert-or-change-region :exit t)
-  ("b" ni-modal-start-from-new-line :exit t)
-  ("B" ni-modal-start-from-new-top-line :exit t)
+  ;; ("f" ham-keys-insert-or-change-region :exit t)
+  ("f" ham-keys-insert-mode-activated :exit t)
   )
 
 (define-global-minor-mode ryo-global-mode ryo-modal-mode
@@ -251,12 +295,3 @@ move the cursor by ARG lines."
       (ryo-modal-mode 1))))
 
 ;; (ryo-global-mode 1) ;; If you want modal to be the default
-
-;; Try to unfuck the arrow keys when running in the terminal
-(IsTerminal
-  ;; Seems to be the only way to get arrows to work, unsetting in the local
-  ;; maps isnt enough. Somehow the actual shortcuts that are bound there still
-  ;; work after this... idk whats going on terminal is wierd xD
-  (global-unset-key (key "M-I"))
-  (global-unset-key (key "M-O"))
-  )
