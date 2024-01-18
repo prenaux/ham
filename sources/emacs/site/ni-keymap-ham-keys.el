@@ -260,9 +260,8 @@ move the cursor by ARG lines."
   ("r" revert-buffer)
 
   ("o" ni-file-cache-find-file-at-point)
-  ("S-o" find-file)
+  ("i" find-file) ;; Use to create new files
   ("b" ivy-switch-buffer)
-  ("S-b" ibuffer)
   ("d" direx:jump-to-project-file)
 
   ("j" ham-grep-regexp-current-dir)
@@ -270,7 +269,7 @@ move the cursor by ARG lines."
   ("h" qrr)
 
   ("s" save-buffer)
-  ("S-s" save-some-buffers) ;; Save all buffers
+  ("w" save-some-buffers) ;; Save all buffers
   ("k" kill-buffer)
 
   ("1" zygospore-toggle-delete-other-windows)
