@@ -56,6 +56,12 @@
   "Add the leader prefix to STRING."
   (unless noglobal
     (bind-key* (concat "M-" aLeader " " aKey) aCommand))
+  (IsTerminal ;; oh sweet terminal, if only you could send the whole full keys for all xD
+    (unless noglobal
+      (bind-key* (concat "M-" aLeader " C-M-" aKey) aCommand))
+    (unless noglobal
+      (bind-key* (concat "M-" aLeader " M-" aKey) aCommand))
+    )
   (unless noglobal
     (bind-key* (concat "C-M-" aLeader " C-M-" aKey) aCommand))
   (unless noryo
@@ -254,7 +260,9 @@ move the cursor by ARG lines."
   ("r" revert-buffer)
 
   ("o" ni-file-cache-find-file-at-point)
+  ("S-o" find-file)
   ("b" ivy-switch-buffer)
+  ("S-b" ibuffer)
   ("d" direx:jump-to-project-file)
 
   ("j" ham-grep-regexp-current-dir)
@@ -273,6 +281,8 @@ move the cursor by ARG lines."
   ("n" universal-argument)
 
   ("m" mc/mark-all-like-this)
+
+  ("a" mark-whole-buffer)
 )
 
 ;; Separate global key setups for special cases

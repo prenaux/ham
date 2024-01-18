@@ -1,0 +1,195 @@
+[
+  /**
+   * ham-keys (alt), for use with Alt down without a special keyboard layer.
+   **/
+  // Commands
+  { "key": "alt+p", "command": "workbench.action.showCommands" },
+  { "key": "alt+g", "command": "emacs-mcx.cancel" },
+
+  // Movement.
+  { "key": "alt+i", "command": "emacs-mcx.previousLine", "when": "editorTextFocus" },
+  { "key": "alt+j", "command": "emacs-mcx.backwardChar", "when": "editorTextFocus" },
+  { "key": "alt+k", "command": "emacs-mcx.nextLine", "when": "editorTextFocus" },
+  { "key": "alt+l", "command": "emacs-mcx.forwardChar", "when": "editorTextFocus" },
+
+  { "key": "alt+u", "command": "emacs-mcx.backwardWord", "when": "editorTextFocus" },
+  { "key": "alt+o", "command": "emacs-mcx.forwardWord", "when": "editorTextFocus" },
+
+  { "key": "alt+y", "command": "emacs-mcx.backwardParagraph", "when": "editorTextFocus" },
+  { "key": "alt+h", "command": "emacs-mcx.forwardParagraph", "when": "editorTextFocus" },
+
+  { "key": "alt+6", "command": "emacs-mcx.moveBeginningOfLine" },
+  { "key": "alt+7", "command": "emacs-mcx.backToIndentation" },
+  { "key": "alt+8", "command": "emacs-mcx.moveEndOfLine" },
+
+  // Search and navigation
+  { "key": "alt+n", "command": "ham.swiper-word-at-cursor" },
+
+  // Multi cursors
+  { "key": "alt+shift+m", "command": "emacs-mcx.addSelectionToPreviousFindMatch", "when": "editorHasSelection" },
+  { "key": "alt+shift+m", "command": "editor.action.insertCursorAbove", "when": "!editorHasSelection" },
+  { "key": "alt+m", "command": "emacs-mcx.addSelectionToNextFindMatch", "when": "editorHasSelection" },
+  { "key": "alt+m", "command": "editor.action.insertCursorBelow", "when": "!editorHasSelection" },
+
+  // Editing
+  { "key": "alt+q", "command": "editor.action.formatSelection" },
+  { "key": "alt+shift+q", "command": "rewrap.rewrapComment" },
+  { "key": "alt+w", "command": "deleteWordRight" },
+  { "key": "alt+e", "command": "deleteWordLeft" },
+
+  { "key": "alt+a", "command": "expandLineSelection", "when": "editorHasSelection" },
+  {
+    "command": "runCommands",
+    "when": "!editorHasSelection",
+    "key": "alt+a",
+    "args": {
+      "commands": [
+        "emacs-mcx.setMarkCommand",
+        "expandLineSelection",
+      ]
+    }
+  },
+  {
+    "command": "runCommands",
+    "when": "!editorHasSelection",
+    "key": "alt+s",
+    "args": {
+      "commands": [
+        "emacs-mcx.moveEndOfLine",
+        "emacs-mcx.newLine"
+      ],
+    },
+  },
+  {
+    "command": "runCommands",
+    "when": "!editorHasSelection",
+    "key": "alt+shift+s",
+    "args": {
+      "commands": [
+        "emacs-mcx.previousLine",
+        "emacs-mcx.moveEndOfLine",
+        "emacs-mcx.newLine"
+      ],
+    },
+  },
+  { "key": "alt+d", "command": "deleteRight" },
+
+  { "key": "alt+z", "command": "undo" },
+  { "key": "alt+shift+z", "command": "redo" },
+  { "key": "alt+x", "command": "emacs-mcx.killRegion", "when": "editorHasSelection" },
+  { "key": "alt+x", "command": "emacs-mcx.deleteForwardChar", "when": "!editorHasSelection" },
+  { "key": "alt+c", "command": "emacs-mcx.copyRegion" },
+  { "key": "alt+v", "command": "emacs-mcx.yank" },
+  { "key": "alt+shift+v", "command": "emacs-mcx.yank-pop" },
+
+  // Comment/uncomment
+  { "key": "alt+b", "command": "editor.action.addCommentLine", "when": "editorHasSelection" },
+  {
+    "command": "runCommands",
+    "when": "!editorHasSelection",
+    "key": "alt+b",
+    "args": {
+      "commands": [
+        "editor.action.addCommentLine",
+        "cursorDown"
+      ],
+    },
+  },
+  { "key": "alt+shift+b", "command": "editor.action.removeCommentLine", "when": "editorHasSelection" },
+  {
+    "command": "runCommands",
+    "key": "alt+shift+b",
+    "args": {
+      "commands": [
+        "editor.action.removeCommentLine",
+        "cursorUp"
+      ]
+    }
+  },
+
+  // Visual selection
+  { "key": "alt+t", "command": "emacs-mcx.setMarkCommand" },
+  {
+    "command": "runCommands",
+    "when": "editorHasSelection",
+    "key": "alt+r",
+    "args": {
+      "commands": [
+        "editor.action.smartSelect.expand",
+      ]
+    }
+  },
+  {
+    "command": "runCommands",
+    "when": "!editorHasSelection",
+    "key": "alt+r",
+    "args": {
+      "commands": [
+        "emacs-mcx.setMarkCommand",
+        "editor.action.smartSelect.expand",
+      ]
+    }
+  },
+  {
+    "command": "runCommands",
+    "when": "editorHasSelection",
+    "key": "alt+shift+r",
+    "args": {
+      "commands": [
+        "editor.action.smartSelect.shrink",
+      ]
+    }
+  },
+
+  // Splits
+  { "key": "alt+1", "command": "workbench.action.focusNextGroup" },
+  { "key": "alt+2", "command": "workbench.action.splitEditorDown" },
+  { "key": "alt+3", "command": "workbench.action.splitEditorRight" },
+  { "key": "alt+4", "command": "workbench.action.closeEditorsInGroup" },
+
+  // Auto-complete
+  { "key": "ctrl+/", "command": "editor.action.triggerSuggest" },
+
+  // Leader goto locations
+  { "key": "alt+/ alt+y", "command": "emacs-mcx.beginningOfBuffer" },
+  { "key": "alt+/ alt+h", "command": "emacs-mcx.endOfBuffer" },
+  { "key": "alt+/ alt+l", "command": "workbench.action.gotoLine" },
+  { "key": "alt+/ alt+/", "command": "editor.action.jumpToBracket" },
+  { "key": "alt+/ alt+g", "command": "workbench.action.gotoSymbol" },
+  { "key": "alt+/ alt+,", "command": "workbench.action.navigateBack" },
+  { "key": "alt+/ alt+.", "command": "workbench.action.navigateForward" },
+
+  // Leader commands
+  { "key": "alt+, alt+p", "command": "workbench.action.showCommands" },
+  { "key": "alt+, alt+r", "command": "workbench.action.files.revert" },
+
+  { "key": "alt+, alt+o", "command": "workbench.action.quickOpen" },
+  { "key": "alt+, alt+b", "command": "workbench.action.quickOpen" },
+  { "key": "alt+, alt+d", "command": "revealInExplorer" },
+
+  {
+    "key": "alt+, alt+j",
+    "command": "workbench.action.findInFiles"
+  },
+  {
+    "key": "alt+, alt+h",
+    "command": "extension.multiCommand.execute",
+    "args": {
+      // Set an interval such that togglePreserveCase is executed when the
+      // search/replace dialog is open.
+      "interval": 200,
+      "sequence": [
+        "emacs-mcx.queryReplaceRegexp",
+        "togglePreserveCase"
+      ]
+    }
+  },
+
+  { "key": "alt+, alt+s", "command": "workbench.action.files.save" },
+  { "key": "alt+, alt+S", "command": "saveAll" },
+  { "key": "alt+, alt+k", "command": "workbench.action.closeActiveEditor" },
+
+  { "key": "alt+, alt+1", "command": "workbench.action.toggleZenMode" },
+
+  { "key": "alt+, alt+a", "command": "editor.action.selectAll" },
+]
