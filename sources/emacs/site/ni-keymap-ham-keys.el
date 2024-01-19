@@ -274,9 +274,6 @@ move the cursor by ARG lines."
 
   ("1" zygospore-toggle-delete-other-windows)
 
-  ("c" aflymake-mode-or-syntax-check)
-  ("v" ham-fix-current-buffer)
-
   ("n" universal-argument)
 
   ("m" mc/mark-all-like-this)
@@ -286,6 +283,12 @@ move the cursor by ARG lines."
 
 ;; Separate global key setups for special cases
 (bind-key* (kbd "C-/") (make-ni-expand))
+(bind-key* "<f1>" 'aflymake-goto-prev-error)
+(bind-key* "<f2>" 'aflymake-goto-next-error)
+(bind-key* "<f3>" 'previous-error)
+(bind-key* "<f4>" 'next-error)
+(bind-key* "<f7>" 'aflymake-mode-or-syntax-check)
+(bind-key* "<f8>" 'ham-fix-current-buffer)
 
 ;; Modal mode toggles
 (global-set-key (kbd "C-h C-v") 'ryo-modal-mode)
