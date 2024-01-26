@@ -456,6 +456,18 @@ The list of brackets to jump to is defined by `ni-left-brackets' and `ni-right-b
      (t (backward-up-list 1 'ESCAPE-STRINGS 'NO-SYNTAX-CROSSING)))))
 
 ;;;======================================================================
+;;; Rectangle
+;;;======================================================================
+(defun ni-copy-rectangle-to-system-clipboard (start end)
+  "Like `copy-rectangle-as-kill', but also copy to system clipboard."
+  (interactive "r")
+  (call-interactively #'copy-rectangle-as-kill)
+  (with-temp-buffer
+    (yank-rectangle)
+    (delete-trailing-whitespace)
+    (funcall interprogram-cut-function (buffer-string))))
+
+;;;======================================================================
 ;;; Dark mode
 ;;;======================================================================
 (defun ni-shell-command-to-string-no-stderr (aCommand)
