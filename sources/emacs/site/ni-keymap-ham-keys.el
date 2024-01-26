@@ -201,7 +201,7 @@ move the cursor by ARG lines."
   ("8" move-end-of-line)
 
   ;; Searching
-  ("n" ni-swiper-isearch)
+  ("n" swiper-thing-at-point)
 
   ;; Multi cursors
   ("m" mc/mark-next-like-this)
@@ -290,10 +290,10 @@ move the cursor by ARG lines."
 (bind-key* "<f7>" 'aflymake-mode-or-syntax-check)
 (bind-key* "<f8>" 'ham-fix-current-buffer)
 
-;; Modal mode toggles
-(global-set-key (kbd "C-h C-v") 'ryo-modal-mode)
-(global-set-key (kbd "M-SPC") 'ryo-modal-mode)
-;; (global-set-key (kbd "<escape>") 'ryo-modal-mode)
+;; Modal mode toggles suggestions
+;; (global-set-key (kbd "C-h C-v") 'ryo-modal-mode)
+;; (global-set-key (kbd "M-SPC") 'ryo-modal-mode)
+;; (global-set-key (kbd "<escape>") 'ryo-modal-mode) ;; Doesnt work in Terminal
 
 ;; Modal only keys
 (ryo-modal-keys
