@@ -1,10 +1,11 @@
 ;;; ivy.el --- Incremental Vertical completYon -*- lexical-binding: t -*-
 
-;; Copyright (C) 2015-2021 Free Software Foundation, Inc.
+;; Copyright (C) 2015-2023 Free Software Foundation, Inc.
 
 ;; Author: Oleh Krehel <ohwoeowho@gmail.com>
+;; Maintainer: Basil L. Contovounesios <contovob@tcd.ie>
 ;; URL: https://github.com/abo-abo/swiper
-;; Version: 0.13.4
+;; Version: 0.14.2
 ;; Package-Requires: ((emacs "24.5"))
 ;; Keywords: matching
 
@@ -2889,7 +2890,7 @@ When GREEDY is non-nil, join words in a greedy way."
 
 (defun ivy--regex-p (object)
   "Return OBJECT if it is a valid regular expression, else nil."
-  (ignore-errors (string-match-p object "") object))
+  (ignore-errors (ignore (string-match-p object "")) object))
 
 (defun ivy--regex-or-literal (str)
   "If STR isn't a legal regexp, escape it."
@@ -3386,7 +3387,7 @@ Should be run via minibuffer `post-command-hook'."
   (let ((coll (condition-case nil
                   (funcall (ivy-state-collection ivy-last) input)
                 (error
-                 (funcall (ivy-state-collection ivy-last) input nil nil)))))
+                 (funcall (ivy-state-collection ivy-last) input nil t)))))
     (if (listp coll)
         (mapcar (lambda (x) (if (consp x) (car x) x)) coll)
       coll)))

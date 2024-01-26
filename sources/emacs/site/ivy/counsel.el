@@ -1,11 +1,12 @@
 ;;; counsel.el --- Various completion functions using Ivy -*- lexical-binding: t -*-
 
-;; Copyright (C) 2015-2021 Free Software Foundation, Inc.
+;; Copyright (C) 2015-2023 Free Software Foundation, Inc.
 
 ;; Author: Oleh Krehel <ohwoeowho@gmail.com>
+;; Maintainer: Basil L. Contovounesios <contovob@tcd.ie>
 ;; URL: https://github.com/abo-abo/swiper
-;; Version: 0.13.4
-;; Package-Requires: ((emacs "24.5") (ivy "0.13.4") (swiper "0.13.4"))
+;; Version: 0.14.2
+;; Package-Requires: ((emacs "24.5") (ivy "0.14.2") (swiper "0.14.2"))
 ;; Keywords: convenience, matching, tools
 
 ;; This file is part of GNU Emacs.
@@ -3006,52 +3007,11 @@ NEEDLE is the search string."
                          (replace-match needle t t extra-args 1)
                        (concat extra-args " " needle)))))
 
-(defun counsel--grep-dumb-jump-regex (lang-and-look-for ctx-type)
-  ""
-  (let* ( (lang (s-before lang-and-look-for "::" "c++"))
-          (look-for (s-after lang-and-look-for "::" lang-and-look-for))
-          (regexes
-            (if (string= ctx-type "funtype")
-              (append
-                (dumb-jump-get-contextual-regexes lang "function" 'rg)
-                (dumb-jump-get-contextual-regexes lang "type" 'rg))
-              (dumb-jump-get-contextual-regexes lang ctx-type 'rg)))
-          (filled-regexes (dumb-jump-populate-regexes look-for regexes 'rg))
-          (search-term (s-join "|" filled-regexes)))
-    ;; (message (concat
-               ;; "... lang-and-look-for: " lang-and-look-for
-               ;; ", lang: " lang
-               ;; ", search-term: " look-for "->" search-term))
-    search-term))
-
 (defun counsel--grep-regex (str)
-  ""
-  ;; (let ((str "::match::hamster-fou"))
-  (cond
-    ((s-starts-with? "::raw::" str)
-      (s-chop-prefix "::raw::" str))
-    ((s-starts-with? "::match::" str)
-      (concat "\\b" (s-chop-prefix "::match::" str) "\\b"))
-    ;; any dump-jump pattern, function, type and variables
-    ((s-starts-with? "::djany::" str)
-      (counsel--grep-dumb-jump-regex (s-chop-prefix "::djany::" str) ""))
-    ;; dumb-jump, functions & types only
-    ((s-starts-with? "::djfunt::" str)
-      (counsel--grep-dumb-jump-regex (s-chop-prefix "::djfunt::" str) "funtype"))
-    ;; dumb-jump, functions only
-    ((s-starts-with? "::djfunc::" str)
-      (counsel--grep-dumb-jump-regex (s-chop-prefix "::djfunc::" str) "function"))
-    ;; dumb-jump, types only
-    ((s-starts-with? "::djtype::" str)
-      (counsel--grep-dumb-jump-regex (s-chop-prefix "::djtype::" str) "type"))
-    ;; dumb-jump, variables only
-    ((s-starts-with? "::djvar::" str)
-      (counsel--grep-dumb-jump-regex (s-chop-prefix "::djvar::" str) "variable"))
-    (t
-      (counsel--elisp-to-pcre
-      (setq ivy--old-re
-        (funcall (ivy-state-re-builder ivy-last) str))
-      counsel--regex-look-around))))
+  (counsel--elisp-to-pcre
+   (setq ivy--old-re
+         (funcall (ivy-state-re-builder ivy-last) str))
+   counsel--regex-look-around))
 
 (defun counsel--ag-extra-switches (regex)
   "Get additional switches needed for look-arounds."
@@ -3288,11 +3248,6 @@ Note: don't use single quotes for the regexp."
                   t))
         (delq t files)))))
 
-(defcustom counsel-rg-search-dirs
-  '("." (concat ENV_WORK "/niLang"))
-  "Extra list of directories to search in'."
-  :type '(repeat string))
-
 ;;;###autoload
 (defun counsel-rg (&optional initial-input initial-directory extra-rg-args rg-prompt)
   "Grep for a string in the current directory using `rg'.
@@ -3305,21 +3260,16 @@ Example input with inclusion and exclusion file patterns:
     require i -- -g*.el"
   (interactive)
   (let ((counsel-ag-base-command
-         (append (if (listp counsel-rg-base-command)
-                   (append counsel-rg-base-command (counsel--rg-targets))
-                   (concat
-                     counsel-rg-base-command " "
-                     (mapconcat #'shell-quote-argument (counsel--rg-targets) " ")))
-           (mapcar #'shell-quote-argument
-             (seq-filter (lambda (x) (not (string= x initial-directory)))
-               (mapcar #'eval counsel-rg-search-dirs)))))
+         (if (listp counsel-rg-base-command)
+             (append counsel-rg-base-command (counsel--rg-targets))
+           (concat counsel-rg-base-command " "
+                   (mapconcat #'shell-quote-argument (counsel--rg-targets) " "))))
         (counsel--grep-tool-look-around
          (let ((rg (car (if (listp counsel-rg-base-command) counsel-rg-base-command
                           (split-string counsel-rg-base-command))))
                (switch "--pcre2"))
            (and (eq 0 (call-process rg nil nil nil switch "--pcre2-version"))
                 switch))))
-    ;; (message "... counsel-ag-base-command: %s :: %s :: %s" initial-directory counsel-ag-base-command extra-rg-args)
     (counsel-ag initial-input initial-directory extra-rg-args rg-prompt
                 :caller 'counsel-rg)))
 
@@ -4404,13 +4354,21 @@ Additional actions:\\<ivy-minibuffer-map>
    ("h" counsel-package-action-homepage "open package homepage")))
 
 ;;** `counsel-tmm'
-(defvar tmm-km-list nil)
-(declare-function tmm-get-keymap "tmm")
-(declare-function tmm--completion-table "tmm")
-(declare-function tmm-get-keybind "tmm")
+(declare-function tmm-get-keymap "tmm" (elt &optional in-x-menu))
+(declare-function tmm--completion-table "tmm" (items))
+
+(defalias 'counsel--menu-keymap
+  ;; Added in Emacs 28.1.
+  (if (fboundp 'menu-bar-keymap)
+      #'menu-bar-keymap
+    (autoload 'tmm-get-keybind "tmm")
+    (declare-function tmm-get-keybind "tmm" (keyseq))
+    (lambda () (tmm-get-keybind [menu-bar])))
+  "Compatibility shim for `menu-bar-keymap'.")
 
 (defun counsel-tmm-prompt (menu)
   "Select and call an item from the MENU keymap."
+  (defvar tmm-km-list)
   (let (out
         choice
         chosen-string)
@@ -4428,16 +4386,15 @@ Additional actions:\\<ivy-minibuffer-map>
            (setq last-command-event chosen-string)
            (call-interactively choice)))))
 
-(defvar tmm-table-undef)
-
 ;;;###autoload
 (defun counsel-tmm ()
   "Text-mode emulation of looking and choosing from a menu bar."
   (interactive)
   (require 'tmm)
+  (defvar tmm-table-undef)
   (run-hooks 'menu-bar-update-hook)
   (setq tmm-table-undef nil)
-  (counsel-tmm-prompt (tmm-get-keybind [menu-bar])))
+  (counsel-tmm-prompt (counsel--menu-keymap)))
 
 ;;** `counsel-yank-pop'
 (defcustom counsel-yank-pop-truncate-radius 2
@@ -6169,7 +6126,7 @@ This function always returns its elements in a stable order."
       (when (file-exists-p dir)
         (let ((dir (file-name-as-directory dir)))
           ;; Function `directory-files-recursively' added in Emacs 25.1.
-          (dolist (file (directory-files-recursively dir ".*\\.desktop$"))
+          (dolist (file (directory-files-recursively dir "\\.desktop\\'"))
             (let ((id (subst-char-in-string ?/ ?- (file-relative-name file dir))))
               (when (and (not (gethash id hash)) (file-readable-p file))
                 (push (cons id file) result)
@@ -6916,7 +6873,7 @@ Additional actions:\\<ivy-minibuffer-map>
      "https://duckduckgo.com/html/?q="
      counsel--search-request-data-ddg))
   "Search engine parameters for `counsel-search'."
-  :type '(list))
+  :type '(alist :key-type symbol :value-type (list string string function)))
 
 (defun counsel--search-request-data-google (data)
   (mapcar #'identity (aref data 1)))
