@@ -109,10 +109,8 @@
  (global-set-key (kbd "C-;") 'ni-comment-dwim)
  (global-set-key (kbd "M-;") 'ni-comment-dwim)
  ;; shift-down comments the current line and goes down
- (define-key global-map [(shift down)] 'agl-comment-and-go-down)
  (define-key global-map (kbd "M-+") 'agl-comment-and-go-down)
  ;; shift-up uncomments the current line and goes up
- (define-key global-map [(shift up)] 'agl-uncomment-and-go-up)
  (define-key global-map (kbd "M-_") 'agl-uncomment-and-go-up)
 
  ;; inc number under cursor
