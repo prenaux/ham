@@ -36,6 +36,7 @@
   Themes:
     - wesbos.theme-cobalt2: Cobalt2 Theme Official
     - whizkydee.material-palenight-theme: Palenight Theme
+    - BeardedBear.beardedtheme: Bearded Themes, 45 awesomes themes (really)
 
   Only on local installs:
     - ms-vscode-remote.remote-ssh: Remote - SSH development
@@ -147,13 +148,13 @@
   /**
     * Typography
     **/
-  "editor.fontFamily": "CommitMono, MonoLisa, Consolas, Menlo, Monaco, 'Courier New', monospace",
+  "editor.fontFamily": "Monaco, Consolas, 'Courier New', monospace",
   "editor.fontSize": 13,
-  "editor.lineHeight": 24,
+  "editor.lineHeight": 20,
   "editor.suggestFontSize": 13,
-  "editor.suggestLineHeight": 24,
-  "terminal.integrated.fontSize": 13,
-  "terminal.integrated.lineHeight": 1.2,
+  "editor.suggestLineHeight": 20,
+  "terminal.integrated.fontSize": 12,
+  "terminal.integrated.lineHeight": 1.1,
 
   /**
     * Find
