@@ -283,6 +283,17 @@ See the docstrings of `defalias' and `make-obsolete' for more details."
     (t
      ""))))
 
+(defun ni-shell-execute-and-print ()
+  "Execute the content of the marked region or the current line in a shell and print the result."
+  (interactive)
+  (let* ((start (if (use-region-p) (region-beginning) (line-beginning-position)))
+         (end (if (use-region-p) (region-end) (line-end-position)))
+         (command (buffer-substring-no-properties start end))
+         (output (shell-command-to-string command)))
+    (goto-char end)
+    (unless (use-region-p) (end-of-line))
+    (insert "\n" output)))
+
 ;;;======================================================================
 ;;; OS Environment
 ;;;======================================================================
