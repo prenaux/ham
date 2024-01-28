@@ -8,7 +8,8 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/docker"
 case "$HAM_BIN_LOA" in
   lin-x64)
     if [ -z "$(where_inpath docker)" ]; then
-      ham-apt-get-install podman
+      # TODO: More robust test of whether all of those are installed.
+      ham-apt-get-install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     fi
     ;;
 
