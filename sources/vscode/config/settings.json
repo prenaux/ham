@@ -50,6 +50,7 @@
   /**
     * Better Defaults
     **/
+  "editor.acceptSuggestionOnEnter": "off",
   "editor.copyWithSyntaxHighlighting": false,
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.emptySelectionClipboard": false,
@@ -66,7 +67,7 @@
   "files.trimFinalNewlines": true,
   "workbench.sideBar.location": "right",
   "workbench.statusBar.visible": true,
-  "workbench.editor.showTabs": false,
+  "workbench.editor.showTabs": "single", // single takes the same amount of space as off, just with more info xD
   "editor.minimap.enabled": false,
   "editor.rulers": [80],
   "editor.autoClosingBrackets": "never",
@@ -90,7 +91,7 @@
   },
   "zenMode.fullScreen": false,
   "zenMode.centerLayout": false,
-  "editor.wordBasedSuggestions": true,
+  "editor.wordBasedSuggestions": "allDocuments",
   "editor.wordBasedSuggestionsMode": "allDocuments",
   // Controls whether suggestions should automatically show up while typing.
   "editor.quickSuggestions": {
