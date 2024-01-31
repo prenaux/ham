@@ -573,7 +573,7 @@
   {
     "key": "ctrl+h ctrl+s",
     // "command": "fuzzySearch.activeTextEditorWithCurrentSelection",
-    "command": "ham.swiper-word-at-cursor",
+    // "command": "ham.swiper-word-at-cursor",
     "command": "actions.findWithSelection"
   },
 ]

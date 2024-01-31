@@ -13,6 +13,7 @@
     - stkb.rewrap: Rewrap - automatically assigned to Alt-Q
     - tuttieee.emacs-mcx: Awesome Emacs Keymap
     - prenaux.ham-tools: Ham Tools
+    - jakearl.search-editor-apply-changes
 
   Languages:
     - IronGeek.vscode-env: Env File Syntax Highlighting

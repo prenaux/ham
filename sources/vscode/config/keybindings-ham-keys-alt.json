@@ -164,6 +164,7 @@
   { "key": "alt+, alt+r", "command": "workbench.action.files.revert" },
 
   { "key": "alt+, alt+o", "command": "workbench.action.quickOpen" },
+  { "key": "alt+, alt+i", "command": "breadcrumbs.focusAndSelect" },
   { "key": "alt+, alt+b", "command": "workbench.action.quickOpen" },
   { "key": "alt+, alt+d", "command": "revealInExplorer" },
 
@@ -186,7 +187,7 @@
   },
 
   { "key": "alt+, alt+s", "command": "workbench.action.files.save" },
-  { "key": "alt+, alt+S", "command": "saveAll" },
+  { "key": "alt+, alt+shift+s", "command": "saveAll" },
   { "key": "alt+, alt+k", "command": "workbench.action.closeActiveEditor" },
 
   { "key": "alt+, alt+1", "command": "workbench.action.toggleZenMode" },
