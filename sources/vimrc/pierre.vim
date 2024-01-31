@@ -94,7 +94,7 @@ call plug#end()
 
 " Minimal keymap
 " Mostly mapping for fzf: https://github.com/junegunn/fzf.vim?tab=readme-ov-file#commands
-let mapleader = "\<space>"
+let mapleader = "\,"
 " Open files in git repo
 nnoremap <Leader>g :GFiles<CR>
 " Open files in pwd
@@ -104,9 +104,10 @@ nnoremap <Leader>b :History<CR>
 " Open currently opened files
 nnoremap <Leader>B :Buffers<CR>
 " Last command typed
-nnoremap <Leader>x :History:<CR>
+nnoremap <Leader>p :History:<CR>
+nnoremap <Leader>, :History:<CR>
 " List all commands
-nnoremap <Leader>X :Commands<CR>
+nnoremap <Leader>P :Commands<CR>
 " Ripgrep in pwd
 nnoremap <Leader>j :Rg<CR>
 " Search in the current buffer
