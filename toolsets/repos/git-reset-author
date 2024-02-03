@@ -1,0 +1,14 @@
+#!/bin/bash -e
+help() {
+  echo "usage: git-reset-author COMMITID"
+  echo ""
+  echo "  Rebase from the specified commitid to set the author to the current author."
+  exit 1
+}
+if [ -z "$1" ]; then
+  help
+fi
+
+COMMITID=$1
+(set -x ;
+ git rebase -r "$COMMITID" --exec 'git commit --amend --no-edit --reset-author')
