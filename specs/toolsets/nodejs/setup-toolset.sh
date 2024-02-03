@@ -21,7 +21,7 @@ export HAM_TOOLSET_NAME=nodejs
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/nodejs"
 
 # We use a tag file to mark the version so that upgrades are automatically handled when we update the version number
-NODEJS_DL_VER=v16.14.2
+NODEJS_DL_VER=v20.11.0
 NODEJS_DL_TAG=$(echo ${NODEJS_DL_VER} | tr '.' '_')
 export NODEJS_DIR="${HAM_TOOLSET_DIR}/${HAM_BIN_LOA}"
 case "$HAM_BIN_LOA" in
@@ -46,7 +46,7 @@ export NODE_PATH=$NODEJS_GLOBAL_MODULES_DIR
 
 pathenv_add "${HAM_TOOLSET_DIR}"
 if [ ! -f "$NODEJS_DIR/$NODEJS_DL_TAG" ]; then
-  echo "W/Couldn't find node, installing from the nodejs.org dist package..."
+  echo "W/Couldn't find node '$NODEJS_DL_VER', installing from the nodejs.org dist package..."
   case "$HAM_BIN_LOA" in
     nt-x86)
       NODEJS_DL_NAME="node-${NODEJS_DL_VER}-win-x64"
