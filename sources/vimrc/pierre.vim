@@ -104,10 +104,9 @@ nnoremap <Leader>b :History<CR>
 " Open currently opened files
 nnoremap <Leader>B :Buffers<CR>
 " Last command typed
-nnoremap <Leader>p :History:<CR>
 nnoremap <Leader>, :History:<CR>
 " List all commands
-nnoremap <Leader>P :Commands<CR>
+nnoremap <Leader>p :Commands<CR>
 " Ripgrep in pwd
 nnoremap <Leader>j :Rg<CR>
 " Search in the current buffer

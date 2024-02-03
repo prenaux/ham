@@ -37,9 +37,8 @@
 
 (defun ham-keys-edit (aKey aCommand &optional noryo noglobal)
   "Add the edit prefix to STRING."
-  (IsTerminal ;; oh sweet terminal, if only you could send the whole full keys for all xD
-    (unless noglobal
-      (bind-key* (concat "M-" aKey) aCommand)))
+  (unless noglobal
+    (bind-key* (concat "M-" aKey) aCommand))
   (unless noglobal
     (bind-key* (concat "C-M-" aKey) aCommand))
   (unless noryo
@@ -164,8 +163,8 @@ move the cursor by ARG lines."
 
 (ham-keys-def-edit
   ;; Commands
-  ("p" counsel-M-x)
   ("g" ham-keys-keyboard-quit)
+  ("p" repeat)
   )
 
 (ham-keys-def-edit
@@ -206,11 +205,9 @@ move the cursor by ARG lines."
 
   ;; Multi cursors
   ("m" mc/mark-next-like-this)
-  ("S-m" mc/mark-previous-like-this)
 
   ;; Editing
   ("q" indent-region)
-  ("S-q" fill-paragraph)
   ("w" agl-backward-delete-word)
   ("e" agl-delete-word)
 
@@ -223,15 +220,11 @@ move the cursor by ARG lines."
   ("x" ham-keys-delete-char-or-kill-region)
   ("c" kill-ring-save)
   ("v" yank)
-  ("S-v" yank-pop)
-
-  ("b" ham-keys-comment-region-or-line-and-go-down)
-  ("S-b" ham-keys-uncomment-region-or-line-and-go-up)
+  ("b" yank-pop)
 
   ;; Visual selection
   ("t" set-mark-command)
   ("r" er/expand-region)
-  ("S-r" er/contract-region)
 
   ;; Macros
   ("9" kmacro-start-macro)
@@ -255,15 +248,19 @@ move the cursor by ARG lines."
   ("v" avy-goto-char)
   ("," back-button-local-backward)
   ("." back-button-local-forward)
+  ("p" agl-search-word-backward)
+  ("n" agl-search-word-forward)
   )
 
 (ham-keys-def-leader ","
-  ("r" revert-buffer)
+  ("," counsel-M-x)
 
   ("o" ni-file-cache-find-file-at-point)
   ("i" find-file) ;; Use to create new files
   ("b" ivy-switch-buffer)
   ("d" direx:jump-to-project-file)
+
+  ("e" pierre-join-line)
 
   ("j" ham-grep-regexp-current-dir)
   ("u" ham-grep-work-regexp)
@@ -272,15 +269,24 @@ move the cursor by ARG lines."
   ("s" save-buffer)
   ("w" save-some-buffers) ;; Save all buffers
   ("k" kill-buffer)
+  ("t" revert-buffer)
 
   ("1" zygospore-toggle-delete-other-windows)
 
-  ("n" universal-argument)
+  ("r" er/contract-region)
 
   ("m" mc/mark-all-like-this)
+  ("8" mc/edit-ends-of-lines)
 
   ("a" mark-whole-buffer)
-)
+
+  ("p" agl-run-last-shell-command)
+
+  ("q" fill-paragraph)
+
+  ("c" ham-keys-comment-region-or-line-and-go-down)
+  ("v" ham-keys-uncomment-region-or-line-and-go-up)
+  )
 
 ;; Separate global key setups for special cases
 (bind-key* (kbd "C-/") (make-ni-expand))
