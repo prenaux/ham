@@ -11,4 +11,4 @@ fi
 
 COMMITID=$1
 (set -x ;
- git rebase -r "$COMMITID" --exec 'git commit --amend --no-edit --reset-author')
+ git rebase --autostash -r "$COMMITID" --exec 'git commit --amend --no-edit --reset-author')
