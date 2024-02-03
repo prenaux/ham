@@ -37,8 +37,9 @@
 
 (defun ham-keys-edit (aKey aCommand &optional noryo noglobal)
   "Add the edit prefix to STRING."
-  ;; (unless noglobal
-    ;; (bind-key* (concat "M-" aKey) aCommand))
+  (IsTerminal ;; oh sweet terminal, if only you could send the whole full keys for all xD
+    (unless noglobal
+      (bind-key* (concat "M-" aKey) aCommand)))
   (unless noglobal
     (bind-key* (concat "C-M-" aKey) aCommand))
   (unless noryo
