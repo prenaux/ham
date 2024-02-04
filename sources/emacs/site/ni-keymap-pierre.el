@@ -56,8 +56,8 @@
  (global-set-key '[(control down)] 'forward-paragraph)
  (global-set-key '[(meta up)] 'backward-paragraph)
  (global-set-key '[(meta down)] 'forward-paragraph)
- (global-set-key (key "ESC <up>") 'backward-paragraph)
- (global-set-key (key "ESC <down>") 'forward-paragraph)
+ (global-set-key (kbd "ESC <up>") 'backward-paragraph)
+ (global-set-key (kbd "ESC <down>") 'forward-paragraph)
 
  ;; Move to the 'next' window (in clockwise order)
  (global-set-key (key "M-`") 'other-window)
