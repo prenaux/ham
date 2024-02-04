@@ -127,13 +127,6 @@
  (define-key global-map "\C-h\C-a" 'beginning-of-buffer)
  (define-key global-map "\C-h\C-e" 'end-of-buffer)
 
- ;; Join line
- (defun pierre-join-line () ""
-   (interactive)
-   (end-of-line)
-   (next-line)
-   (join-line))
-
  (bind-key* "C-j" 'pierre-join-line)
 
 ;;;======================================================================
@@ -237,14 +230,9 @@
  (global-set-key "\C-h\C-k" 'ham-grep-work-regexp)
 
  ;; counsel-rg-match in current project
- (global-set-key (kbd "M-.") (lambda () (interactive)
-                               (ni-counsel-rg-match
-                                 nil pierre-search-file-patterns)))
+ (global-set-key (kbd "M-.") 'pierre-rg-match-in-current)
  ;; counsel-rg-match in current project and all work directories
- (global-set-key (kbd "M->") (lambda () (interactive)
-                               (ni-counsel-rg-match
-                                 pierre-search-all-dirs
-                                 pierre-search-file-patterns)))
+ (global-set-key (kbd "M->") 'pierre-rg-match-in-work)
 
  ;; Indent region
  (define-key global-map "\C-h\C-\\" 'indent-region)

@@ -760,3 +760,23 @@ If the new path's directories does not exist, create them."
      (concat ENV_WORK "/ham/")
      (concat ENV_WORK "/Vlk/")
      (concat ENV_WORK "/Playground/")))
+
+;; Join line
+(defun pierre-join-line () ""
+  (interactive)
+  (end-of-line)
+  (next-line)
+  (join-line))
+
+(defun pierre-rg-match-in-current ()
+  ""
+  (interactive)
+  (ni-counsel-rg-match
+    nil pierre-search-file-patterns))
+
+(defun pierre-rg-match-in-work ()
+  ""
+  (interactive)
+  (ni-counsel-rg-match
+    pierre-search-all-dirs
+    pierre-search-file-patterns))

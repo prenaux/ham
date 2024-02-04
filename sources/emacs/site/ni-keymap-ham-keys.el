@@ -128,11 +128,6 @@ move the cursor by ARG lines."
     (set-mark-command nil))
   (forward-line arg))
 
-(defun ham-keys-fif-at-point ()
-  (interactive)
-  (ni-counsel-rg-match
-    nil pierre-search-file-patterns))
-
 (defun ham-keys-comment-region-or-line-and-go-down (arg)
   "Kill active region if active"
   (interactive "p")
@@ -244,7 +239,8 @@ move the cursor by ARG lines."
   ("h" end-of-buffer)
   ("l" goto-line-preview)
   ("/" ni-goto-matching-bracket)
-  ("g" ham-keys-fif-at-point)
+  ("g" pierre-rg-match-in-current)
+  ("t" pierre-rg-match-in-work)
   ("v" avy-goto-char)
   ("," back-button-local-backward)
   ("." back-button-local-forward)
