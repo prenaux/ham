@@ -35,14 +35,19 @@
     :lighter " ham-keys")
   )
 
-(defun ham-keys-edit (aKey aCommand &optional noryo noglobal)
+(defun ham-keys-edit (aKey aCommand)
   "Add the edit prefix to STRING."
-  (unless noglobal
-    (bind-key* (concat "M-" aKey) aCommand))
-  (unless noglobal
-    (bind-key* (concat "C-M-" aKey) aCommand))
-  (unless noryo
-    (ryo-modal-key aKey aCommand))
+  (if (or
+        ;; Dont bind these keys globally
+        (string-equal aKey "n")
+        (string-equal aKey "p"))
+    (progn
+      (bind-key (concat "M-" aKey) aCommand)
+      (bind-key (concat "C-M-" aKey) aCommand))
+    (progn
+      (bind-key* (concat "M-" aKey) aCommand)
+      (bind-key* (concat "C-M-" aKey) aCommand)))
+  (ryo-modal-key aKey aCommand)
   )
 
 (defmacro ham-keys-def-edit (&rest pairs)
@@ -52,20 +57,15 @@
                  `(ham-keys-edit ,(car pair) ',(cadr pair)))
                pairs)))
 
-(defun ham-keys-leader (aLeader aKey aCommand &optional noryo noglobal)
+(defun ham-keys-leader (aLeader aKey aCommand)
   "Add the leader prefix to STRING."
-  (unless noglobal
-    (bind-key* (concat "M-" aLeader " " aKey) aCommand))
+  (bind-key* (concat "M-" aLeader " " aKey) aCommand)
   (IsTerminal ;; oh sweet terminal, if only you could send the whole full keys for all xD
-    (unless noglobal
-      (bind-key* (concat "M-" aLeader " C-M-" aKey) aCommand))
-    (unless noglobal
-      (bind-key* (concat "M-" aLeader " M-" aKey) aCommand))
+    (bind-key* (concat "M-" aLeader " C-M-" aKey) aCommand)
+    (bind-key* (concat "M-" aLeader " M-" aKey) aCommand)
     )
-  (unless noglobal
-    (bind-key* (concat "C-M-" aLeader " C-M-" aKey) aCommand))
-  (unless noryo
-    (ryo-modal-key (concat aLeader " " aKey) aCommand))
+  (bind-key* (concat "C-M-" aLeader " C-M-" aKey) aCommand)
+  (ryo-modal-key (concat aLeader " " aKey) aCommand)
   )
 
 (defmacro ham-keys-def-leader (aLeader &rest pairs)
@@ -246,20 +246,23 @@ move the cursor by ARG lines."
   ("." back-button-local-forward)
   ("p" agl-search-word-backward)
   ("n" agl-search-word-forward)
+  ("o" ni-counsel-rg-at-point)
   )
 
 (ham-keys-def-leader ","
   ("," counsel-M-x)
 
-  ("o" ni-file-cache-find-file-at-point)
+  ("u" counsel-fzf)
   ("i" find-file) ;; Use to create new files
+  ("o" ni-file-cache-find-file-at-point)
+
   ("b" ivy-switch-buffer)
   ("d" direx:jump-to-project-file)
 
   ("e" pierre-join-line)
 
   ("j" ham-grep-regexp-current-dir)
-  ("u" ham-grep-work-regexp)
+  ("y" ham-grep-work-regexp)
   ("h" qrr)
 
   ("s" save-buffer)
