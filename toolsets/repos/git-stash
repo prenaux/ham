@@ -97,7 +97,7 @@ case $OPERATION in
     else
       (set -x ; git stash drop "$ID")
     fi
-   , ;;
+    ;;
   # Find the id of the specified stash
   find)
     echo "$ID"
