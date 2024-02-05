@@ -10,5 +10,7 @@ if [ -z "$1" ]; then
 fi
 
 COMMITID=$1
-(set -x ;
- git rebase --autostash -r "$COMMITID" --exec 'git commit --amend --no-edit --reset-author')
+(
+  set -x
+  git rebase --autostash -r "$COMMITID" --exec 'git commit --amend --no-edit --reset-author'
+)
