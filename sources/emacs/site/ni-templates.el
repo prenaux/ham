@@ -11,7 +11,7 @@
   (let ((GUARD (replace-regexp-in-string
                         "[\\.-]"
                         "_"
-                        (upcase (concat "__" (buffer-name) "_" (agl-uuid3) "__"))
+                        (upcase (concat "__" (buffer-name) "_" (ni-uuid3) "__"))
                          )))
     (beginning-of-buffer)
     (insert "#pragma once") (newline)

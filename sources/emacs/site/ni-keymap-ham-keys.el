@@ -75,17 +75,6 @@
                  `(ham-keys-leader ,aLeader ,(car pair) ',(cadr pair)))
                pairs)))
 
-(defun ham-keys-start-from-new-line ()
-  (interactive)
-  (move-end-of-line nil)
-  (newline)
-  (indent-for-tab-command))
-
-(defun ham-keys-start-from-new-top-line ()
-  (interactive)
-  (previous-line)
-  (ham-keys-start-from-new-line))
-
 (defun ham-keys-insert-or-change-region ()
   "Kill active region if active"
   (interactive)
@@ -96,60 +85,6 @@
   "Notifies that the insert mode has been activated"
   (interactive)
   (message "Insert mode actived"))
-
-(defun ham-keys-delete-word-or-kill-region (arg)
-  "Kill active region if active"
-  (interactive "p")
-  (if mark-active
-    (kill-region (region-beginning) (region-end))
-    (delete-region ;; we dont want the word in the kill-ring
-      (point)
-      (progn
-        (forward-word arg)
-        (point)))
-    ))
-
-(defun ham-keys-delete-char-or-kill-region (arg)
-  "Kill active region if active"
-  (interactive "p")
-  (if mark-active
-    (kill-region (region-beginning) (region-end))
-    (delete-char arg)))
-
-(defun ni-select-current-line-and-forward-line (arg)
-  "Select the current line and move the cursor by ARG lines IF no
-region is selected.
-
-If a region is already selected when calling this command, only
-move the cursor by ARG lines."
-  (interactive "p")
-  (when (not (use-region-p))
-    (forward-line 0)
-    (set-mark-command nil))
-  (forward-line arg))
-
-(defun ham-keys-comment-region-or-line-and-go-down (arg)
-  "Kill active region if active"
-  (interactive "p")
-  (if mark-active
-    (comment-region (region-beginning) (region-end))
-    (progn
-      (condition-case nil (comment-region (point-at-bol) (point-at-eol)) (error nil))
-      (end-of-line)
-      (next-line 1)
-      (back-to-indentation)))
-  )
-
-(defun ham-keys-uncomment-region-or-line-and-go-up (arg)
-  "Kill active region if active"
-  (interactive "p")
-  (if mark-active
-    (uncomment-region (region-beginning) (region-end))
-    (progn
-      (condition-case nil (uncomment-region (point-at-bol) (point-at-eol)) (error nil))
-      (back-to-indentation)
-      (next-line -1)))
-  )
 
 (defun ham-keys-keyboard-quit ()
   (interactive)
@@ -207,12 +142,12 @@ move the cursor by ARG lines."
   ("e" agl-delete-word)
 
   ("a" ni-select-current-line-and-forward-line)
-  ("s" ham-keys-start-from-new-line)
-  ("S-s" ham-keys-start-from-new-top-line)
+  ("s" ni-start-from-new-line)
+  ("S-s" ni-start-from-new-top-line)
   ("d" delete-char)
 
   ("z" undo)
-  ("x" ham-keys-delete-char-or-kill-region)
+  ("x" ni-delete-char-or-kill-region)
   ("c" kill-ring-save)
   ("v" yank)
   ("b" yank-pop)
@@ -283,18 +218,9 @@ move the cursor by ARG lines."
 
   ("q" fill-paragraph)
 
-  ("c" ham-keys-comment-region-or-line-and-go-down)
-  ("v" ham-keys-uncomment-region-or-line-and-go-up)
+  ("c" ni-comment-region-or-line-and-go-down)
+  ("v" ni-uncomment-region-or-line-and-go-up)
   )
-
-;; Separate global key setups for special cases
-(bind-key* (kbd "C-/") (make-ni-expand))
-(bind-key* "<f1>" 'aflymake-goto-prev-error)
-(bind-key* "<f2>" 'aflymake-goto-next-error)
-(bind-key* "<f3>" 'previous-error)
-(bind-key* "<f4>" 'next-error)
-(bind-key* "<f7>" 'aflymake-mode-or-syntax-check)
-(bind-key* "<f8>" 'ham-fix-current-buffer)
 
 ;; Modal mode toggles suggestions
 ;; (global-set-key (kbd "C-h C-v") 'ryo-modal-mode)

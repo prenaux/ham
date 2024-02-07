@@ -432,19 +432,6 @@ BEG and END (region to sort)."
          (match-beginning 0)
        cur))))
 
-(defun agl-comment-and-go-down ()
-  "Comments the current line and goes to the next one" (interactive)
-  (condition-case nil (comment-region (point-at-bol) (point-at-eol)) (error nil))
-  (end-of-line)
-  (next-line 1)
-  (back-to-indentation))
-
-(defun agl-uncomment-and-go-up ()
-  "Uncomments the current line and goes to the previous one" (interactive)
-  (condition-case nil (uncomment-region (point-at-bol) (point-at-eol)) (error nil))
-  (back-to-indentation)
-  (next-line -1))
-
 (defun ni-comment-dwim ()
   "Like 'comment-dwim' when there's a region otherwise comment down."
   (interactive)
@@ -513,31 +500,31 @@ BEG and END (region to sort)."
   (PrognInHamShell
    (shell-command-to-string aCmd)))
 
-(defun agl-uuid1 ()
+(defun ni-uuid1 ()
   "Generate a type 1 UUID and return it."
   (interactive)
   (agl-bash-cmd-to-string "genuuid 1"))
-(defun agl-uuid2 ()
+(defun ni-uuid2 ()
   "Generate a type 2 UUID and return it."
   (interactive)
   (agl-bash-cmd-to-string "genuuid 2"))
-(defun agl-uuid3 ()
+(defun ni-uuid3 ()
   "Generate a type 3 UUID and return it."
   (interactive)
   (agl-bash-cmd-to-string "genuuid 3"))
 
-(defun agl-uuid1-to-buffer ()
+(defun ni-uuid1-to-buffer ()
   "Generate a type 1 UUID and copy it in the clipboard."
   (interactive)
-  (insert (agl-uuid1)))
-(defun agl-uuid2-to-buffer ()
+  (insert (ni-uuid1)))
+(defun ni-uuid2-to-buffer ()
   "Generate a type 2 UUID and copy it in the clipboard."
   (interactive)
-  (insert (agl-uuid2)))
-(defun agl-uuid3-to-buffer ()
+  (insert (ni-uuid2)))
+(defun ni-uuid3-to-buffer ()
   "Generate a type 3 UUID and copy it in the clipboard."
   (interactive)
-  (insert (agl-uuid3)))
+  (insert (ni-uuid3)))
 
 ;; Useful for times where indentation doesnt work - common in multiline strings
 (defun agl-newline-and-indent-same-level ()
@@ -548,6 +535,72 @@ BEG and END (region to sort)."
                (current-column))))
     (newline)
     (indent-to-column col)))
+
+
+(defun ni-select-current-line-and-forward-line (arg)
+  "Select the current line and move the cursor by ARG lines IF no
+region is selected.
+
+If a region is already selected when calling this command, only
+move the cursor by ARG lines."
+  (interactive "p")
+  (when (not (use-region-p))
+    (forward-line 0)
+    (set-mark-command nil))
+  (forward-line arg))
+
+(defun ni-comment-region-or-line-and-go-down (arg)
+  "Kill active region if active"
+  (interactive "p")
+  (if mark-active
+    (comment-region (region-beginning) (region-end))
+    (progn
+      (condition-case nil (comment-region (point-at-bol) (point-at-eol)) (error nil))
+      (end-of-line)
+      (next-line 1)
+      (back-to-indentation)))
+  )
+
+(defun ni-uncomment-region-or-line-and-go-up (arg)
+  "Kill active region if active"
+  (interactive "p")
+  (if mark-active
+    (uncomment-region (region-beginning) (region-end))
+    (progn
+      (condition-case nil (uncomment-region (point-at-bol) (point-at-eol)) (error nil))
+      (back-to-indentation)
+      (next-line -1)))
+  )
+
+(defun ni-start-from-new-line ()
+  (interactive)
+  (move-end-of-line nil)
+  (newline)
+  (indent-for-tab-command))
+
+(defun ni-start-from-new-top-line ()
+  (interactive)
+  (previous-line)
+  (ni-start-from-new-line))
+
+(defun ni-delete-word-or-kill-region (arg)
+  "Kill active region if active"
+  (interactive "p")
+  (if mark-active
+    (kill-region (region-beginning) (region-end))
+    (delete-region ;; we dont want the word in the kill-ring
+      (point)
+      (progn
+        (forward-word arg)
+        (point)))
+    ))
+
+(defun ni-delete-char-or-kill-region (arg)
+  "Kill active region if active"
+  (interactive "p")
+  (if mark-active
+    (kill-region (region-beginning) (region-end))
+    (delete-char arg)))
 
 ;;;======================================================================
 ;;; Time

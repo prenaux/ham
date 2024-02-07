@@ -4,6 +4,7 @@
  (require 'bind-key)
  (require 'golden-ratio-scroll-screen)
  (require 'expand-region)
+ (require 'zygospore)
 
 ;;;======================================================================
 ;;; aglemacs.el
@@ -94,53 +95,19 @@
  ;; Remap recenter-top-bottom (which is mapped to Ctrl-l by default) to Ctrl-Shift-L
  (global-set-key (key "C-S-l") 'recenter-top-bottom)
 
- ;; remap regex search to Atl-s/r
- (global-set-key "\M-s" 'isearch-forward-regexp)
- (global-set-key "\M-r" 'isearch-backward-regexp)
-
  ;; Search and replace in the current buffer
  (global-set-key "\C-h\C-h" 'qrr)
-
- ;; extended expand, tab & shift-tab expand are handled in fancy-dabbrev
- (global-set-key (kbd "M-/") (make-ni-expand))
-
- ;; ni-comment-dwim
- (global-set-key "\C-c\C-c" 'ni-comment-dwim)
- (global-set-key (kbd "C-;") 'ni-comment-dwim)
- (global-set-key (kbd "M-;") 'ni-comment-dwim)
- ;; shift-down comments the current line and goes down
- (define-key global-map (kbd "M-+") 'agl-comment-and-go-down)
- ;; shift-up uncomments the current line and goes up
- (define-key global-map (kbd "M-_") 'agl-uncomment-and-go-up)
 
  ;; inc number under cursor
  (define-key global-map (kbd "M-=") 'agl-increment-number-at-point)
  ;; dec number under cursor
  (define-key global-map (kbd "M--") 'agl-decrement-number-at-point)
 
- ;; UUID generation
- (global-set-key (kbd "C-M-g")   'agl-uuid1-to-buffer)
- (global-set-key (kbd "C-M-S-g") 'agl-uuid2-to-buffer)
- (global-set-key (kbd "M-G")     'agl-uuid3-to-buffer)
-
  ;; Begin/end of buffer
  (define-key global-map "\C-h\C-a" 'beginning-of-buffer)
  (define-key global-map "\C-h\C-e" 'end-of-buffer)
 
  (bind-key* "C-j" 'pierre-join-line)
-
-;;;======================================================================
-;;; aglemacs.el: mark-multiple, expand-region
-;;;======================================================================
- (global-set-key (kbd "M-9") 'mc/mark-previous-like-this-symbol) ;; M-9, M-(
- (global-set-key (kbd "M-(") 'mc/mark-previous-like-this) ;; M-9, M-(
- (global-set-key (kbd "M-0") 'mc/mark-next-like-this-symbol) ;; M-0, M-)
- (global-set-key (kbd "M-)") 'mc/mark-next-like-this) ;; M-0, M-)
- (global-set-key (kbd "M-8") 'mc/mark-all-like-this) ;; M-8, M-*
- (global-set-key (kbd "M-*") 'mc/edit-ends-of-lines) ;; M-8, M-*
-
- (global-unset-key (kbd "M-<down-mouse-1>"))
- (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
 
 ;;;======================================================================
 ;;; ni-flymake.el
@@ -190,20 +157,6 @@
  ;; Save all then compile with the last compile command used
  (global-set-key (key "C-h C-b") 'save-all-and-compile)
 
- ;; Goto matching bracket/paren
- (bind-key* "M-a" 'ni-goto-matching-bracket)
-
- ;; Expand region
- (bind-key* "M-A" 'er/expand-region) ;; M-S-a
- (IsNotTerminal ;; breaks C-space in terminal
-   (bind-key* "C-@" 'er/expand-region)) ;; M-S-a
-
- ;; Previous/Next errors
- (define-key global-map "\M-1" 'aflymake-goto-next-error)
- (define-key global-map "\M-2" 'aflymake-goto-prev-error)
- (define-key global-map "\M-3" 'next-error)
- (define-key global-map "\M-4" 'previous-error)
-
  ;; Previous/Next flymake errors
  (global-set-key (kbd "M-!") 'next-error) ;; M-! (M-S-1)
  (global-set-key (kbd "M-@") 'previous-error) ;; M-@ (M-S-2)
@@ -229,11 +182,6 @@
  ;; ham-grep in the Work directories
  (global-set-key "\C-h\C-k" 'ham-grep-work-regexp)
 
- ;; counsel-rg-match in current project
- (global-set-key (kbd "M-.") 'pierre-rg-match-in-current)
- ;; counsel-rg-match in current project and all work directories
- (global-set-key (kbd "M->") 'pierre-rg-match-in-work)
-
  ;; Indent region
  (define-key global-map "\C-h\C-\\" 'indent-region)
 
@@ -247,5 +195,61 @@
  ;; Map M-Esc & C-Esc to escape
  (global-set-key (kbd "M-<escape>") 'keyboard-escape-quit)
  (global-set-key (kbd "C-<escape>") 'keyboard-escape-quit)
+
+;;;======================================================================
+;;; ham keys inspired
+;;;=====================================================================
+
+ ;; Unset the leader key
+ (global-unset-key (key "M-/"))
+
+ ;; Commands
+ (bind-key* "M-z" 'undo)
+ (bind-key* "C-i" (make-ni-expand))
+ (bind-key* "M-s" 'ni-start-from-new-line)
+ (bind-key* "M-/ M-s" 'ni-start-from-new-top-line)
+ (bind-key* "M-." 'ni-counsel-rg-at-point)
+
+ ;; Macros
+ (bind-key* "M-5" 'kmacro-end-and-call-macro)
+ (bind-key* "M-6" 'kmacro-start-macro)
+ (bind-key* "M-7" 'kmacro-end-macro)
+
+ ;; Nav & Splits
+ (bind-key* "C-1" 'zygospore-toggle-delete-other-windows)
+ (bind-key* "M-1" 'other-window)
+ (bind-key* "M-2" 'split-window-below)
+ (bind-key* "M-3" 'split-window-right)
+ (bind-key* "M-4" 'delete-window)
+
+ ;; Multi-cursor
+ (bind-key* "M-9" 'mc/mark-previous-like-this)
+ (bind-key* "M-0" 'mc/mark-next-like-this)
+ (bind-key* "M-8" 'mc/mark-all-like-this)
+ (bind-key* "M-*" 'mc/edit-ends-of-lines)
+ (global-unset-key (kbd "M-<down-mouse-1>"))
+ (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
+
+ ;; Region
+ (bind-key* "M-a" 'ni-select-current-line-and-forward-line)
+ (bind-key* "M-r" 'er/expand-region)
+ (bind-key* "M-/ M-r" 'er/contract-region)
+
+ ;; Goto
+ (bind-key* "M-/ M-/" 'ni-goto-matching-bracket)
+ (bind-key* "M-/ M-l" 'goto-line-preview)
+ (bind-key* "M-/ M-," 'back-button-local-backward)
+ (bind-key* "M-/ M-." 'back-button-local-forward)
+
+ ;; Comment/uncomment
+ (bind-key* "M-;" 'ni-comment-dwim)
+ (bind-key* "M-/ M-c" 'ni-comment-region-or-line-and-go-down)
+ (bind-key* "M-/ M-v" 'ni-uncomment-region-or-line-and-go-up)
+
+ ;; Error nav
+ (bind-key* "<f1>" 'aflymake-goto-prev-error)
+ (bind-key* "<f2>" 'aflymake-goto-next-error)
+ (bind-key* "<f3>" 'previous-error)
+ (bind-key* "<f4>" 'next-error)
 
  )
