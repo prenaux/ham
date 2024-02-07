@@ -405,29 +405,8 @@
   // Commands
   { "key": "alt+z", "command": "undo" },
   { "key": "ctrl+i", "command": "editor.action.triggerSuggest" },
-  {
-    "command": "runCommands",
-    "when": "!editorHasSelection",
-    "key": "alt+s",
-    "args": {
-      "commands": [
-        "emacs-mcx.moveEndOfLine",
-        "emacs-mcx.newLine"
-      ],
-    },
-  },
-  {
-    "command": "runCommands",
-    "when": "!editorHasSelection",
-    "key": "alt+/ alt+s",
-    "args": {
-      "commands": [
-        "emacs-mcx.previousLine",
-        "emacs-mcx.moveEndOfLine",
-        "emacs-mcx.newLine"
-      ],
-    },
-  },
+  { "key": "alt+s", "command": "editor.action.insertLineAfter" },
+  { "key": "alt+/ alt+s", "command": "editor.action.insertLineBefore" },
   {
     "key": "alt+.",
     "command": "editor.action.revealDefinition",
@@ -503,14 +482,9 @@
     }
   },
   {
-    "command": "runCommands",
-    "when": "editorHasSelection",
-    "key": "atl+/ alt+r",
-    "args": {
-      "commands": [
-        "editor.action.smartSelect.shrink",
-      ]
-    }
+    "key": "alt+/ alt+r",
+    "command": "editor.action.smartSelect.shrink",
+    "when": "editorTextFocus"
   },
 
   // Goto
