@@ -3,7 +3,7 @@ export HAM_TOOLSET=boost_cppm
 export HAM_TOOLSET_NAME=boost_cppm
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/boost_cppm"
 
-export BOOST_CPPM_VER=1_80_0
+export BOOST_CPPM_VER=1_84_0
 export HAM_HDRS_BOOST_CPPM="${HAM_TOOLSET_DIR}/dist"
 toolset_check_and_dl_ver boost_cppm dist v${BOOST_CPPM_VER} || return 1
 
