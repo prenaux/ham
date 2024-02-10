@@ -81,6 +81,8 @@
  ;; PgUp/Dn
  (global-set-key (kbd "C-v") 'golden-ratio-scroll-screen-up)
  (global-set-key (kbd "M-v") 'golden-ratio-scroll-screen-down)
+ (global-set-key (kbd "<next>") 'golden-ratio-scroll-screen-up)
+ (global-set-key (kbd "<prior>") 'golden-ratio-scroll-screen-down)
 
  ;; Scroll one line at a time
  (global-set-key (quote [C-M-down]) (quote scroll-up-line))
@@ -204,6 +206,7 @@
  (global-unset-key (key "M-/"))
 
  ;; Commands
+ (bind-key* "M-g" 'keyboard-escape-quit)
  (bind-key* "M-z" 'undo)
  (bind-key* "C-i" (make-ni-expand))
  (bind-key* "M-s" 'ni-start-from-new-line)
@@ -231,13 +234,14 @@
  (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
 
  ;; Region
+ (bind-key* "M-t" 'ni-select-current-line-and-forward-line)
  (bind-key* "M-a" 'ni-select-current-line-and-forward-line)
  (bind-key* "M-r" 'er/expand-region)
  (bind-key* "M-/ M-r" 'er/contract-region)
 
  ;; Goto
  (bind-key* "M-/ M-/" 'ni-goto-matching-bracket)
- (bind-key* "M-/ M-l" 'goto-line-preview)
+ (bind-key* "M-/ M-l" 'goto-line)
  (bind-key* "M-/ M-," 'back-button-local-backward)
  (bind-key* "M-/ M-." 'back-button-local-forward)
 
