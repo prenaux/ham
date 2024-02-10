@@ -3,7 +3,7 @@ set nocompatible
 
 syntax on                  " Enable syntax highlighting.
 
-set relativenumber number " Show relative line numbers
+" set relativenumber number " Show relative line numbers
 set nowrapscan " Dont wrap search
 
 set backspace   =indent,eol,start  " Make backspace work as you would expect.
