@@ -37,7 +37,7 @@ if [ -z "$1" ]; then
   git-status short
   log_info "Last ${LOG_COUNT} commits:"
   # shellcheck disable=SC2086
-  git $PAGER log --all --decorate --oneline -${LOG_COUNT} --graph "${FORMAT[@]}"
+  (set -x ; git $PAGER log --all --decorate --oneline -${LOG_COUNT} --graph "${FORMAT[@]}")
 else
   BRANCH=$(git-get-branch-name "$1")
   log_info "Status:"
@@ -51,10 +51,10 @@ else
   fi
   if [ -z "$ORIGIN" ]; then
     # shellcheck disable=SC2086
-    git $PAGER log --decorate --oneline -${LOG_COUNT} --graph --first-parent "${FORMAT[@]}" "$BRANCH" "$@"
+    (set -x ; git $PAGER log --decorate --oneline -${LOG_COUNT} --graph --first-parent "${FORMAT[@]}" "$BRANCH" "$@")
   else
     shift
     # shellcheck disable=SC2086
-    git $PAGER log --decorate --oneline -${LOG_COUNT} --graph --first-parent "${FORMAT[@]}" "$BRANCH" "$ORIGIN/$BRANCH" "$@"
+    (set -x ; git $PAGER log --decorate --oneline -${LOG_COUNT} --graph --first-parent "${FORMAT[@]}" "$BRANCH" "$ORIGIN/$BRANCH" "$@")
   fi
 fi
