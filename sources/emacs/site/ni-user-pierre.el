@@ -575,26 +575,35 @@ If the new path's directories does not exist, create them."
 ;;; Ivy & Swiper
 ;;;======================================================================
 (NotBatchMode
- (agl-begin-time-block "Ivy")
+  (agl-begin-time-block "Ivy")
 
- (require 'ni-ivy)
+  (require 'ni-ivy)
 
- (require 'swiper)
+  (require 'swiper)
 
- ;; Search what's been marked otherwise isearch
- (defun ni-swiper-isearch ()
-   "`swiper' with `ivy-thing-at-point'."
-   (interactive)
-   (let ((thing (ni-get-default-search-text)))
-     (cond
-      ((not (string-empty-p thing))
-       (progn
-         (when (use-region-p)
-           (deactivate-mark))
-         (swiper (regexp-quote thing))))
-      (t (swiper-isearch)))))
+  ;; Search what's been marked otherwise isearch
+  (defun ni-swiper-isearch ()
+    "`swiper' with `ivy-thing-at-point'."
+    (interactive)
+    ;; This should select the initial input so that we can just type to modify
+    ;; the default input. Doesnt look super robust and probably isnt but does
+    ;; the job for now.
+    (run-with-timer 0.1 nil
+      (lambda ()
+        (beginning-of-line)
+        (set-mark-command nil)
+        (end-of-line)
+        ))
+    (let ((thing (ni-get-default-search-text)))
+      (cond
+        ((not (string-empty-p thing))
+          (progn
+            (when (use-region-p)
+              (deactivate-mark))
+            (swiper (regexp-quote thing))))
+        (t (swiper-isearch)))))
 
-)
+  )
 
 ;;;======================================================================
 ;;; Back button mode

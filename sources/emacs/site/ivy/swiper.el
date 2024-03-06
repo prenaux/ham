@@ -811,7 +811,7 @@ When non-nil, INITIAL-INPUT is the initial search pattern."
            (and
             (setq res
                   (ivy-read
-                   "Swiper: "
+                   "swiper: "
                    candidates
                    :initial-input initial-input
                    :keymap swiper-map
@@ -1187,7 +1187,7 @@ Run `swiper' for those buffers."
               #'internal-complete-buffer
               :action #'swiper-multi-action-1))
   (let ((swiper-window-width (- (- (frame-width) (if (display-graphic-p) 0 1)) 4)))
-    (ivy-read "Swiper: " swiper-multi-candidates
+    (ivy-read "swiper-multi: " swiper-multi-candidates
               :action #'swiper-multi-action-2
               :caller 'swiper-multi)))
 
@@ -1740,7 +1740,7 @@ When the input is empty, browse the search history instead."
         (cursor-in-non-selected-windows nil)
         (swiper-min-highlight 1))
     (ivy-read
-     "Swiper: "
+     "swiper-isearch: "
      #'swiper-isearch-function
      :initial-input initial-input
      :keymap swiper-isearch-map

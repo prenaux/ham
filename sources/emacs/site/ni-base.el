@@ -270,18 +270,14 @@ See the docstrings of `defalias' and `make-obsolete' for more details."
 
 ;; Return the default value of search like functions
 (defun ni-get-default-search-text ()
-  ""
-  (substring-no-properties
-   (cond
-    ;; Marked text
-    ((use-region-p)
-     (let* ((beg (region-beginning))
-            (end (region-end))
-            (eol (save-excursion (goto-char beg) (line-end-position))))
-       (buffer-substring-no-properties beg (min end eol))))
-    ;; None
-    (t
-     ""))))
+  "Get the default text for a search: region, then symbol at point, then last swiper search."
+  (interactive)
+  (or (and (use-region-p)
+           (buffer-substring-no-properties (region-beginning) (min (region-end) (save-excursion (goto-char (region-beginning)) (line-end-position)))))
+      (thing-at-point 'symbol t)  ; 't' for no text properties
+      (and swiper-history
+           (substring-no-properties (car swiper-history)))
+      ""))
 
 (defun ni-shell-execute-and-print ()
   "Execute the content of the marked region or the current line in a shell and print the result."
