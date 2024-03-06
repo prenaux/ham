@@ -437,7 +437,7 @@ BEG and END (region to sort)."
   (interactive)
   (if (region-active-p)
     (comment-dwim nil)
-    (agl-comment-and-go-down)))
+    (ni-comment-region-or-line-and-go-down)))
 
 (defun agl-increment-number-at-point (&optional amount)
   "Increment the number under point by `amount'"
@@ -537,7 +537,7 @@ BEG and END (region to sort)."
     (indent-to-column col)))
 
 
-(defun ni-select-current-line-and-forward-line (arg)
+(defun ni-select-current-line-and-forward-line (&optional arg)
   "Select the current line and move the cursor by ARG lines IF no
 region is selected.
 
@@ -549,7 +549,7 @@ move the cursor by ARG lines."
     (set-mark-command nil))
   (forward-line arg))
 
-(defun ni-comment-region-or-line-and-go-down (arg)
+(defun ni-comment-region-or-line-and-go-down (&optional arg)
   "Kill active region if active"
   (interactive "p")
   (if mark-active
@@ -561,7 +561,7 @@ move the cursor by ARG lines."
       (back-to-indentation)))
   )
 
-(defun ni-uncomment-region-or-line-and-go-up (arg)
+(defun ni-uncomment-region-or-line-and-go-up (&optional arg)
   "Kill active region if active"
   (interactive "p")
   (if mark-active
