@@ -92,11 +92,6 @@
  (global-set-key (kbd "C-=") 'agl-increase-font-size)
  (global-set-key (kbd "C--") 'agl-decrease-font-size)
 
- ;; Goto line
- (global-set-key (key "C-l") 'goto-line-preview)
- ;; Remap recenter-top-bottom (which is mapped to Ctrl-l by default) to Ctrl-Shift-L
- (global-set-key (key "C-S-l") 'recenter-top-bottom)
-
  ;; Search and replace in the current buffer
  (global-set-key "\C-h\C-h" 'qrr)
 
