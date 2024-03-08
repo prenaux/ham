@@ -347,7 +347,7 @@ If the new path's directories does not exist, create them."
   (setq buffer-display-table (make-display-table))
   (aset buffer-display-table ?\^M []))
 
-(defun my-indent-buffer ()
+(defun ni-indent-buffer ()
   (interactive)
   ;; (begining-of-buffer)
   (untabify (point-min) (point-max))
@@ -355,7 +355,7 @@ If the new path's directories does not exist, create them."
   (remove-dos-eol)
   (indent-region (point-min) (point-max)))
 
-(defun my-indent-marked-files ()
+(defun ni-indent-marked-files ()
   (interactive)
   (setq num-files (length (dired-get-marked-files)))
   (setq count 1)
@@ -363,12 +363,21 @@ If the new path's directories does not exist, create them."
     (message (format "Indenting %s (%d/%d)" file count num-files))
     (find-file file)
     (ignore-errors
-      (my-indent-buffer))
+      (ni-indent-buffer))
     (save-buffer)
     (kill-buffer nil)
     (setq count (+ count 1))
   )
   (message (format "Done indenting %d files" num-files)))
+
+(defun ni-indent-region-or-buffer ()
+  "If there's an active region indent it, if not dos2unix and indent the whole file."
+  (interactive)
+  (if (use-region-p)
+    (progn
+      (indent-region (region-beginning) (region-end))
+      (message "Indented selected region."))
+    (ni-indent-buffer)))
 
 ;;;======================================================================
 ;;; --- Disable unneeded warnings ---

@@ -180,7 +180,8 @@
  (global-set-key "\C-h\C-k" 'ham-grep-work-regexp)
 
  ;; Indent region
- (define-key global-map "\C-h\C-\\" 'indent-region)
+ (bind-key* "C-h C-\\" 'ni-indent-region-or-buffer)
+ (bind-key* "C-M-\\" 'ni-indent-region-or-buffer)
 
  ;; Disable C-MouseWheel to zoom text. Note that you can use
  ;; Super/Cmd/Window-0,-,+ to change the font size in a buffer.
