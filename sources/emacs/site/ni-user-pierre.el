@@ -431,10 +431,9 @@ If the new path's directories does not exist, create them."
  ;; ejs
  (add-to-list 'auto-mode-alist '("\\.ejs\\'" . web-mode))
  ;; Javascript / JSX, only use web-mode for JS/JSX in Emacs24
- (GNUEmacs24
-  (add-to-list 'auto-mode-alist '("\\.js$" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
-  (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'"))))
+ (add-to-list 'auto-mode-alist '("\\.js$" . web-mode))
+ (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
+ (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
  ;; Misc
  (add-to-list 'auto-mode-alist '("\\.ftl\\'" . web-mode))
 
