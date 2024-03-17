@@ -67,7 +67,7 @@
  '(font-latex-math-face ((t (:foreground "aquamarine1"))))
  '(font-lock-type-face ((t (:foreground "white"))))
  '(font-lock-builtin-face ((t (:foreground "white"))))
- '(font-lock-function-name-face ((t (:foreground "gold" :italic t))))
+ '(font-lock-function-name-face ((t (:foreground "gold"))))
  ;; (font-lock-function-name-face ((t (:foreground "selectedControlColor"))))
  ;; (font-lock-variable-name-face ((t (:foreground "green"))))
  ;; (font-lock-negation-char-face ((t (:foreground "white"))))
@@ -127,13 +127,13 @@
  '(nxml-element-prefix ((t (:foreground "#EC9852"))))
  ;; python customization
  ;; self, None, True, False, ... keywords
- '(py-pseudo-keyword-face ((t (:foreground "#ABCDEF" :italic t))))
+ '(py-pseudo-keyword-face ((t (:foreground "#ABCDEF"))))
  ;; object, open, exec etc
  '(py-builtins-face ((t (:foreground "white" :bold t))))
  ;; numbers
  '(py-number-face ((t (:foreground "cyan1"))))
  ;; method decorators, starting with @
- '(py-decorators-face ((t (:foreground "#BBB5B9" :italic t))))
+ '(py-decorators-face ((t (:foreground "#BBB5B9"))))
  ;; Scala mode colors
  '(scala-font-lock:var-face ((t (:foreground "Magenta"))))
  ;; erc colors
