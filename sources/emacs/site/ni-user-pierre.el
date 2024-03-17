@@ -439,10 +439,17 @@ If the new path's directories does not exist, create them."
  (add-to-list 'auto-mode-alist '("\\.htm?\\'" . web-mode))
  ;; ejs
  (add-to-list 'auto-mode-alist '("\\.ejs\\'" . web-mode))
- ;; Javascript / JSX, only use web-mode for JS/JSX in Emacs24
- (add-to-list 'auto-mode-alist '("\\.js$" . web-mode))
- (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
+
+ ;; Javascript / JSX, use js-jsx-mode if its available
  (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
+ (if (fboundp 'js-jsx-mode)
+    (progn
+      (add-to-list 'auto-mode-alist '("\\.js$" . js-jsx-mode))
+      (add-to-list 'auto-mode-alist '("\\.jsx$" . js-jsx-mode)))
+    (progn
+      (add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
+      (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))))
+
  ;; Misc
  (add-to-list 'auto-mode-alist '("\\.ftl\\'" . web-mode))
 
@@ -485,6 +492,7 @@ If the new path's directories does not exist, create them."
   "Revert TAB key binding."
   (local-unset-key [tab]))
  (add-hook 'php-mode-hook 'ni-unbind-tab-hook)
+
 )
 
 ;;;======================================================================
