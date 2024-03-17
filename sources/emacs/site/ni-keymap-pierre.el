@@ -179,9 +179,11 @@
  ;; ham-grep in the Work directories
  (global-set-key "\C-h\C-k" 'ham-grep-work-regexp)
 
- ;; Indent region
+ ;; Indent
  (bind-key* "C-h C-\\" 'ni-indent-region-or-buffer)
  (bind-key* "C-M-\\" 'ni-indent-region-or-buffer)
+ (bind-key* "<tab>" 'indent-for-tab-command)
+ (bind-key* "C-i" 'indent-for-tab-command)
 
  ;; Disable C-MouseWheel to zoom text. Note that you can use
  ;; Super/Cmd/Window-0,-,+ to change the font size in a buffer.
@@ -199,14 +201,14 @@
 ;;;=====================================================================
 
  ;; Unset the leader key
- (global-unset-key (key "M-/"))
+ (global-unset-key (key "M-,"))
 
  ;; Commands
  (bind-key* "M-g" 'keyboard-escape-quit)
  (bind-key* "M-z" 'undo)
- (bind-key* "C-i" (make-ni-expand))
+ (bind-key* "M-/" (make-ni-expand))
  (bind-key* "M-s" 'ni-start-from-new-line)
- (bind-key* "M-/ M-s" 'ni-start-from-new-top-line)
+ (bind-key* "M-, M-s" 'ni-start-from-new-top-line)
  (bind-key* "M-." 'ni-counsel-rg-at-point)
 
  ;; Macros
@@ -214,9 +216,8 @@
  (bind-key* "M-6" 'kmacro-start-macro)
  (bind-key* "M-7" 'kmacro-end-macro)
 
- ;; Nav & Splits
- (bind-key* "C-1" 'zygospore-toggle-delete-other-windows)
- (bind-key* "M-1" 'other-window)
+ ;; Splits
+ (bind-key* "M-1" 'zygospore-toggle-delete-other-windows)
  (bind-key* "M-2" 'split-window-below)
  (bind-key* "M-3" 'split-window-right)
  (bind-key* "M-4" 'delete-window)
@@ -230,21 +231,21 @@
  (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
 
  ;; Region
- (bind-key* "M-t" 'ni-select-current-line-and-forward-line)
+ (bind-key* "M-t" 'ni-select-current-paragraph-and-forward-paragraph)
  (bind-key* "M-a" 'ni-select-current-line-and-forward-line)
  (bind-key* "M-r" 'er/expand-region)
- (bind-key* "M-/ M-r" 'er/contract-region)
+ (bind-key* "M-, M-r" 'er/contract-region)
 
  ;; Goto
- (bind-key* "M-/ M-/" 'ni-goto-matching-bracket)
- (bind-key* "M-/ M-l" 'goto-line)
- (bind-key* "M-/ M-," 'back-button-local-backward)
- (bind-key* "M-/ M-." 'back-button-local-forward)
+ (bind-key* "M-, M-k" 'ni-goto-matching-bracket)
+ (bind-key* "M-, M-l" 'goto-line)
+ (bind-key* "M-, M-," 'back-button-local-backward)
+ (bind-key* "M-, M-." 'back-button-local-forward)
 
  ;; Comment/uncomment
  (bind-key* "M-;" 'ni-comment-dwim)
- (bind-key* "M-/ M-c" 'ni-comment-region-or-line-and-go-down)
- (bind-key* "M-/ M-v" 'ni-uncomment-region-or-line-and-go-up)
+ (bind-key* "M-, M-c" 'ni-comment-region-or-line-and-go-down)
+ (bind-key* "M-, M-v" 'ni-uncomment-region-or-line-and-go-up)
 
  ;; Error nav
  (bind-key* "<f1>" 'aflymake-goto-prev-error)

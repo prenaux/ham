@@ -549,6 +549,19 @@ move the cursor by ARG lines."
     (set-mark-command nil))
   (forward-line arg))
 
+(defun ni-select-current-paragraph-and-forward-paragraph (&optional arg)
+  "Select the current paragraph and move the cursor by ARG paragraphs IF no
+region is selected.
+
+If a region is already selected when calling this command, only
+move the cursor by ARG paragraphs."
+  (interactive "p")
+  (when (not (use-region-p))
+    (beginning-of-line)
+    (forward-paragraph 0)
+    (set-mark-command nil))
+  (forward-paragraph arg))
+
 (defun ni-comment-region-or-line-and-go-down (&optional arg)
   "Kill active region if active"
   (interactive "p")
