@@ -1,0 +1,72 @@
+if [ SubDirOnce TOP specs toolsets openxr_cppm ] = 1 { return ; }
+
+LINKLIBS += advapi32.lib ;
+
+ECHO "... OPENXR_CPPM ..." ;
+
+### openxr_cppm #######################################################
+tkDefModuleLib openxr_cppm : 1.0.0 ;
+
+SubDirHdrs $(SUBDIR) github-openxr src ;
+SubDirHdrs $(SUBDIR) github-openxr include ;
+SubDirHdrs $(SUBDIR) github-openxr src external jsoncpp include ;
+SubDirHdrs $(SUBDIR) github-openxr src common ;
+SubDirHdrs $(SUBDIR) github-openxr src loader ;
+
+XR_USE_GRAPHICS_API_OPENGL = 1 ;
+if $(TARGET_OS) = NT {
+  XR_USE_GRAPHICS_API_D3D12 = 1 ;
+}
+
+# Copied from github-openxr/src/loader/CMakeLists.txt
+SRC =
+
+#src
+[ tkPkgSrcSubDirLst [ FDirName github-openxr src ] :
+  xr_generated_dispatch_table_core.c
+]
+
+# src/loader
+[ tkPkgSrcSubDirLst [ FDirName github-openxr src loader ] :
+  android_utilities.cpp
+  api_layer_interface.cpp
+  loader_core.cpp
+  loader_init_data.cpp
+  loader_instance.cpp
+  loader_logger.cpp
+  loader_logger_recorders.cpp
+  manifest_file.cpp
+  runtime_interface.cpp
+  xr_generated_loader.cpp
+]
+
+# src/common
+[ tkPkgSrcSubDirLst [ FDirName github-openxr src common ] :
+  object_info.cpp
+  filesystem_utils.cpp
+]
+
+# src/external/jsoncpp/src/lib_json
+[ tkPkgSrcSubDirLst [ FDirName github-openxr src external jsoncpp src lib_json ] :
+  json_reader.cpp
+  json_value.cpp
+  json_writer.cpp
+] ;
+
+AssertFExists openxr_cppm : $(SRC) ;
+
+BUILD_SRC = [ tkBuildPackage $(SRC) : exc rtti : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+
+ObjectDefines $(BUILD_SRC) : XR_CURRENT_API_MAJOR_VERSION=1 XR_CURRENT_API_MINOR_VERSION=0 XR_CURRENT_API_PATCH_VERSION=34 XR_USE_GRAPHICS_API_OPENGL XR_USE_TIMESPEC ;
+
+if $(WINDOWS) = 1 {
+  ObjectDefines $(BUILD_SRC) : XR_OS_WINDOWS XR_USE_PLATFORM_WIN32 NOMINMAX XR_USE_GRAPHICS_API_D3D11 XR_USE_GRAPHICS_API_D3D12 ;
+}
+
+if $(OSX) = 1 {
+  ObjectDefines $(BUILD_SRC) : XR_OS_APPLE XR_USE_PLATFORM_MACOS ;
+}
+
+
+
+

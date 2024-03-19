@@ -1,0 +1,14 @@
+#!/bin/bash -e
+if [[ -z $HAM_PROJECT_DIR ]]; then
+    echo "E/HAM_PROJECT_DIR not set !"
+    return 1
+fi
+
+if [ ! -d "github-openxr" ]; then
+  toolset_import_list repos || return 1
+  (set -x ; git clone --depth 1 https://github.com/KhronosGroup/OpenXR-SDK.git github-openxr)
+else
+  echo "I/cppm-openxr: github-openxr already cloned"
+fi
+
+toolset_import_list repos cppm || return 1
