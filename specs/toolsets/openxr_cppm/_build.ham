@@ -1,9 +1,5 @@
 if [ SubDirOnce TOP specs toolsets openxr_cppm ] = 1 { return ; }
 
-LINKLIBS += advapi32.lib ;
-
-ECHO "... OPENXR_CPPM ..." ;
-
 ### openxr_cppm #######################################################
 tkDefModuleLib openxr_cppm : 1.0.0 ;
 
@@ -60,13 +56,10 @@ BUILD_SRC = [ tkBuildPackage $(SRC) : exc rtti : $(CHK_SOURCES) : $(SRC_EXTRA) ]
 ObjectDefines $(BUILD_SRC) : XR_CURRENT_API_MAJOR_VERSION=1 XR_CURRENT_API_MINOR_VERSION=0 XR_CURRENT_API_PATCH_VERSION=34 XR_USE_GRAPHICS_API_OPENGL XR_USE_TIMESPEC ;
 
 if $(WINDOWS) = 1 {
+  TargetLinkLibs $(PKGTARGET) : advapi32.lib ;
   ObjectDefines $(BUILD_SRC) : XR_OS_WINDOWS XR_USE_PLATFORM_WIN32 NOMINMAX XR_USE_GRAPHICS_API_D3D11 XR_USE_GRAPHICS_API_D3D12 ;
 }
 
 if $(OSX) = 1 {
   ObjectDefines $(BUILD_SRC) : XR_OS_APPLE XR_USE_PLATFORM_MACOS ;
 }
-
-
-
-
