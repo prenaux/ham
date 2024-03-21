@@ -1,6 +1,9 @@
 # https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md
 notARepository: 'skip' # one of: 'prompt' | 'create' | 'skip'
 gui:
+  windowSize: 'normal'
+  mainPanelSplitMode: 'vertical'
+  enlargedSideViewLocation: 'top'
   timeFormat: "20060102"
   scrollPastBottom: false
   scrollHeight: 10
