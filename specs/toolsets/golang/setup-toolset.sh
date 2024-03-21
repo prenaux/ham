@@ -7,11 +7,14 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/golang"
 
 # We use a tag file to mark the version so that upgrades are automatically
 # handled when we update the version number
-GOLANG_DL_VER=1.21.6
+GOLANG_DL_VER=1.22.1
 GOLANG_DL_TAG=$(echo v${GOLANG_DL_VER} | tr '.' '_')
 export GOLANG_DIR="${HAM_TOOLSET_DIR}/${HAM_BIN_LOA}/go"
-export GOPATH="${GOLANG_DIR}"
 export GOLANG_BIN_DIR="${GOLANG_DIR}/bin"
+
+# Should be set per project in _ham_project, but this is a reasonable default
+export GOPATH="${HAM_TOOLSET_DIR}/dist/"
+mkdir -p "$GOPATH"
 
 pathenv_add "${HAM_TOOLSET_DIR}"
 if [ ! -f "$GOLANG_DIR/$GOLANG_DL_TAG" ]; then
@@ -19,6 +22,14 @@ if [ ! -f "$GOLANG_DIR/$GOLANG_DL_TAG" ]; then
   case "$HAM_BIN_LOA" in
     lin-x64)
       GOLANG_DL_NAME="go${GOLANG_DL_VER}.linux-amd64"
+      GOLANG_DL_FN="${GOLANG_DL_NAME}.tar.gz"
+      ;;
+    osx-arm64)
+      GOLANG_DL_NAME="go${GOLANG_DL_VER}.darwin-arm64"
+      GOLANG_DL_FN="${GOLANG_DL_NAME}.tar.gz"
+      ;;
+    osx-amd64)
+      GOLANG_DL_NAME="go${GOLANG_DL_VER}.darwin-amd64"
       GOLANG_DL_FN="${GOLANG_DL_NAME}.tar.gz"
       ;;
     *)
