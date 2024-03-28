@@ -8,7 +8,7 @@ if [ ! -d "$JAVA_HOME" ] || [ -z "$(where_inpath java)" ]; then
       toolset_import_once java_jdk_11 || return 1
       ;;
     LINUX)
-      toolset_import_once java_jdk18 || return 1
+      toolset_import_once java_jdk_21 || return 1
       ;;
     *)
       echo "E/Toolset: Unsupported host OS"
