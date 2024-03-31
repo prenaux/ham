@@ -1,0 +1,14 @@
+actions together piecemeal Archive
+{
+  $(AR) "$(<)" "$(>:T)"
+}
+
+actions DllLink bind NEEDLIBS
+{
+  $(LINK) $(LINKFLAGS) $(LINKFLAGS_DLL) -fvisibility=hidden -shared -o "$(<)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+}
+
+actions Link bind NEEDLIBS
+{
+  $(LINK) $(LINKFLAGS) $(LINKFLAGS_EXE) $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
+}

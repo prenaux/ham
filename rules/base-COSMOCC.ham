@@ -1,0 +1,24 @@
+COSMOCC = 1 ;
+OSPLAT = COSMO ;
+
+SLASH  ?= / ;
+SUFOBJ ?= .o ;
+SUFLIB ?= .a ;
+PREFIXDLL ?= ;
+CHMOD  ?= chmod ;
+SUFEXE = .com ;
+SUFDLL = .dll_not_supported ;
+
+C++FLAGS ?= ;
+CCFLAGS  ?= ;
+
+CC   ?= cosmocc ;
+C++  ?= cosmocc ;
+LINK ?= cosmocc ;
+AR   ?= cosmoar ;
+
+LINKFLAGS   ?= "" ;
+LINKLIBS    ?=  ;
+OPTIM       ?= "" ;
+STDHDRS     ?= ;
+UNDEFFLAG   ?= "-u _" ;
