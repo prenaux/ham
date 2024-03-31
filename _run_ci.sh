@@ -5,7 +5,7 @@ echo "I/Setup ham environment"
 echo "I/Run cosmo_pi.com"
 (
   set -x
-  time "$HAM_HOME/bin/cosmo_pi.com"
+  time cosmo-run "$HAM_HOME/bin/cosmo_pi.com"
 )
 
 echo "I/Build ham"
