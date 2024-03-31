@@ -63,6 +63,9 @@ case "$TARGET_BIN_LOA" in
   ios-arm64)
     TOOLSET_NAME=ios
     ;;
+  cosmocc)
+    TOOLSET_NAME=cosmocc
+    ;;
   *) ;;
 esac
 
