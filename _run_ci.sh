@@ -22,10 +22,18 @@ echo "I/Run ham tests"
   ham all
 )
 
+echo "I/Build and run pi with ham & the default toolset"
+(
+  set -x
+  git-cleanup-repo doit "$HAM_HOME/sources/ham/tests/pi"
+  BUILD_TARGET=default hamx -dx :ham/sources/ham/tests/pi Run_pi
+)
+
 echo "I/Build and run pi with ham"
 (
   set -x
-  ham -X ham/sources/ham/tests/pi Run_pi
+  git-cleanup-repo doit "$HAM_HOME/sources/ham/tests/pi"
+  BUILD_TARGET=cosmocc hamx -dx :ham/sources/ham/tests/pi Run_pi
 )
 
 echo "I/Test examples"
