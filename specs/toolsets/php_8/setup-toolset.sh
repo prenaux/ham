@@ -4,6 +4,10 @@
 export HAM_TOOLSET=PHP
 export HAM_TOOLSET_NAME=php_8
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/php_8"
+export HAM_TOOLSET_PHP_8_VER="1"
+
+TAG="php_8-${HAM_OS}-v24_04_09"
+TAGFILE="$TEMPDIR/php_8-${HAM_OS}-tag.txt"
 
 # path setup
 case $HAM_OS in
@@ -23,8 +27,14 @@ case $HAM_OS in
     ;;
   LINUX*)
     export HAM_PHP_VERSION=8.2
-    if [ -z "$(where_inpath "php$HAM_PHP_VERSION")" ]; then
-      echo "W/php $HAM_PHP_VERSION not found, trying to install with sudo..."
+    TAGFILE_STATUS="$(tagfile_status "$TAGFILE" "$TAG")"
+    if [ "$TAGFILE_STATUS" == "outdated" ] || [ "$TAGFILE_STATUS" == "no_tagfile" ]; then
+      FORCE_UPDATE="true"
+    else
+      FORCE_UPDATE="false"
+    fi
+    if [ -z "$(where_inpath "php$HAM_PHP_VERSION")" ] || [ "$FORCE_UPDATE" = "true" ]; then
+      echo "W/php $HAM_PHP_VERSION not found or outdated, trying to install with sudo..."
       (
         set -ex
         sudo add-apt-repository -y ppa:ondrej/php
@@ -64,3 +74,6 @@ $(composer -V)"; then
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
+
+# Update tag file
+tagfile_update "$TAGFILE" "$TAG"
