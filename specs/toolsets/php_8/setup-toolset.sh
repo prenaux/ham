@@ -4,7 +4,6 @@
 export HAM_TOOLSET=PHP
 export HAM_TOOLSET_NAME=php_8
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/php_8"
-export HAM_TOOLSET_PHP_8_VER="1"
 
 TAG="php_8-${HAM_OS}-v24_04_09"
 TAGFILE="$TEMPDIR/php_8-${HAM_OS}-tag.txt"
