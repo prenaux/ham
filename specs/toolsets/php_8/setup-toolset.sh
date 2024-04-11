@@ -5,9 +5,6 @@ export HAM_TOOLSET=PHP
 export HAM_TOOLSET_NAME=php_8
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/php_8"
 
-TAG="php_8-${HAM_OS}-v24_04_09"
-TAGFILE="$TEMPDIR/php_8-${HAM_OS}-tag.txt"
-
 # path setup
 case $HAM_OS in
   OSX*)
@@ -26,13 +23,10 @@ case $HAM_OS in
     ;;
   LINUX*)
     export HAM_PHP_VERSION=8.2
+    TAG="php_8-${HAM_OS}-v24_04_09"
+    TAGFILE="$TEMPDIR/php_8-${HAM_OS}-tag.txt"
     TAGFILE_STATUS="$(tagfile_status "$TAGFILE" "$TAG")"
-    if [ "$TAGFILE_STATUS" == "outdated" ] || [ "$TAGFILE_STATUS" == "no_tagfile" ]; then
-      FORCE_UPDATE="true"
-    else
-      FORCE_UPDATE="false"
-    fi
-    if [ -z "$(where_inpath "php$HAM_PHP_VERSION")" ] || [ "$FORCE_UPDATE" = "true" ]; then
+    if [ -z "$(where_inpath "php$HAM_PHP_VERSION")" ] || [ "$TAGFILE_STATUS" == "outdated" ] || [ "$TAGFILE_STATUS" == "no_tagfile" ]; then
       echo "W/php $HAM_PHP_VERSION not found or outdated, trying to install with sudo..."
       (
         set -ex
@@ -40,6 +34,8 @@ case $HAM_OS in
         sudo apt-get -y update
         ham-apt-get-install php$HAM_PHP_VERSION-common php$HAM_PHP_VERSION-mysql php$HAM_PHP_VERSION-xml php$HAM_PHP_VERSION-xmlrpc php$HAM_PHP_VERSION-curl php$HAM_PHP_VERSION-gd php$HAM_PHP_VERSION-imagick php$HAM_PHP_VERSION-cli php$HAM_PHP_VERSION-dev php$HAM_PHP_VERSION-imap php$HAM_PHP_VERSION-mbstring php$HAM_PHP_VERSION-opcache php$HAM_PHP_VERSION-pgsql php$HAM_PHP_VERSION-soap php$HAM_PHP_VERSION-sqlite3 php$HAM_PHP_VERSION-zip php$HAM_PHP_VERSION-intl php$HAM_PHP_VERSION-fpm php$HAM_PHP_VERSION-gmp php$HAM_PHP_VERSION-bcmath
       ) || return 1
+      # Update tag file
+      tagfile_update "$TAGFILE" "$TAG"
     fi
     export HAM_PHP_EXE_PATH="/usr/bin/php$HAM_PHP_VERSION"
     export HAM_PHP_FPM_EXE_PATH="/usr/sbin/php-fpm$HAM_PHP_VERSION"
@@ -73,6 +69,3 @@ $(composer -V)"; then
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"
-
-# Update tag file
-tagfile_update "$TAGFILE" "$TAG"
