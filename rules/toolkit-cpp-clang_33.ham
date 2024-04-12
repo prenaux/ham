@@ -13,6 +13,7 @@ CLANG_CC_ARGS +=
   -Wno-switch
   -Wno-#pragma-messages
   -Wno-unused-value
+  -Wno-unknown-warning-option
 ;
 if $(LINUX) {
   CLANG_CPP_ARGS +=
