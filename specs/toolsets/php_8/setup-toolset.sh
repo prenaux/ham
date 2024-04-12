@@ -23,14 +23,19 @@ case $HAM_OS in
     ;;
   LINUX*)
     export HAM_PHP_VERSION=8.2
-    if [ -z "$(where_inpath "php$HAM_PHP_VERSION")" ]; then
-      echo "W/php $HAM_PHP_VERSION not found, trying to install with sudo..."
+    TAG="php_8-${HAM_OS}-v24_04_09"
+    TAGFILE="$TEMPDIR/php_8-${HAM_OS}-tag.txt"
+    TAGFILE_STATUS="$(tagfile_status "$TAGFILE" "$TAG")"
+    if [ -z "$(where_inpath "php$HAM_PHP_VERSION")" ] || [ "$TAGFILE_STATUS" == "outdated" ] || [ "$TAGFILE_STATUS" == "no_tagfile" ]; then
+      echo "W/php $HAM_PHP_VERSION not found or outdated, trying to install with sudo..."
       (
         set -ex
         sudo add-apt-repository -y ppa:ondrej/php
         sudo apt-get -y update
         ham-apt-get-install php$HAM_PHP_VERSION-common php$HAM_PHP_VERSION-mysql php$HAM_PHP_VERSION-xml php$HAM_PHP_VERSION-xmlrpc php$HAM_PHP_VERSION-curl php$HAM_PHP_VERSION-gd php$HAM_PHP_VERSION-imagick php$HAM_PHP_VERSION-cli php$HAM_PHP_VERSION-dev php$HAM_PHP_VERSION-imap php$HAM_PHP_VERSION-mbstring php$HAM_PHP_VERSION-opcache php$HAM_PHP_VERSION-pgsql php$HAM_PHP_VERSION-soap php$HAM_PHP_VERSION-sqlite3 php$HAM_PHP_VERSION-zip php$HAM_PHP_VERSION-intl php$HAM_PHP_VERSION-fpm php$HAM_PHP_VERSION-gmp php$HAM_PHP_VERSION-bcmath
       ) || return 1
+      # Update tag file
+      tagfile_update "$TAGFILE" "$TAG"
     fi
     export HAM_PHP_EXE_PATH="/usr/bin/php$HAM_PHP_VERSION"
     export HAM_PHP_FPM_EXE_PATH="/usr/sbin/php-fpm$HAM_PHP_VERSION"
