@@ -21,14 +21,17 @@ if $(OS) = MACOSX
   }
 
   # cf https://en.wikipedia.org/wiki/MacOS_version_history
-  # 10.10 Yosemite
-  # 10.11 El Capitan
-  # 10.12 Sierra
-  # 10.13 High Sierra
-  # 10.14 Mojave
-  # 10.15 Catalina
-  # 11 Big Sur
-  MACOSX_MINVER ?= 10.14 ;
+  # 10.10 Yosemite (2014)
+  # 10.11 El Capitan (2015)
+  # 10.12 Sierra (2016)
+  # 10.13 High Sierra (2017)
+  # 10.14 Mojave (2018)
+  # 10.15 Catalina (2019)
+  # 11 Big Sur (2020)
+  # 12 Monterey (2021)
+  # 13 Ventura (2022)
+  # 14 Sonoma (2023)
+  MACOSX_MINVER ?= 11 ;
 
   CLANG_BASE_FLAGS =
     -arch $(MACOSX_ARCH)
