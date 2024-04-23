@@ -3,6 +3,8 @@ export HAM_TOOLSET=openxr_cppm
 export HAM_TOOLSET_NAME=openxr_cppm
 export HAM_TOOLSET_DIR="${HAM_HOME}/specs/toolsets/openxr_cppm"
 
+export HAM_HDRS_OPENXR_CPPM="${HAM_TOOLSET_DIR}/github-openxr/include"
+
 case $HAM_OS in
   NT*) ;;
   *)
