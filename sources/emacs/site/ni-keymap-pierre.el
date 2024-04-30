@@ -239,6 +239,7 @@
  ;; Goto
  (bind-key* "M-, M-k" 'ni-goto-matching-bracket)
  (bind-key* "M-, M-l" 'goto-line)
+ (bind-key* "C-l" 'goto-line)
  (bind-key* "M-, M-," 'back-button-local-backward)
  (bind-key* "M-, M-." 'back-button-local-forward)
 
