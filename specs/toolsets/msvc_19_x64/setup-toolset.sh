@@ -40,7 +40,7 @@ fi
 ########################################################################
 ##  Find devenv.exe to setup RUN_DEBUGGER
 ########################################################################
-# This will always override the MSVC_IDE_DIR.
+
 # NOTE: This is quite slow and should be used only once during setup.
 toolset_find_msvc_ide_dir() {
   # We assume that all combinations of visual studio versions and editions
@@ -80,33 +80,22 @@ toolset_find_msvc_ide_dir() {
       done
     done
   done
-  return 1
-}
 
-toolset_find_msvc_file() {
-  local ide_dir="${MSVC_IDE_DIR}"
-  if [ ! -d "${ide_dir}" ]; then
-    ide_dir=$(toolset_find_msvc_ide_dir) || return 1
-  fi
-  local file="${1}"
-  local path="${ide_dir}\\${file}"
-  if [ -f "${path}" ]; then
-    echo "$path"
+
+  ide_dir="c:/Program Files (x86)/Microsoft Visual Studio 12.0/Common7/IDE/"
+  if [ -d "$ide_dir" ] && [ -f "$ide_dir/devenv.exe" ]; then
+    echo "${ide_dir}"
     return 0
   fi
-  return 1
-}
 
-toolset_find_msvc_devenv() {
-  local devenv
-  devenv=$(toolset_find_msvc_file "devenv.exe") || return 1
-  echo "${devenv}"
-  return 0
+  echo "__cant_find_msvc_ide_dir__"
+  return 1
 }
 
 MSVC_IDE_DIR=$(toolset_find_msvc_ide_dir)
 export MSVC_IDE_DIR
-RUN_DEBUGGER=$(toolset_find_msvc_devenv)
+echo "I/MSVC_IDE_DIR '$MSVC_IDE_DIR'"
+RUN_DEBUGGER="$MSVC_IDE_DIR/devenv.exe"
 export RUN_DEBUGGER
 export RUN_DEBUGGER_PARAMS=-debugexe
 
