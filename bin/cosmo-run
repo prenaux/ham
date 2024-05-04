@@ -1,0 +1,61 @@
+#!/bin/bash
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+usage() {
+  echo "usage:"
+  echo "  cosmo-run COM PARAMS"
+  echo "    Run the specified cosmocc executable."
+  echo "  cosmo-run ape_install"
+  echo "    Install the APE executable format handler on Linux. This enable using"
+  echo "    cosmo exe on Linux without using cosmo-run. Requires sudo access."
+  exit 1
+}
+
+if [ "$1" == "ape_install" ]; then
+  log_info "Installing APE binary handler..."
+  case $HAM_OS in
+    LINUX*)
+      (
+        set -x
+        sudo wget -O /usr/bin/ape https://cosmo.zip/pub/cosmos/bin/ape-$(uname -m).elf
+        sudo chmod +x /usr/bin/ape
+        sudo sh -c "echo ':APE:M::MZqFpD::/usr/bin/ape:' >/proc/sys/fs/binfmt_misc/register"
+        sudo sh -c "echo ':APE-jart:M::jartsr::/usr/bin/ape:' >/proc/sys/fs/binfmt_misc/register"
+      )
+      log_info "Done."
+      ;;
+    *)
+      log_info "APE binary handler install not needed on this platform '$HAM_OS'."
+      ;;
+  esac
+  exit 0
+fi
+
+if [ -z "$1" ]; then
+  log_error "Com exe to run not specified."
+  usage
+fi
+COM=$1
+shift
+
+COM_PATH=$COM
+if [ -e "$COM_PATH" ]; then
+  # log_info "Running '$COM_PATH'."
+  # log_info "In '$(pwd)'."
+  # set -x
+  case $HAM_OS in
+    LINUX*)
+      sh "$COM_PATH" "$@"
+      ;;
+    *)
+      "$COM_PATH" "$@"
+      ;;
+  esac
+else
+  log_error "'$COM' not found."
+  exit 1
+fi

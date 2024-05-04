@@ -1,0 +1,19 @@
+actions together piecemeal Archive
+{
+  $(AR) "$(<)" "$(>:T)"
+}
+
+actions DllLink bind NEEDLIBS
+{
+  $(LINK) $(LINKFLAGS) $(LINKFLAGS_DLL) -fvisibility=hidden -shared -o "$(<)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+}
+
+actions Link bind NEEDLIBS
+{
+  $(LINK) $(LINKFLAGS) $(LINKFLAGS_EXE) $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
+}
+
+actions RunExe {
+  cd $(WORKDIR)
+  cosmo-run "./$(>)$(SUFEXE)" $(A0) $(A1) $(A2) $(A3) $(A4) $(A5) $(A6) $(A7) $(A8) $(A9)
+}

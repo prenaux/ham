@@ -8,7 +8,7 @@ fi
 
 # IMPORTANT: Update the tag date when you make any change to the list of
 # packages installed. You can replace the date with the output of `arch_datez`
-TAG="ham-install-os-packages-${HAM_OS}-v23_12_10"
+TAG="ham-install-os-packages-${HAM_OS}-v24_04_01"
 TAGFILE="$TEMPDIR/ham-install-os-packages-${HAM_OS}-tag.txt"
 
 if [[ $(tagfile_status "$TAGFILE" "$TAG") == "up-to-date" ]]; then
@@ -37,6 +37,11 @@ case $HAM_OS in
     ;;
   LINUX)
     if [ "$(type apt-get 2>/dev/null | wc -l)" = 1 ]; then
+      echo "I/Installing Cosmo APE binary format handler"
+      (
+        set -ex
+        "$HAM_HOME/bin/cosmo-run" ape_install
+      )
       echo "### Installing packages required by ham on Linux (apt-get) ###"
       echo "I/Installing apt-get packages"
       (

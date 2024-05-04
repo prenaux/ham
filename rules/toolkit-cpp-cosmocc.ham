@@ -1,0 +1,87 @@
+STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
+
+COSMOCC_CC_ARGS +=
+  -ffunction-sections
+  -fdata-sections
+  -fvisibility=hidden
+  -Wno-return-type-c-linkage
+  -Wno-switch
+  -Wno-#pragma-messages
+  -Wno-unused-value
+  -Wno-deprecated-declarations
+  -Wno-gnu-inline-cpp-without-extern
+;
+COSMOCC_CPP_ARGS +=
+  -std=$(C++VERSION)
+  -Werror=c++11-narrowing
+;
+
+LINKFLAGS +=
+  -fvisibility=hidden
+  -ffunction-sections
+  -fdata-sections
+;
+
+if $(FLYMAKE) = 1 {
+  # Happens when we're compiling header files with flymake since the temporary
+  # flymake file is a cpp file.
+  COSMOCC_CC_ARGS +=
+    -Wno-pragma-once-outside-header
+  ;
+}
+
+CCFLAGS  += $(COSMOCC_CC_ARGS) ;
+C++FLAGS += $(COSMOCC_CC_ARGS) $(COSMOCC_CPP_ARGS) ;
+
+if $(FLYMAKE) = 1 {
+  COSMOCC_DBG_ARGS = -O0 $(STRICT_ALIASING_FLAGS) ;
+  # COSMOCC_DBG_ARGS = -ggdb -O0 $(STRICT_ALIASING_FLAGS) ;
+  COSMOCC_OPT_ARGS = $(COSMOCC_DBG_ARGS) ;
+}
+else {
+  ### "Debug" (da) build flags ###
+  COSMOCC_DBG_ARGS = -ggdb -O0 $(STRICT_ALIASING_FLAGS) ;
+  ### Optimized (ra) build flags ###
+  COSMOCC_OPT_ARGS = -ggdb -O2 $(STRICT_ALIASING_FLAGS) ;
+}
+
+### Link flags ###
+if $(COSMOCC_SANITIZE) = 1 {
+  LINKFLAGS += -fsanitize=address ;
+}
+LINKLIBS += ;
+
+rule tkCC++Build
+{
+  local t = $(<) ;
+  local strOpt = "" ;
+  # Set the debug infos generation
+  # Set the optimization flags
+  if $(DEBUG) = 1 {
+    PKGOPTIM += $(COSMOCC_DBG_ARGS) ;
+    strOpt += "(DebugOnly) " ;
+  }
+  # Set debug-only flags
+  else {
+    PKGOPTIM += $(COSMOCC_OPT_ARGS) ;
+    strOpt += "(Optimized) " ;
+  }
+  logVerbose "- CC++Build: " $(strOpt) ;
+}
+
+rule tkC++Exceptions {
+  ObjectC++Flags $(<) : -fexceptions ;
+}
+rule tkNoC++Exceptions {
+  ObjectC++Flags $(<) : -fno-exceptions ;
+}
+
+rule tkC++RTTI {
+  ObjectC++Flags $(<) : -frtti ;
+}
+rule tkNoC++RTTI {
+  ObjectC++Flags $(<) : -fno-rtti ;
+}
+
+rule tkCC++Lint {
+}

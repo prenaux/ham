@@ -2,6 +2,12 @@
 echo "I/Setup ham environment"
 . hat repos default shell_linter
 
+echo "I/Run cosmo_pi.com"
+(
+  set -x
+  time cosmo-run "$HAM_HOME/bin/cosmo_pi.com"
+)
+
 echo "I/Build ham"
 (
   set -x
@@ -22,10 +28,18 @@ echo "I/Run ham tests"
   ham all
 )
 
-echo "I/Build and run pi with ham"
+echo "I/Build and run pi with ham using the default toolset"
 (
   set -x
-  ham -X ham/sources/ham/tests/pi Run_pi
+  git-cleanup-repo doit "$HAM_HOME/sources/ham/tests/pi"
+  BUILD_TARGET=default hamx -dx :ham/sources/ham/tests/pi Run_pi
+)
+
+echo "I/Build and run pi with ham using the cosmocc toolset"
+(
+  set -x
+  git-cleanup-repo doit "$HAM_HOME/sources/ham/tests/pi"
+  BUILD_TARGET=cosmocc hamx -dx :ham/sources/ham/tests/pi Run_pi
 )
 
 echo "I/Test examples"
