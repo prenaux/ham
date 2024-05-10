@@ -5,11 +5,13 @@ export HAM_TOOLSET=PYTHON
 export HAM_TOOLSET_NAME=python_3
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/python_3"
 
+export HAM_PY3_VERSION=3.10
+
 # path setup
 case $HAM_OS in
   NT*)
     PYINSTALL_VERDIR=Python310
-    PYINSTALL_VERSION=3.10.11
+    PYINSTALL_VERSION=${HAM_PY3_VERSION}.11
     # Look for python in default install destination...
     export PYTHON3_DIR="$HOME/AppData/Local/Programs/Python/$PYINSTALL_VERDIR"
     if [ ! -e "$PYTHON3_DIR" ] || [ ! -e "$PYTHON3_DIR/python.exe" ]; then
@@ -43,18 +45,30 @@ case $HAM_OS in
     ;;
 
   OSX*)
-    export PYTHON3_VERSION=3.10
-    ham-brew-install python@${PYTHON3_VERSION} "bin/python${PYTHON3_VERSION}" || return 1
-    PYTHON3_HOME=$(ham-brew-installdir python@${PYTHON3_VERSION})
+    ham-brew-install python@${HAM_PY3_VERSION} "bin/python${HAM_PY3_VERSION}" || return 1
+    PYTHON3_HOME=$(ham-brew-installdir python@${HAM_PY3_VERSION})
     export PYTHON3_HOME
-    export PYTHON3_BINDIR="$HOME/Library/Python/${PYTHON3_VERSION}/bin"
+    export PYTHON3_BINDIR="$HOME/Library/Python/${HAM_PY3_VERSION}/bin"
     # Might not exist the first time we install python...
     mkdir -p "$PYTHON3_BINDIR"
     pathenv_add "$PYTHON3_BINDIR"
     ;;
 
   LINUX*)
-    pathenv_add "$HOME/.local/bin"
+    TAG="ham-py3-${HAM_OS}-v24_05_11"
+    TAGFILE="$TEMPDIR/ham-py3-${HAM_OS}-tag.txt"
+    TAGFILE_STATUS="$(tagfile_status "$TAGFILE" "$TAG")"
+    if [ -z "$(where_inpath "python$HAM_PY3_VERSION")" ] || [ "$TAGFILE_STATUS" == "outdated" ] || [ "$TAGFILE_STATUS" == "no_tagfile" ]; then
+      log_warning "Python $HAM_PY3_VERSION not found or outdated, trying to install with sudo..."
+      (
+        set -ex
+        sudo add-apt-repository -y ppa:deadsnakes/ppa
+        sudo apt-get -y update
+        ham-apt-get-install "python${HAM_PY3_VERSION}" "python${HAM_PY3_VERSION}-venv" python3-pip
+      ) || return 1
+      # Update tag file
+      tagfile_update "$TAGFILE" "$TAG"
+    fi
     ;;
 
   *)
@@ -68,9 +82,9 @@ pathenv_add "$HAM_TOOLSET_DIR"
 VER="--- python3 --------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
   if ! VER="$VER
-$(python3 --version 2>&1)
+$(ham-py3 --version 2>&1)
 --- pip3 -----------------------------
-$(pip3 --version 2>&1)"; then
+$(ham-pip3 --version 2>&1)"; then
     echo "E/Can't get python3 version."
     return 1
   fi

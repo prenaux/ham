@@ -13,4 +13,4 @@ toolset_import_once python_3 >/dev/null
 
 # Default BUILD_TARGET if hamx is passed
 export BUILD_TARGET=${BUILD_TARGET:-web-js}
-python3 "$SCRIPT_DIR/simple-http-server.py" "$@"
+ham-py3 "$SCRIPT_DIR/simple-http-server.py" "$@"

@@ -12,12 +12,12 @@ case $HAM_OS in
   NT)
     if [ ! -e "$PYTHON3_BINDIR/eb" ]; then
       echo "I/eb not found, installing..."
-      pip3 install awsebcli --upgrade --user
+      ham-pip3 install awsebcli --upgrade --user
       errcheck $? aws "E/Can't pip3 install awsebcli."
     fi
     if [ ! -e "$PYTHON3_BINDIR/aws" ]; then
       echo "I/aws not found, installing..."
-      pip3 install awscli --upgrade --user
+      ham-pip3 install awscli --upgrade --user
       errcheck $? aws "E/Can't pip3 install awscli."
     fi
     ;;
@@ -28,11 +28,11 @@ case $HAM_OS in
   LINUX)
     if [ ! -x "$(command -v eb)" ]; then
       echo "I/eb not found, installing..."
-      pip3 install awsebcli --upgrade --user
+      ham-pip3 install awsebcli --upgrade --user
     fi
     if [ ! -x "$(command -v aws)" ]; then
       echo "I/aws not found, installing..."
-      pip3 install awscli --upgrade --user
+      ham-pip3 install awscli --upgrade --user
     fi
     ;;
   *)
