@@ -46,3 +46,10 @@ if [ "$PY3_VENV_REQUIREMENTS_SHOULD_INSTALL" == "yes" ]; then
   py3-venv-pip-reinstall || return 1
   unset PY3_VENV_REQUIREMENTS_SHOULD_INSTALL
 fi
+
+EXPECTED_PY3_VER=$(ham-py3 --version)
+ACTUAL_PY3_VER=$(python3 --version)
+if [ "$EXPECTED_PY3_VER" != "$ACTUAL_PY3_VER" ]; then
+  complain "Expected python3 version '$EXPECTED_PY3_VER' but got '$ACTUAL_PY3_VER', please delete the venv directory '$VIRTUAL_ENV' and try again."
+  return 1
+fi
