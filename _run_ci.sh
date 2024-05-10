@@ -1,40 +1,39 @@
 #!/bin/bash -e
-echo "I/Setup ham environment"
 . hat repos default shell_linter
 
-echo "I/Build ham"
+log_info "Build ham"
 (
   set -x
   cd "$HAM_HOME/sources/ham"
   ./build-"${HAM_BIN_LOA}".sh
 )
 
-echo "I/Run ham linter"
+log_info "Run ham linter"
 (
   set -x
   ham lint
 )
 
-echo "I/Run ham tests"
+log_info "Run ham tests"
 (
   set -x
   cd "$HAM_HOME/sources/ham/tests/ham_base"
   ham all
 )
 
-echo "I/Build and run pi with ham"
+log_info "Build and run pi with ham"
 (
   set -x
   ham -X ham/sources/ham/tests/pi Run_pi
 )
 
-echo "I/Test examples"
+log_info "Test examples"
 (
   set -x
   ham -X ham/sources/examples/py3-venv-web-scrape _run_ci.sh
 )
 
-echo "I/Build cppm modules."
+log_info "Build cppm modules."
 case $HAM_OS in
   NT* | OSX* | LINUX*)
     (
@@ -47,3 +46,5 @@ case $HAM_OS in
     return 1
     ;;
 esac
+
+log_info "Done. ham/_run_ci ran successfully."
