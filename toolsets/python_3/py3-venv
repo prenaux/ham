@@ -1,3 +1,2 @@
 #!/bin/bash -e
-. ham-bash-lib.sh
-python3 -m venv "$@"
+ham-py3 -m venv "$@"

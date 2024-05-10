@@ -25,7 +25,7 @@ if [ -z "$1" ]; then
         echo "I/No script selected."
     else
         echo "I/Running $FILE"
-        (set -x ; python3 "$DIR/$FILE")
+        (set -x ; ham-py3 "$DIR/$FILE")
     fi
 else
     FILE="$1"
@@ -37,5 +37,5 @@ else
         exit 1
     fi
     shift
-    (set -x ; python3 "$DIR/$FILE" "$@")
+    (set -x ; ham-py3 "$DIR/$FILE" "$@")
 fi
