@@ -81,7 +81,6 @@ toolset_find_msvc_ide_dir() {
     done
   done
 
-
   ide_dir="c:/Program Files (x86)/Microsoft Visual Studio 12.0/Common7/IDE/"
   if [ -d "$ide_dir" ] && [ -f "$ide_dir/devenv.exe" ]; then
     echo "${ide_dir}"
