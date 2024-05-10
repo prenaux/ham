@@ -3,4 +3,12 @@
 if [ -z "${HAM_PY3_VERSION}" ]; then
   die ham-py3 "HAM_PY3_VERSION not set, make sure the python3 toolset has been imported."
 fi
-"python${HAM_PY3_VERSION}" "$@"
+
+case $HAM_OS in
+  NT*)
+    python3 "$@"
+    ;;
+  *)
+    "python${HAM_PY3_VERSION}" "$@"
+    ;;
+esac
