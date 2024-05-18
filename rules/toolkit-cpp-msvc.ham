@@ -13,6 +13,11 @@ CC_ADD_FLAGS +=
   -Zc:__cplusplus
 ;
 
+if $(MSVC_ANALYZE) = 1 {
+  CC_ADD_FLAGS += -analyze ;
+  ECHO "I/Building with MSVC's static analyzer" ;
+}
+
 # sometimes usefull
 if $(MSVC_SHOW_INCLUDES) = 1 {
   CC_ADD_FLAGS += -showIncludes ;
