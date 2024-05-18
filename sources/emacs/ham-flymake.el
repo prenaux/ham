@@ -374,3 +374,19 @@
 
 (push '(".+\\.sh$" ham-flymake-ham-lint-bash-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
 (push '("^[0-9a-zA-Z-_]+[^\\.]*$" ham-flymake-ham-lint-bash-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
+
+;;*** Go *************************************************************
+
+;; Go error parser
+;; (regexp file-idx line-idx col-idx(optional) text-idx(optional))
+(makunbound 'aflymake-ham-lint-err-line-patterns-go)
+(defvar aflymake-ham-lint-err-line-patterns-go
+  '(("^[ ]*\\(.*\\):\\([0-9]+\\):\\([0-9]+\\):[ ]*\\(.*\\)" 1 2 3 4)))
+
+(defun ham-flymake-ham-lint-go-init ()
+  (interactive)
+  (aflymake-easy-load 'aflymake-ham-lint-command
+                      aflymake-ham-lint-err-line-patterns-go
+                      'inplace "go"))
+
+(push '(".+\\.go$" ham-flymake-ham-lint-go-init ham-flymake-ham-lint-cleanup) aflymake-allowed-file-name-masks)
