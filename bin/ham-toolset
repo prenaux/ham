@@ -25,7 +25,7 @@ if [ $# = 0 ] || [ "$1" == "." ]; then
   FOUND_PROJECT_DIR="$(hat-search-ham-project.sh)"
   if [[ -z "$FOUND_PROJECT_DIR" ]]; then
     log_error "No argument or '.' specified but couldn't find a _ham_project file."
-    usage
+    usage || return 1
   else
     export HAM_PROJECT_DIR=${FOUND_PROJECT_DIR}
     HAM_PROJECT_FILE="$(abspath "${FOUND_PROJECT_DIR}/_ham_project")"
@@ -33,20 +33,23 @@ if [ $# = 0 ] || [ "$1" == "." ]; then
 elif [ -f "$1" ] && [ "$(basename "$1")" == "_ham_project" ]; then
   HAM_PROJECT_FILE="$(abspath "$1")"
 elif [ -d "$1" ]; then
-  if [ ! -f "$1/_ham_project" ]; then
-    log_error "ham-toolset: The specified directory '$1' doesn't contain a '_ham_project' file."
-    usage
-  fi
   HAM_PROJECT_FILE="$(abspath "$1/_ham_project")"
-elif [ -d "$WORK/$1" ]; then
-  if [ ! -f "$WORK/$1/_ham_project" ]; then
-    log_error "ham-toolset: The specified WORK directory '$WORK/$1' doesn't contain a '_ham_project' file."
-    usage
+  if [ ! -f "${HAM_PROJECT_FILE}" ]; then
+    HAM_PROJECT_FILE="$(abspath "$WORK/$1/_ham_project")"
+    if [ ! -f "${HAM_PROJECT_FILE}" ]; then
+      log_error "ham-toolset: The specified directory '$1' doesn't contain a '_ham_project' file."
+      usage || return 1
+    fi
   fi
+elif [ -d "$WORK/$1" ]; then
   HAM_PROJECT_FILE="$(abspath "$WORK/$1/_ham_project")"
+  if [ ! -f "${HAM_PROJECT_FILE}" ]; then
+    log_error "ham-toolset: The specified WORK directory '$WORK/$1' doesn't contain a '_ham_project' file."
+    usage || return 1
+  fi
 elif [ -f "$1" ]; then
   log_error "ham-toolset: The specified file '$1' is not named '_ham_project'."
-  usage
+  usage || return 1
 fi
 
 # Import a _ham_project
