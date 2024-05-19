@@ -207,8 +207,6 @@
  (bind-key* "M-g" 'keyboard-escape-quit)
  (bind-key* "M-z" 'undo)
  (bind-key* "M-/" (make-ni-expand))
- (bind-key* "M-s" 'ni-start-from-new-line)
- (bind-key* "M-, M-s" 'ni-start-from-new-top-line)
  (bind-key* "M-." 'ni-counsel-rg-at-point)
 
  ;; Macros
@@ -237,16 +235,15 @@
  (bind-key* "M-, M-r" 'er/contract-region)
 
  ;; Goto
- (bind-key* "M-, M-k" 'ni-goto-matching-bracket)
- (bind-key* "M-, M-l" 'goto-line)
+ (bind-key* "M-s" 'ni-goto-matching-bracket)
  (bind-key* "C-l" 'goto-line)
  (bind-key* "M-, M-," 'back-button-local-backward)
  (bind-key* "M-, M-." 'back-button-local-forward)
 
  ;; Comment/uncomment
  (bind-key* "M-;" 'ni-comment-dwim)
- (bind-key* "M-, M-c" 'ni-comment-region-or-line-and-go-down)
- (bind-key* "M-, M-v" 'ni-uncomment-region-or-line-and-go-up)
+ (bind-key* "M-k" 'ni-comment-region-or-line-and-go-down)
+ (bind-key* "M-i" 'ni-uncomment-region-or-line-and-go-up)
 
  ;; Error nav
  (bind-key* "<f1>" 'aflymake-goto-prev-error)
