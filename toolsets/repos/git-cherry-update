@@ -1,0 +1,78 @@
+#!/bin/bash -e
+. ham-bash-lib.sh
+
+usage() {
+  echo "usage: $(basename "$0") BRANCH_TO_REBASE (BASE_BRANCH: current_branch)"
+  echo ""
+  echo "  Rebase the BRANCH_TO_REBASE onto BASE_BRANCH by cherry picking all the"
+  echo "  commits and applying them on top of BASE_BRANCH and then setting"
+  echo "  BRANCH_TO_REBASE to the new rebased branch."
+  echo ""
+  exit 1
+}
+
+if [ $# -ne 1 ]; then
+  usage
+fi
+
+BRANCH_TO_REBASE=$(git-get-branch-name "$1")
+if [[ "$BRANCH_TO_REBASE" = get_branch_error__* ]]; then
+  log_error "Can't get BRANCH_TO_REBASE."
+  usage
+fi
+
+BASE_BRANCH=$(git-get-branch-name "${2:-current_branch}")
+if [[ "$BASE_BRANCH" = get_branch_error__* ]]; then
+  log_error "Can't get BASE_BRANCH."
+  usage
+fi
+
+# Check if the provided branches exist
+if ! git rev-parse --verify "$BRANCH_TO_REBASE" >/dev/null 2>&1; then
+  log_error "Branch '$BRANCH_TO_REBASE' does not exist."
+  usage
+fi
+
+if ! git rev-parse --verify "$BASE_BRANCH" >/dev/null 2>&1; then
+  log_error "Branch '$BASE_BRANCH' does not exist."
+  usage
+fi
+
+# Get the commit range to rebase
+COMMITS=$(git rev-list --reverse "${BASE_BRANCH}".."${BRANCH_TO_REBASE}")
+
+# Checkout the base branch
+TEMP_BRANCH="tmp-cherry-rebase-${BRANCH_TO_REBASE}"
+if [ "$(git branch --list tmp-git-force-pull)" ]; then
+  (
+    set -x
+    git branch -D "$TEMP_BRANCH"
+  )
+fi
+(
+  set -ex
+  git checkout -b "$TEMP_BRANCH" "$BASE_BRANCH"
+)
+
+# Cherry-pick the commits
+git-stash trydrop "${TEMP_BRANCH}-stash"
+git-stash push "${TEMP_BRANCH}-stash"
+for COMMIT in $COMMITS; do
+  log_info "Cherry-picking commit: $(git log -1 --pretty=format:'%h - %s' "$COMMIT")"
+  (
+    set -ex
+    git cherry-pick "$COMMIT"
+  )
+done
+git-stash trypop "${TEMP_BRANCH}-stash"
+
+# Update the branch reference
+NEW_HEAD=$(git rev-parse HEAD)
+(
+  set -ex
+  git update-ref "refs/heads/$BRANCH_TO_REBASE" "$NEW_HEAD"
+  git checkout "$BRANCH_TO_REBASE"
+  git branch -D "$TEMP_BRANCH"
+)
+
+log_info "Branch '$BRANCH_TO_REBASE' has been rebased onto '$BASE_BRANCH' and checked out."
