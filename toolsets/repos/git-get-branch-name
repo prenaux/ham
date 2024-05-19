@@ -48,11 +48,20 @@ case "$BRANCH" in
     if [ "$(git rev-parse --verify master 2>/dev/null)" ]; then
       output_and_done master
     fi
-    echo "cant_find_main_branch"
+    echo "get_branch_error__cant_find_main_branch"
     ;;
   current-branch | current_branch | .)
     CURRENT_BRANCH=$(git branch --no-color 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
     output_and_done "$CURRENT_BRANCH"
+    ;;
+  pick | pick-branch | pick_branch)
+    SEL_BRANCH=$(git-ls-branches | fzf --query="$CURRENT_BRANCH" --select-1)
+    # shellcheck disable=SC2181
+    if [ $? -ne 0 ]; then
+      echo "get_branch_error__pick_no_branch_selected"
+    else
+      output_and_done "$SEL_BRANCH"
+    fi
     ;;
   *)
     output_and_done "$BRANCH"

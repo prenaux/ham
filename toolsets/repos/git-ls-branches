@@ -1,0 +1,6 @@
+#!/bin/bash -e
+. ham-bash-lib.sh
+{
+  git branch --format="%(refname:short)"
+  git branch -r --format="%(refname:lstrip=2)" | sed 's|^[^/]*/||'
+} | awk '!seen[$0]++'
