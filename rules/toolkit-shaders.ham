@@ -4,19 +4,19 @@
 SHADER_HDRS_DEPS ?= 1 ;
 if $(WINDOWS) = 1 {
   SHADER_COMPILE ?= 1 ;
-  # Use the local nicgc compiler
-  SHADER_NICGC_SERVER ?= ;
 }
 else if $(OSX) = 1 {
   # It is by default since the remote shader compiler would make the build
   # dependant on an internet connection.
   SHADER_COMPILE ?= 0 ;
-  # Use the remote nicgc compiler
-  SHADER_NICGC_SERVER ?= "http://nicgc.bitscollider.com" ;
 }
 else {
   SHADER_COMPILE ?= 0 ;
 }
+
+SHADER_NICGC_SERVER ?= ;
+# Set or uncomment to use a remote nicgc compiler
+# SHADER_NICGC_SERVER ?= "http://nicgc.bitscollider.com" ;
 
 # /ShaderObject object : source : defs ;
 #
