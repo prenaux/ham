@@ -4,26 +4,33 @@
 list_files_excluding_aflymake() {
   local dir="$1"
 
-  # List all files and store them in an array
+  # List all files
   local files=()
   while IFS= read -r -d '' file; do
     files+=("$file")
   done < <(find "$dir" -maxdepth 1 -type f -print0)
 
   # Loop through files to find _aflymake.go files and their base names
-  local flymake_files=()
   local base_files=()
   for file in "${files[@]}"; do
-    if [[ "$file" =~ _aflymake\.go$ ]]; then
-      flymake_files+=("$file")
-      base_files+=("${file%_aflymake.go}.go")
-    fi
+    case "$file" in
+      *_aflymake.go)
+        base_files+=("${file%_aflymake.go}.go")
+        ;;
+    esac
   done
 
-  # Loop through files again and exclude base files corresponding to _aflymake.go files
+  # Exclude files corresponding to _aflymake.go files
   local final_list=()
   for file in "${files[@]}"; do
-    if [[ ! " ${base_files[@]} " =~ " $file " ]]; then
+    local exclude=false
+    for base_file in "${base_files[@]}"; do
+      if [ "$file" = "$base_file" ]; then
+        exclude=true
+        break
+      fi
+    done
+    if [ "$exclude" = false ]; then
       final_list+=("$file")
     fi
   done
@@ -67,19 +74,21 @@ elif [ -d "$1" ]; then
   )
 else
   DIR=$(dirname "$1")
-  FN=$(basename "$1")
   # cd in the directory so that we get error message that only contain the filename
   cd "$DIR"
   FILES=$(list_files_excluding_aflymake .)
-  log_info "Lint file '$1', in directory '$(pwd)'..."
+  log_info "Lint file '$1'..."
+  log_info "(in directory '$(pwd)')"
   if [ "$DO_GOFMT" = 1 ]; then
     (
       set -x
+      # shellcheck disable=SC2068
       go fmt ${FILES[@]}
     )
   fi
   (
     set -x
+    # shellcheck disable=SC2068
     go build ${FILES[@]}
   )
 fi
