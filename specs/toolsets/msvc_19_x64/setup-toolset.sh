@@ -141,8 +141,11 @@ echo "I/Found MSBuild at '$MSBUILD_EXE'"
 ########################################################################
 export HAM_CL="\"${MSVCDIR_BIN}/cl.exe\""
 export HAM_LINK="\"${MSVCDIR_BIN}/link.exe\""
-pathenv_add "${WINSDKDIR_BIN}"
 pathenv_add "${MSVCDIR_BIN}"
+# Put winsdk's bin folder after so that it doesnt shadow utility scripts. Note
+# that you can still call executables explicitly by specifying the .exe
+# extension which is never used by any script.
+pathenv_add "${WINSDKDIR_BIN}" after
 pathenv_add "${MSVC_IDE_DIR}"
 
 INCLUDE="$(nativedir "${WINSDKDIR_INCLUDE}/um");$(nativedir "${WINSDKDIR_INCLUDE}/ucrt");$(nativedir "${WINSDKDIR_INCLUDE}/shared");$(nativedir "${MSVCDIR}/include")"
