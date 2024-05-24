@@ -1,0 +1,16 @@
+#!/bin/bash
+export HAM_NO_VER_CHECK=1
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
+MC_PATH="c:/Utils/MC/mc.exe"
+if [[ ! -e "$MC_PATH" ]]; then
+  echo "E/Midnight commander not found in '$MC_PATH'."
+  exit 1
+else
+  (
+    set -x
+    "$MC_PATH" "$@"
+  )
+fi

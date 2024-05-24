@@ -4,5 +4,5 @@ if [[ -z $HAM_PROJECT_DIR ]]; then
     return 1
 fi
 
-toolset_import_list repos cppm
+toolset_import_list repos shell_linter cppm
 pathenv_add "$HAM_PROJECT_DIR/bin"
