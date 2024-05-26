@@ -249,6 +249,9 @@ See the docstrings of `defalias' and `make-obsolete' for more details."
 (defun agl-found-custom-arg (switch)
   (member switch command-line-args))
 
+;; Keeps mouse scroll from jumping around
+(setq scroll-preserve-screen-position 1)
+
 ;;;======================================================================
 ;;; Utils
 ;;;======================================================================
