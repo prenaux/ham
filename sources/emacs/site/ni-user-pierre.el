@@ -173,6 +173,25 @@
    (ni-word-wrap-on))
  (add-hook 'compilation-mode-hook 'ni-pierre-compilation-mode-hook)
 
+ (defun ni-pierre-update-compilation-from-WORK ()
+  "Update `compilation-search-path` with specific subdirectories from `$WORK`."
+  (interactive)
+  (let ((work-dir (getenv "WORK"))
+        (subdirs '("sources" "scripts" "include"))
+        (paths '()))
+    (when work-dir
+      ;; List all directories in work-dir excluding `.` and `..`
+      (dolist (dir (directory-files work-dir t "^[^.].*"))
+        (when (file-directory-p dir)
+          (dolist (subdir subdirs)
+            (let ((full-path (concat dir "/" subdir)))
+              (when (file-directory-p full-path)
+                (push full-path paths))))
+          (push dir paths)))
+      ;; Reverse so that we have the subdirs first
+      (setq compilation-search-path (reverse paths))
+      (message "Updated `compilation-search-path` from WORK: %s" compilation-search-path))))
+
  ;; Yes... close everything... but not the buffers
  (defadvice keyboard-escape-quit (around my-keyboard-escape-quit activate)
    (let (orig-one-window-p)
