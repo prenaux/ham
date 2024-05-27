@@ -78,7 +78,7 @@ function build_image() {
   (set -x ;
    # DOCKER_OPTS: https://stackoverflow.com/questions/24991136/docker-build-could-not-resolve-archive-ubuntu-com-apt-get-fails-to-install-a
    export DOCKER_OPTS="--dns 8.8.8.8 --dns 8.8.4.4" ;
-   docker build "${PARAMS[@]}" -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${TAG_NAME} -f "${DOCKERFILE_PATH}" .)
+   docker build "${PARAMS[@]}" --network=host -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${TAG_NAME} -f "${DOCKERFILE_PATH}" .)
   log_success "Successfully built '$IMAGE_NAME' image with tag '$TAG_NAME'."
 }
 

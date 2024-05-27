@@ -34,6 +34,12 @@ CMD ["echo", "I/my-ham-nodejs-rust docker image."]
 
 ## Build and push
 
+Make sure your user is part of the docker group:
+```
+. hat docker
+docker-add-user-to-group $USER
+```
+
 Build and push all:
 ```
 ./_docker_build_and_push.sh all

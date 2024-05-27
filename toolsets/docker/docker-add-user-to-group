@@ -1,0 +1,26 @@
+#!/bin/bash -e
+usage() {
+  echo "Usage:"
+  echo "  docker-add-user-to-group USERNAME"
+  echo "Example:"
+  echo "  docker-add-user-to-group \$USER"
+  exit 1
+}
+
+if [ "$#" -ne 1 ]; then
+  usage
+fi
+
+USERNAME="$1"
+if ! id -u "$USERNAME" >/dev/null 2>&1; then
+  echo "E/User '$USERNAME' does not exist."
+  usage
+fi
+
+(
+  set -x
+  sudo usermod -aG docker "$USERNAME"
+)
+
+echo "I/User '$USERNAME' has been added to the 'docker' group."
+echo "I/You can run 'newgrp docker' to login in the group or logout/login fully for the change to take effect. Run 'docker run hello-world' to check that docker works without sudo."
