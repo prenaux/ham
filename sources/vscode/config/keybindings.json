@@ -226,6 +226,8 @@
     "key": "alt+9",
     "command": "editor.action.addSelectionToPreviousFindMatch"
   },
+
+  // Line selection
   {
     "key": "shift+alt+a",
     "command": "editor.action.smartSelect.expand",
@@ -236,6 +238,31 @@
     "command": "editor.action.jumpToBracket",
     "when": "editorTextFocus"
   },
+
+  // Paragraph selection
+  {
+    "command": "runCommands",
+    "when": "editorHasSelection",
+    "key": "alt+s",
+    "args": {
+      "commands": [
+        "emacs-mcx.forwardParagraph",
+      ]
+    }
+  },
+  {
+    "command": "runCommands",
+    "when": "!editorHasSelection",
+    "key": "alt+s",
+    "args": {
+      "commands": [
+        "emacs-mcx.setMarkCommand",
+        "expandLineSelection",
+        "emacs-mcx.forwardParagraph",
+      ]
+    }
+  },
+
   {
     "key": "ctrl+h ctrl+a",
     "command": "emacs-mcx.beginningOfBuffer",
@@ -405,20 +432,36 @@
   // Commands
   { "key": "alt+z", "command": "undo" },
   { "key": "ctrl+i", "command": "editor.action.triggerSuggest" },
-  { "key": "alt+s", "command": "editor.action.insertLineAfter" },
-  { "key": "alt+/ alt+s", "command": "editor.action.insertLineBefore" },
+  { "key": "alt+o", "command": "editor.action.insertLineAfter" },
+  { "key": "alt+, alt+o", "command": "editor.action.insertLineBefore" },
   {
     "key": "alt+.",
     "command": "editor.action.revealDefinition",
     "when": "editorHasDocumentSelectionFormattingProvider && editorTextFocus && !editorReadonly"
   },
+  { "key": "alt+t", "command": "rewrap.rewrapComment" },
+
+  // Jump to next/prev occurence
+  {
+    "key": "alt+1",
+    "command": "editor.action.previousSelectionMatchFindAction",
+    "when": "editorFocus"
+  },
+  {
+    "key": "alt+2",
+    "command": "editor.action.nextSelectionMatchFindAction",
+    "when": "editorFocus"
+  },
 
   // Nav & Splits
-  { "key": "ctrl+1", "command": "workbench.action.toggleZenMode" },
-  { "key": "alt+1", "command": "workbench.action.focusNextGroup" },
-  { "key": "alt+2", "command": "workbench.action.splitEditorDown" },
-  { "key": "alt+3", "command": "workbench.action.splitEditorRight" },
-  { "key": "alt+4", "command": "workbench.action.closeEditorsInGroup" },
+  {
+    "key": "alt+3",
+    "command": "workbench.action.focusNextGroup"
+  },
+  {
+    "key": "alt+4",
+    "command": "workbench.action.toggleZenMode"
+  },
 
   // Multi-cursors
   {
@@ -482,27 +525,27 @@
     }
   },
   {
-    "key": "alt+/ alt+r",
+    "key": "alt+, alt+r",
     "command": "editor.action.smartSelect.shrink",
     "when": "editorTextFocus"
   },
 
   // Goto
-  { "key": "alt+/ alt+l", "command": "workbench.action.gotoLine" },
-  { "key": "alt+/ alt+/", "command": "editor.action.jumpToBracket" },
-  { "key": "alt+/ alt+,", "command": "workbench.action.navigateBack" },
-  { "key": "alt+/ alt+.", "command": "workbench.action.navigateForward" },
+  { "key": "alt+q", "command": "editor.action.jumpToBracket" },
+  { "key": "ctrl+l", "command": "workbench.action.gotoLine" },
+  { "key": "alt+, alt+,", "command": "workbench.action.navigateBack" },
+  { "key": "alt+, alt+.", "command": "workbench.action.navigateForward" },
 
   // Comment/uncomment
   {
-    "key": "alt+/ alt+c",
+    "key": "alt+, alt+c",
     "command": "editor.action.addCommentLine",
     "when": "editorHasSelection"
   },
   {
     "command": "runCommands",
     "when": "!editorHasSelection",
-    "key": "alt+/ alt+c",
+    "key": "alt+, alt+c",
     "args": {
       "commands": [
         "editor.action.addCommentLine",
@@ -511,13 +554,13 @@
     },
   },
   {
-    "key": "alt+/ alt+v",
+    "key": "alt+, alt+v",
     "command": "editor.action.removeCommentLine",
     "when": "editorHasSelection"
   },
   {
     "command": "runCommands",
-    "key": "alt+/ alt+v",
+    "key": "alt+, alt+v",
     "args": {
       "commands": [
         "editor.action.removeCommentLine",
