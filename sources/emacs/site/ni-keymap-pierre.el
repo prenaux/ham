@@ -9,11 +9,12 @@
 ;;;======================================================================
 ;;; aglemacs.el
 ;;;======================================================================
+
  ;; Disable electric mode so that 'enter' insert a new line without modifying
  ;; the current line but indents the actual new line.
  (when (fboundp 'electric-indent-mode) (electric-indent-mode -1))
- (global-set-key (kbd "RET") 'electric-newline-and-maybe-indent)
- (global-set-key [(control return)] 'agl-newline-and-indent-same-level)
+ (global-set-key (kbd "RET") 'ni-newline-and-indent)
+ (global-set-key (kbd "M-RET") 'newline)
 
  (OSX
   (global-set-key (kbd "<home>") 'move-beginning-of-line)
@@ -208,17 +209,22 @@
  (bind-key* "M-z" 'undo)
  (bind-key* "M-/" (make-ni-expand))
  (bind-key* "M-." 'ni-counsel-rg-at-point)
+ (bind-key* "M-o" 'ni-insert-line-below)
+ (bind-key* "M-, M-o" 'ni-insert-line-above)
+ (bind-key* "M-t" 'fill-paragraph)
+
+ ;; Next/prev match
+ (bind-key* "M-1" 'agl-search-word-backward)
+ (bind-key* "M-2" 'agl-search-word-forward)
+
+ ;; Window movement
+ (bind-key* "M-3" 'other-window)
+ (bind-key* "M-4" 'zygospore-toggle-delete-other-windows)
 
  ;; Macros
  (bind-key* "M-5" 'kmacro-end-and-call-macro)
  (bind-key* "M-6" 'kmacro-start-macro)
  (bind-key* "M-7" 'kmacro-end-macro)
-
- ;; Splits
- (bind-key* "M-1" 'zygospore-toggle-delete-other-windows)
- (bind-key* "M-2" 'split-window-below)
- (bind-key* "M-3" 'split-window-right)
- (bind-key* "M-4" 'delete-window)
 
  ;; Multi-cursor
  (bind-key* "M-9" 'mc/mark-previous-like-this)
@@ -229,13 +235,13 @@
  (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
 
  ;; Region
- (bind-key* "M-t" 'ni-select-current-paragraph-and-forward-paragraph)
  (bind-key* "M-a" 'ni-select-current-line-and-forward-line)
+ (bind-key* "M-s" 'ni-select-current-paragraph-and-forward-paragraph)
  (bind-key* "M-r" 'er/expand-region)
  (bind-key* "M-, M-r" 'er/contract-region)
 
  ;; Goto
- (bind-key* "M-s" 'ni-goto-matching-bracket)
+ (bind-key* "M-q" 'ni-goto-matching-bracket)
  (bind-key* "C-l" 'goto-line)
  (bind-key* "M-, M-," 'back-button-local-backward)
  (bind-key* "M-, M-." 'back-button-local-forward)

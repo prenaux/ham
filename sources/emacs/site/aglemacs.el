@@ -526,17 +526,6 @@ BEG and END (region to sort)."
   (interactive)
   (insert (ni-uuid3)))
 
-;; Useful for times where indentation doesnt work - common in multiline strings
-(defun agl-newline-and-indent-same-level ()
-  "Insert a newline, then indent to the same column as the current line."
-  (interactive)
-  (let ((col (save-excursion
-               (back-to-indentation)
-               (current-column))))
-    (newline)
-    (indent-to-column col)))
-
-
 (defun ni-select-current-line-and-forward-line (&optional arg)
   "Select the current line and move the cursor by ARG lines IF no
 region is selected.
@@ -585,17 +574,6 @@ move the cursor by ARG paragraphs."
       (next-line -1)))
   )
 
-(defun ni-start-from-new-line ()
-  (interactive)
-  (move-end-of-line nil)
-  (newline)
-  (indent-for-tab-command))
-
-(defun ni-start-from-new-top-line ()
-  (interactive)
-  (previous-line)
-  (ni-start-from-new-line))
-
 (defun ni-delete-word-or-kill-region (arg)
   "Kill active region if active"
   (interactive "p")
@@ -614,6 +592,23 @@ move the cursor by ARG paragraphs."
   (if mark-active
     (kill-region (region-beginning) (region-end))
     (delete-char arg)))
+
+(defun ni-newline-and-indent ()
+  "New line and indent."
+  (interactive)
+  (electric-newline-and-maybe-indent))
+
+(defun ni-insert-line-below ()
+  "Insert a new line below the current line and indent it properly."
+  (interactive)
+  (end-of-line)
+  (ni-newline-and-indent))
+
+(defun ni-insert-line-above ()
+  "Insert a new line above the current line and indent it properly."
+  (interactive)
+  (forward-line -1)
+  (ni-insert-line-below))
 
 ;;;======================================================================
 ;;; Time
