@@ -61,9 +61,8 @@
  (global-set-key (kbd "ESC <up>") 'backward-paragraph)
  (global-set-key (kbd "ESC <down>") 'forward-paragraph)
 
- ;; Move to the 'next' window (in clockwise order)
- (global-set-key (key "M-`") 'other-window)
- (global-set-key (kbd "M-o") 'other-window)
+ ;; Move to other frame
+ (global-set-key (key "M-`") 'other-frame)
 
  ;; Forward/Backward word under point
  (global-set-key (key "M-p") 'agl-search-word-backward)
