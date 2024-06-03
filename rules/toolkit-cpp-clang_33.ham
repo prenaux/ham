@@ -81,10 +81,11 @@ if $(LINUX) {
   ;
   CLANG_CPP_ARGS +=
     -Wno-conversion-null
+    -Wno-unknown-warning-option
   ;
 
   LINKLIBS +=
-   -lstdc++ -lpthread -ldl -lm
+   -lstdc++ -lpthread -ldl -lm -lX11 -lGL
    # sudo apt-get install -y libunwind-dev
    -lunwind
   ;
