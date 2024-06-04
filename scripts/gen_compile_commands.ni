@@ -45,7 +45,7 @@ function main() {
           file = dir + file;
         }
         obj["file"] <- file;
-        ::println("line -> " + ::json.toString(obj))
+        // ::println("line -> " + ::json.toString(obj))
         arr.append(obj)
       }
     }
