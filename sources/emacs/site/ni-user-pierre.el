@@ -218,6 +218,9 @@
  (GNUEmacsMin28
     (require 'ansi-color)
     (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter))
+
+ (IsTerminal
+   (require 'windresize))
 )
 
 ;;;======================================================================
