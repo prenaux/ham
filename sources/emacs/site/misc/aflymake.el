@@ -914,22 +914,22 @@ Return t if it has at least one aflymake overlay, nil if no overlay."
     has-aflymake-overlays))
 
 (defface aflymake-errline
-  '((((class color) (background dark)) (:background "Firebrick4"))
-    (((class color) (background light)) (:background "LightPink"))
+  '((((class color) (background dark)) (:background "Firebrick4" :foreground "White"))
+    (((class color) (background light)) (:background "LightPink" :foreground "black"))
     (t (:bold t)))
   "Face used for marking error lines."
   :group 'aflymake)
 
 (defface aflymake-warnline
-  '((((class color) (background dark)) (:background "DarkBlue"))
-    (((class color) (background light)) (:background "LightBlue2"))
+  '((((class color) (background dark)) (:background "DarkBlue" :foreground "White"))
+    (((class color) (background light)) (:background "LightBlue2" :foreground "black"))
     (t (:bold t)))
   "Face used for marking warning lines."
   :group 'aflymake)
 
 (defface aflymake-infoline
-  '((((class color) (background dark)) (:background "DarkGreen"))
-    (((class color) (background light)) (:background "LightGreen"))
+  '((((class color) (background dark)) (:background "DarkGreen" :foreground "black"))
+    (((class color) (background light)) (:background "LightGreen" :foreground "black"))
     (t (:bold t)))
   "Face used for marking info lines."
   :group 'aflymake)
