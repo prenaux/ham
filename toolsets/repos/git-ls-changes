@@ -1,0 +1,16 @@
+#!/bin/bash -e
+. ham-bash-lib.sh
+
+BRANCH_TO_COMPARE=$(git-get-branch-name "${1:-current_branch}")
+if [[ "$BRANCH_TO_COMPARE" = get_branch_error__* ]]; then
+  log_error "Can't get BRANCH_TO_COMPARE."
+  usage
+fi
+
+MAIN_BRANCH=$(git-get-branch-name "${2:-main_branch}")
+if [[ "$MAIN_BRANCH" = get_branch_error__* ]]; then
+  log_error "Can't get MAIN_BRANCH."
+  usage
+fi
+
+git diff --name-only "$MAIN_BRANCH"..."$BRANCH_TO_COMPARE"
