@@ -12,7 +12,6 @@ SH_FILES_NO_EXTENSION = 7z-fromzip
 7z-unpack-arch
 curl-find-final-url
 curl-timed
-emacs-filecache-cleanup
 genuuid
 ham
 ham-brew
