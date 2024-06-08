@@ -100,7 +100,7 @@
                         ham-grep-arguments
                         args
                         '("--")
-                        (list (shell-quote-argument regexp) ".")) " ")
+                        (list (shell-quote-argument regexp) (shell-quote-argument default-directory))) " ")
      'ham-grep-search-mode
 
      (when ham-grep-use-search-in-buffer-name
