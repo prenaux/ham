@@ -36,13 +36,14 @@ fi
 # Fetch the list of repos
 REPOS_LIST=${REPOS_LIST:-$WORK}
 if [[ -d "$REPOS_LIST/.git" ]]; then
-  log_info "'$REPOS_LIST' is git repo, running in it directly."
+  log_info "'$REPOS_LIST' is a git repo, running in it directly."
   REPOS_SINGLE_GIT_DIR="$(abspath "$REPOS_LIST")"
 elif [[ -d "$REPOS_LIST" ]]; then
   log_info "repos_list '$REPOS_LIST' is a directory, switching to it and using repos-list-cwd."
   cd "$REPOS_LIST"
   REPOS_CWD=$(repos-list-cwd)
 elif [[ -f "$REPOS_LIST" ]]; then
+  log_info "REPOS_LIST file from envvar '$REPOS_LIST'."
   REPOS_CWD=$(cat "$REPOS_LIST")
   REPOS_CWD=$(eval echo \""$REPOS_CWD"\")
 else
