@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # toolset
 export HAM_TOOLSET=PYTHON
@@ -52,6 +52,7 @@ case $HAM_OS in
     # Might not exist the first time we install python...
     mkdir -p "$PYTHON3_BINDIR"
     pathenv_add "$PYTHON3_BINDIR"
+    pathenv_add "$PYTHON3_HOME/bin"
     ;;
 
   LINUX*)
@@ -82,10 +83,15 @@ pathenv_add "$HAM_TOOLSET_DIR"
 VER="--- python3 --------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
   if ! VER="$VER
-$(ham-py3 --version 2>&1)
+$(ham-py3 --version 2>&1)"; then
+    echo "E/Can't get python3 version."
+    return 1
+  fi
+
+  if ! VER="$VER
 --- pip3 -----------------------------
 $(ham-pip3 --version 2>&1)"; then
-    echo "E/Can't get python3 version."
+    echo "E/Can't get pip3 version."
     return 1
   fi
 fi
