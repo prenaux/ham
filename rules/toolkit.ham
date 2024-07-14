@@ -813,10 +813,11 @@ rule tkBuildPackage
     switch $(_i) {
         # Use precompiled header, should be the first option if specified
       case pch :
-        if $(SUFPCH) && ( ! ( $(NO_PCH) = 1 ) )  && ( ( ! $(FLYMAKE) ) || ( $(FLYMAKE_PCH) = 1 ) ) {
-          # Use _exsrc
-          _pch = [ tkC++Pch PCH_$(PACKAGE) : stdafx.cpp : $(_src) $(_exsrc) : $(_nopchsrc) : $(>) ] ;
-          # _exsrc += stdafx.cpp ;
+        if $(SUFPCH)
+        && ( ! ( $(NO_PCH) = 1 ) )
+        && ( ( ! $(FLYMAKE) ) || ( $(FLYMAKE_PCH) = 1 ) )
+        {
+          _pch = 1 ;
         }
         # Require exceptions
       case exc :
@@ -903,7 +904,11 @@ rule tkBuildPackage
     tkCC++Build $(_exsrc) $(_src) $(_nopchsrc) ;
   }
   ObjectOptimFlags $(_exsrc) $(_src) $(_nopchsrc) : $(PKGOPTIM) ;
-  OPTIM on $(_pch) = $(PKGOPTIM) ;
+
+  if $(_pch) {
+    _pch = [ tkC++Pch PCH_$(PACKAGE) : stdafx.cpp : $(_src) $(_exsrc) : $(_nopchsrc) : $(>) ] ;
+    OPTIM on $(_pch) = $(PKGOPTIM) ;
+  }
 
   ### Main build output ###
   _src += $(_nopchsrc) ;
