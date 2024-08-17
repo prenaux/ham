@@ -99,7 +99,7 @@ case $TYPE in
         ;;
       lin-*)
         case "$HAM_CPP_TOOLSET" in
-          gcc*)
+          GCC*|gcc*)
             LINKER=gcc
             ;;
           *)
