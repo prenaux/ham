@@ -28,10 +28,12 @@ case $HAM_OS in
     fi
     ;;
   LINUX*)
-    if [ "$HAM_GDB_DONT_RUN" == "1" ]; then
-      gdb --args "$@"
+    if [ "$HAM_GDB_TMUX_DASHBOARD" == "1" ]; then
+      ham-gdb-tmux-dashboard "$@"
+    elif [ "$HAM_GDB_DONT_RUN" == "1" ]; then
+      gdb -q --nh --nx -iex "add-auto-load-safe-path \"$HAM_HOME\"" -ix "$HAM_HOME/bin/ham-gdb--init-config" --args "$@"
     else
-      gdb -ex run --args "$@"
+      gdb -q --nh --nx -iex "add-auto-load-safe-path \"$HAM_HOME\"" -ix "$HAM_HOME/bin/ham-gdb--init-config" -ex run --args "$@"
     fi
     ;;
   *)

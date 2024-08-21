@@ -1,0 +1,6 @@
+#!/bin/bash -ex
+id="$(tmux split-pane -hPF "#D" "tail -f /dev/null")"
+tmux last-pane
+tty="$(tmux display-message -p -t "$id" '#{pane_tty}')"
+gdb -q --nh --nx -iex "add-auto-load-safe-path \"$HAM_HOME\"" -ix "$HAM_HOME/bin/ham-gdb--init-config" -ex "dashboard -output $tty" --args "$@"
+tmux kill-pane -t "$id"
