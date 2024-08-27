@@ -12,6 +12,9 @@ define hookpost-frame
   dashboard
 end
 
+# We always want to break when ni::sPanicException is thrown
+catch throw ni::sPanicException
+
 python
 
 # GDB dashboard - Modular visual interface for GDB in Python.
