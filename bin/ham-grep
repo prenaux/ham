@@ -6,6 +6,12 @@ if [[ -z "$HAM_HOME" ]]; then
 fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
+SILENT=0
+if [ "$1" == "--no-hamgrep-ignore-echo" ]; then
+  SILENT=1
+  shift
+fi
+
 CMD=("$HAM_HOME/bin/$HAM_BIN_LOA/rg")
 CMD=("${CMD[@]}" -M 500)
 CMD=("${CMD[@]}" --line-number)
@@ -15,10 +21,16 @@ CMD=("${CMD[@]}" --hidden)
 
 HAMGREP_IGNORE="$(ham-find-file-up _hamgrep_ignore)"
 if [[ -e "$HAMGREP_IGNORE" ]]; then
-  echo "I/HAMGREP_IGNORE: $HAMGREP_IGNORE"
+  if [ "$SILENT" != "1" ]; then
+    echo "I/HAMGREP_IGNORE: $HAMGREP_IGNORE"
+  fi
   CMD=("${CMD[@]}" --ignore-file "${HAMGREP_IGNORE}")
 else
-  echo "I/NO HAMGREP_IGNORE"
+  if [ "$SILENT" != "1" ]; then
+    echo "I/NO HAMGREP_IGNORE"
+  fi
 fi
-set -x
+if [ "$SILENT" != "1" ]; then
+    set -x
+fi
 "${CMD[@]}" "$@"
