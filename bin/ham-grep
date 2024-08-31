@@ -31,6 +31,6 @@ else
   fi
 fi
 if [ "$SILENT" != "1" ]; then
-    set -x
+  set -x
 fi
 "${CMD[@]}" "$@"
