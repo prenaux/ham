@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# This is solves problem with tools that really try hard to screw up the
-# environment by reseting the path manually.
+# This works around tools that manually reset the PATH environment variable.
 if test -z "$PATH"; then
   if test -z "$PATH_BACKUP"; then
     echo "E/No PATH backup to restore"
