@@ -33,7 +33,7 @@ case $HAM_OS in
     toolset_unquarantine_dir "$HAM_HOME/bin"
     echo "### Installing packages required by ham on OSX (brew) ###"
     # coreutils is mainly for 'realpath' atm
-    ham-brew install jq yq wget hstr mc ncdu htop coreutils autossh
+    ham-brew install bash jq yq wget hstr mc ncdu htop coreutils autossh
     ;;
   LINUX)
     if [ "$(type apt-get 2>/dev/null | wc -l)" = 1 ]; then
