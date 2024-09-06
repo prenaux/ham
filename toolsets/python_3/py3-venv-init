@@ -1,0 +1,28 @@
+#!/bin/bash -e
+. ham-bash-lib.sh
+
+if [ -e "py3_pip_install.txt" ]; then
+  complain "'py3_pip_install.txt' already exists. Please delete it if you want to create a new one."
+  exit 1
+fi
+
+if [ -e "py3_requirements.txt" ]; then
+  complain "'py3_requirements.txt' already exists. Please delete it if you want to create a new one."
+  exit 1
+fi
+
+if [ "$#" -lt 1 ]; then
+  complain "No packages specified. Please provide a list of packages to install."
+  exit 1
+fi
+
+log_info "Creating 'py3_pip_install.txt' with the following packages:"
+for pkg in "$@"; do
+  echo "- $pkg"
+  echo "$pkg" >> py3_pip_install.txt
+done
+
+log_info "Creating an empty 'py3_requirements.txt' file."
+touch py3_requirements.txt
+
+log_success "Initialization complete."

@@ -20,7 +20,7 @@ esac
 if [ ! -e "${PY3_VENV_BIN_DIR}/activate" ]; then
   PY3_VENV_REQUIREMENTS_SHOULD_INSTALL=yes
   if [ ! -e "py3_requirements.txt" ]; then
-    complain "No venv and no py3_requirements.txt present to initialize it. You can use 'echo \"\" > py3_requirements.txt' to initialize an empty one."
+    complain "No venv and no py3_requirements.txt present to initialize it. You can use 'py3-venv-init PKGs' to initialize an empty one."
     return 1
   fi
   py3-venv "venv"
