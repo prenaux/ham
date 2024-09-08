@@ -12,15 +12,20 @@ esac
 export OSPLAT=X64
 export BUILD_BIN_LOA=$HAM_BIN_LOA
 
-# Clang is the default on Linux, the GCC linker is insane...
-export LINUX_CLANG=${LINUX_CLANG:-1}
+# Default to GCC.
+export LINUX_CLANG=${LINUX_CLANG:-0}
 
 # Use GCC
 if [ "${LINUX_CLANG}" == "0" ]; then
   toolset_import gcc_470 || return 1
 
   VER="--- linux_x64 -----------------------
-Using GCC"
+Using GCC System: $(gcc --version | grep gcc)"
+elif [ "${LINUX_CLANG}" == "18" ]; then
+  toolset_import clang_18 || return 1
+
+  VER="--- linux_x64 -----------------------
+Using Clang 18: $(clang -arch x86_64 --version)"
 else
   # Use clang
   export HAM_TOOLSET=CLANG
@@ -34,7 +39,7 @@ else
   export CMD_JSON_COMPILER_PATH=${dir#*' '}/
 
   if ! VER="--- linux_x64 -----------------------
-$(clang -arch x86_64 --version)"; then
+Using Clang System: $(clang -arch x86_64 --version)"; then
     echo "E/Can't get version."
     return 1
   fi

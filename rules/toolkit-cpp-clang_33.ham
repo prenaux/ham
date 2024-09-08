@@ -85,8 +85,6 @@ if $(LINUX) {
 
   LINKLIBS +=
    -lstdc++ -lpthread -ldl -lm
-   # sudo apt-get install -y libunwind-dev
-   -lunwind
   ;
 
   # Flags needed so that backtrace() include the function names on Linux

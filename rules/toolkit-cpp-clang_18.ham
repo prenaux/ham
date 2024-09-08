@@ -1,0 +1,13 @@
+Import toolkit-cpp-clang_33.ham ;
+
+CLANG_CPP_ARGS +=
+  # Disable: warning: variable length arrays in C++ are a Clang extension
+  -Wno-vla-cxx-extension
+;
+
+if $(LINUX) {
+  LINKFLAGS +=
+    # More compatible, should work on Arch/SteamOS & Ubuntu
+    --unwindlib=libgcc
+  ;
+}

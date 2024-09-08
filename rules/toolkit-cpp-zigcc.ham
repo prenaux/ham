@@ -94,7 +94,7 @@ if $(TARGET_OS) = MACOSX {
   -framework MetalKit
   -framework QuartzCore
   -framework Security
-  -lc++ -lpthread -ldl -lunwind ;
+  -lc++ -lpthread -ldl ;
 }
 else if $(TARGET_OS) = LINUX {
 
@@ -107,7 +107,7 @@ else if $(TARGET_OS) = LINUX {
     LINKFLAGS_DLL += -dead_strip ;
   }
   LINKLIBS +=
-    -lstdc++ -lpthread -ldl -lm -lunwind
+    -lstdc++ -lpthread -ldl -lm
   ;
 }
 else {
