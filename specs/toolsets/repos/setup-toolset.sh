@@ -61,7 +61,7 @@ else
   VER="--- mercurial ---"
   if [ "$HAM_NO_VER_CHECK" != "1" ]; then
     VER="$VER
-W/Mercurial is not installed or not accessible from the PATH !"
+W/Mercurial is not installed or not accessible from the PATH."
   fi
 fi
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
