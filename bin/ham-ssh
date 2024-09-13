@@ -14,27 +14,50 @@ function pick_host() {
   ham-ssh-ls | fzf --header "=== Pick a SSH host ==="
 }
 
-if where_inpath autossh; then
-  SSH_CMD=autossh
-else
+SSH_CMD=$(ham-print-exe-path autossh)
+if [[ -z "$SSH_CMD" ]]; then
   SSH_CMD=ssh
 fi
-PARAMS=()
+log_info "SSH_CMD: $SSH_CMD"
 
 if [[ -z "$1" ]]; then
+  log_error "No arguments specified."
   usage
 fi
 
-HOST="$1"
-shift
-if [[ "$HOST" == "pick" ]]; then
-  HOST=$(pick_host)
+USE_TMUX=0
+
+PARAMS=()
+while true; do
+  case "$1" in
+    pick)
+      HOST=$(pick_host)
+      shift
+      ;;
+    tmux)
+      USE_TMUX=1
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [[ -z "$HOST" ]]; then
+  if [[ -z "$1" ]]; then
+    log_error "No host specified."
+    usage
+  else
+    HOST="$1"
+    shift
+  fi
 fi
 
-if [[ "$1" == "tmux" ]]; then
+if [[ "$USE_TMUX" == "1" ]]; then
   PARAMS=("${PARAMS[@]}" -t "tmux new -A -s $HOST")
-  shift
 fi
+
 PARAMS=("${PARAMS[@]}" "$@")
 
 if [[ "$SSH_CMD" == "autossh" ]]; then

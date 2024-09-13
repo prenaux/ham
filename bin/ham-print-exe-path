@@ -1,4 +1,5 @@
 #!/bin/bash
+# bang: no -e on purpose as we want to always return 0 for in ham-print-exe-path
 export HAM_NO_VER_CHECK=1
 if [[ -z "$HAM_HOME" ]]; then
   echo "E/HAM_HOME not set !"
@@ -7,18 +8,13 @@ fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 case $HAM_OS in
   NT*)
-    path=$("type" -p "$*")
+    path=$("type" -p "$*" 2>/dev/null)
     ;;
   OSX* | LINUX*)
-    path=$("which" "$*")
+    path=$("which" "$*" 2>/dev/null)
     ;;
   *)
-    path=$("whereis" "$*")
+    path=$("whereis" "$*" 2>/dev/null)
     ;;
 esac
 echo -n "$path"
-if [ -z "$path" ]; then
-  exit 1
-else
-  exit 0
-fi
