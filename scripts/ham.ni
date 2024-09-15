@@ -1,11 +1,8 @@
 // Copyright 2007-2016 TalanSoft, Co. All Rights Reserved.
 ::Import("lang.ni")
 ::Import("fs.ni")
-local __lint = {
-  this_set_key_notfound = 0
-}
 
-local module = {
+module <- {
   _osArch = null
   _build = null
   _hamPath = null
@@ -185,8 +182,8 @@ local module = {
     throw "Can't find the temp folder."
   }
 
-  function getNewTempFilePath(aExt,aName) {
-    local path = getTempDir().setfile((aName || "")+::gLang.CreateGlobalUUID()).setext(aExt || "tmp")
+  function getNewTempFilePath(aExt,_aName) {
+    local path = getTempDir().setfile((_aName || "")+::gLang.CreateGlobalUUID()).setext(aExt || "tmp")
     _tempFilesCollector.Add(path)
     if (_debugEchoAll) {
       ::dbg("... Added temp file:" path)
@@ -393,8 +390,7 @@ local module = {
                      tmpFilePath, aScript));
     }
     return runDetachedProcess(
-      getBashPath().quote() + " " + tmpFilePath.quote(),
-      true,true)
+      getBashPath().quote() + " " + tmpFilePath.quote())
   }
 
   function seqRawBash(aScript,aOptions) {
@@ -450,8 +446,7 @@ local module = {
                      tmpFilePath, aScript));
     }
     return runDetachedProcess(
-      getBashPath().quote() + " " + tmpFilePath.quote(),
-      true,true)
+      getBashPath().quote() + " " + tmpFilePath.quote())
   }
 
   function seqBash(aScript,aOptions) {
@@ -466,19 +461,15 @@ local module = {
   }
 }
 
-if (::isModule(this)) {
-  this.module = module
-}
-else {
-  ::namespace("ham", module);
+::?LINT_CHECK_TYPE("null", ::?ham);
+::ham <- module
 
-  function ::bash(aScript) {
-    return ::ham.runBash(aScript,true,true)
-  }
-  function ::bashDetached(aScript) {
-    return ::ham.runDetachedBash(aScript)
-  }
-  function ::bashSeq(aScript) {
-    return ::ham.seqBash(aScript)
-  }
+function ::bash(aScript) {
+  return ::ham.runBash(aScript,true,true)
+}
+function ::bashDetached(aScript) {
+  return ::ham.runDetachedBash(aScript)
+}
+function ::bashSeq(aScript) {
+  return ::ham.seqBash(aScript, null)
 }
