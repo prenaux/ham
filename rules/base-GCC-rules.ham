@@ -5,5 +5,10 @@ actions SharedLink {
 
 actions DllLink bind NEEDLIBS
 {
-  $(LINK) $(LINKFLAGS) $(LINKFLAGS_DLL) -fvisibility=hidden -shared -o "$(<)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+  $(LINK) $(LINKFLAGS) $(LINKFLAGS_DLL) -Wl,--no-undefined -shared -o "$(<)" $(UNDEFS) -Wl,--start-group $(NEEDLIBS) $(LINKLIBS) "$(>)" -Wl,--end-group $(SYSTEM_LINKLIBS)
+}
+
+actions Link bind NEEDLIBS
+{
+  $(LINK) $(LINKFLAGS) $(LINKFLAGS_EXE) -Wl,--no-undefined -o "$(<)" $(UNDEFS) -Wl,--start-group $(NEEDLIBS) $(LINKLIBS) "$(>)" -Wl,--end-group $(SYSTEM_LINKLIBS)
 }
