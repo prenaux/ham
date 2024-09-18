@@ -702,6 +702,12 @@ SUFOBJ      ?= .o ;
 UNDEFFLAG   ?= "-u _" ;
 RCFLAGS     ?= ;
 SUFJAVAC    ?= .class ;
+if $(OS) = NT {
+  HAM_EXEC_RETRY ?= ham-exec-retry ;
+}
+else {
+  HAM_EXEC_RETRY ?= ;
+}
 
 HDRPATTERN =
 "^[ 	]*#[ 	]*include[ 	]*[<\"]([^\">]*)[\">].*$" ;
@@ -2397,38 +2403,38 @@ actions LintH
 
 actions Chgrp
 {
-  ham-exec-retry $(CHGRP) $(GROUP) "$(<)"
+  $(HAM_EXEC_RETRY) $(CHGRP) $(GROUP) "$(<)"
 }
 
 actions Chmod1
 {
-  ham-exec-retry $(CHMOD) $(MODE) "$(<)"
+  $(HAM_EXEC_RETRY) $(CHMOD) $(MODE) "$(<)"
 }
 
 actions Chown
 {
-  ham-exec-retry $(CHOWN) $(OWNER) "$(<)"
+  $(HAM_EXEC_RETRY) $(CHOWN) $(OWNER) "$(<)"
 }
 
 actions piecemeal together existing Clean
 {
-  ham-exec-retry $(RM) "$(>)"
+  $(HAM_EXEC_RETRY) $(RM) "$(>)"
 }
 
 actions Cp
 {
-  ham-exec-retry $(CP) "$(>)" "$(<)"
+  $(HAM_EXEC_RETRY) $(CP) "$(>)" "$(<)"
 }
 
 rule Touch {
 }
 actions Touch {
-  ham-exec-retry touch "$(<)"
+  $(HAM_EXEC_RETRY) touch "$(<)"
 }
 
 actions File
 {
-  ham-exec-retry $(CP) "$(>)" "$(<)"
+  $(HAM_EXEC_RETRY) $(CP) "$(>)" "$(<)"
 }
 
 
@@ -2452,15 +2458,15 @@ if $(OS) = MACOSX {
 else {
   actions FilePreserveRO
   {
-    ham-exec-retry $(CP_PRESERVE) "$(>)" "$(<)"
+    $(HAM_EXEC_RETRY) $(CP_PRESERVE) "$(>)" "$(<)"
   }
   actions FilePreserveEXE
   {
-    ham-exec-retry $(CP_PRESERVE) "$(>)" "$(<)"
+    $(HAM_EXEC_RETRY) $(CP_PRESERVE) "$(>)" "$(<)"
   }
   actions FilePreserve
   {
-    ham-exec-retry $(CP_PRESERVE) "$(>)" "$(<)"
+    $(HAM_EXEC_RETRY) $(CP_PRESERVE) "$(>)" "$(<)"
   }
 }
 
@@ -2478,7 +2484,7 @@ else {
 
 actions HardLink
 {
-  ham-exec-retry $(RM) "$(<)" && $(LN) "$(>)" "$(<)"
+  $(HAM_EXEC_RETRY) $(RM) "$(<)" && $(LN) "$(>)" "$(<)"
 }
 
 actions Link bind NEEDLIBS
@@ -2498,12 +2504,12 @@ actions together Ranlib
 
 actions quietly updated piecemeal together RmTemps
 {
-  ham-exec-retry $(RM) "$(>)"
+  $(HAM_EXEC_RETRY) $(RM) "$(>)"
 }
 
 actions SoftLink
 {
-  ham-exec-retry $(RM) "$(<)" && $(LN) -s "$(>)" "$(<)"
+  $(HAM_EXEC_RETRY) $(RM) "$(<)" && $(LN) -s "$(>)" "$(<)"
 }
 
 # The the absolute path of the specified path, using / as file separator
