@@ -905,6 +905,9 @@ rule tkBuildPackage
   ObjectOptimFlags $(_exsrc) $(_src) $(_nopchsrc) : $(PKGOPTIM) ;
   OPTIM on $(_pch) = $(PKGOPTIM) ;
 
+  ### List of built files ###
+  local f = ;
+
   ### Main build output ###
   _src += $(_nopchsrc) ;
 
@@ -913,11 +916,19 @@ rule tkBuildPackage
   logVar PKGBUILD ;
   if $(PKGTYPE) = dll || $(PKGTYPE) = tooldll {
     ObjectDefines $(_allsrc) : _TARGET_DLL ;
+    SharedLibrary $(t) : $(_src) : : : $(_extra_objs) ;
+
     if $(PKGTARGET_LIB) {
-      SharedAndStaticLibrary $(t) : $(_src) : : : $(_extra_objs) ;
-    }
-    else {
-      SharedLibrary $(t) : $(_src) : : : $(_extra_objs) ;
+      local tlib_obj = [ FDirName $(OBJDIR) $(PKGTARGET_LIB) ] ;
+      Library $(tlib_obj) : $(_src) : $(_extra_objs) ;
+      DEPENDS $(PACKAGE)_lib : $(tlib_obj) ;
+      f += $(tlib_obj) ;
+      if $(_cpredist) = 1 {
+        local tlib_redist = [ FDirName $(TK_DIR_LIBS) $(PKGTARGET_LIB:B)$(_stamp)$(PKGTARGET_LIB:S) ] ;
+        FilePreserve $(tlib_redist) : $(tlib_obj) ;
+        DEPENDS $(PACKAGE)_lib : $(tlib_redist) ;
+        f += $(tlib_redist) ;
+      }
     }
   }
   else if $(PKGTYPE) = library {
@@ -933,7 +944,6 @@ rule tkBuildPackage
   ### Copy into the redist/output directory ###
   local d = $(PKGTARGET) ;
   DEPENDS $(d) : tkdir ;
-  local f = ;
   if $(_cpredist) = 1 {
     local p = [ tkFile $(PKGTARGETF:B)$(_stamp)$(PKGTARGETF:S) : $(d) : $(OUTDIR) ] ;
     if $(is_exe) {
@@ -941,12 +951,6 @@ rule tkBuildPackage
       Chmod $(p) ;
     }
     f += $(p) ;
-
-    if $(PKGTARGET_LIB) {
-      local p = [ tkFile $(PKGTARGET_LIB:B)$(_stamp)$(PKGTARGET_LIB:S) : $(PKGTARGET_LIB) : $(TK_DIR_LIBS) ] ;
-      DEPENDS $(PACKAGE)_lib : $(p) ;
-      f += $(p) ;
-    }
 
     if $(PKGTARGET_JS) {
       local p = [ tkFile $(PKGTARGET_JS:B)$(_stamp)$(PKGTARGET_JS:S) : $(PKGTARGET_JS) : $(TK_DIR_BIN) ] ;
@@ -962,11 +966,6 @@ rule tkBuildPackage
   }
   else {
     f += $(d) ;
-
-    if $(PKGTARGET_LIB) {
-      f += $(PKGTARGET_LIB) ;
-      DEPENDS $(PACKAGE)_lib : $(PKGTARGET_LIB) ;
-    }
 
     if $(PKGTARGET_JS) {
       f += $(PKGTARGET_JS) ;

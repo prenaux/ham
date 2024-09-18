@@ -1121,14 +1121,6 @@ rule SharedLibrary
   SharedObjects            $(>) ;
 }
 
-# Same as SharedLibrary, but also output a static library along side the dll
-rule SharedAndStaticLibrary
-{
-  SharedLibraryFromObjects $(<) : $(>:S=$(SUFDLLOBJ)) $(5) : $(3) : $(4) ;
-  LibraryFromObjects $(<) : $(>:S=$(SUFOBJ)) $(5) ;
-  SharedObjects $(>) ;
-}
-
 # /LibraryFromObjects library : objects ;
 #
 # Archives _objects_ into _library_. The _objects_ are then deleted
