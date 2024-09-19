@@ -64,7 +64,7 @@ case "$1" in
     shift
     ;;
   # Based on command
-  "git-update" | "git-force-pull")
+  "git-update" | "git-force-pull" | "git-push")
     log_info "Running concurrently based on command '$1'"
     CONCURRENT='y'
     ;;
