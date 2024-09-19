@@ -6,6 +6,7 @@ if $(BUILD) = da {
 STRICT_ALIASING_FLAGS = -fno-strict-aliasing ;
 
 CLANG_CC_ARGS +=
+  -fvisibility=hidden
   -ffunction-sections
   -fdata-sections
   -fvisibility=hidden
@@ -37,12 +38,6 @@ if $(C++VERSION) >= 20 {
     -Wno-deprecated-builtins
   ;
 }
-
-LINKFLAGS +=
-  -fvisibility=hidden
-  -ffunction-sections
-  -fdata-sections
-;
 
 if $(FLYMAKE) = 1 {
   # Happens when we're compiling header files with flymake since the temporary
@@ -84,16 +79,7 @@ if $(LINUX) {
   ;
 
   LINKLIBS +=
-   -lstdc++ -lpthread -ldl -lm
-  ;
-
-  # Flags needed so that backtrace() include the function names on Linux
-  CLANG_CC_ARGS +=
-    -fvisibility=default
-  ;
-  LINKLIBS +=
-    -fvisibility=default
-    -rdynamic
+    -lstdc++ -lpthread -ldl -lm
   ;
 }
 
