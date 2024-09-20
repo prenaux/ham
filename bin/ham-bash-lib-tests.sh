@@ -188,31 +188,23 @@ test_brew_package_manager() {
 #######################################################################
 # Run package manager tests based on detection
 #######################################################################
-detect_package_manager() {
-  command -v "$1" &>/dev/null
-  return $?
-}
-
-if detect_package_manager "pacman"; then
-  log_info "pacman detected, adding tests for it"
-  test_pacman_package_manager
-else
-  log_warning "pacman not found, not adding its tests"
-fi
-
-if detect_package_manager "apt-get"; then
-  log_info "apt-get detected, adding tests for it"
-  test_apt_package_manager
-else
-  log_warning "apt-get not found, not adding its tests"
-fi
-
-if detect_package_manager "brew"; then
-  log_info "brew detected, adding tests for it"
-  test_brew_package_manager
-else
-  log_warning "brew not found, not adding its tests"
-fi
+log_info "Adding tests for the detected package manager '$DETECTED_PACKAGE_MANAGER'."
+case "$DETECTED_PACKAGE_MANAGER" in
+  pacman)
+    test_pacman_package_manager
+    ;;
+  apt)
+    test_apt_package_manager
+    ;;
+  brew)
+    test_brew_package_manager
+    ;;
+  none) ;;
+  *)
+    log_error "Unexpected detected package manager: '$DETECTED_PACKAGE_MANAGER'."
+    exit 1
+    ;;
+esac
 
 ###########################################################################
 # TESTS: ham_os_package_syslib
