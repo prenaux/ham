@@ -1,6 +1,12 @@
 #!/bin/bash -e
 . hat repos default shell_linter
 
+log_info "The ham-bash-lib.sh"
+(
+  set -x
+  bash "$HAM_HOME/bin/ham-bash-lib-tests.sh"
+)
+
 log_info "Build ham"
 (
   set -x
