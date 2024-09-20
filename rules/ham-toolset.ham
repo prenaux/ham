@@ -23,6 +23,7 @@ rule hamToolsetHdrs {
   else {
     # logFatal "hamToolsetHdrs: $(toolsetName), can't find include directory:" $(d) ;
   }
+  return $(d) ;
 }
 
 rule hamToolsetDll {
