@@ -29,6 +29,15 @@ case $HAM_OS in
           return 1
         fi
       fi
+    elif command -v apt-get &>/dev/null; then
+      if [ ! -f "/usr/lib/x86_64-linux-gnu/libtinfo.so.5" ]; then
+        log_info "Library libtinfo.so.5 does not exist. Installing ncurses5..."
+        ham-apt-get-install libncurses5
+        if [ ! -f "/usr/lib/x86_64-linux-gnu/libtinfo.so.5" ]; then
+          log_error "Library libtinfo.so.5 still cant be found after installation."
+          return 1
+        fi
+      fi
     fi
     ;;
   *)
