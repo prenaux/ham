@@ -1006,10 +1006,26 @@ function ham_os_package_syslib_find_file() {
       echo "$INSTALL_DIR/$FILE"
       return 0
     fi
+
+    if [[ -n "$(ham_find_which_path xcrun)" ]]; then
+      INSTALL_DIR=$(xcrun --show-sdk-path)/usr/$TYPE
+      if [[ -f "$INSTALL_DIR/$FILE" ]]; then
+        echo "$INSTALL_DIR/$FILE"
+        return 0
+      fi
+    fi
   else
     # For other package managers, use ham_os_package_find_in_usr_dir
     ham_os_package_find_in_usr_dir "$TYPE" "$FILE"
     return 0
+  fi
+
+  # if its a binary we allow the path to work aswell
+  if [[ "$TYPE" == "bin" ]]; then
+    EXE_PATH=$(ham_find_which_path "$FILE")
+    if [[ -e "$EXE_PATH" ]]; then
+      echo "$EXE_PATH"
+    fi
   fi
 }
 
