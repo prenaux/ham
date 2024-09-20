@@ -19,7 +19,7 @@ fi
 log_info "Creating 'py3_pip_install.txt' with the following packages:"
 for pkg in "$@"; do
   echo "- $pkg"
-  echo "$pkg" >> py3_pip_install.txt
+  echo "$pkg" >>py3_pip_install.txt
 done
 
 log_info "Creating an empty 'py3_requirements.txt' file."
