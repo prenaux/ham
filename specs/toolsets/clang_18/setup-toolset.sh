@@ -2,7 +2,7 @@
 toolset_import_once xslt_tools || return 1
 
 # We're using clang...
-export LINUX_CLANG=1
+export LINUX_CLANG=18
 
 # Use clang
 export HAM_TOOLSET=CLANG
@@ -52,7 +52,7 @@ pathenv_add "${CLANG_DIR}/bin"
 dir=$(clang --version | grep InstalledDir)
 export CMD_JSON_COMPILER_PATH=${dir#*' '}/
 
-if ! VER="--- linux_x64 -----------------------
+if ! VER="--- clang_18 ------------------------
 $(clang -arch x86_64 --version)"; then
   echo "E/Can't get version."
   return 1

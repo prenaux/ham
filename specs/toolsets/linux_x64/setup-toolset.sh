@@ -12,8 +12,9 @@ esac
 export OSPLAT=X64
 export BUILD_BIN_LOA=$HAM_BIN_LOA
 
-# Default to GCC.
-export LINUX_CLANG=${LINUX_CLANG:-0}
+# Default to Clang 18 because we install it ourselve so its a reliable well
+# defined version.
+export LINUX_CLANG=${LINUX_CLANG:-18}
 
 # Use GCC
 if [ "${LINUX_CLANG}" == "0" ]; then
@@ -21,13 +22,15 @@ if [ "${LINUX_CLANG}" == "0" ]; then
 
   VER="--- linux_x64 -----------------------
 Using GCC System: $(gcc --version | grep gcc)"
+
 elif [ "${LINUX_CLANG}" == "18" ]; then
   toolset_import clang_18 || return 1
 
   VER="--- linux_x64 -----------------------
 Using Clang 18: $(clang -arch x86_64 --version)"
+
 else
-  # Use clang
+  # Use the system clang
   export HAM_TOOLSET=CLANG
   export HAM_TOOLSET_NAME=clang_33
   export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}"
