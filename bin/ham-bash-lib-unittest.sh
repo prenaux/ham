@@ -40,8 +40,8 @@ CHECK_EQUAL() {
     else
       complain "CHECK_EQUAL" "Expected both values to be equal."
     fi
-    echo "EXPECTED: $expected"
-    echo "  ACTUAL: $actual"
+    echo "EXPECTED: <<<$expected>>>"
+    echo "  ACTUAL: <<<$actual>>>"
     return 1
   fi
 
@@ -61,8 +61,8 @@ CHECK_NOT_EQUAL() {
     else
       complain "CHECK_NOT_EQUAL" "Expected both values to be different."
     fi
-    echo "EXPECTED: $expected"
-    echo "  ACTUAL: $actual"
+    echo "EXPECTED: <<<$expected>>>"
+    echo "  ACTUAL: <<<$actual>>>"
     return 1
   fi
 
@@ -82,8 +82,8 @@ CHECK_CONTAINS() {
     else
       complain "CHECK_CONTAINS" "Expected value should be contained in the actual value."
     fi
-    echo "EXPECTED: $expected"
-    echo "  ACTUAL: $actual"
+    echo "EXPECTED: <<<$expected>>>"
+    echo "  ACTUAL: <<<$actual>>>"
     return 1
   fi
 

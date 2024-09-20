@@ -856,6 +856,15 @@ ham_os_package_find_in_usr_dir() {
 
   # Search for the file in a few directories
   SEARCH_DIRS=("/usr/$TYPE" "/usr/local/$TYPE")
+
+  if [[ "$HAM_BIN_LOA" == "lin-x64" && "$HAM_OS_PACKAGE_MANAGER" == "apt" ]]; then
+    ARCH_USR_DIR="/usr/$TYPE/x86_64-linux-gnu"
+    if [[ -d "$ARCH_USR_DIR" ]]; then
+      # Append to SEARCH_DIRS
+      SEARCH_DIRS+=("$ARCH_USR_DIR")
+    fi
+  fi
+
   for DIR in "${SEARCH_DIRS[@]}"; do
     local TRY_PATH="$DIR/$FILE"
     if [[ -e "$TRY_PATH" ]]; then

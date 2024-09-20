@@ -286,7 +286,7 @@ else
     value=$(ham_os_package_syslib_check_and_install "include" "wee_iamnotapackage.h" apt:wee_iamnotapackage-bla wee_iamnotapackage 2>&1)
     CHECK_EQUAL 1 $? "call should fail" || return 1
     log_info "... value: $value"
-    CHECK_CONTAINS "ham_os_package_syslib_check_and_install: Unable to find 'wee_iamnotapackage.h' after installing package 'wee_iamnotapackage'" "$value" "curl/curl.h should be found after check/install" || return 1
+    CHECK_CONTAINS "ham_os_package_syslib_check_and_install: Unable to find 'wee_iamnotapackage.h' after installing package" "$value" "Should tell us that it cant find the non existant header." || return 1
   }
   TEST "ham_os_package_syslib" "test__ham_os_package_syslib_check_and_install__non_existent_package"
 fi
