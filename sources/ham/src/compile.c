@@ -15,15 +15,15 @@
  *	compile_foreach() - compile the "for x in y" statement
  *	compile_if() - compile 'if' rule
  *	compile_include() - support for 'include' - call include() on file
- *	compile_list() - expand and return a list 
+ *	compile_list() - expand and return a list
  *	compile_local() - declare (and set) local variables
  *	compile_null() - do nothing -- a stub for parsing
  *	compile_on() - run rule under influence of on-target variables
  *	compile_rule() - compile a single user defined rule
  *	compile_rules() - compile a chain of rules
  *	compile_set() - compile the "set variable" statement
- *	compile_setcomp() - support for `rule` - save parse tree 
- *	compile_setexec() - support for `actions` - save execution string 
+ *	compile_setcomp() - support for `rule` - save parse tree
+ *	compile_setexec() - support for `actions` - save execution string
  *	compile_settings() - compile the "on =" (set variable on exec) statement
  *	compile_switch() - compile 'switch' rule
  *
@@ -32,7 +32,7 @@
  *	debug_compile() - printf with indent to show rule expansion.
  *	evaluate_rule() - execute a rule invocation
  *
- * 02/03/94 (seiwald) -	Changed trace output to read "setting" instead of 
+ * 02/03/94 (seiwald) -	Changed trace output to read "setting" instead of
  *			the awkward sounding "settings".
  * 04/12/94 (seiwald) - Combined build_depends() with build_includes().
  * 04/12/94 (seiwald) - actionlist() now just appends a single action.
@@ -56,7 +56,7 @@
  * 01/21/01 (seiwald) - replace evaluate_if() with compile_eval()
  * 01/24/01 (seiwald) - 'while' statement
  * 03/23/01 (seiwald) - "[ on target rule ]" support
- * 02/28/02 (seiwald) - merge EXEC_xxx flags in with RULE_xxx 
+ * 02/28/02 (seiwald) - merge EXEC_xxx flags in with RULE_xxx
  * 03/02/02 (seiwald) - rules can be invoked via variable names
  * 03/12/02 (seiwald) - &&,&,||,|,in now short-circuit again
  * 03/25/02 (seiwald) - if ( "" a b ) one again returns true
@@ -357,7 +357,7 @@ LIST *compile_include(PARSE *parse, LOL *args, int *jmp) {
 }
 
 /*
- * compile_list() - expand and return a list 
+ * compile_list() - expand and return a list
  *
  * 	parse->string - character string to expand
  */
@@ -435,8 +435,8 @@ LIST *compile_on(PARSE *parse, LOL *args, int *jmp) {
     printf("\n");
   }
 
-  /* 
-	 * Copy settings, so that 'on target var on target = val' 
+  /*
+	 * Copy settings, so that 'on target var on target = val'
 	 * doesn't set var globally.
 	 */
 
@@ -507,8 +507,10 @@ LIST *evaluate_rule(const char *rulename, LOL *args, LIST *result) {
 
   /* Check traditional targets $(<) and sources $(>) */
 
-  if (!rule->actions && !rule->procedure)
-    printf("warning: unknown rule %s\n", rule->name);
+  if (!rule->actions && !rule->procedure) {
+    fprintf(stderr, "error: unknown rule %s\n", rule->name);
+    exit(EXITBAD);
+  }
 
   /* If this rule will be executed for updating the targets */
   /* then construct the action for make(). */
@@ -597,7 +599,7 @@ LIST *compile_rules(PARSE *parse, LOL *args, int *jmp) {
  * compile_set() - compile the "set variable" statement
  *
  *	parse->left	variable names
- *	parse->right	variable values 
+ *	parse->right	variable values
  *	parse->num	VAR_SET/APPEND/DEFAULT
  */
 
@@ -626,7 +628,7 @@ LIST *compile_set(PARSE *parse, LOL *args, int *jmp) {
 }
 
 /*
- * compile_setcomp() - support for `rule` - save parse tree 
+ * compile_setcomp() - support for `rule` - save parse tree
  *
  *	parse->string	rule name
  *	parse->left	list of argument names
@@ -670,7 +672,7 @@ LIST *compile_setcomp(PARSE *parse, LOL *args, int *jmp) {
 }
 
 /*
- * compile_setexec() - support for `actions` - save execution string 
+ * compile_setexec() - support for `actions` - save execution string
  *
  *	parse->string	rule name
  *	parse->string1	OS command string
@@ -703,8 +705,8 @@ LIST *compile_setexec(PARSE *parse, LOL *args, int *jmp) {
  * compile_settings() - compile the "on =" (set variable on exec) statement
  *
  *	parse->left	variable names
- *	parse->right	target name 
- *	parse->third	variable value 
+ *	parse->right	target name
+ *	parse->third	variable value
  *	parse->num	VAR_SET/APPEND/DEFAULT
  */
 

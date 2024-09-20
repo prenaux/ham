@@ -52,7 +52,7 @@ static char *symdump(YYSTYPE *s);
 
 #define BIGGEST_TOKEN 10240 /* no single token can be larger */
 
-/* 
+/*
  * Set parser mode: normal, string, or keyword
  */
 
@@ -131,8 +131,10 @@ int yyline() {
   if (!i->file) {
     FILE *f = stdin;
 
-    if (strcmp(i->fname, "-") && !(f = fopen(i->fname, "r")))
+    if (strcmp(i->fname, "-") && !(f = fopen(i->fname, "r"))) {
       perror(i->fname);
+      yyerror("cant open input/include file");
+     }
 
     i->file = f;
   }
