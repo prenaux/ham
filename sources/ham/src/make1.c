@@ -63,7 +63,7 @@
 #include "execcmd.h"
 #include "buffer.h"
 
-#ifdef OS_MACOSX
+#if defined OS_MACOSX || (defined(__clang__) && defined(OS_LINUX))
   #include <unistd.h>
 #endif
 

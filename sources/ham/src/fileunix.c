@@ -49,7 +49,7 @@
     #include <sys/stat.h>
   #endif
 
-  #if defined(OS_RHAPSODY) || defined(OS_MACOSX) || defined(OS_NEXT)
+  #if defined(OS_RHAPSODY) || defined(OS_MACOSX) || defined(OS_NEXT) || (defined(__clang__) && defined(OS_LINUX))
     /* need unistd for rhapsody's proper lseek */
     #include <sys/dir.h>
     #include <unistd.h>
@@ -250,8 +250,8 @@ void file_archscan(const char *archive, scanback func, void *closure) {
 
     *dst = 0;
 
-    /* Modern (BSD4.4) long names: if the name is "#1/nnnn", 
-	    ** then the actual name is the nnnn bytes after the header.  
+    /* Modern (BSD4.4) long names: if the name is "#1/nnnn",
+	    ** then the actual name is the nnnn bytes after the header.
 	    */
 
     if (!strcmp(lar_name, "#1")) {
