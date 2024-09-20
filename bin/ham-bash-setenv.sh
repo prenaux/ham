@@ -52,6 +52,7 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
       echo "W/ham-bash-setenv.sh: Unknown HAM_OS: $HAM_OS"
       ;;
   esac
+
   pathenv_add "$HAM_HOME/bin/$HAM_BIN_LOA"
   # This must be called after bin/HAM_BIN_LOA so that they
   # get before it in the PATH list.
@@ -62,6 +63,10 @@ if [ "${HAM_ENV_SETUP}" != 1 ]; then
   # Sanitize HAM_HOME's path
   HAM_HOME=$(abspath "$HAM_HOME")
   export HAM_HOME
+
+  # Detect the package manager
+  HAM_OS_PACKAGE_MANAGER=$(ham_os_package_detect_default_manager)
+  export HAM_OS_PACKAGE_MANAGER
 else
   true
 fi

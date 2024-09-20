@@ -742,6 +742,354 @@ tagfile_update() {
   echo "I/Updated tagfile: '$OUTFILE'"
 }
 
+ham_find_which_path() {
+  case $HAM_OS in
+    NT*)
+      local path
+      path=$("type" -p "$*" 2>/dev/null)
+      echo -n "$path"
+      ;;
+    *)
+      local path
+      path=$("which" "$*" 2>/dev/null)
+      echo -n "$path"
+      ;;
+  esac
+}
+
+########################################################################
+##  OS Packages
+########################################################################
+ham_os_package_exist_pacman() {
+  pacman -Si "$1" &>/dev/null && return 0
+  return 1
+}
+
+ham_os_package_exist_apt() {
+  apt-cache show "$1" &>/dev/null && return 0
+  return 1
+}
+
+ham_os_package_exist_brew() {
+  brew info "$1" &>/dev/null && return 0
+  return 1
+}
+
+ham_os_package_check_and_install_pacman() {
+  local FUNC_NAME="ham_os_package_check_and_install_pacman"
+  local PACKAGE_NAME=$1
+  if [ -z "$PACKAGE_NAME" ]; then
+    complain "$FUNC_NAME" "PACKAGE_NAME not specified"
+    return 1
+  fi
+
+  if pacman -Qi "$PACKAGE_NAME" &>/dev/null; then
+    log_info "Package '$PACKAGE_NAME' is already installed."
+  else
+    log_info "Package '$PACKAGE_NAME' is not installed. Installing..."
+    (
+      set -ex
+      sudo pacman -q -S --noconfirm "$PACKAGE_NAME"
+    )
+  fi
+}
+
+ham_os_package_check_and_install_apt() {
+  local FUNC_NAME="ham_os_package_check_and_install_apt"
+  local PACKAGE_NAME=$1
+  if [ -z "$PACKAGE_NAME" ]; then
+    complain "$FUNC_NAME" "PACKAGE_NAME not specified"
+    return 1
+  fi
+
+  if dpkg -l | grep -q "^ii.*$PACKAGE_NAME "; then
+    log_info "Package '$PACKAGE_NAME' is already installed."
+  else
+    log_info "Package '$PACKAGE_NAME' is not installed. Installing..."
+    (
+      set -ex
+      ham-apt-get-install "$PACKAGE_NAME"
+    )
+  fi
+}
+
+ham_os_package_check_and_install_brew() {
+  local FUNC_NAME="ham_os_package_check_and_install_brew"
+  local PACKAGE_NAME=$1
+  if [ -z "$PACKAGE_NAME" ]; then
+    complain "$FUNC_NAME" "PACKAGE_NAME not specified"
+    return 1
+  fi
+
+  if ls "$(ham-brew-installdir "$1")"/ &>/dev/null; then
+    echo "Package '$PACKAGE_NAME' is already installed."
+  else
+    echo "Package '$PACKAGE_NAME' is not installed. Installing..."
+    (
+      set -ex
+      ham-brew install "$PACKAGE_NAME"
+    )
+  fi
+}
+
+#
+# usage: ham_os_package_find_in_usr_dir TYPE FILE
+#   TYPE: One of 'lib', 'include', or 'bin', representing the type of file to search for.
+#   FILE: The name of the file to search for. Can include directory structure (e.g., 'curl/curl.h' or 'libcurl.so').
+# Example:
+#   ham_os_package_find_in_usr_dir include "curl/curl.h"  # Search for 'curl/curl.h' in include paths.
+#   ham_os_package_find_in_usr_dir lib "libcurl.so"       # Search for 'libcurl.so' in library paths.
+#   ham_os_package_find_in_usr_dir bin "curl"             # Search for the 'curl' binary in bin paths.
+#
+ham_os_package_find_in_usr_dir() {
+  local FUNC_NAME="ham_os_package_find_in_usr_dir"
+  local TYPE=$1
+  if [ -z "$TYPE" ]; then
+    complain "$FUNC_NAME" "TYPE not specified"
+    return 1
+  fi
+  local FILE=$2
+  if [ -z "$FILE" ]; then
+    complain "$FUNC_NAME" "FILE not specified"
+    return 1
+  fi
+
+  # Search for the file in a few directories
+  SEARCH_DIRS=("/usr/$TYPE" "/usr/local/$TYPE")
+  for DIR in "${SEARCH_DIRS[@]}"; do
+    local TRY_PATH="$DIR/$FILE"
+    if [[ -e "$TRY_PATH" ]]; then
+      echo "$TRY_PATH"
+      return 0
+    fi
+  done
+
+  # empty value if we cant find the file, no error code
+  return 0
+}
+
+#
+# usage: ham_os_package_get_value KEYNAME (KEYNAME:VALUE) (DEFAULT_VALUE)
+#
+# Return an error if no DEFAULT_VALUE is specified and we can't find a
+# matching value for the key specified.
+#
+# Example:
+#   ham_os_package_get_value $KEYNAME apt:binutils-dev binutils
+#   ham_os_package_get_value $KEYNAME apt:libsdl2-dev sdl2
+#   ham_os_package_get_value $KEYNAME pacman:squirrel apt:foo_for_apt brew:foodebiere
+#
+ham_os_package_get_value() {
+  local FUNC_NAME="ham_os_package_get_value"
+  local KEYNAME=$1
+  if [ -z "$KEYNAME" ]; then
+    complain "$FUNC_NAME" "KEYNAME not specified"
+    return 1
+  fi
+  shift
+
+  local args=("$@")
+
+  # Look for the default value first so that we can validate how the default
+  # values are specified
+  local DEFAULT_VALUE=""
+  for MAPPING in "${args[@]}"; do
+    # If the argument does not contain a colon, it's the default value
+    if [[ "$MAPPING" != *":"* ]]; then
+      if [[ -n "$DEFAULT_VALUE" ]]; then
+        complain "$FUNC_NAME" "Multiple default values specified."
+        return 1
+      fi
+      DEFAULT_VALUE=$MAPPING
+      continue
+    fi
+  done
+
+  for MAPPING in "${args[@]}"; do
+    # Extract key and value from the mapping
+    local MAPPED_KEY
+    MAPPED_KEY=$(echo "$MAPPING" | cut -d':' -f1)
+    local MAPPED_VALUE
+    MAPPED_VALUE=$(echo "$MAPPING" | cut -d':' -f2)
+
+    # If the current mapping matches the key, return the value
+    if [[ "$KEYNAME" == "$MAPPED_KEY" ]]; then
+      echo "$MAPPED_VALUE"
+      return 0
+    fi
+  done
+
+  # If no specific key match and DEFAULT_VALUE is specified, return it
+  if [[ -n "$DEFAULT_VALUE" ]]; then
+    echo "$DEFAULT_VALUE"
+    return 0
+  fi
+
+  # If no match and no DEFAULT_VALUE, return an error
+  complain "$FUNC_NAME" "No matching value for key '$KEYNAME' and no default value provided."
+  return 1
+}
+
+# Detect the default package manager in the current environment
+ham_os_package_detect_default_manager() {
+  local FUNC_NAME="ham_os_package_detect_default_manager"
+  local PKGMANAGER=""
+
+  # Check for Homebrew. Prioritize it on macOS or if experimental Linuxbrew is enabled.
+  if command -v brew &>/dev/null; then
+    PKGMANAGER="brew"
+    if [[ "$HAM_ENABLE_EXPERIMENTAL_LINUX_BREW" == "1" || "$OSTYPE" == "darwin"* ]]; then
+      echo "$PKGMANAGER"
+      return 0
+    fi
+  fi
+
+  # Check for Pacman (Arch Linux / SteamOS)
+  if command -v pacman &>/dev/null; then
+    PKGMANAGER="pacman"
+  # Check for APT (Debian/Ubuntu)
+  elif command -v apt-get &>/dev/null; then
+    PKGMANAGER="apt"
+  fi
+
+  if [[ -n "$PKGMANAGER" ]]; then
+    echo "$PKGMANAGER"
+  else
+    echo "none"
+  fi
+}
+
+#
+# usage: ham_os_package_syslib_find_file TYPE FILE [OS PACKAGES]
+#   TYPE: One of 'lib', 'include', or 'bin', representing the type of file to search for.
+#   FILE: The name of the file to search for. Can include directory structure (e.g., 'curl/curl.h' or 'libcurl.so').
+#   OS PACKAGES: A list of package options like: apt:libcurl4-openssl-dev curl
+#
+function ham_os_package_syslib_find_file() {
+  local FUNC_NAME="ham_os_package_syslib_find_file"
+  if [[ -z "$HAM_OS_PACKAGE_MANAGER" || "$HAM_OS_PACKAGE_MANAGER" == "none" ]]; then
+    complain "$FUNC_NAME" "HAM_OS_PACKAGE_MANAGER is not set or is 'none'"
+    return 1
+  fi
+
+  local TYPE="$1"
+  if [[ -z "$TYPE" ]]; then
+    complain "$FUNC_NAME" "TYPE is not specified"
+    return 1
+  fi
+  shift
+
+  local FILE="$1"
+  if [[ -z "$FILE" ]]; then
+    complain "$FUNC_NAME" "FILE is not specified"
+    return 1
+  fi
+  shift
+
+  local -a PACKAGE_OPTIONS=("$@")
+
+  # If the package manager is brew, use ham-brew-installdir
+  if [[ "$HAM_OS_PACKAGE_MANAGER" == "brew" ]]; then
+    local BREWPKGNAME
+    BREWPKGNAME=$(ham_os_package_get_value brew "${PACKAGE_OPTIONS[@]}")
+    if [[ -z "$BREWPKGNAME" ]]; then
+      return 0
+    fi
+
+    local INSTALL_DIR
+    INSTALL_DIR=$(ham-brew-installdir "$BREWPKGNAME" "$TYPE")
+    if [[ -z "$INSTALL_DIR" ]]; then
+      return 0
+    fi
+
+    if [[ -f "$INSTALL_DIR/$FILE" ]]; then
+      echo "$INSTALL_DIR/$FILE"
+      return 0
+    fi
+  else
+    # For other package managers, use ham_os_package_find_in_usr_dir
+    ham_os_package_find_in_usr_dir "$TYPE" "$FILE"
+    return 0
+  fi
+}
+
+#
+# usage: ham_os_package_syslib_check_and_install TYPE FILE [OS PACKAGES]
+#   TYPE: One of 'lib', 'include', or 'bin', representing the type of file to search for.
+#   FILE: The name of the file to search for. Can include directory structure (e.g., 'curl/curl.h' or 'libcurl.so').
+#   OS PACKAGES: A list of package options like 'apt:libcurl4-openssl-dev pacman:curl brew:curl'
+#
+# return: 0 if succeeded and print the path of the file, 1 if failed and print an error message
+#
+function ham_os_package_syslib_check_and_install() {
+  local FUNC_NAME="ham_os_package_syslib_check_and_install"
+  if [[ -z "$HAM_OS_PACKAGE_MANAGER" || "$HAM_OS_PACKAGE_MANAGER" == "none" ]]; then
+    complain "$FUNC_NAME" "HAM_OS_PACKAGE_MANAGER is not set or is 'none'"
+    return 1
+  fi
+
+  local TYPE="$1"
+  if [[ -z "$TYPE" ]]; then
+    complain "$FUNC_NAME" "TYPE is not specified"
+    return 1
+  fi
+  shift
+
+  local FILE="$1"
+  if [[ -z "$FILE" ]]; then
+    complain "$FUNC_NAME" "FILE is not specified"
+    return 1
+  fi
+  shift
+
+  local -a PACKAGE_OPTIONS=("$@")
+
+  local PACKAGE_NAME
+  PACKAGE_NAME=$(ham_os_package_get_value "$HAM_OS_PACKAGE_MANAGER" "${PACKAGE_OPTIONS[@]}")
+  if [[ -z "$PACKAGE_NAME" ]]; then
+    complain "$FUNC_NAME" "Unable to find a valid package name from '${PACKAGE_OPTIONS[*]}'"
+    return 1
+  fi
+
+  # Try to find the file first
+  local FILE_PATH
+  FILE_PATH=$(ham_os_package_syslib_find_file "$TYPE" "$FILE" "${PACKAGE_OPTIONS[@]}")
+  if [[ -n "$FILE_PATH" ]]; then
+    echo "$FILE_PATH"
+    return 0
+  fi
+
+  # If not found, attempt to install the package
+  log_info "'$FILE' not found, attempting to install..." 1>&2
+
+  # Install the package based on the package manager
+  case "$HAM_OS_PACKAGE_MANAGER" in
+    pacman)
+      ham_os_package_check_and_install_pacman "$PACKAGE_NAME" 1>&2
+      ;;
+    apt)
+      ham_os_package_check_and_install_apt "$PACKAGE_NAME" 1>&2
+      ;;
+    brew)
+      ham_os_package_check_and_install_brew "$PACKAGE_NAME" 1>&2
+      ;;
+    *)
+      complain "$FUNC_NAME" "Unsupported package manager '$HAM_OS_PACKAGE_MANAGER'"
+      return 1
+      ;;
+  esac
+
+  # Check again if the file can be found after the installation
+  FILE_PATH=$(ham_os_package_syslib_find_file "$TYPE" "$FILE" "${PACKAGE_OPTIONS[@]}")
+  if [[ -n "$FILE_PATH" ]]; then
+    echo "$FILE_PATH"
+    return 0
+  else
+    complain "$FUNC_NAME" "Unable to find '$FILE' after installing package '$PACKAGE_NAME' with '$HAM_OS_PACKAGE_MANAGER'."
+    return 1
+  fi
+}
+
 ########################################################################
 ##  Environments
 ########################################################################

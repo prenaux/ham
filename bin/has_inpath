@@ -9,6 +9,5 @@ path=$(ham_find_which_path "$*")
 if [ -z "$path" ]; then
   exit 1
 else
-  echo -n "$path"
   exit 0
 fi

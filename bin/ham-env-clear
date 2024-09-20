@@ -1,5 +1,5 @@
 #!/bin/bash
-TO_UNSET=$(ham-env | grep -E -vw 'WORK|HAM_OS|HAM_HOME|HAM_CMD|HAM_BIN_LOA|HAM_NO_VER_CHECK|HAM_CPPM_FORCE_BUILD|HAM_TOOLSET_DL_URL|BUILD_TARGET' | cut -d= -f1)
+TO_UNSET=$(ham-env | grep -E -vw 'WORK|HAM_OS|HAM_OS_PACKAGE_MANAGER|HAM_HOME|HAM_CMD|HAM_BIN_LOA|HAM_NO_VER_CHECK|HAM_CPPM_FORCE_BUILD|HAM_TOOLSET_DL_URL|BUILD_TARGET' | cut -d= -f1)
 # echo "TO_UNSET: $TO_UNSET"
 # shellcheck disable=SC2086 # We actually want word splitting here
 unset $TO_UNSET
