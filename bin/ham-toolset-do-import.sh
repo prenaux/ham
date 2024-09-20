@@ -19,11 +19,24 @@ fi
 
 SETUP_SCRIPT=
 FOUND_SETUP_SCRIPT=no
+
+# Look in HAM_HOME/specs for the toolset definition
 if [ "$FOUND_SETUP_SCRIPT" == "no" ]; then
   DIR="${HAM_HOME}/specs/toolsets/$1"
   SETUP_SCRIPT="$DIR/setup-toolset.sh"
   if [ -f "$SETUP_SCRIPT" ]; then
     FOUND_SETUP_SCRIPT="from GLOBAL."
+  fi
+fi
+
+# Look in HAM_PROJECT_DIR/specs for the toolset definition, this is the
+# directory of the current _ham_project
+if [[ -d "${HAM_PROJECT_DIR}" && "$FOUND_SETUP_SCRIPT" == "no" ]]; then
+  DIR="${HAM_PROJECT_DIR}/specs/toolsets/$1"
+  log_info "TRY PROJECT: $DIR"
+  SETUP_SCRIPT="$DIR/setup-toolset.sh"
+  if [ -f "$SETUP_SCRIPT" ]; then
+    FOUND_SETUP_SCRIPT="from PROJECT."
   fi
 fi
 
