@@ -459,18 +459,23 @@ toolset_dl_and_extract() {
   # export ARCH_URL="http://localhost:8123/data/toolsets/$2.7z"
   DLFILENAME="_$2.7z"
   echo "=== Importing toolset '$1' from $DIR"
-  mkdir -p "${DIR}"
 
-  if [ -e "$DL_DIR/$2.7z" ]; then
-    echo "I/Copying archive found at: $DL_DIR/$2.7z"
-    cp "$DL_DIR/$2.7z" "./$DLFILENAME"
+  mkdir -p "${DIR}"
+  if ! pushd "${DIR}" >/dev/null; then
+    echo "E/Can't go to the toolset directory '$DIR'."
+    return 1
   fi
 
-  if ! pushd "${DIR}" >/dev/null; then
-    echo "E/Can't cd to the toolset's directory '$DIR'."
-    return 1
-  elif [ -e "$DLFILENAME" ]; then
-    echo "I/Extracting $DLFILENAME"
+  if [ -e "$DL_DIR/$2.7z" ]; then
+    echo "I/Copying archive found at '$DL_DIR/$2.7z'"
+    (
+      set -x
+      cp "$DL_DIR/$2.7z" "$DLFILENAME"
+    )
+  fi
+
+  if [ -e "$DLFILENAME" ]; then
+    echo "I/Extracting '$DLFILENAME' ..."
     7z x -y "$DLFILENAME" | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
     if [ "${PIPESTATUS[0]}" != 0 ]; then
       echo "E/Extraction failed ! Removing corrupted archive, please re-run the environment setup."
@@ -487,7 +492,7 @@ toolset_dl_and_extract() {
       return 1
     fi
     mv "$DLFILENAME.dlfile" "$DLFILENAME"
-    echo "I/Extracting $DLFILENAME"
+    echo "I/Extracting '$DLFILENAME' ..."
     7z x -y "$DLFILENAME" | grep -v -e "\(7-Zip\|Processing\|Extracting\|^$\)" -
     if [ "${PIPESTATUS[0]}" != 0 ]; then
       echo "E/Extraction failed ! Removing corrupted archive, please re-run the environment setup."
