@@ -33,6 +33,15 @@ log_info "Build and run pi with ham"
   ham -X ham/sources/ham/tests/pi Run_pi
 )
 
+log_info "Test common toolsets import"
+(
+  set -x
+  hat repos
+  hat python_3
+  hat nodejs
+  hat php_8
+)
+
 log_info "Test examples"
 (
   set -x
