@@ -9,12 +9,6 @@ case "$BUILD_TARGET" in
     ;;
 esac
 
-if [ "$NODEJS_CAN_NODE_MODULES" = "1" ]; then
-  # These are needed by gyp to build native nodejs modules
-  toolset_import_once python_3 || return 1
-  toolset_import_once default || return 1
-fi
-
 # toolset
 export HAM_TOOLSET=NODEJS
 export HAM_TOOLSET_NAME=nodejs
