@@ -1,0 +1,2 @@
+Import toolkit-base-gcc_470.ham ;
+LOA_LINKER = clang ;
