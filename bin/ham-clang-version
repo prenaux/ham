@@ -1,0 +1,10 @@
+#!/bin/bash -e
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
+. "$HAM_HOME/bin/ham-bash-lib.sh"
+clang_path=$(ham_find_which_path "clang")
+if [ -n "$clang_path" ]; then
+  "$clang_path" --version | sed -n 's/^.*version \([0-9]*\)\..*/\1/p'
+fi
