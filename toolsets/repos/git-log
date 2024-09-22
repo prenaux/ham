@@ -11,6 +11,8 @@ usage() {
   echo "  # Print the current branches' commit and the origin's commits graph"
   echo "  git-log . ."
   echo "  git-log current_branch origin"
+  echo "  # Print the commits between the current branch and its parent branch, the equivalent of what you'd see in a PR"
+  echo "  git-log parent"
   exit 1
 }
 
@@ -32,6 +34,7 @@ if [ "$LOG_COUNT" == "0" ]; then
   LOG_COUNT=100000
 fi
 
+# Simple log of the current branch
 if [ -z "$1" ]; then
   log_info "Status:"
   git-status short
@@ -41,6 +44,39 @@ if [ -z "$1" ]; then
     set -x
     git $PAGER log --all --decorate --oneline -${LOG_COUNT} --graph "${FORMAT[@]}"
   )
+
+# Log between the current branch and its first parent
+elif [[ "$1" == "parent" || "$1" == "parent_branch" || "$1" == "parent-branch" ]]; then
+  BRANCH=$(git-get-branch-name current_branch)
+  PARENT_BRANCH=$(git-get-branch-name parent_branch)
+  if [[ "$PARENT_BRANCH" == "get_branch_error__"* ]]; then
+    log_error "Can't get parent branch: '$PARENT_BRANCH'."
+    usage
+  fi
+
+  log_info "Status:"
+  git-status short
+  log_info "Logging branch '$BRANCH'."
+  shift
+  ORIGIN="$1"
+  if [ "$ORIGIN" == "origin" ] || [ "$ORIGIN" == "." ]; then
+    ORIGIN=origin
+    echo "I/Default origin '$ORIGIN'."
+  fi
+  if [ -z "$ORIGIN" ]; then
+    # shellcheck disable=SC2086
+    (
+      set -x
+      git $PAGER log --decorate --oneline --graph --first-parent "${FORMAT[@]}" "${PARENT_BRANCH}".."${BRANCH}" "$@"
+    )
+  else
+    shift
+    # shellcheck disable=SC2086
+    (
+      set -x
+      git $PAGER log --decorate --oneline --graph --first-parent "${FORMAT[@]}" "${PARENT_BRANCH}".."${BRANCH}" "$ORIGIN/$BRANCH" "$@"
+    )
+  fi
 else
   BRANCH=$(git-get-branch-name "$1")
   log_info "Status:"
