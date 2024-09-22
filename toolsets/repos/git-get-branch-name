@@ -60,6 +60,14 @@ case "$BRANCH" in
     CURRENT_BRANCH=$(git branch --no-color 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
     output_and_done "$CURRENT_BRANCH"
     ;;
+  parent-branch | parent_branch | .)
+    PARENT_BRANCH=$(git-get-parent-branch-names parent)
+    if [[ "$PARENT_BRANCH" == "__no_parent_branch__" ]]; then
+      echo "get_branch_error__no_parent_branch"
+    else
+      output_and_done "$PARENT_BRANCH"
+    fi
+    ;;
   pick-all | pick_all)
     SEL_BRANCH=$(git-ls-branches | fzf --query="$CURRENT_BRANCH" --select-1)
     # shellcheck disable=SC2181
