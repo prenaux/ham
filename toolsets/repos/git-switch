@@ -1,0 +1,25 @@
+#!/bin/bash -e
+. ham-bash-lib.sh
+
+if [[ -z "$1" || "$1" == "all" ]]; then
+  BRANCH=$(git-get-branch-name pick-all)
+elif [ "$1" == "parent" ]; then
+  BRANCH=$(git-get-branch-name pick-parent)
+else
+  BRANCH=$(git-get-branch-name "$1")
+fi
+
+if [[ "$BRANCH" == $(git-get-branch-name "current_branch") ]]; then
+  log_info "Already on branch '$BRANCH'."
+  exit 0
+fi
+
+if [[ "$BRANCH" = get_branch_error__* || -z "$BRANCH" ]]; then
+  log_error "Can't get BRANCH."
+  usage
+fi
+
+(
+  set -x
+  git checkout "$BRANCH"
+)

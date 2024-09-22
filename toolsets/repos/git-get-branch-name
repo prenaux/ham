@@ -7,8 +7,14 @@ usage() {
   echo "  Detectable branch name:"
   echo "    main-branch|main_branch|master-branch|master_branch"
   echo "      Name of the main branch, usually main or master."
-  echo "    current-branch|current_branch|."
+  echo "    current-branch|current_branch"
   echo "      Name of the current branch."
+  echo ""
+  echo "  Pickable branch name:"
+  echo "    pick-all|pick_all"
+  echo "      Pick any branch with fzf."
+  echo "    pick-parent|pick_parent"
+  echo "      Pick on of this or its parent branches with fzf."
   echo ""
   echo "  The 'ORIGIN:' prefix is useful to specifiy an origin and expand a detected"
   echo "  branch name behind it. For example:"
@@ -54,8 +60,17 @@ case "$BRANCH" in
     CURRENT_BRANCH=$(git branch --no-color 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
     output_and_done "$CURRENT_BRANCH"
     ;;
-  pick | pick-branch | pick_branch)
+  pick-all | pick_all)
     SEL_BRANCH=$(git-ls-branches | fzf --query="$CURRENT_BRANCH" --select-1)
+    # shellcheck disable=SC2181
+    if [ $? -ne 0 ]; then
+      echo "get_branch_error__pick_no_branch_selected"
+    else
+      output_and_done "$SEL_BRANCH"
+    fi
+    ;;
+  pick-parent | pick_parent)
+    SEL_BRANCH=$(git-get-parent-branch-names this_and_parents | fzf --query="$CURRENT_BRANCH" --select-1)
     # shellcheck disable=SC2181
     if [ $? -ne 0 ]; then
       echo "get_branch_error__pick_no_branch_selected"

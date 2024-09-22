@@ -1,0 +1,86 @@
+#!/bin/bash
+. ham-bash-lib.sh
+
+usage() {
+  SCRIPT_NAME=$(basename "$0")
+  echo "usage: $SCRIPT_NAME [-v] [-h | --help] KIND"
+  echo ""
+  echo "Options:"
+  echo "  -v         Enable verbose output."
+  echo "  -h, --help Show this help message and exit."
+  echo ""
+  echo "Kinds:"
+  echo "  parent            Get the parent branch name."
+  echo "  parents           Get the parents branch names."
+  echo "  this              Get this branch name only."
+  echo "  this_and_parents  Get this branch name and its parents."
+  exit 1
+}
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+  usage
+fi
+
+if [ "$1" == "-v" ]; then
+  VERBOSE=1
+  shift
+fi
+
+if [ -z "$1" ]; then
+  log_error "No kind of branch specified."
+  usage
+fi
+
+extract_branch_name() {
+  echo "$1" | sed -n 's/.*refs\/heads\/\([^, ]*\).*/\1/p'
+}
+
+lines=
+line=
+
+current_branch=$(git-get-branch-name ".")
+
+if [ "$1" == "this_and_parents" ]; then
+  lines=$(git log --decorate=full --simplify-by-decoration --oneline --format="%D" "$current_branch")
+
+elif [ "$1" == "this" ]; then
+  line=$(git log --decorate=full --simplify-by-decoration --oneline --format="%D" -n 1 "$current_branch")
+
+elif [ "$1" == "parent" ]; then
+  line=$(git log --decorate=full --simplify-by-decoration --oneline --format="%D" -n 2 "$current_branch" | tail -1)
+  if [ -z "$line" ]; then
+    echo "__no_parent_branch__"
+    exit 0
+  fi
+
+elif [ "$1" == "parents" ]; then
+  line=$(git log --decorate=full --simplify-by-decoration --oneline --format="%D" -n 2 "$current_branch" | tail -1)
+  if [ -z "$line" ]; then
+    echo "__no_parent_branches__"
+    exit 0
+  fi
+  lines=$(git log --decorate=full --simplify-by-decoration --oneline --format="%D" "$current_branch" | tail -n +2)
+  line=
+
+else
+  log_error "Unknown parameter(s): $*"
+  usage
+fi
+
+if [[ -n "$line" ]]; then
+  if [[ "$VERBOSE" == 1 ]]; then
+    echo "$line"
+  else
+    extract_branch_name "$line"
+  fi
+else
+  if [[ "$VERBOSE" == 1 ]]; then
+    while IFS= read -r line; do
+      echo "$line"
+    done <<<"$lines"
+  else
+    while IFS= read -r line; do
+      extract_branch_name "$line"
+    done <<<"$lines"
+  fi
+fi
