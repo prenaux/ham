@@ -18,7 +18,11 @@ usage() {
 
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
-FORMAT=(--pretty=format:'%C(yellow)%h%Cgreen%d %Creset%s (%Cblue%an%Creset - %Cred%ad%Creset)' --date=short)
+if [[ -n "$GIT_LOG_CUSTOM_FORMAT" ]]; then
+  FORMAT=(--pretty=format:"$GIT_LOG_CUSTOM_FORMAT" --date=short)
+else
+  FORMAT=(--pretty=format:'%C(yellow)%h%Cgreen%d %Creset%s (%Cblue%an%Creset - %Cred%ad%Creset)' --date=short)
+fi
 LOG_COUNT=${LOG_COUNT:-10}
 
 if [ "${1:0:1}" = "-" ]; then
@@ -54,9 +58,7 @@ elif [[ "$1" == "parent" || "$1" == "parent_branch" || "$1" == "parent-branch" ]
     usage
   fi
 
-  log_info "Status:"
-  git-status short
-  log_info "Logging branch '$BRANCH'."
+  log_info "Commits between branch '$BRANCH' and its parent '$PARENT_BRANCH'."
   shift
   ORIGIN="$1"
   if [ "$ORIGIN" == "origin" ] || [ "$ORIGIN" == "." ]; then
