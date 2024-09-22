@@ -14,8 +14,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_ubuntu:
-    # The type of runner that the job will run on
+  build_ubuntu22:
     runs-on: ubuntu-22.04
 
     steps:
@@ -38,8 +37,30 @@ jobs:
         run: |
           ./bin/ham -X ham _run_ci.sh
 
+  build_ubuntu24:
+    runs-on: ubuntu-24.04
+
+    steps:
+      # Check-out our repository
+      - uses: actions/checkout@v3
+
+      - name: Install OS packages
+        run: |
+          ./bin/ham-install-os-packages
+
+      - name: ham-toolset repos svn default
+        run: |
+          ./bin/ham-toolset repos svn default
+
+      - name: ham-toolset rclone python_3 nodejs php_8
+        run: |
+          ./bin/ham-toolset rclone python_3 nodejs php_8
+
+      - name: _run_ci.sh
+        run: |
+          ./bin/ham -X ham _run_ci.sh
+
   build_macos_latest:
-    # The type of runner that the job will run on
     runs-on: macos-latest
 
     steps:
@@ -63,7 +84,6 @@ jobs:
           ./bin/ham -X ham _run_ci.sh
 
   build_windows_latest:
-    # The type of runner that the job will run on
     runs-on: windows-latest
 
     steps:
