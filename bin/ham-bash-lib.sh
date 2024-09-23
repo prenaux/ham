@@ -780,6 +780,48 @@ ham_os_package_exist_brew() {
   return 1
 }
 
+ham_os_package_install_pacman() {
+  local FUNC_NAME="ham_os_package_install_pacman"
+  local PACKAGE_NAME=$1
+  if [ -z "$PACKAGE_NAME" ]; then
+    complain "$FUNC_NAME" "PACKAGE_NAME not specified"
+    return 1
+  fi
+
+  (
+    set -ex
+    sudo pacman -q -S --noconfirm "$PACKAGE_NAME"
+  )
+}
+
+ham_os_package_install_apt() {
+  local FUNC_NAME="ham_os_package_install_apt"
+  local PACKAGE_NAME=$1
+  if [ -z "$PACKAGE_NAME" ]; then
+    complain "$FUNC_NAME" "PACKAGE_NAME not specified"
+    return 1
+  fi
+
+  (
+    set -ex
+    ham-apt-get-install "$PACKAGE_NAME"
+  )
+}
+
+ham_os_package_install_brew() {
+  local FUNC_NAME="ham_os_package_install_brew"
+  local PACKAGE_NAME=$1
+  if [ -z "$PACKAGE_NAME" ]; then
+    complain "$FUNC_NAME" "PACKAGE_NAME not specified"
+    return 1
+  fi
+
+  (
+    set -ex
+    ham-brew install "$PACKAGE_NAME"
+  )
+}
+
 ham_os_package_check_and_install_pacman() {
   local FUNC_NAME="ham_os_package_check_and_install_pacman"
   local PACKAGE_NAME=$1
@@ -792,10 +834,7 @@ ham_os_package_check_and_install_pacman() {
     log_info "Package '$PACKAGE_NAME' is already installed."
   else
     log_info "Package '$PACKAGE_NAME' is not installed. Installing..."
-    (
-      set -ex
-      sudo pacman -q -S --noconfirm "$PACKAGE_NAME"
-    )
+    ham_os_package_install_pacman "$PACKAGE_NAME"
   fi
 }
 
@@ -811,10 +850,7 @@ ham_os_package_check_and_install_apt() {
     log_info "Package '$PACKAGE_NAME' is already installed."
   else
     log_info "Package '$PACKAGE_NAME' is not installed. Installing..."
-    (
-      set -ex
-      ham-apt-get-install "$PACKAGE_NAME"
-    )
+    ham_os_package_install_apt "$PACKAGE_NAME"
   fi
 }
 
@@ -830,10 +866,7 @@ ham_os_package_check_and_install_brew() {
     echo "Package '$PACKAGE_NAME' is already installed."
   else
     echo "Package '$PACKAGE_NAME' is not installed. Installing..."
-    (
-      set -ex
-      ham-brew install "$PACKAGE_NAME"
-    )
+    ham_os_package_install_brew "$PACKAGE_NAME"
   fi
 }
 
@@ -1095,13 +1128,13 @@ function ham_os_package_syslib_check_and_install() {
   # Install the package based on the package manager
   case "$HAM_OS_PACKAGE_MANAGER" in
     pacman)
-      ham_os_package_check_and_install_pacman "$PACKAGE_NAME" 1>&2
+      ham_os_package_install_pacman "$PACKAGE_NAME" 1>&2
       ;;
     apt)
-      ham_os_package_check_and_install_apt "$PACKAGE_NAME" 1>&2
+      ham_os_package_install_apt "$PACKAGE_NAME" 1>&2
       ;;
     brew)
-      ham_os_package_check_and_install_brew "$PACKAGE_NAME" 1>&2
+      ham_os_package_install_brew "$PACKAGE_NAME" 1>&2
       ;;
     *)
       complain "$FUNC_NAME" "Unsupported package manager '$HAM_OS_PACKAGE_MANAGER'"
