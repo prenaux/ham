@@ -20,7 +20,8 @@ if "%~2" == "" (
 set "CWD=%CD%"
 set "DL_DIR=%HAM_HOME%\toolsets\_dl"
 set "DIR=%HAM_HOME%\toolsets\%~1"
-set "ARCH_URL=https://cdn2.talansoft.com/ftp/toolsets/%~2.7z"
+set "ARCH_URL=https://f001.backblazeb2.com/file/cdn-ts/toolsets/%~2.7z"
+REM set "ARCH_URL=https://cdn2.talansoft.com/ftp/toolsets/%~2.7z"
 REM set "ARCH_URL=http://localhost:8123/data/toolsets/%~2.7z"
 set "DLFILENAME=_%~2.7z"
 
