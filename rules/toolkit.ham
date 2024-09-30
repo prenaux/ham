@@ -916,8 +916,13 @@ rule tkBuildPackage
   logVar PKGBUILD ;
   if $(PKGTYPE) = dll || $(PKGTYPE) = tooldll {
     ObjectDefines $(_allsrc) : _TARGET_DLL ;
+    SharedLibrary $(t) : $(_src) : : : $(_extra_objs) ;
+
     if $(PKGTARGET_LIB) {
       local tlib_obj = [ FDirName $(OBJDIR) $(PKGTARGET_LIB) ] ;
+      # Use LibraryFromObjects separately so that the target library is
+      # correctly bound and recognized as a separate target
+      LibraryFromObjects $(tlib_obj) : $(_src:S=$(SUFOBJ)) $(_extra_objs) ;
       DEPENDS $(PACKAGE)_lib : $(tlib_obj) ;
       f += $(tlib_obj) ;
       if $(_cpredist) = 1 {
@@ -926,11 +931,6 @@ rule tkBuildPackage
         DEPENDS $(PACKAGE)_lib : $(tlib_redist) ;
         f += $(tlib_redist) ;
       }
-
-      SharedAndStaticLibrary $(t) : $(_src) : : : $(_extra_objs) ;
-    }
-    else {
-      SharedLibrary  $(t) : $(_src) : : : $(_extra_objs) ;
     }
   }
   else if $(PKGTYPE) = library {

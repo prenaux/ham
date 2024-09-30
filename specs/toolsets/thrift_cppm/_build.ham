@@ -1,7 +1,5 @@
 if [ SubDirOnce TOP specs toolsets thrift_cppm ] = 1 { return ; }
 
-ECHO "... THRIFT_CPPM ..." ;
-
 ### env setup ###########################################################
 THRIFT_CPPM_HAS_SSL = 0 ;
 THRIFT_CPPM_HAS_SERVER = 0 ;
