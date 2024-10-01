@@ -449,7 +449,7 @@ module <- {
       getBashPath().quote() + " " + tmpFilePath.quote())
   }
 
-  function seqBash(aScript,aOptions) {
+  function seqBash(aScript,_aOptions) {
     local tmpFilePath = _writeHamBashScriptToTempFile(aScript)
     if (_debugEchoAll) {
       ::dbg(::format("I/Running from %s\n-----------------------\n%s\n-----------------------"
@@ -457,7 +457,7 @@ module <- {
     }
     return seqProcess(
       getBashPath().quote() + " " + tmpFilePath.quote(),
-      aOptions)
+      _aOptions)
   }
 }
 
