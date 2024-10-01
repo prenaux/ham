@@ -55,27 +55,102 @@ if $(OS) = MACOSX
   }
 }
 else if $(OS) = LINUX {
-  LINKFLAGS += -fuse-ld=lld -Wl,--gdb-index ;
+  #
+  # This setup addresses several complexities involved with dynamic and
+  # static linking in Linux, particularly when dealing with absolute
+  # paths to shared libraries (.so files) during the build process.
+  #
+  # Problem:
+  # In the initial build process, absolute paths to shared libraries
+  # were being hardcoded into the ELF binary's NEEDED section, causing
+  # issues with portability. This was undesirable because binaries were
+  # bound to specific paths where the libraries were compiled, instead
+  # of being able to rely on relative paths (e.g., $ORIGIN) for finding
+  # shared libraries at runtime.
+  #
+  # Solution:
+  # 1. **-rpath with $ORIGIN**:
+  #    To avoid hardcoded paths, the linker flag `-Wl,-rpath,'$ORIGIN'`
+  #    is added for both shared libraries (DLLs) and executables. The
+  #    `$ORIGIN` variable ensures that the binary will look for shared
+  #    libraries in its own directory or relatively from where it resides
+  #    at runtime. This solves the portability issue by allowing libraries
+  #    to be located without needing absolute paths hardcoded into the ELF
+  #    binary.
+  #
+  # 2. **Processing LINKLIBS**:
+  #    `LINKLIBS` contains both dynamic libraries (shared objects, .so)
+  #    and static libraries or other linker flags. If absolute paths are
+  #    passed for shared libraries during the link phase, they would be
+  #    hardcoded in the binary, causing the same portability issues.
+  #
+  #    To avoid this, the `process_linklibs()` function processes each
+  #    item in `LINKLIBS`, detects shared libraries by checking for `.so`,
+  #    extracts the directory (`-L`) and library name (`-l`), and passes
+  #    these to the linker using standard flags. This replaces the absolute
+  #    paths with `-L<dir>` and `-l<library>`, ensuring the dynamic linker
+  #    can resolve the libraries using `rpath`.
+  #
+  #    The function also handles other linker flags or static libraries
+  #    passed via `LINKLIBS` and includes them without modification. This
+  #    way, the static libraries and flags remain unaffected, while shared
+  #    libraries benefit from proper dynamic linking.
+  #
+  LINKFLAGS += -fuse-ld=lld -Wl,--gdb-index -Wl,-rpath,'$ORIGIN' ;
 
   actions DllLink bind NEEDLIBS
   {
-    $(LINK) $(LINKFLAGS) $(LINKFLAGS_DLL) -fvisibility=hidden -shared -o "$(<)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
-  }
-  actions Link bind NEEDLIBS
-  {
-    $(LINK) $(LINKFLAGS) $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
+    function process_linklibs() {
+      local linklibs="$1"
+      local processed_linklibs=()
+
+      eval "local linklibs_array=($linklibs)"
+      for lib in "${linklibs_array[@]}"; do
+        if [[ "$lib" == *.so* ]]; then
+          lib_dir=`dirname "$lib"`
+          lib_filename=`basename "$lib"`
+          processed_linklibs+=(-L"$lib_dir" -l:"$lib_filename")
+        else
+          processed_linklibs+=("$lib")
+        fi
+      done
+      echo "${processed_linklibs[@]}"
+    }
+    PROCESSED_LINKLIBS=`process_linklibs " $(LINKLIBS) "`
+
+    $(LINK) $(LINKFLAGS) $(LINKFLAGS_DLL) -shared -o "$(<)" $(UNDEFS) "$(>)" $(NEEDLIBS) ${PROCESSED_LINKLIBS[@]} $(SYSTEM_LINKLIBS)
   }
 
+  actions Link bind NEEDLIBS
+  {
+    function process_linklibs() {
+      local linklibs="$1"
+      local processed_linklibs=()
+
+      eval "local linklibs_array=($linklibs)"
+      for lib in "${linklibs_array[@]}"; do
+        if [[ "$lib" == *.so* ]]; then
+          lib_dir=`dirname "$lib"`
+          lib_filename=`basename "$lib"`
+          processed_linklibs+=(-L"$lib_dir" -l:"$lib_filename")
+        else
+          processed_linklibs+=("$lib")
+        fi
+      done
+      echo "${processed_linklibs[@]}"
+    }
+    PROCESSED_LINKLIBS=`process_linklibs " $(LINKLIBS) "`
+
+    $(LINK) $(LINKFLAGS) $(LINKFLAGS_EXE) $(UNDEFS) "$(>)" $(NEEDLIBS) ${PROCESSED_LINKLIBS[@]} $(SYSTEM_LINKLIBS) -o "$(<)"
+  }
 }
 else {
-
   actions DllLink
   {
-    $(LINK) $(LINKFLAGS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
+    $(LINK) $(LINKFLAGS) $(LINKFLAGS_DLL) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
   }
   actions Link bind NEEDLIBS
   {
-    $(LINK) $(LINKFLAGS) $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
+    $(LINK) $(LINKFLAGS) $(LINKFLAGS_EXE) $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
   }
-
 }
