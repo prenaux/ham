@@ -1,27 +1,32 @@
 #!/bin/bash
 . ham-bash-lib.sh
-TEMPFILE=$(mktemp)
 
-if [[ -z $(git status --porcelain) ]] &&
-  [[ -z $(git diff --cached --exit-code) ]] &&
-  [[ -z $(git ls-files --exclude-standard --others) ]]; then
-  log_info "There are no changes. Nothing to commit."
-  exit 0
+if [[ "$1" == "all" ]]; then
+  if [[ -z $(git status --porcelain) ]] &&
+    [[ -z $(git diff --cached --exit-code) ]] &&
+    [[ -z $(git ls-files --exclude-standard --others) ]]; then
+    log_info "There are no changes. Nothing to commit."
+    exit 0
+  fi
+  log_info "Staging all changes..."
+  (
+    set -ex
+    git add -A
+  )
+else
+  if ! git diff --cached --quiet; then
+    log_info "Changes are staged, proceeding."
+  else
+    log_error "No changes staged. Please stage changes before committing."
+    exit 1
+  fi
 fi
 
-echo -e "wip - $(arch_datez)\n\n$(git-status)" >"$TEMPFILE"
-#shellcheck disable=SC2320
-errcheck $? git-wip-commit "Can't get commit message." || exit 1
-
-log_info "Commit message:"
-cat "$TEMPFILE"
-
-log_info "Commiting changes..."
+log_info "Committing changes..."
 (
   set -ex
-  git add -A
-  git commit -F "$TEMPFILE"
-  rm "$TEMPFILE"
+  STATS=$(git diff --cached --stat | tail -n1)
+  git commit -m "wip - $(arch_datez) -${STATS} ;"
 )
 
 log_success "Done."
