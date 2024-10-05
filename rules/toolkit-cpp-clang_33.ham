@@ -81,6 +81,16 @@ if $(LINUX) {
   LINKLIBS +=
     -lstdc++ -lpthread -ldl -lm
   ;
+
+  if $(CLANG_SANITIZE) = 1 {
+    LINKFLAGS +=
+      # NOTE: We have to allow undefined symbols when using ASAN :(
+      # -Wl,--no-allow-shlib-undefined -Wl,--no-undefined
+    ;
+  }
+  else {
+    LINKFLAGS += -Wl,--no-allow-shlib-undefined -Wl,--no-undefined ;
+  }
 }
 
 ### OSX ###
