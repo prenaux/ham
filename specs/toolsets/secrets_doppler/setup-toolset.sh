@@ -10,10 +10,7 @@ case $HAM_OS in
   OSX*)
     ham-brew-install gnupg "bin/gpg" || return 1
     if [ -z "$(which doppler)" ]; then
-      (
-        set -ex
-        curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sudo sh
-      )
+      ham-brew-install dopplerhq/cli/doppler "bin/doppler" doppler
       if [ -z "$(which doppler)" ]; then
         echo "E/Can't install doppler."
         return 1
