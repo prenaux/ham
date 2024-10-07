@@ -17,10 +17,17 @@ case $HAM_OS in
     pathenv_add "${POSTGRES_DIR}/bin"
     ;;
   LINUX*)
-    if [ -z "$(which psql)" ]; then
+    if [ ! -f "/usr/lib/postgresql/14/bin/psql" ]; then
+      log_warning "psql not found, adding PostgreSQL APT repository and attempting to install postgresql-client-14..."
+      (
+        set -x
+        sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+        wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+        sudo apt-get update -y
+      )
       ham-apt-get-install postgresql-client-14
-      if [ -z "$(which psql)" ]; then
-        echo "E/ham-apt-get-install postgresql-client-14 install failed."
+      if [ ! -f "/usr/lib/postgresql/14/bin/psql" ]; then
+        log_error "ham-apt-get-install postgresql-client-14 install failed."
         return 1
       fi
     fi
