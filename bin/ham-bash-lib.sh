@@ -566,6 +566,23 @@ toolset_ver_file_path() {
   echo "${TS_DIR}/${TS_VER_FILE_NAME}"
 }
 
+# usage: toolset_check_ver name loa version
+# example: toolset_check_ver repos nt-x86 v2
+toolset_check_ver() {
+  TS_NAME=$1
+  TS_LOA=$2
+  TS_VER=$3
+  TS_DIR="${HAM_HOME}/toolsets/${TS_NAME}/${TS_LOA}"
+  TS_VER_NAME=${TS_NAME}_${TS_LOA}_${TS_VER}
+  TS_VER_FILE_NAME=toolset_${TS_VER_NAME}
+  if [ ! -e "${TS_DIR}/${TS_VER_FILE_NAME}" ]; then
+    log_error "Toolset '$TS_NAME': Can't find '${TS_VER_FILE_NAME}' in '${TS_DIR}'."
+    return 1
+  else
+    return 0
+  fi
+}
+
 # usage: toolset_check_and_dl_ver name loa version
 # example: toolset_check_and_dl_ver repos nt-x86 v2
 toolset_check_and_dl_ver() {
