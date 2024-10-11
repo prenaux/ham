@@ -1,0 +1,167 @@
+#!/bin/bash
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+usage() {
+  local script_name=$(basename "$0")
+  echo "usage: $script_name [short|long]"
+  echo ""
+  echo "options:"
+  echo "  short   Print short version of host information"
+  echo "  long    Print long version of host information (default)"
+  echo ""
+  echo "This script provides information about the current build host, including OS, CPU, memory, and disk space."
+  echo "If no option is specified, the long version is displayed by default."
+  exit 1
+}
+
+ham_host_sanitize() {
+  echo "$1" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '_' | sed 's/_\+/_/g;s/^_//;s/_$//'
+}
+
+ham_host_get_os() {
+  local os
+  case $HAM_OS in
+    NT)
+      os="windows"
+      ;;
+    OSX)
+      os="macos"
+      ;;
+    LINUX)
+      os="linux"
+      ;;
+    *)
+      os="unknown_os"
+      ;;
+  esac
+  echo "$os"
+}
+
+ham_host_get_hostname() {
+  local hostname
+  case $HAM_OS in
+    NT)
+      hostname=$(hostname)
+      ;;
+    OSX)
+      hostname=$(hostname -s)
+      ;;
+    LINUX)
+      hostname=$(hostname -s)
+      ;;
+    *)
+      hostname="unknown_host"
+      ;;
+  esac
+  ham_host_sanitize "$hostname"
+}
+
+ham_host_get_cpu() {
+  local cpuname cpuc cput
+  case $HAM_OS in
+    NT)
+      cpuname=$(wmic cpu get name | sed -n 2p | tr -d ' \r' | sed 's/^ *//')
+      cpuc=$(wmic cpu get numberofcores | sed -n 2p | tr -d ' \r' | sed 's/^ *//')
+      cput=$(wmic cpu get numberoflogicalprocessors | sed -n 2p | tr -d ' \r' | sed 's/^ *//')
+      ;;
+    OSX)
+      cpuname=$(sysctl -n machdep.cpu.brand_string)
+      cpuc=$(sysctl -n hw.physicalcpu)
+      cput=$(sysctl -n hw.logicalcpu)
+      ;;
+    LINUX)
+      cpuname=$(grep "model name" /proc/cpuinfo | head -n 1 | cut -d ':' -f 2 | sed 's/^ *//')
+      cpuc=$(grep "cpu cores" /proc/cpuinfo | head -n 1 | cut -d ':' -f 2 | tr -d ' ')
+      cput=$(grep -c ^processor /proc/cpuinfo)
+      ;;
+    *)
+      cpuname="unknown_cpu"
+      cpuc=0
+      cput=0
+      ;;
+  esac
+  echo "$(ham_host_sanitize "$cpuname")|$cpuc|$cput"
+}
+
+ham_host_get_memory() {
+  local mem_gb
+  case $HAM_OS in
+    NT)
+      mem_gb=$(wmic computersystem get totalphysicalmemory | sed -n 2p | tr -d ' \r' | awk '{printf "%.0f", $1/1024/1024/1024}')
+      ;;
+    OSX)
+      mem_gb=$(sysctl -n hw.memsize | awk '{printf "%.0f", $1/1024/1024/1024}')
+      ;;
+    LINUX)
+      mem_gb=$(free -g | awk '/^Mem:/{print $2}')
+      ;;
+    *)
+      mem_gb=0
+      ;;
+  esac
+  echo "$mem_gb"
+}
+
+
+ham_host_get_disk() {
+  local disksize diskfree
+  case $HAM_OS in
+    NT)
+      local drive=$(echo "$HAM_HOME" | cut -d: -f1)
+      disksize=$(wmic logicaldisk where "DeviceID='$drive:'" get size | sed -n 2p | tr -d ' \r' | awk '{printf "%.0f", $1/1024/1024/1024}')
+      diskfree=$(wmic logicaldisk where "DeviceID='$drive:'" get freespace | sed -n 2p | tr -d ' \r' | awk '{printf "%.0f", $1/1024/1024/1024}')
+      ;;
+    OSX)
+      disksize=$(df -g "$HAM_HOME" | awk 'NR==2 {print $2}')
+      diskfree=$(df -g "$HAM_HOME" | awk 'NR==2 {print $4}')
+      ;;
+    LINUX)
+      disksize=$(df -BG "$HAM_HOME" | awk 'NR==2 {print $2}' | sed 's/G//')
+      diskfree=$(df -BG "$HAM_HOME" | awk 'NR==2 {print $4}' | sed 's/G//')
+      ;;
+    *)
+      disksize=0
+      diskfree=0
+      ;;
+  esac
+  echo "$disksize|$diskfree"
+}
+
+ham_host_short() {
+  local cpu_info=$(ham_host_get_cpu)
+  local cpuc=$(echo $cpu_info | cut -d'|' -f2)
+  local cput=$(echo $cpu_info | cut -d'|' -f3)
+  local mem=$(ham_host_get_memory)
+  local disk_info=$(ham_host_get_disk)
+  local diskfree=$(echo $disk_info | cut -d'|' -f2)
+  local disksize=$(echo $disk_info | cut -d'|' -f1)
+  echo "$(ham_host_get_os)-$(ham_host_get_hostname)-${cpuc}c-${cput}t-${mem}ram-${diskfree}fr-${disksize}sz"
+}
+
+ham_host_long() {
+  local cpu_info=$(ham_host_get_cpu)
+  local cpuname=$(echo $cpu_info | cut -d'|' -f1)
+  local cpuc=$(echo $cpu_info | cut -d'|' -f2)
+  local cput=$(echo $cpu_info | cut -d'|' -f3)
+  local mem=$(ham_host_get_memory)
+  local disk_info=$(ham_host_get_disk)
+  local diskfree=$(echo $disk_info | cut -d'|' -f2)
+  local disksize=$(echo $disk_info | cut -d'|' -f1)
+  echo "host: $(ham_host_get_hostname), os: $(ham_host_get_os), cpuname: $cpuname, cpuc: $cpuc, cput: $cput, ram: ${mem}GB, diskfree: ${diskfree}GB, disksz: ${disksize}GB"
+}
+
+case "$1" in
+  "short")
+    ham_host_short
+    ;;
+  "long"|"")
+    ham_host_long
+    ;;
+  *)
+    usage
+    ;;
+esac
