@@ -7,11 +7,16 @@ fi
 
 usage() {
   local script_name=$(basename "$0")
-  echo "usage: $script_name [short|long]"
+  echo "usage: $script_name [short|long|os|hostname|cpu|memory|disk]"
   echo ""
   echo "options:"
-  echo "  short   Print short version of host information"
-  echo "  long    Print long version of host information (default)"
+  echo "  short     Print short version of host information"
+  echo "  long      Print long version of host information (default)"
+  echo "  os        Print only the operating system information"
+  echo "  hostname  Print only the hostname"
+  echo "  cpu       Print only the CPU information"
+  echo "  memory    Print only the memory information"
+  echo "  disk      Print only the disk information"
   echo ""
   echo "This script provides information about the current build host, including OS, CPU, memory, and disk space."
   echo "If no option is specified, the long version is displayed by default."
@@ -160,6 +165,22 @@ case "$1" in
     ;;
   "long"|"")
     ham_host_long
+    ;;
+  "os")
+    ham_host_get_os
+    ;;
+  "hostname")
+    ham_host_get_hostname
+    ;;
+  "cpu")
+    ham_host_get_cpu | sed 's/|/, /g'
+    ;;
+  "memory")
+    echo "$(ham_host_get_memory)GB"
+    ;;
+  "disk")
+    disk_info=$(ham_host_get_disk)
+    echo "Total: $(echo $disk_info | cut -d'|' -f1)GB, Free: $(echo $disk_info | cut -d'|' -f2)GB"
     ;;
   *)
     usage
