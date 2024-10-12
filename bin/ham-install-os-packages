@@ -2,72 +2,122 @@
 if [[ -z "$HAM_HOME" ]]; then
   HAM_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
   export HAM_HOME
-  echo "W/HAM_HOME not set, set to:" "$HAM_HOME"
+  echo "W/HAM_HOME not set, set to: $HAM_HOME"
 fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 # IMPORTANT: Update the tag date when you make any change to the list of
 # packages installed. You can replace the date with the output of `arch_datez`
-TAG="ham-install-os-packages-${HAM_OS}-v23_12_10"
+TAG="ham-install-os-packages-${HAM_OS}-v24_10_12"
 TAGFILE="$TEMPDIR/ham-install-os-packages-${HAM_OS}-tag.txt"
 
+install_macos_packages() {
+  log_info "Make sure '$HAM_HOME/bin' isn't quarantined"
+  toolset_unquarantine_dir "$HAM_HOME/bin"
+  log_info "Installing packages required by ham on OSX (brew)"
+  # coreutils is mainly for 'realpath' atm
+  ham-brew install bash jq yq wget hstr mc ncdu htop coreutils autossh
+}
+
+install_linux_apt_packages() {
+  log_info "Installing apt-get packages"
+  (
+    set -ex
+    sudo apt-get -y autoremove
+    sudo apt-get -y update
+    ham-apt-get-install software-properties-common build-essential clang git lld curl ffmpeg file freeglut3-dev git g++ gcc git htop jq libcurl4-openssl-dev libdw-dev libunwind-dev libsdl2-dev libssl-dev libudev-dev mc mesa-common-dev mesa-utils net-tools netcat-openbsd ntpdate p7zip-full procps pkg-config python3 python3-pip wget xsltproc autossh tcpdump
+  )
+}
+
+install_linux_pacman_packages() {
+  log_info "Installing pacman packages"
+  (
+    set -ex
+    sudo pacman -Syu
+    sudo pacman --noconfirm -S base-devel gcc clang lld curl ffmpeg file git glibc mesa libglvnd freeglut linux-api-headers sdl2 xorgproto libx11 htop jq openssl mc net-tools openbsd-netcat ntp p7zip procps pkg-config python python-pip wget libxslt autossh tcpdump
+  )
+}
+
+fix_clang_cpp_installation_linux_apt() {
+  log_info "Checking Clang C++ library installation for Linux (apt)"
+
+  # Detect GCC version picked by Clang
+  clang_gcc_version=$(clang -v 2>&1 | grep 'Selected GCC installation:' | sed -E 's/.*: (.+)/\1/' | xargs basename)
+
+  if [[ -z "$clang_gcc_version" ]]; then
+    log_error "Failed to detect GCC version used by Clang"
+    return 1
+  fi
+
+  log_info "Clang is using GCC version: $clang_gcc_version"
+
+  # Check if the C++ include path exists
+  cpp_include_path="/usr/include/c++/$clang_gcc_version"
+
+  if [[ ! -d "$cpp_include_path" ]]; then
+    log_warning "C++ include path not found: $cpp_include_path"
+
+    # Determine the package name
+    package_name="libstdc++-${clang_gcc_version}-dev"
+    log_info "Attempting to install the missing package '${package_name}'..."
+
+    # Try to install the package
+    if sudo apt-get install -y "$package_name"; then
+      log_info "Successfully installed $package_name"
+    else
+      log_error "Failed to install $package_name"
+      return 1
+    fi
+
+    # Check again if the path exists
+    if [[ ! -d "$cpp_include_path" ]]; then
+      log_error "C++ include path still not found after installation: $cpp_include_path"
+      return 1
+    fi
+  else
+    log_info "C++ include path found: $cpp_include_path"
+  fi
+}
+
 if [[ $(tagfile_status "$TAGFILE" "$TAG") == "up-to-date" ]]; then
-  echo "I/ham-install-os-packages tagfile is up-to-date."
+  log_info "ham-install-os-packages tagfile is up-to-date."
   if [ "$1" == "nocheck" ] || [ "$1" == "force" ]; then
-    echo "I/Installing anyway because of 'nocheck' option."
+    log_info "Installing anyway because of 'nocheck' option."
   else
     exit 0
   fi
 else
-  echo "I/HAM_HOME: ${HAM_HOME}"
-  echo "I/TAGFILE: ${TAGFILE}"
-  echo "I/ham-install-os-packages tagfile is outdated, installing os packages..."
+  log_info "HAM_HOME: ${HAM_HOME}"
+  log_info "TAGFILE: ${TAGFILE}"
+  log_info "ham-install-os-packages tagfile is outdated, installing os packages..."
 fi
 
 case $HAM_OS in
   NT*)
-    echo "### No extra packages need to be installed on Windows ###"
+    log_info "No extra packages need to be installed on Windows"
     ;;
   OSX)
-    echo "### Make sure '$HAM_HOME/bin' isn't quarantined ###"
-    toolset_unquarantine_dir "$HAM_HOME/bin"
-    echo "### Installing packages required by ham on OSX (brew) ###"
-    # coreutils is mainly for 'realpath' atm
-    ham-brew install bash jq yq wget hstr mc ncdu htop coreutils autossh
+    install_macos_packages
     ;;
   LINUX)
     if [ "$(type apt-get 2>/dev/null | wc -l)" = 1 ]; then
-      echo "### Installing packages required by ham on Linux (apt-get) ###"
-      echo "I/Installing apt-get packages"
-      (
-        set -ex
-        # autoremove & update fix "E: Unable to correct problems, you have held broken packages."
-        sudo apt-get -y autoremove
-        sudo apt-get -y update
-        # sudo apt -y upgrade ; # Try this if your install seems broken...
-        # install all our required packages
-        ham-apt-get-install software-properties-common build-essential clang git lld curl ffmpeg file freeglut3-dev git g++ gcc git htop jq libcurl4-openssl-dev libdw-dev libunwind-dev libsdl2-dev libssl-dev libudev-dev mc mesa-common-dev mesa-utils net-tools netcat-openbsd ntpdate p7zip-full procps pkg-config python3 python3-pip wget xsltproc autossh tcpdump
-      )
+      log_info "Installing packages required by ham on Linux (apt-get)"
+      install_linux_apt_packages
+      fix_clang_cpp_installation_linux_apt
     elif [ "$(type pacman 2>/dev/null | wc -l)" = 1 ]; then
-      echo "### Installing packages required by ham on Linux (pacman) ###"
-      echo "I/Installing pacman packages"
-      (
-        set -ex
-        sudo pacman -Syu
-        sudo pacman --noconfirm -S base-devel gcc clang lld curl ffmpeg file git glibc mesa libglvnd freeglut linux-api-headers sdl2 xorgproto libx11 htop jq openssl mc net-tools openbsd-netcat ntp p7zip procps pkg-config python python-pip wget libxslt autossh tcpdump
-      )
+      log_info "Installing packages required by ham on Linux (pacman)"
+      install_linux_pacman_packages
     else
-      echo "E/Unsupported LINUX package manager"
+      log_error "Unsupported LINUX package manager"
       exit 1
     fi
     ;;
   *)
-    echo "E/Toolset: Unsupported host OS"
+    log_error "Toolset: Unsupported host OS"
     exit 1
     ;;
 esac
 
 # Update tag file
 tagfile_update "$TAGFILE" "$TAG"
-
-echo "I/Done"
+log_info "Done"
