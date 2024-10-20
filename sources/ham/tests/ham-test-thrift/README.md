@@ -66,7 +66,7 @@ open http://localhost:8123/src_html/JsClient.html
 
 5. You can use CURL with the C++ server compiled with `USE_JSON_PROTOCOL`:
 ```
-$ curl -X POST -H "Content-Type: application/x-thrift" -d '[1,"calculate",1,0,{"1":{"i32":1},"2":{"rec":{"1":{"i32":20},"2":{"i32":5},"3":{"i32":1}}}}]' http://localhost:9090/service
+$ curl -X POST -H "Content-Type: application/x-thrift" -d '[1,"calculate",1,0,{"1":{"i32":1},"2":{"rec":{"1":{"i32":20},"2":{"i32":5},"3":{"i32":1}}}}]' http://localhost:40990/service
 
 # Prints
 [1,"calculate",2,0,{"0":{"i32":25}}]
