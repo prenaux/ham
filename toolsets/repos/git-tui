@@ -21,7 +21,7 @@ if [ ! -d "$DIR/.git" ]; then
   cd "$DIR"
   DOT_GIT_UP=$(ham-find-dir-up .git)
   if [[ -n "$DOT_GIT_UP" && -d "$DOT_GIT_UP" ]]; then
-    DIR="$DOT_GIT_UP"
+    DIR="$DOT_GIT_UP/.."
   else
     echo "I/Not in a git repo, looking in the subfolders..."
     REPOS_LIST=$(repos-list-cwd)
