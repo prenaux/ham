@@ -33,10 +33,9 @@ fi
 # directory of the current _ham_project
 if [[ -d "${HAM_PROJECT_DIR}" && "$FOUND_SETUP_SCRIPT" == "no" ]]; then
   DIR="${HAM_PROJECT_DIR}/specs/toolsets/$1"
-  log_info "TRY PROJECT: $DIR"
   SETUP_SCRIPT="$DIR/setup-toolset.sh"
   if [ -f "$SETUP_SCRIPT" ]; then
-    FOUND_SETUP_SCRIPT="from PROJECT."
+    FOUND_SETUP_SCRIPT="from PROJECT (${HAM_PROJECT_DIR})."
   fi
 fi
 
