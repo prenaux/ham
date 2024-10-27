@@ -17,6 +17,10 @@ usage() {
   fi
 }
 
+if [ -z "$1" ]; then
+  usage
+fi
+
 PKGNAME="$1"
 if [[ "$PKGNAME" == *"tap/"* ]]; then
   PKGNAME=$(basename "$PKGNAME")
