@@ -59,7 +59,8 @@ else {
   CCFLAGS     ?= $(CCFLAGS) ;
 }
 
-AR ?= lib ;
+AR ?= llvm-lib ;
+RC ?= $(HAM_RC) ;
 
 CC          ?= $(HAM_CL) -nologo ;
 C++         ?= $(HAM_CL) -nologo ;

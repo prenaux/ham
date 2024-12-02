@@ -15,6 +15,16 @@ case $HAM_OS in
   NT*)
     export BUILD_BIN_LOA=nt-${HAM_MSVC_ARCH}
     ;;
+  OSX*)
+    export BUILD_BIN_LOA=nt-${HAM_MSVC_ARCH}
+    if ! brew list --formula | grep -q llvm; then
+      brew install llvm;
+    fi
+
+    if ! brew list --formula | grep -q lld; then
+      brew install lld;
+    fi
+    ;;
   *)
     echo "E/Toolset: Unsupported host OS"
     return 1
@@ -70,8 +80,6 @@ fi
 ########################################################################
 ##  Setup the C++ environment
 ########################################################################
-export HAM_CL="\"${MSVCDIR_BIN}/cl.exe\""
-export HAM_LINK="\"${MSVCDIR_BIN}/link.exe\""
 pathenv_add "${MSVCDIR_BIN}"
 # Put winsdk's bin folder after so that it doesnt shadow utility scripts. Note
 # that you can still call executables explicitly by specifying the .exe
@@ -83,13 +91,47 @@ export INCLUDE
 LIB="$(nativedir "${WINSDKDIR_LIBS}/um/${HAM_MSVC_ARCH}");$(nativedir "${WINSDKDIR_LIBS}/ucrt/${HAM_MSVC_ARCH}");$(nativedir "${MSVCDIR}/lib/${HAM_MSVC_ARCH}")"
 export LIB
 
-VER="--- Microsoft Visual C++ 19 ${HAM_MSVC_ARCH} -----------------"
-if [ "$HAM_NO_VER_CHECK" != "1" ]; then
-  if ! VER="$VER
+
+case $HAM_OS in
+  NT*)
+    export HAM_CL="\"${MSVCDIR_BIN}/cl.exe\""
+    export HAM_LINK="\"${MSVCDIR_BIN}/link.exe\""
+    export HAM_AR="lib"
+    export HAM_RC="rc"
+
+    VER="--- Microsoft Visual C++ 19 ${HAM_MSVC_ARCH} -----------------"
+    if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+      if ! VER="$VER
 $(cl 2>&1 >/dev/null | grep Optimizing)"; then
-    echo "E/Can't get version."
+        echo "E/Can't get version."
+        return 1
+      fi
+    fi
+    ;;
+  OSX*)
+    LLVM_DIR=$(ham-brew-installdir llvm)
+    export PATH="${LLVM_DIR}/bin:$PATH"
+    export LDFLAGS="-L${LLVM_DIR}/lib"
+    export CPPFLAGS="-I${LLVM_DIR}/include"
+    export HAM_CL="clang-cl"
+    export HAM_LINK="lld-link"
+    export HAM_AR="llvm-lib"
+    export HAM_RC="llvm-rc"
+    export CLANG_MSVC=1
+    VER="--- clang_cl ${HAM_MSVC_ARCH} -----------------"
+    if [ "$HAM_NO_VER_CHECK" != "1" ]; then
+      if ! VER="$VER
+$(clang-cl -v 2>&1 >/dev/null | grep "clang version")"; then
+        echo "E/Can't get version."
+        return 1
+      fi
+    fi
+    ;;
+  *)
+    echo "E/Toolset: Unsupported host OS"
     return 1
-  fi
-fi
+    ;;
+esac
+
 export HAM_TOOLSET_VERSIONS="$HAM_TOOLSET_VERSIONS
 $VER"

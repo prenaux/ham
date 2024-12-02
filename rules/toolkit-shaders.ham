@@ -3,7 +3,13 @@
 #----------------------------------------------------------------------
 SHADER_HDRS_DEPS ?= 1 ;
 if $(WINDOWS) = 1 {
-  SHADER_COMPILE ?= 1 ;
+  if $(HAM_CL) = "clang-cl" {
+    SHADER_COMPILE = 0 ;
+  }
+  else {
+    SHADER_COMPILE = 0 ;
+    # SHADER_COMPILE ?= 1 ;
+  }
 }
 else if $(OSX) = 1 {
   # It is by default since the remote shader compiler would make the build
