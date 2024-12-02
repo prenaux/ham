@@ -10,7 +10,7 @@ rule ResourceCompiler {
 }
 
 actions ResourceCompiler {
-  rc -fo "$(<)" $(CCHDRS) $(RCFLAGS) "$(>)"
+  $(RC) -fo "$(<)" $(CCHDRS) $(RCFLAGS) "$(>)"
 }
 
 actions Archive {

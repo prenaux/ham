@@ -1,5 +1,5 @@
 if $(WINDOWS) = 1 {
-  LINKLIBS += winmm.lib gdi32.lib user32.lib shell32.lib ;
+  LINKLIBS += winmm.lib gdi32.lib user32.lib shell32.lib legacy_stdio_definitions.lib ;
 }
 SUFPCH = .pch ;
 
@@ -25,6 +25,30 @@ if $(MSVC_SHOW_INCLUDES) = 1 {
 
 if $(FLYMAKE) = 1 {
   CC_ADD_FLAGS += -WL ;
+}
+
+if $(CLANG_MSVC) = 1 {
+  CC_ADD_FLAGS +=
+  -target x86_64-pc-windows-msvc # target platform
+  -DniCCNoStrictWarnings # have to disable those clang warnings
+  -DLIBYUV_DISABLE_X86   # this is disabled on MSVC build
+  -fms-compatibility
+  -Wno-pragma-pack
+  -Wno-deprecated-builtins
+  -Wno-inconsistent-missing-override
+  -Wno-deprecated-copy-with-user-provided-copy
+  -Wno-ignored-qualifiers
+  -Wno-reorder-ctor
+  -Wno-ignored-attributes
+  -Wno-deprecated-enum-enum-conversion
+  -Wno-c++11-narrowing
+  -Wno-unused-local-typedef
+  -Wno-cast-function-type-mismatch
+  -Wno-implicit-function-declaration
+  -Wunused-command-line-argument
+  -Wnonportable-include-path
+  -Wunknown-pragmas
+  ;
 }
 
 CC_ADD_FLAGS +=
