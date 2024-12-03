@@ -3,7 +3,7 @@ if $(WINDOWS) = 1 {
 }
 SUFPCH = .pch ;
 
-CC_ADD_FLAGS = -Zm200 -Zc:forScope -W4 -std:$(C++VERSION) ;
+CC_ADD_FLAGS = -Zm200 -Zc:forScope -W4 ;
 
 # Another MSVC awesomeness: The /Zc:__cplusplus compiler option enables the
 # __cplusplus preprocessor macro to report an updated value for recent C++
@@ -28,6 +28,7 @@ if $(FLYMAKE) = 1 {
 }
 
 if $(CLANG_MSVC) = 1 {
+  C++FLAGS += -Xclang -std=c++20 ;
   CC_ADD_FLAGS +=
   -target x86_64-pc-windows-msvc # target platform
   -DniCCNoStrictWarnings # have to disable those clang warnings
@@ -45,11 +46,16 @@ if $(CLANG_MSVC) = 1 {
   -Wno-unused-local-typedef
   -Wno-cast-function-type-mismatch
   -Wno-implicit-function-declaration
+  -Wno-deprecated-builtins
   -Wunused-command-line-argument
   -Wnonportable-include-path
   -Wunknown-pragmas
   ;
 }
+else {
+  CC_ADD_FLAGS += -std:$(C++VERSION) ;
+}
+
 
 CC_ADD_FLAGS +=
 # ERROR: warning C4172: returning address of local variable or temporary.
