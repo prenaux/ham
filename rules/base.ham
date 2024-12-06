@@ -500,7 +500,7 @@ rule AssertFExists {
     logFatal "AssertFExists: CONTEXT_NAME not specified." ;
   }
   if ! $(2) {
-    logFatal "AssertFExists: FILE not specified." ;
+    logFatal "AssertFExists: $(1): FILE not specified." ;
   }
   for _s in $(2) {
     if ! [ FExists $(_s) ] {
