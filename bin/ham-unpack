@@ -6,7 +6,7 @@ if [[ -z "$HAM_HOME" ]]; then
 fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
-print_help() {
+usage() {
   echo "syntax: ham-unpack ARCH OUTDIR"
   exit 1
 }
