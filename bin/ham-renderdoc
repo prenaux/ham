@@ -1,0 +1,74 @@
+#!/bin/bash -e
+export HAM_NO_VER_CHECK=1
+if [[ -z "$HAM_HOME" ]]; then
+  log_error "HAM_HOME not set !"
+  exit 1
+fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+usage() {
+  echo "usage:"
+  echo "  ${0##*/} EXE [ARGS]"
+  echo ""
+  exit 1
+}
+
+# Detect platform binaries
+case $HAM_OS in
+  NT*)
+    RENDERDOC_GUI_EXE="$HAM_HOME/toolsets/renderdoc/$HAM_BIN_LOA/bin/qrenderdoc.exe"
+    RENDERDOC_CMD_EXE="$HAM_HOME/toolsets/renderdoc/$HAM_BIN_LOA/bin/renderdoccmd.exe"
+    ;;
+  LINUX*)
+    RENDERDOC_GUI_EXE="$HAM_HOME/toolsets/renderdoc/$HAM_BIN_LOA/bin/qrenderdoc"
+    RENDERDOC_CMD_EXE="$HAM_HOME/toolsets/renderdoc/$HAM_BIN_LOA/bin/renderdoccmd"
+    # sudo "$HAM_HOME/toolsets/renderdoc/$HAM_BIN_LOA/bin/renderdoccmd" vulkanlayer --register --system
+    ;;
+  *)
+    log_error "ham-renderdoc: Unsupported host OS '$HAM_OS'."
+    usage
+    ;;
+esac
+
+if [ ! -f "${RENDERDOC_CMD_EXE}" ]; then
+  log_error "Couldn't find renderdoc cli '$RENDERDOC_CMD_EXE', try installing it with 'hat renderdoc'."
+  usage
+fi
+if [ ! -f "${RENDERDOC_GUI_EXE}" ]; then
+  log_error "Couldn't find renderdoc gui '$RENDERDOC_GUI_EXE', try installing it with 'hat renderdoc'."
+  usage
+fi
+
+EXE_PATH="$1"
+if [ -z "$EXE_PATH" ]; then
+  log_error "No executable specified."
+  usage
+fi
+shift
+EXE_BASENAME=$(basename "${EXE_PATH}")
+EXE_ARGS=("$@")
+
+NAME_ARGS=$(printf "_%s" "${EXE_ARGS[@]}")
+
+OUT_DIR="${SHARED_WORK:-$WORK}/renderdoc_captures/${EXE_BASENAME}"
+OUT_DIR=$(echo "$OUT_DIR" | tr ' ,-.' '_')
+OUT_BASENAME="${EXE_BASENAME}${NAME_ARGS}"
+OUT_BASENAME=$(echo "$OUT_BASENAME" | tr ' ,-.' '_')
+OUT_BASENAME="$(arch_datez)_${OUT_BASENAME}"
+
+RDC_FILE="${OUT_DIR}/${OUT_BASENAME}.rdc"
+
+WORKING_DIR="$(pwd)"
+
+log_info "WORKING_DIR: $WORKING_DIR"
+log_info "EXE_PATH: $EXE_PATH"
+log_info "EXE_ARGS: ${EXE_ARGS[*]}"
+log_info "OUT_DIR: $OUT_DIR"
+log_info "OUT_BASENAME: $OUT_BASENAME"
+log_info "RDC_FILE: $RDC_FILE"
+
+(
+  set -x
+  mkdir -p "$OUT_DIR"
+  "$RENDERDOC_CMD_EXE" capture --wait-for-exit --working-dir "$WORKING_DIR" --capture-file "$RDC_FILE" "$EXE_PATH" "${EXE_ARGS[@]}"
+)

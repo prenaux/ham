@@ -47,6 +47,7 @@ ham-lint
 ham-lint-fix
 ham-ls-targets
 ham-pm2
+ham-renderdoc
 ham-rtcpp
 ham-rtcpp-clean
 ham-run-up
