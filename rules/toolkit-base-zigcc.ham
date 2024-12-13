@@ -26,7 +26,7 @@ LOA_ARCH = $(TARGET_OSPLAT:L) ;
 #----------------------------------------------------------------------
 #     DEFINES
 #----------------------------------------------------------------------
-DEFINES += $(TARGET_OS) TARGET_OS_$(TARGET_OS) ZIGCC=1 __ZIGCC__ _COMPILER_$(LOA_OS:U)_$(LOA_ARCH:U) ;
+DEFINES += TARGET_OS_$(TARGET_OS) ZIGCC=1 __ZIGCC__ _COMPILER_$(LOA_OS:U)_$(LOA_ARCH:U) ;
 
 #----------------------------------------------------------------------
 #     TARGET FEATURES
