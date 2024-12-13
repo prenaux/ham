@@ -2980,7 +2980,8 @@ rule FlyMakeSetup
 #----------------------------------------------------------------------
 #     Standard directories and the cache file
 #----------------------------------------------------------------------
-TEMPDIR ?= [ FDirName $(HOME) _ham ] ;
+TEMPDIR ?= [ FDirName $(HOME:/) _ham ] ;
+TEMPDIR = $(TEMPDIR:/) ;
 BASEOBJDIR ?= [ FDirName $(TEMPDIR) obj ] ;
 HCACHEFILE ?= [ FDirName $(TEMPDIR) _cache.ham ] ;
 

@@ -79,6 +79,8 @@ CC_ADD_FLAGS +=
 -wd4459
 # DISABLE: warning C4458: declaration of 'xxx' hides class member
 -wd4458
+# DISABLE: warning C5055: operator '*': deprecated between enumerations and floating-point types
+-wd5055
 ;
 
 if $(MSVC_VER) >= 15 {
