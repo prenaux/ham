@@ -932,6 +932,20 @@ rule tkBuildPackage
         f += $(tlib_redist) ;
       }
     }
+
+    # Copy the import library (for Windows DLL)
+    if $(DLLIMPLIB) = 1 {
+      local impLib = $(PKGTARGETF:B:S)$(SUFLIB) ;
+      local srcLib = [ FDirName $(OBJDIR) $(impLib) ] ;
+      DEPENDS $(srcLib) : $(PKGTARGETF) ;
+
+      local dstLib = [ FDirName $(TK_DIR_LIBS) $(impLib) ] ;
+      Touch $(srcLib) ;
+      FilePreserve $(dstLib) : $(srcLib) ;
+      Clean clean : $(dstLib) ;
+
+      f += $(dstLib) ;
+    }
   }
   else if $(PKGTYPE) = library {
     ObjectDefines $(_allsrc) : _TARGET_LIB ;
@@ -997,23 +1011,6 @@ rule tkBuildPackage
       FilePreserve $(dstPDB) : $(srcPDB) ;
       f += $(dstPDB) ;
     }
-  }
-
-  # Import library, for MSVC, if its also potentially a static library
-  if $(MSVC) = 1 && $(PKGTYPE) = dll {
-    local impLib = $(PKGTARGETF:B:S)$(SUFLIB) ;
-    local srcLib = [ FDirName $(OBJDIR) $(impLib) ] ;
-    DEPENDS $(srcLib) : $(PKGTARGETF) ;
-
-    LINKFLAGS on $(PKGTARGET) ?= $(LINKFLAGS) ;
-    LINKFLAGS on $(PKGTARGET) += [ FQuoteFlag -IMPLIB: : $(srcLib) ] ;
-
-    local dstLib = [ FDirName $(TK_DIR_LIBS) $(impLib) ] ;
-    Touch $(srcLib) ;
-    FilePreserve $(dstLib) : $(srcLib) ;
-    Clean clean : $(dstLib) ;
-
-    f += $(dstLib) ;
   }
 
   DEPENDS $(PACKAGE) : $(f) ;

@@ -20,9 +20,6 @@ actions updated together piecemeal Archive
   $(AR) "$(<)" ${FILES}
 }
 
-actions SharedLink {
-}
-
 actions DllLink bind NEEDLIBS
 {
   $(LINK) $(LINKFLAGS) -fvisibility=hidden -shared -o "$(<)" $(UNDEFS) "$(>)" "$(NEEDLIBS)" "$(LINKLIBS)" "$(SYSTEM_LINKLIBS)"

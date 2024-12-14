@@ -1,8 +1,4 @@
 # base.ham is setup for GCC by default
-
-actions SharedLink {
-}
-
 actions DllLink bind NEEDLIBS
 {
   $(LINK) $(LINKFLAGS) $(LINKFLAGS_DLL) -Wl,--no-undefined -shared -o "$(<)" $(UNDEFS) -Wl,--start-group $(NEEDLIBS) $(LINKLIBS) "$(>)" -Wl,--end-group $(SYSTEM_LINKLIBS)

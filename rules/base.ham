@@ -1239,35 +1239,28 @@ rule SharedLibraryFromObjects
 
   Clean clean : $(_l) ;
 
-  # I don't know if VMS supports shared libraries, so I prefer
-  # to disable the following right now
-  #
-  #if $(CRELIB) { CreLib $(_l) : $(_s[1]) ; }
-
   if $(OS) = LINUX || $(OS) = MACOSX
   {
     DllLink $(_l) : $(_s) ;
   }
   else if $(NT)
   {
-    local  _implib = $(4) ;
+    local _implib ;
+    if $(DLLIMPLIB) = 1 {
+      _implib = $(4) ;
+      _implib ?= $(_l)$(SUFLIB) ;
 
-    _implib ?= $(_l:S=$(SUFLIB)) ;
+      Clean    clean : $(_implib) ;
+      Clean    clean : $(_implib:S=.exp) $(_implib:S=.ilk) ;
+      Depends  lib   : $(_implib) ;
 
-    Clean    clean : $(_implib) ;
-    Depends  lib   : $(_implib) ;
+      Depends $(_implib) : $(_l) ;
 
-    Depends $(_implib) : $(_l) ;
-    Depends $(_l)      ;
-
-    IMPLIBNAME  on $(_l) = $(_implib) ;
-
-    MakeLocate $(_implib)        : $(LOCATE_TARGET) ;
-    MakeLocate $(_implib:S=.exp) : $(LOCATE_TARGET) ;
-
-    SharedLink $(_l) : $(_s) : $(_implib) ;
-
-    DllLink $(_l) : $(_s) ;
+      IMPLIBNAME on $(_l) = [ FDirName $(LOCATE_TARGET) $(_implib) ] ;
+      MakeLocate $(_implib)        : $(LOCATE_TARGET) ;
+      MakeLocate $(_implib:S=.exp) : $(LOCATE_TARGET) ;
+    }
+    DllLink $(_l) : $(_s) : $(_implib) ;
   }
   else
   {
@@ -2421,7 +2414,7 @@ actions Cp
 rule Touch {
 }
 actions Touch {
-  $(HAM_EXEC_RETRY) touch "$(<)"
+  [ -e "$(<)" ] && $(HAM_EXEC_RETRY) touch "$(<)" || { echo "E/Touch file '$(<)' doesnt exist." >&2; exit 1; }
 }
 
 actions File
