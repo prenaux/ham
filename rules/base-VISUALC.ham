@@ -6,8 +6,7 @@ WINDESKTOP = 1 ;
 if $(HAM_CPP_TOOLSET_NAME) = msvc_10_x86 ||
    $(HAM_CPP_TOOLSET_NAME) = msvc_11_x86 ||
    $(HAM_CPP_TOOLSET_NAME) = msvc_15_x86 ||
-   $(HAM_CPP_TOOLSET_NAME) = msvc_19_x86 ||
-   $(HAM_CPP_TOOLSET_NAME) = icl_11
+   $(HAM_CPP_TOOLSET_NAME) = msvc_19_x86
 {
   OSPLAT = X86 ;
 }
