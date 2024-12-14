@@ -18,6 +18,7 @@
 #include "pathsys.h"
 #include "timestamp.h"
 #include "newstr.h"
+#include <assert.h>
 
 /*
  * BINDING - all known files
@@ -182,4 +183,28 @@ static void time_enter(
 
 void donestamps() {
   hashdone(bindhash);
+}
+
+#if defined(_WIN32) || defined(_WIN64)
+#define localtime_r(timep, result) (localtime_s(result, timep) == 0 ? result : NULL)
+#endif
+
+const char* format_timestamp(const time_t *time, char *buffer, size_t buffer_size) {
+  assert(buffer != NULL);
+  assert(buffer_size >= 20);
+  if (!time) {
+    return "<null_time>";
+  }
+  if (*time == 0) {
+    return "<no_time>";
+  }
+
+  struct tm tm_info;
+  if (localtime_r(time, &tm_info) == NULL) {
+    return "<invalid_time>";
+  }
+  if (strftime(buffer, buffer_size, "%y-%m-%dT%H:%M:%S", &tm_info) == 0) {
+    return "<invalid_time>";
+  }
+  return buffer;
 }

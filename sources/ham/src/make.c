@@ -67,6 +67,8 @@
 #ifdef OPT_HEADER_CACHE_EXT
   #include "hcache.h"
 #endif
+#include "timestamp.h"
+#include "hash.h"
 
 #ifndef max
   #define max(a, b) ((a) > (b) ? (a) : (b))
@@ -154,6 +156,100 @@ int make(int n_targets, const char **targets, int anyhow) {
     status |= make1(bindtarget(targets[i]));
 
   return status;
+}
+
+// Returns 1 if we should skip the cause reporting. This is in a utility
+// function so that we can write it in a more readable manner.
+static int skip_cause(TARGET *t, TARGET *p)
+{
+  // No parent target, we dont skip.
+  if (!p)
+    return 0;
+
+  // We consider skipping reporting only if the target is marked as newer and exists
+  if (t->fate != T_FATE_NEWER)
+    return 0;
+
+  // Skip cause reporting if the target does not exist.
+  if (t->binding != T_BIND_EXISTS) return 1;
+
+  // Skip cause reporting if the parent is not missing or explicitly marked as missing.
+  if (p->fate != T_FATE_MISSING && p->binding != T_BIND_MISSING) return 1;
+
+  // Otherwise, do not skip cause reporting.
+  return 0;
+}
+
+/*
+ * Should we show build causality information for this target?
+ *
+ * We show causality when:
+ * 1. The target needs updating (between NEWER and BROKEN states)
+ * 2. Except when it's an obvious case of a NEWER existing target with a MISSING parent
+ *    since that's self-explanatory
+ */
+static int should_show_causality(TARGET *t, TARGET *p) {
+  /* Must be in the right fate range to show causality */
+  if (!(t->fate >= T_FATE_NEWER && t->fate < T_FATE_BROKEN))
+    return 0;
+
+  /* If no parent, always show causality */
+  if (!p)
+    return 1;
+
+  /* Skip obvious case: target exists but parent is missing */
+  if (t->fate == T_FATE_NEWER &&
+      t->binding == T_BIND_EXISTS &&
+      (p->fate == T_FATE_MISSING || p->binding == T_BIND_MISSING))
+    return 0;
+
+  return 1;
+}
+
+/*
+ * Display build causality information for a target,
+ * showing its state and why it needs to be updated
+ */
+static void show_causality(TARGET *t) {
+  char buffer[32] = {0};
+  struct hash *seen = hashinit(sizeof(const char *), "seen_deps");
+  TARGETS *c;
+
+  printf(
+    "BECAUSE %s %s \"%s\" (%s)\n",
+    target_fate[t->fate],
+    target_bind[t->binding],
+    t->name,
+    format_timestamp(&t->time,buffer,sizeof(buffer)));
+
+  if (strcmp(t->name, t->boundname)) {
+    printf("  binds to %s\n", t->boundname);
+  }
+
+  // Print all modified dependencies for the targets that changed
+  if (t->fate != T_FATE_MISSING && t->binding != T_BIND_MISSING) {
+    for (c = t->depends; c; c = c->next) {
+      if (c->target->fate == T_FATE_STABLE)
+        continue;
+
+      // Only show each dependency once
+      const char *name = c->target->name;
+      const char **entry = &name;
+      if (!hashenter(seen, (HASHDATA **)&entry)) {
+        continue;  // Skip if we've already seen this dependency
+      }
+
+      int internal = t->flags & T_FLAG_INTERNAL;
+      printf(
+        "  %s %s \"%s\" (%s)\n",
+        internal ? "Includes" : "Depends",
+        target_fate[c->target->fate],
+        c->target->name,
+        format_timestamp(&t->time,buffer,sizeof(buffer)));
+    }
+  }
+  hashdone(seen);
+  fflush(stdout);
 }
 
 /*
@@ -462,12 +558,13 @@ static void make0(
   else if (t->binding == T_BIND_EXISTS && p && t->time > p->time)
     flag = "*";
 
-  if (DEBUG_MAKEPROG)
-    printf(
-      "made%s\t%s\t%s%s\n", flag, target_fate[t->fate], spaces(depth), t->name);
+  if (DEBUG_MAKEPROG) {
+    printf("made%s\t%s\t%s%s\n", flag, target_fate[t->fate], spaces(depth), t->name);
+  }
 
-  if (DEBUG_CAUSES && t->fate >= T_FATE_NEWER && t->fate <= T_FATE_MISSING)
-    printf("%s %s\n", target_fate[t->fate], t->name);
+  if (DEBUG_CAUSES && should_show_causality(t, p)) {
+    show_causality(t);
+  }
 }
 
 /*

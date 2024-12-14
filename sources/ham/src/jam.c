@@ -336,7 +336,7 @@ int main(int argc, char **argv, char **arg_environ) {
   /* Pick up interesting options */
 
   if ((s = getoptval(optv, 'n', 0)))
-    globs.noexec++, DEBUG_MAKE = DEBUG_MAKEQ = DEBUG_EXEC = 1;
+    globs.noexec++;
 
   if ((s = getoptval(optv, 'q', 0)))
     globs.quitquick = 0;
@@ -362,14 +362,8 @@ int main(int argc, char **argv, char **arg_environ) {
     globs.newestfirst = 1;
 
   /* Turn on/off debugging */
-
   for (n = 0; (s = getoptval(optv, 'd', n)) != 0; n++) {
     int i = atoi(s);
-
-    /* First -d, turn off defaults. */
-
-    if (!n)
-      DEBUG_MAKE = DEBUG_MAKEQ = DEBUG_EXEC = 0;
 
     /* n turns on levels 1-n */
     /* +n turns on level n */
@@ -385,8 +379,8 @@ int main(int argc, char **argv, char **arg_environ) {
       while (i) {
         globs.debug[i--] = 1;
       }
-    else
-      while (*s)
+    else {
+      while (*s) {
         switch (*s++) {
           case 'a':
             DEBUG_MAKE = DEBUG_MAKEQ = 1;
@@ -405,9 +399,13 @@ int main(int argc, char **argv, char **arg_environ) {
             break;
           case '0':
             break;
-          default:
+          default: {
             printf("Invalid debug flag '%c'.\n", s[-1]);
+            break;
+          }
         }
+      }
+    }
   }
 
   /* Set HAMDATE first */
@@ -495,10 +493,9 @@ int main(int argc, char **argv, char **arg_environ) {
    */
   {
     LIST *l = L0;
-
-    for (n = 0; n < num_targets; n++)
+    for (n = 0; n < num_targets; n++) {
       l = list_new(l, targets[n], 0);
-
+    }
     var_set("HAMCMDARGS", l, VAR_SET);
   }
 
