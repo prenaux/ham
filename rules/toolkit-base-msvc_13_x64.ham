@@ -1,4 +1,2 @@
 Import toolkit-base-msvc.ham ;
 LOA_ARCH = x64 ;
-
-DEFINES += _COMPILER_MSVC_13_X64 ;

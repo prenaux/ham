@@ -106,6 +106,12 @@ logVar BIN_LOA ;
 #----------------------------------------------------------------------
 #     DEFINES
 #----------------------------------------------------------------------
+DEFINES +=
+  HAM_LOA_LINKER_$(LOA_LINKER:U)
+  HAM_LOA_OS_$(LOA_OS:U)
+  HAM_LOA_ARCH_$(LOA_ARCH:U)
+;
+
 if $(FLYMAKE) = 1 {
   BUILD ?= da ;
 }
