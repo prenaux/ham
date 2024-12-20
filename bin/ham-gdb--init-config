@@ -1,4 +1,6 @@
 set debuginfod enabled off
+# when I type 'quit' or 'exit' actually quit
+set confirm off
 
 define hookpost-up
   dashboard
