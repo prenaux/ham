@@ -3,19 +3,26 @@ if ! $(OSPLAT) {
   EXIT "E/{OSPLAT} not defined." ;
 }
 
-SLASH   ?= / ;
-SUFOBJ  ?= .o ;
-SUFLIB  ?= .a ;
-PREFIXDLL ?= lib ;
-CHMOD   ?= chmod ;
+SLASH ?= / ;
+SUFOBJ ?= .o ;
+CHMOD ?= chmod ;
 
-if $(OS) = MACOSX {
+if $(OS) = NT {
+  SUFLIB ?= .lib ;
+  SUFEXE ?= .exe ;
+  SUFDLL ?= .dll ;
+}
+else if $(OS) = MACOSX {
   SUFEXE = "" ;
+  SUFLIB ?= .a ;
   SUFDLL = .dylib ;
+  PREFIXDLL ?= lib ;
 }
 else {
   SUFEXE  ?= .$(OSPLAT:L) ;
+  SUFLIB  ?= .a ;
   SUFDLL ?= .so ;
+  PREFIXDLL ?= lib ;
 }
 
 C++FLAGS    ?= ;

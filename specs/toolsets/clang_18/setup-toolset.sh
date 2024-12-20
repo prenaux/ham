@@ -1,5 +1,10 @@
 #!/bin/bash
 toolset_import_once xslt_tools || return 1
+case $HAM_OS in
+  NT)
+    toolset_import_once msvc_19_x64 || return 1
+    ;;
+esac
 
 # Use clang
 export HAM_TOOLSET=CLANG
@@ -36,6 +41,12 @@ case $HAM_OS in
         fi
       fi
     fi
+    ;;
+  NT)
+    toolset_check_and_dl_ver clang_18 nt-x64 v18_1_8 || return 1
+    export CLANG_DIR="${HAM_TOOLSET_DIR}/nt-x64"
+    export OSPLAT=X64
+    export BUILD_BIN_LOA=$HAM_BIN_LOA
     ;;
   *)
     echo "E/Toolset: Unsupported host OS"

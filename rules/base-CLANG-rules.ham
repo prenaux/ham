@@ -144,6 +144,37 @@ else if $(OS) = LINUX {
     $(LINK) $(LINKFLAGS) $(LINKFLAGS_EXE) $(UNDEFS) "$(>)" $(NEEDLIBS) ${PROCESSED_LINKLIBS[@]} $(SYSTEM_LINKLIBS) -o "$(<)"
   }
 }
+else if $(OS) = NT {
+  DLLIMPLIB = 1 ;
+  AR = llvm-lib ;
+  RC = llvm-rc ;
+
+  CLANG_BASE_FLAGS =
+    -target x86_64-pc-windows-msvc # target platform
+    -fms-compatibility
+  ;
+
+  rule ResourceCompiler {
+    DEPENDS $(<) : $(>) ;
+    Clean clean : $(<) ;
+  }
+  actions ResourceCompiler {
+    $(RC) -fo "$(<)" $(CCHDRS) $(RCFLAGS) "$(>)"
+  }
+
+  actions Archive {
+    $(AR) -NOLOGO -WX:NO -out:"$(<)" "$(>)"
+  }
+
+  actions DllLink
+  {
+    $(LINK) $(LINKFLAGS) $(LINKFLAGS_DLL) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
+  }
+  actions Link bind NEEDLIBS
+  {
+    $(LINK) $(LINKFLAGS) $(LINKFLAGS_EXE) $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"
+  }
+}
 else {
   actions DllLink
   {

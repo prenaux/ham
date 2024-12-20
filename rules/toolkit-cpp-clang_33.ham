@@ -22,6 +22,10 @@ if $(LINUX) {
     -stdlib=libstdc++
   ;
 }
+else if $(WINDOWS) {
+  # Only one stdlib on Windows...
+  CLANG_CPP_ARGS += ;
+}
 else {
   CLANG_CPP_ARGS +=
     -stdlib=libc++
