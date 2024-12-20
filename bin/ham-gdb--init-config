@@ -14,6 +14,12 @@ define hookpost-frame
   dashboard
 end
 
+define hook-stop
+  if $_isvoid($_exitcode) == 0
+    quit
+  end
+end
+
 # We always want to break when ni::sPanicException is thrown
 catch throw ni::sPanicException
 
@@ -728,7 +734,9 @@ class Dashboard(gdb.Command):
         # ANSI: move the cursor to top-left corner and clear the screen
         # (optionally also clear the scrollback buffer if supported by the
         # terminal)
-        return '\x1b[H\x1b[2J' + ('\x1b[3J' if R.discard_scrollback else '')
+        # return '\x1b[H\x1b[2J' + ('\x1b[3J' if R.discard_scrollback else '')
+        # Note: Disabled for now, clearing the screen is just annoying...
+        return ''
 
     @staticmethod
     def setup_terminal():

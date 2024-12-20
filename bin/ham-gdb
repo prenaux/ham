@@ -6,6 +6,37 @@ if [[ -z "$HAM_HOME" ]]; then
 fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
+usage() {
+  echo "usage:"
+  echo "  ${0##*/} EXE [ARGS]"
+  echo ""
+  exit 1
+}
+
+EXE_PATH="$1"
+if [ -z "$EXE_PATH" ]; then
+  log_error "No executable specified."
+  usage
+fi
+shift
+
+EXE_BASENAME=$(basename "${EXE_PATH}")
+EXE_ARGS=("$@")
+
+NAME_ARGS=$(printf "_%s" "${EXE_ARGS[@]}")
+
+OUT_DIR="${SHARED_WORK:-$WORK}/gdb_sessions/${EXE_BASENAME}"
+OUT_DIR=$(echo "$OUT_DIR" | tr ' ,-.+=' '_')
+OUT_BASENAME="${EXE_BASENAME}${NAME_ARGS}"
+OUT_BASENAME=$(echo "$OUT_BASENAME" | tr ' ,-.+=' '_')
+WORKING_DIR="$(pwd)"
+
+log_info "WORKING_DIR: $WORKING_DIR"
+log_info "EXE_PATH: $EXE_PATH"
+log_info "EXE_ARGS: ${EXE_ARGS[*]}"
+log_info "OUT_DIR: $OUT_DIR"
+log_info "OUT_BASENAME: $OUT_BASENAME"
+
 case $HAM_OS in
   NT*)
     # RUN_DEBUGGER could have been already set
@@ -18,22 +49,40 @@ case $HAM_OS in
         return 1
       fi
     fi
-    "$RUN_DEBUGGER" -debugexe "$@"
+    "$RUN_DEBUGGER" -debugexe "$EXE_PATH" "${EXE_ARGS[@]}"
     ;;
   OSX*)
-    if [ "$HAM_GDB_DONT_RUN" == "1" ]; then
-      PATH="/usr/bin:$PATH" lldb -- "$@"
-    else
-      PATH="/usr/bin:$PATH" lldb --one-line "run" -- "$@"
-    fi
+    PATH="/usr/bin:$PATH" lldb --one-line "run" -- "$EXE_PATH" "${EXE_ARGS[@]}"
     ;;
   LINUX*)
+    GDB_FILE="${OUT_DIR}/${OUT_BASENAME}.gdb"
+    log_info "GDB_FILE: $GDB_FILE"
+    if [ ! -e "$GDB_FILE" ]; then
+      mkdir -p "${OUT_DIR}"
+      echo "# GDB_FILE: $(basename "$GDB_FILE")" > "$GDB_FILE"
+      echo "# WORKING_DIR: $WORKING_DIR" >> "$GDB_FILE"
+      echo "# EXE_PATH: $EXE_PATH" >> "$GDB_FILE"
+      echo "# EXE_ARGS: ${EXE_ARGS[*]}" >> "$GDB_FILE"
+      echo "# OUT_DIR: $OUT_DIR" >> "$GDB_FILE"
+      echo "# OUT_BASENAME: $OUT_BASENAME" >> "$GDB_FILE"
+    fi
+
     if [ "$HAM_GDB_TMUX_DASHBOARD" == "1" ]; then
-      ham-gdb-tmux-dashboard "$@"
-    elif [ "$HAM_GDB_DONT_RUN" == "1" ]; then
-      gdb -q --nh --nx -iex "add-auto-load-safe-path \"$HAM_HOME\"" -ix "$HAM_HOME/bin/ham-gdb--init-config" --args "$@"
+      ham-gdb-tmux-dashboard "${EXE_ARGS[@]}"
     else
-      gdb -q --nh --nx -iex "add-auto-load-safe-path \"$HAM_HOME\"" -ix "$HAM_HOME/bin/ham-gdb--init-config" -ex run --args "$@"
+      (
+        set -x
+        gdb -q --nh --nx\
+            -iex "add-auto-load-safe-path \"$HAM_HOME\""\
+            -iex "add-auto-load-safe-path \"$OUT_DIR\""\
+            -iex "file \"$EXE_PATH\""\
+            -ix "$HAM_HOME/bin/ham-gdb--init-config"\
+            -ix "$GDB_FILE"\
+            -ex run\
+            --args "$EXE_PATH" "${EXE_ARGS[@]}"
+      )
+      log_info "GDB_FILE: $GDB_FILE"
+      log_info "Done debugging: \"$EXE_PATH\" ${EXE_ARGS[@]}"
     fi
     ;;
   *)
