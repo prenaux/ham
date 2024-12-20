@@ -212,6 +212,51 @@ See the `prompt` attribute. This value is used as a Python format string.''',
             }
         }
 
+# PrettyPrinters ---------------------------------------------------------------
+class PrettyPrintCommand(gdb.Command):
+    """Print object with 'set print object on' temporarily."""
+
+    def __init__(self):
+        super().__init__("pp", gdb.COMMAND_USER)
+        gdb.execute("set print object off")
+
+    def invoke(self, arg, from_tty):
+        try:
+            gdb.execute("set print object on")
+
+            # Evaluate the object
+            obj = gdb.parse_and_eval(arg)
+            obj_type = obj.type
+            obj_type_fields = obj_type.fields()
+            is_wrapped_pointer_type = False
+
+            # Check for specific members in order of preference
+            if len(obj_type_fields) == 1:
+                fields = {field.name for field in obj_type_fields}
+                is_wrapped_pointer_type = True
+                if 'mPtr' in fields:
+                    gdb.execute(f"print *{arg}.mPtr")
+                elif 'mRefPtr' in fields:
+                    gdb.execute(f"print *{arg}.mRefPtr")
+                elif 'ptr_' in fields:
+                    gdb.execute(f"print *{arg}.ptr_")
+                else:
+                    is_wrapped_pointer_type = False
+
+            if is_wrapped_pointer_type:
+              print(f"pp of wrapped pointer type: {obj_type}")
+            else:
+              gdb.execute(f"print {arg}")
+              print(f"pp of regular type: {obj_type}")
+
+        except Exception as e:
+            print(f"Error in pp command: {e}")
+        finally:
+            gdb.execute("set print object off")
+
+def register_printers():
+    PrettyPrintCommand()
+
 # Common -----------------------------------------------------------------------
 
 class Beautifier():
@@ -618,6 +663,8 @@ class Dashboard(gdb.Command):
         dashboard.load_modules(modules)
         Dashboard.parse_inits(False)
         dashboard.inhibited = False
+        # register pretty printers
+        gdb.printing.register_pretty_printer(None, register_printers())
         # GDB overrides
         run('set pagination off')
         # display if possible (program running and not explicitly disabled by
@@ -2392,9 +2439,12 @@ end
 
 set history save
 set verbose off
+set pagination off
 set print pretty on
 set print array off
 set print array-indexes on
+# set print object on
+# set print static-members on
 set python print-stack full
 
 # Start ------------------------------------------------------------------------
