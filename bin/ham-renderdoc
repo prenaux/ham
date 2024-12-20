@@ -9,6 +9,7 @@ fi
 usage() {
   echo "usage:"
   echo "  ${0##*/} EXE [ARGS]"
+  echo "  ${0##*/} gui [ARGS]"
   echo ""
   exit 1
 }
@@ -16,8 +17,8 @@ usage() {
 # Detect platform binaries
 case $HAM_OS in
   NT*)
-    RENDERDOC_GUI_EXE="$HAM_HOME/toolsets/renderdoc/$HAM_BIN_LOA/bin/qrenderdoc.exe"
-    RENDERDOC_CMD_EXE="$HAM_HOME/toolsets/renderdoc/$HAM_BIN_LOA/bin/renderdoccmd.exe"
+    RENDERDOC_GUI_EXE="$HAM_HOME/toolsets/renderdoc/nt-x64/qrenderdoc.exe"
+    RENDERDOC_CMD_EXE="$HAM_HOME/toolsets/renderdoc/nt-x64/renderdoccmd.exe"
     ;;
   LINUX*)
     RENDERDOC_GUI_EXE="$HAM_HOME/toolsets/renderdoc/$HAM_BIN_LOA/bin/qrenderdoc"
@@ -45,30 +46,38 @@ if [ -z "$EXE_PATH" ]; then
   usage
 fi
 shift
-EXE_BASENAME=$(basename "${EXE_PATH}")
-EXE_ARGS=("$@")
 
-NAME_ARGS=$(printf "_%s" "${EXE_ARGS[@]}")
+if [ "$EXE_PATH" == "gui" ]; then
+  (
+    set -x
+    "$RENDERDOC_GUI_EXE" "$@" &
+  )
+else
+  EXE_BASENAME=$(basename "${EXE_PATH}")
+  EXE_ARGS=("$@")
 
-OUT_DIR="${SHARED_WORK:-$WORK}/renderdoc_captures/${EXE_BASENAME}"
-OUT_DIR=$(echo "$OUT_DIR" | tr ' ,-.' '_')
-OUT_BASENAME="${EXE_BASENAME}${NAME_ARGS}"
-OUT_BASENAME=$(echo "$OUT_BASENAME" | tr ' ,-.' '_')
-OUT_BASENAME="$(arch_datez)_${OUT_BASENAME}"
+  NAME_ARGS=$(printf "_%s" "${EXE_ARGS[@]}")
 
-RDC_FILE="${OUT_DIR}/${OUT_BASENAME}.rdc"
+  OUT_DIR="${SHARED_WORK:-$WORK}/renderdoc_captures/${EXE_BASENAME}"
+  OUT_DIR=$(echo "$OUT_DIR" | tr ' ,-.' '_')
+  OUT_BASENAME="${EXE_BASENAME}${NAME_ARGS}"
+  OUT_BASENAME=$(echo "$OUT_BASENAME" | tr ' ,-.' '_')
+  OUT_BASENAME="$(arch_datez)_${OUT_BASENAME}"
 
-WORKING_DIR="$(pwd)"
+  RDC_FILE="${OUT_DIR}/${OUT_BASENAME}.rdc"
 
-log_info "WORKING_DIR: $WORKING_DIR"
-log_info "EXE_PATH: $EXE_PATH"
-log_info "EXE_ARGS: ${EXE_ARGS[*]}"
-log_info "OUT_DIR: $OUT_DIR"
-log_info "OUT_BASENAME: $OUT_BASENAME"
-log_info "RDC_FILE: $RDC_FILE"
+  WORKING_DIR="$(pwd)"
 
-(
-  set -x
-  mkdir -p "$OUT_DIR"
-  "$RENDERDOC_CMD_EXE" capture --wait-for-exit --working-dir "$WORKING_DIR" --capture-file "$RDC_FILE" "$EXE_PATH" "${EXE_ARGS[@]}"
-)
+  log_info "WORKING_DIR: $WORKING_DIR"
+  log_info "EXE_PATH: $EXE_PATH"
+  log_info "EXE_ARGS: ${EXE_ARGS[*]}"
+  log_info "OUT_DIR: $OUT_DIR"
+  log_info "OUT_BASENAME: $OUT_BASENAME"
+  log_info "RDC_FILE: $RDC_FILE"
+
+  (
+    set -x
+    mkdir -p "$OUT_DIR"
+    "$RENDERDOC_CMD_EXE" capture --wait-for-exit --working-dir "$WORKING_DIR" --capture-file "$RDC_FILE" "$EXE_PATH" "${EXE_ARGS[@]}"
+  )
+fi
