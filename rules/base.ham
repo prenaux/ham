@@ -2386,19 +2386,9 @@ actions LintH
   $(LINT_H) $(LINT_HDRS) "$(>)" ; $(LINT_CANNOT_FAIL)
 }
 
-actions Chgrp
-{
-  $(HAM_EXEC_RETRY) $(CHGRP) $(GROUP) "$(<)"
-}
-
 actions Chmod1
 {
   $(HAM_EXEC_RETRY) $(CHMOD) $(MODE) "$(<)"
-}
-
-actions Chown
-{
-  $(HAM_EXEC_RETRY) $(CHOWN) $(OWNER) "$(<)"
 }
 
 actions piecemeal together existing Clean
