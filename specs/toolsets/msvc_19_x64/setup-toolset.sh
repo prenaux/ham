@@ -27,13 +27,16 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/msvc_19_x64"
 export HAM_CPP_TOOLSET=$HAM_TOOLSET
 export HAM_CPP_TOOLSET_NAME=$HAM_TOOLSET_NAME
 
-toolset_check_and_dl_ver msvc_19_x64 nt-x86 19b || return 1
+toolset_check_and_dl_ver msvc_19_x64 nt-x86 v24_12 || return 1
 
-export MSVCDIR="${HAM_TOOLSET_DIR}/nt-x86/2019/BuildTools/VC/Tools/MSVC/14.29.30133"
+export VCTOOLSVERSION="14.42.34433"
+export WINSDKVER="10.0.26100.0"
+
+export MSVCDIR="${HAM_TOOLSET_DIR}/nt-x86/VC/Tools/MSVC/${VCTOOLSVERSION}"
 export MSVCDIR_BIN="${MSVCDIR}/bin/Host${HAM_MSVC_ARCH}/${HAM_MSVC_ARCH}"
 export MSVC_VER=19
 if [ ! -e "${MSVCDIR_BIN}/cl.exe" ]; then
-  echo "E/$HAM_TOOLSET_NAME: Couldn't find cl.exe"
+  echo "E/$HAM_TOOLSET_NAME: Couldn't find cl.exe in MSVCDIR_BIN '$MSVCDIR_BIN'."
   return 1
 fi
 
@@ -101,8 +104,6 @@ export RUN_DEBUGGER_PARAMS=-debugexe
 ########################################################################
 ##  Find gacutil.exe to setup WINSDKDIR
 ########################################################################
-export WINSDKVER="10.0.18362.0"
-
 export WINSDKDIR="${HAM_TOOLSET_DIR}/nt-x86/winsdk/10"
 
 export WINSDKDIR_BIN="${WINSDKDIR}/bin/${WINSDKVER}/${HAM_MSVC_ARCH}/"
@@ -124,17 +125,6 @@ if [ ! -e "$WINSDKDIR_INCLUDE/um/windows.h" ]; then
   echo "E/Can't find windows.h in '$WINSDKDIR_INCLUDE/um/windows.h' for $TAG"
   return 1
 fi
-
-########################################################################
-##  Find Msbuild.exe and setup MSBUILD_EXE
-########################################################################
-export MSBUILD_DIR="${HAM_TOOLSET_DIR}/nt-x86/2019/BuildTools/MSBuild"
-export MSBUILD_EXE="${MSBUILD_DIR}/Current/Bin/MSBuild.exe"
-if [ ! -e "$MSBUILD_EXE" ]; then
-  echo "E/Can't find '$MSBUILD_EXE'"
-  return 1
-fi
-echo "I/Found MSBuild at '$MSBUILD_EXE'"
 
 ########################################################################
 ##  Setup the C++ environment
