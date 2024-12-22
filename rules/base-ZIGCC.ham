@@ -2,7 +2,6 @@ SLASH   ?= / ;
 SUFOBJ  ?= .o ;
 SUFLIB  ?= .a ;
 PREFIXDLL ?= lib ;
-CHMOD   ?= chmod ;
 
 if $(TARGET_OS) = NT {
   SUFEXE = .exe ;
@@ -18,6 +17,7 @@ if $(TARGET_OS) = NT {
   }
 }
 else if $(TARGET_OS) = MACOSX {
+  CHMOD  ?= chmod ;
   SUFEXE = "" ;
   SUFDLL = .dylib ;
   if $(TARGET_OSPLAT) = X64 {
@@ -31,6 +31,7 @@ else if $(TARGET_OS) = MACOSX {
   }
 }
 else if $(TARGET_OS) = LINUX {
+  CHMOD  ?= chmod ;
   SUFEXE = .$(TARGET_OSPLAT:L) ;
   SUFDLL = .so ;
   if $(TARGET_OSPLAT) = X64 {

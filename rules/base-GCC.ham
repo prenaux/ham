@@ -5,7 +5,6 @@ if ! $(OSPLAT) {
 
 SLASH ?= / ;
 SUFOBJ ?= .o ;
-CHMOD ?= chmod ;
 
 if $(OS) = NT {
   SUFLIB ?= .lib ;
@@ -13,14 +12,16 @@ if $(OS) = NT {
   SUFDLL ?= .dll ;
 }
 else if $(OS) = MACOSX {
+  CHMOD ?= chmod ;
   SUFEXE = "" ;
   SUFLIB ?= .a ;
   SUFDLL = .dylib ;
   PREFIXDLL ?= lib ;
 }
 else {
-  SUFEXE  ?= .$(OSPLAT:L) ;
-  SUFLIB  ?= .a ;
+  CHMOD ?= chmod ;
+  SUFEXE ?= .$(OSPLAT:L) ;
+  SUFLIB ?= .a ;
   SUFDLL ?= .so ;
   PREFIXDLL ?= lib ;
 }

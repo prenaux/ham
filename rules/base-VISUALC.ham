@@ -30,7 +30,6 @@ SUFOBJ  ?= .obj ;
 SUFEXE  ?= .exe ;
 SUFDLL  ?= .dll ;
 DLLIMPLIB ?= 1 ;
-CHMOD   ?= chmod ;
 
 if ! $(HAM_CL) {
   EXIT "F/HAM_CL not defined." ;
@@ -65,7 +64,11 @@ AR ?= lib ;
 CC          ?= $(HAM_CL) -nologo ;
 C++         ?= $(HAM_CL) -nologo ;
 LINK        ?= $(HAM_LINK) -nologo ;
-LINKFLAGS   ?= "" ;
+LINKFLAGS   ?= -DEBUG ;
+if $(MSVC_VER) >= 17 {
+  MSVC_FASTLINK = 1 ;
+  LINKFLAGS += -DEBUG:FASTLINK ;
+}
 LINKLIBS    ?= kernel32.lib ;
 OPTIM       ?= "" ;
 STDHDRS     ?= $(VISUALC)/include ;

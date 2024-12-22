@@ -186,15 +186,22 @@ rule tkCC++Build
   if $(OSPLAT) = X64 {
     ObjectOptimFlags $(<) : -bigobj ;
   }
-
   LINKFLAGS on $(PKGTARGETF) ?= $(LINKFLAGS) ;
 
   # Set the debug infos generation
   if ! ( $(REDIST) ) && ! ( $(FLYMAKE) = 1 ) {
     SUFPDB = .pdb ;
-    PDB = [ FDirName $(LOCATE_TARGET) $(PKGBUILD:S=.pdb) ] ;
-    ObjectOptimFlags $(<) : -Zi -Fd\"$(PDB)\" ;
-    Clean clean : $(PDB) ;
+    LINKER_PDB = [ FDirName $(LOCATE_TARGET) $(PKGBUILD:S=.pdb) ] ;
+    Clean clean : $(LINKER_PDB) ;
+    if $(MSVC_FASTLINK) = 1 {
+      COMPILER_PDB = [ FDirName $(LOCATE_TARGET) _compiler.pdb ] ;
+      Clean clean : $(COMPILER_PDB) ;
+    }
+    else {
+      COMPILER_PDB = $(LINKER_PDB) ;
+    }
+    ObjectOptimFlags $(<) : -Zi -Fd\"$(COMPILER_PDB)\" ;
+    LINKFLAGS on $(PKGTARGETF) += -PDB:$(LINKER_PDB) ;
     strOpt += "(PDB) " ;
   }
 

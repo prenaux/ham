@@ -20,11 +20,11 @@ actions C++ {
 }
 
 actions Link bind NEEDLIBS {
-  $(LINK) $(LINKFLAGS) -DEBUG -out:"$(<)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+  $(LINK) $(LINKFLAGS) -out:"$(<)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
 }
 
 actions DllLink bind NEEDLIBS {
-  $(LINK) $(LINKFLAGS) -DLL -DEBUG -out:"$(<)" -IMPLIB:"$(IMPLIBNAME)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
+  $(LINK) $(LINKFLAGS) -DLL -out:"$(<)" -IMPLIB:"$(IMPLIBNAME)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
 }
 
 # No C99 support

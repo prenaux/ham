@@ -1000,15 +1000,16 @@ rule tkBuildPackage
     }
   }
 
-  if $(SUFPDB) && $(_pdb) = 1 {
+  if $(SUFPDB) && $(_pdb) = 1 && ( $(PKGGROUP) != libs || $(MSVC_FASTLINK) != 1 ) {
     local srcPDB = [ FDirName $(LOCATE_TARGET) $(d:S=$(SUFPDB)) ] ;
     local dstPDB = [ FDirName $(OUTDIR) $(d:B)$(_stamp)$(SUFPDB) ] ;
     DEPENDS $(srcPDB) : $(d) ;
-    Touch $(srcPDB) ; # Make sure that the PDB's date is more recent than the output
+    # Make sure that the PDB's date is more recent than the output
+    Touch $(srcPDB) ;
     FilePreserve $(dstPDB) : $(srcPDB) ;
     f += $(dstPDB) ;
 
-    if $(PKGTARGET_LIB) {
+    if $(PKGTARGET_LIB) && ( $(MSVC_FASTLINK) != 1 ) {
       local p = $(PKGTARGET_LIB) ;
       local srcPDB = [ FDirName $(LOCATE_TARGET) $(p:S=$(SUFPDB)) ] ;
       local dstPDB = [ FDirName $(TK_DIR_LIBS) $(p:B)$(_stamp)$(SUFPDB) ] ;
