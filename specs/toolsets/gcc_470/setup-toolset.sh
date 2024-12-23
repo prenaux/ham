@@ -9,24 +9,12 @@ export HAM_CPP_TOOLSET_NAME=$HAM_TOOLSET_NAME
 
 # path setup
 case $HAM_OS in
-  NT*)
-    export GCCDIR="${HAM_TOOLSET_DIR}/nt-x86"
-    if [ ! -e "$GCCDIR" ] || [ -z "$(type -P gcc)" ]; then
-      toolset_dl gcc_470 gcc_470_nt-x86
-      if [ ! -e "$GCCDIR" ] || [ -z "$(type -P gcc)" ]; then
-        echo "E/nt-x86 folder doesn't exist in the toolset"
-        return 1
-      fi
-    fi
-    pathenv_add "${GCCDIR}/bin"
-    ;;
   OSX) ;;
   LINUX) ;;
   *)
     echo "E/Toolset: Unsupported host OS"
     return 1
     ;;
-
 esac
 
 VER="--- gcc_470 ------------------------"
