@@ -19,7 +19,11 @@
 # VC/Auxiliary/Builds/vcvarsall.bat files - or copy them from a previous
 # setup.
 #
-
+# Run with:
+#   python3 portable-msvc.py --show-versions
+#   python3 portable-msvc.py --accept-license --host=x64 --target=x64
+#   python3 portable-msvc.py --accept-license --host=x86 --target=x86
+#
 import io
 import os
 import sys

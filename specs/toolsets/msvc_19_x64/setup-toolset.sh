@@ -27,7 +27,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/msvc_19_x64"
 export HAM_CPP_TOOLSET=$HAM_TOOLSET
 export HAM_CPP_TOOLSET_NAME=$HAM_TOOLSET_NAME
 
-toolset_check_and_dl_ver msvc_19_x64 nt-x86 v24_12 || return 1
+toolset_check_and_dl_ver msvc_19_x64 nt-x86 v24_13 || return 1
 
 export VCTOOLSVERSION="14.42.34433"
 export WINSDKVER="10.0.26100.0"
