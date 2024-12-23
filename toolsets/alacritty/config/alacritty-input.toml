@@ -1,0 +1,89 @@
+[selection]
+save_to_clipboard = false
+
+[mouse]
+bindings = [
+{ mouse = "Right", action = "Copy" },
+{ mouse = "Middle", action = "Paste" },
+{ mouse = "Right", mods = "Control", action = "Paste" }
+]
+
+[keyboard]
+bindings = [
+
+# New window
+{ key = "N", mods = "Control|Shift", action = "SpawnNewInstance" },
+
+# Basic copy/paste
+{ key = "Paste",                           action = "Paste" },
+{ key = "Copy",                            action = "Copy" },
+
+# Control bindings
+{ key = "L",         mods = "Control",     action = "ClearLogNotice" },
+{ key = "L",         mods = "Control",     chars = "\u000c",         mode = "~Vi" },
+
+# Scroll controls with Shift/Alt
+{ key = "PageUp",    mods = "Shift",       action = "ScrollHalfPageUp", mode = "~Alt" },
+{ key = "PageDown",  mods = "Shift",       action = "ScrollHalfPageDown", mode = "~Alt" },
+{ key = "Home",      mods = "Shift",       action = "ScrollToTop", mode = "~Alt" },
+{ key = "End",       mods = "Shift",       action = "ScrollToBottom", mode = "~Alt" },
+{ key = "Up",        mods = "Shift",       action = "ScrollLineUp", mode = "~Alt" },
+{ key = "Down",      mods = "Shift",       action = "ScrollLineDown", mode = "~Alt" },
+{ key = "PageUp",    mods = "Alt",         action = "ScrollPageUp" },
+{ key = "PageDown",  mods = "Alt",         action = "ScrollPageDown" },
+
+# Control+Shift bindings
+{ key = "F",         mods = "Control|Shift", action = "SearchForward" },
+{ key = "PageUp",    mods = "Control|Shift", action = "ScrollHalfPageUp" },
+{ key = "PageDown",  mods = "Control|Shift", action = "ScrollHalfPageDown" },
+{ key = "Home",      mods = "Control|Shift", action = "ScrollToTop" },
+{ key = "End",       mods = "Control|Shift", action = "ScrollToBottom" },
+{ key = "Up",        mods = "Control|Shift", action = "ScrollLineUp" },
+{ key = "Down",      mods = "Control|Shift", action = "ScrollLineDown" },
+{ key = "V",         mods = "Control|Shift", action = "Paste" },
+{ key = "C",         mods = "Control|Shift", action = "Copy" },
+{ key = "F",         mods = "Control|Shift", action = "SearchForward" },
+{ key = "B",         mods = "Control|Shift", action = "SearchBackward" },
+
+# Special keys
+{ key = "Insert",    mods = "Shift",        action = "Paste" },
+
+# Emacs-like navigation
+{ key = "S",         mods = "Control",  action = "SearchForward" },
+{ key = "3",         mods = "Alt",      action = "Bracket" },
+{ key = "W",         mods = "Alt",      action = "Copy" },
+{ key = "Y",         mods = "Control",  action = "Paste" },
+
+# "Emacs-like" navigation in Vi mode
+{ key = "Enter", mods = "Control",  action = "ToggleViMode" },
+{ key = "G",     mods = "Control",  action = "ClearSelection", mode = "Vi" },
+{ key = "B",     mods = "Control",  action = "Left",        mode = "Vi" },
+{ key = "F",     mods = "Control",  action = "Right",       mode = "Vi" },
+{ key = "P",     mods = "Control",  action = "Up",          mode = "Vi" },
+{ key = "N",     mods = "Control",  action = "Down",        mode = "Vi" },
+{ key = "A",     mods = "Control",  action = "First",       mode = "Vi" },
+{ key = "E",     mods = "Control",  action = "Last",        mode = "Vi" },
+{ key = "B",     mods = "Alt",      action = "WordLeft",    mode = "Vi" },
+{ key = "F",     mods = "Alt",      action = "WordRight",   mode = "Vi" },
+{ key = "Left",  mods = "Alt",      action = "WordLeft",    mode = "Vi" },
+{ key = "Right", mods = "Alt",      action = "WordRight",   mode = "Vi" },
+{ key = "Left",  mods = "Control",  action = "WordLeft",    mode = "Vi" },
+{ key = "Right", mods = "Control",  action = "WordRight",   mode = "Vi" },
+{ key = "PageUp",     action = "ScrollPageUp",  mode = "Vi" },
+{ key = "PageDown",  action = "ScrollPageDown", mode = "Vi" },
+{ key = "Home",      mods = "Control",       action = "ScrollToTop",   mode = "Vi" },
+{ key = "End",       mods = "Control",       action = "ScrollToBottom", mode = "Vi" },
+{ key = "Up",        mods = "Shift",       action = "ScrollLineUp",  mode = "~Alt" },
+{ key = "Down",      mods = "Shift",       action = "ScrollLineDown", mode = "~Alt" },
+
+# Font size controls
+{ key = "Key0",      mods = "Control",      action = "ResetFontSize" },
+{ key = "Equals",    mods = "Control",      action = "IncreaseFontSize" },
+{ key = "Plus",      mods = "Control",      action = "IncreaseFontSize" },
+{ key = "NumpadAdd", mods = "Control",      action = "IncreaseFontSize" },
+{ key = "Minus",     mods = "Control",      action = "DecreaseFontSize" },
+{ key = "NumpadSubtract", mods = "Control", action = "DecreaseFontSize" },
+
+# Fullscreen toggle
+{ key = "Enter",    mods = "Alt",          action = "ToggleFullscreen" }
+]
