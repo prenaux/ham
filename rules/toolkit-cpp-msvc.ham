@@ -193,14 +193,19 @@ rule tkCC++Build
     SUFPDB = .pdb ;
     LINKER_PDB = [ FDirName $(LOCATE_TARGET) $(PKGBUILD:S=.pdb) ] ;
     Clean clean : $(LINKER_PDB) ;
-    if $(MSVC_FASTLINK) = 1 {
-      COMPILER_PDB = [ FDirName $(LOCATE_TARGET) _compiler.pdb ] ;
-      Clean clean : $(COMPILER_PDB) ;
+    if $(MSVC_DEBUG_INFO) = c7 {
+      ObjectOptimFlags $(<) : -Z7 ;
     }
     else {
-      COMPILER_PDB = $(LINKER_PDB) ;
+      if $(MSVC_DEBUG_INFO) = fastpdb {
+        COMPILER_PDB = [ FDirName $(LOCATE_TARGET) _compiler.pdb ] ;
+        Clean clean : $(COMPILER_PDB) ;
+      }
+      else {
+        COMPILER_PDB = $(LINKER_PDB) ;
+      }
+      ObjectOptimFlags $(<) : -Zi -Fd\"$(COMPILER_PDB)\" ;
     }
-    ObjectOptimFlags $(<) : -Zi -Fd\"$(COMPILER_PDB)\" ;
     LINKFLAGS on $(PKGTARGETF) += -PDB:$(LINKER_PDB) ;
     strOpt += "(PDB) " ;
   }

@@ -1000,7 +1000,7 @@ rule tkBuildPackage
     }
   }
 
-  if $(SUFPDB) && $(_pdb) = 1 && ( $(PKGGROUP) != libs || $(MSVC_FASTLINK) != 1 ) {
+  if $(SUFPDB) && $(_pdb) = 1 && ( $(PKGGROUP) != libs || $(MSVC_DEBUG_INFO) = stdpdb ) {
     local srcPDB = [ FDirName $(LOCATE_TARGET) $(d:S=$(SUFPDB)) ] ;
     local dstPDB = [ FDirName $(OUTDIR) $(d:B)$(_stamp)$(SUFPDB) ] ;
     DEPENDS $(srcPDB) : $(d) ;
@@ -1009,7 +1009,7 @@ rule tkBuildPackage
     FilePreserve $(dstPDB) : $(srcPDB) ;
     f += $(dstPDB) ;
 
-    if $(PKGTARGET_LIB) && ( $(MSVC_FASTLINK) != 1 ) {
+    if $(PKGTARGET_LIB) && ( $(MSVC_DEBUG_INFO) = stdpdb ) {
       local p = $(PKGTARGET_LIB) ;
       local srcPDB = [ FDirName $(LOCATE_TARGET) $(p:S=$(SUFPDB)) ] ;
       local dstPDB = [ FDirName $(TK_DIR_LIBS) $(p:B)$(_stamp)$(SUFPDB) ] ;

@@ -64,11 +64,26 @@ AR ?= lib ;
 CC          ?= $(HAM_CL) -nologo ;
 C++         ?= $(HAM_CL) -nologo ;
 LINK        ?= $(HAM_LINK) -nologo ;
-LINKFLAGS   ?= -DEBUG ;
-if $(MSVC_VER) >= 17 {
-  MSVC_FASTLINK = 1 ;
-  LINKFLAGS += -DEBUG:FASTLINK ;
+LINKFLAGS   ?= ;
+
+MSVC_DEBUG_INFO ?= c7 ; # c7, stdpdb, fastpdb
+switch $(MSVC_DEBUG_INFO) {
+  case c7 :
+    LINKFLAGS += -DEBUG ;
+  case pdb :
+    LINKFLAGS += -DEBUG ;
+  case fastpdb :
+    if $(MSVC_VER) >= 17 {
+      LINKFLAGS += -DEBUG -DEBUG:FASTLINK ;
+    }
+    else {
+      logFatal "fastpdb (DEBUG:FASTLINK) MSVC_DEBUG_INFO not supported with older MSVC_VER:" $(MSVC_VER) ;
+    }
+  case * :
+    logFatal "Unknown MSVC_DEBUG_INFO:" $(MSVC_DEBUG_INFO) ;
 }
+ECHO "I/MSVC_DEBUG_INFO:" $(MSVC_DEBUG_INFO) ;
+
 LINKLIBS    ?= kernel32.lib ;
 OPTIM       ?= "" ;
 STDHDRS     ?= $(VISUALC)/include ;
