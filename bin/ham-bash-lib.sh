@@ -19,8 +19,13 @@ fi
 if [[ $OS == Windows* ]]; then
   # Serious BS from Cygwin...
   export CYGWIN=nodosfilewarning
-  # On Windows both Emacs & the regular terminal seem to work fine with 8 colors...
-  export TERM_NCOLORS=8
+  if [ -n "$VisualStudioVersion" ]; then
+    # Inside visual studio, no colors...
+    export TERM_NCOLORS=0
+  else
+    # On Windows both Emacs & the regular terminal seem to work fine with 8 colors...
+    export TERM_NCOLORS=8
+  fi
 else
   export TERM_NCOLORS=${TERM_NCOLORS:-0}
   if [ "$TERM_NCOLORS" -eq 0 ]; then
