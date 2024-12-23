@@ -12,17 +12,23 @@ case "$HAM_BIN_LOA" in
     ham-brew-install vulkan-tools "bin/vulkaninfo"
     ham-brew-install vulkan-profiles "share/vulkan/explicit_layer.d/VkLayer_khronos_profiles.json"
     ham-brew-install vulkan-validationlayers "share/vulkan/explicit_layer.d/VkLayer_khronos_validation.json"
-    export VULKAN_SDK_INCDIR="$(ham-brew-installdir vulkan-headers include)"
-    export VK_LAYER_PATH="$(ham-brew-installdir vulkan-validationlayers)/share/vulkan/explicit_layer.d"
+    VULKAN_SDK_INCDIR="$(ham-brew-installdir vulkan-headers include)"
+    export VULKAN_SDK_INCDIR
+    VK_LAYER_PATH="$(ham-brew-installdir vulkan-validationlayers)/share/vulkan/explicit_layer.d"
+    export VK_LAYER_PATH
     # MoltenVK specific
-    export VULKAN_SDK_MOLTENVK_INCDIR="$(ham-brew-installdir molten-vk include)"
-    export VULKAN_SDK_MOLTENVK_LIBDIR="$(ham-brew-installdir molten-vk lib)"
-    export VK_ICD_FILENAMES="$(ham-brew-installdir molten-vk)/share/vulkan/icd.d/MoltenVK_icd.json"
+    VULKAN_SDK_MOLTENVK_INCDIR="$(ham-brew-installdir molten-vk include)"
+    export VULKAN_SDK_MOLTENVK_INCDIR
+    VULKAN_SDK_MOLTENVK_LIBDIR="$(ham-brew-installdir molten-vk lib)"
+    export VULKAN_SDK_MOLTENVK_LIBDIR
+    VK_ICD_FILENAMES="$(ham-brew-installdir molten-vk)/share/vulkan/icd.d/MoltenVK_icd.json"
+    export VK_ICD_FILENAMES
     ;;
   lin-x64)
     # Note: This is only supported on Ubuntu derivatives
     toolset_check_and_dl_ver vulkan_sdk lin-x64 v1_3_296 || return 1
     VULKAN_SDK_SETUP_ENV="${HAM_TOOLSET_DIR}/lin-x64/setup-env.sh"
+    # shellcheck source=/dev/null
     source "$VULKAN_SDK_SETUP_ENV"
     if [ -z "$VULKAN_SDK" ]; then
       log_error "VULKAN_SDK not defined after running '$VULKAN_SDK_SETUP_ENV'."
@@ -35,7 +41,7 @@ case "$HAM_BIN_LOA" in
     export VULKAN_SDK_INCDIR="${VULKAN_SDK}/include"
     export VK_LAYER_PATH="${VULKAN_SDK}/share/vulkan/explicit_layer.d"
     ;;
-  nt-x86|nt-x64)
+  nt-x86 | nt-x64)
     export VULKAN_SDK="$HAM_TOOLSET_DIR/nt-x64"
     export VULKAN_SDK_INCDIR="${VULKAN_SDK}/Include"
     # Ok... its in Bin on Windows, why not I guess, making it different on

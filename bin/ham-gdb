@@ -59,12 +59,15 @@ case $HAM_OS in
     log_info "GDB_FILE: $GDB_FILE"
     if [ ! -e "$GDB_FILE" ]; then
       mkdir -p "${OUT_DIR}"
-      echo "# GDB_FILE: $(basename "$GDB_FILE")" > "$GDB_FILE"
-      echo "# WORKING_DIR: $WORKING_DIR" >> "$GDB_FILE"
-      echo "# EXE_PATH: $EXE_PATH" >> "$GDB_FILE"
-      echo "# EXE_ARGS: ${EXE_ARGS[*]}" >> "$GDB_FILE"
-      echo "# OUT_DIR: $OUT_DIR" >> "$GDB_FILE"
-      echo "# OUT_BASENAME: $OUT_BASENAME" >> "$GDB_FILE"
+      GDB_FILE_BASENAME=$(basename "$GDB_FILE")
+      {
+        echo "# GDB_FILE: $GDB_FILE_BASENAME"
+        echo "# WORKING_DIR: $WORKING_DIR"
+        echo "# EXE_PATH: $EXE_PATH"
+        echo "# EXE_ARGS: ${EXE_ARGS[*]}"
+        echo "# OUT_DIR: $OUT_DIR"
+        echo "# OUT_BASENAME: $OUT_BASENAME"
+      } >"$GDB_FILE"
     fi
 
     if [ "$HAM_GDB_TMUX_DASHBOARD" == "1" ]; then
@@ -72,17 +75,15 @@ case $HAM_OS in
     else
       (
         set -x
-        gdb -q --nh --nx\
-            -iex "add-auto-load-safe-path \"$HAM_HOME\""\
-            -iex "add-auto-load-safe-path \"$OUT_DIR\""\
-            -iex "file \"$EXE_PATH\""\
-            -ix "$HAM_HOME/bin/ham-gdb--init-config"\
-            -ix "$GDB_FILE"\
-            -ex run\
-            --args "$EXE_PATH" "${EXE_ARGS[@]}"
+        gdb -q --nh --nx -iex "add-auto-load-safe-path \"$HAM_HOME\"" \
+          -iex "add-auto-load-safe-path \"$OUT_DIR\"" \
+          -iex "file \"$EXE_PATH\"" \
+          -ix "$HAM_HOME/bin/ham-gdb--init-config" \
+          -ix "$GDB_FILE" \
+          -ex run --args "$EXE_PATH" "${EXE_ARGS[@]}"
       )
       log_info "GDB_FILE: $GDB_FILE"
-      log_info "Done debugging: \"$EXE_PATH\" ${EXE_ARGS[@]}"
+      log_info "Done debugging: \"$EXE_PATH\" ${EXE_ARGS[*]}"
     fi
     ;;
   *)

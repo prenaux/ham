@@ -452,8 +452,10 @@ function ham_lint_fix_format_sh_main() {
     PARAMS=(--format)
   elif [[ "$1" == "lint" ]]; then
     PARAMS=(--lint --check-format)
+  elif [[ "$1" == "fixlint" ]]; then
+    PARAMS=(--fix --format --lint)
   else
-    die ham_lint_fix_format_sh_main "No mode specified: lint|fix|format"
+    die ham_lint_fix_format_sh_main "No mode specified: lint|fix|format|fixlint"
   fi
   shift
 
@@ -485,4 +487,8 @@ function ham_fix_sh() {
 
 function ham_format_sh() {
   ham_lint_fix_format_sh_main format "$@"
+}
+
+function ham_fixlint_sh() {
+  ham_lint_fix_format_sh_main fix "$@"
 }
