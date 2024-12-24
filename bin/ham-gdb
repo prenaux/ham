@@ -23,6 +23,10 @@ find_remedybg() {
 usage() {
   echo "usage:"
   echo "  ${0##*/} EXE [ARGS]"
+  echo "  ${0##*/} bring-to-front"
+  echo "  ${0##*/} open-file filename [line-number]"
+  echo "  ${0##*/} add-breakpoint filename line-number"
+  echo "  ${0##*/} remove-breakpoint filename line-number"
   echo ""
   echo "Supported platforms:"
   echo "  Windows:"
@@ -46,13 +50,162 @@ usage() {
   exit 1
 }
 
-EXE_PATH="$1"
-if [ -z "$EXE_PATH" ]; then
-  log_error "No executable specified."
+if [ -z "$1" ]; then
+  log_error "No executable or command specified."
   usage
 fi
+
+########################################################################
+## Commands
+########################################################################
+command_open_file() {
+  if [ -z "$1" ]; then
+    log_error "No filename specified"
+    usage
+  fi
+
+  FILENAME="$1"
+  LINE_NUMBER="$2"
+
+  case $HAM_OS in
+    NT*)
+      REMEDYBG_PATH=$(find_remedybg)
+      if [ -n "$REMEDYBG_PATH" ]; then
+        (set -x ; "$REMEDYBG_PATH" open-file "$FILENAME" $LINE_NUMBER)
+      else
+        IDE_DIR=$(msvc-find-ide-dir)
+        if [ -n "$IDE_DIR" ]; then
+          if [ -n "$LINE_NUMBER" ]; then
+            (set -x ; "$IDE_DIR/Common7/IDE/devenv.exe" -Edit "$FILENAME" -Command "GotoLine $LINE_NUMBER")
+          else
+            (set -x ; "$IDE_DIR/Common7/IDE/devenv.exe" -Edit "$FILENAME")
+          fi
+        else
+          log_error "Neither RemedyBG nor Visual Studio found"
+          exit 1
+        fi
+      fi
+      ;;
+
+    *)
+      log_error "open-file command not supported on this platform"
+      exit 1
+      ;;
+  esac
+}
+
+command_bring_to_front() {
+  case $HAM_OS in
+    NT*)
+      REMEDYBG_PATH=$(find_remedybg)
+      if [ -n "$REMEDYBG_PATH" ]; then
+        (set -x ; "$REMEDYBG_PATH" bring-debugger-to-foreground)
+      else
+        log_warning "bring-to-front not supported for Visual Studio."
+      fi
+      ;;
+    *)
+      log_error "bring-to-front command not supported on this platform."
+      exit 1
+      ;;
+  esac
+}
+
+command_add_breakpoint() {
+  if [ -z "$1" ] || [ -z "$2" ]; then
+    log_error "Filename and line number required"
+    usage
+  fi
+
+  FILENAME="$1"
+  LINE_NUMBER="$2"
+
+  case $HAM_OS in
+    NT*)
+      REMEDYBG_PATH=$(find_remedybg)
+      if [ -n "$REMEDYBG_PATH" ]; then
+        (set -x ;
+         "$REMEDYBG_PATH" add-breakpoint-at-file "$FILENAME" "$LINE_NUMBER"
+         "$REMEDYBG_PATH" open-file "$FILENAME" "$LINE_NUMBER"
+        )
+      else
+        log_warning "add-breakpoint not supported for Visual Studio"
+      fi
+      ;;
+
+    *)
+      log_error "add-breakpoint command not supported on this platform"
+      exit 1
+      ;;
+  esac
+}
+
+command_remove_breakpoint() {
+  if [ -z "$1" ] || [ -z "$2" ]; then
+    log_error "Filename and line number required"
+    usage
+  fi
+
+  FILENAME="$1"
+  LINE_NUMBER="$2"
+
+  case $HAM_OS in
+    NT*)
+      REMEDYBG_PATH=$(find_remedybg)
+      if [ -n "$REMEDYBG_PATH" ]; then
+        (set -x ;
+         "$REMEDYBG_PATH" remove-breakpoint-at-file "$FILENAME" "$LINE_NUMBER"
+         "$REMEDYBG_PATH" open-file "$FILENAME" "$LINE_NUMBER"
+        )
+      else
+        log_warning "remove-breakpoint not supported for Visual Studio"
+      fi
+      ;;
+
+    *)
+      log_error "remove-breakpoint command not supported on this platform"
+      exit 1
+      ;;
+  esac
+}
+
+########################################################################
+## Handle commands
+########################################################################
+case "$1" in
+  open-file)
+    shift
+    command_open_file "$@"
+    exit 0
+    ;;
+  bring-to-front)
+    shift
+    command_bring_to_front "$@"
+    exit 0
+    ;;
+  add-breakpoint)
+    shift
+    command_add_breakpoint "$@"
+    exit 0
+    ;;
+  remove-breakpoint)
+    shift
+    command_remove_breakpoint "$@"
+    exit 0
+    ;;
+  *)
+    EXE_PATH="$1"
+    if [ ! -e "$EXE_PATH" ]; then
+      log_error "Can't find the exe at '$EXE_PATH' and not a valid command."
+      usage
+    fi
+    ;;
+esac
 shift
 
+########################################################################
+## Debugging sessions
+########################################################################
 EXE_BASENAME=$(basename "${EXE_PATH}")
 EXE_ARGS=("$@")
 EXE_DIR=$(dirname "$EXE_PATH")
