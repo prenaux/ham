@@ -645,6 +645,11 @@ if ! $(HAM_CPP_TOOLSET) {
 }
 Import base-$(HAM_CPP_TOOLSET).ham ;
 
+if ! $(TEMPDIR) {
+  EXIT "F/TEMPDIR not set." ;
+}
+TEMPDIR = $(TEMPDIR:/) ;
+
 #----------------------------------------------------------------------
 #     General defaults; a lot like UNIX
 #----------------------------------------------------------------------
@@ -2963,8 +2968,6 @@ rule FlyMakeSetup
 #----------------------------------------------------------------------
 #     Standard directories and the cache file
 #----------------------------------------------------------------------
-TEMPDIR ?= [ FDirName $(WORK:/) _ham ] ;
-TEMPDIR = $(TEMPDIR:/) ;
 BASEOBJDIR ?= [ FDirName $(TEMPDIR) obj ] ;
 HCACHEFILE ?= [ FDirName $(TEMPDIR) _cache.ham ] ;
 

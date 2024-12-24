@@ -1226,9 +1226,6 @@ fi
 if [[ -z $BUILD_BIN_LOA ]]; then
   export BUILD_BIN_LOA=$HAM_BIN_LOA
 fi
-if [[ -z $TEMPDIR ]]; then
-  export TEMPDIR=$HOME/_ham
-fi
 
 if [[ -z "$WORK" ]]; then
   WORK=$(nativedir "$HAM_HOME/..")
@@ -1238,6 +1235,10 @@ if [[ -z "$WORK" ]]; then
 fi
 WORK=$(unxpath "$WORK")
 export WORK
+
+if [[ -z $TEMPDIR ]]; then
+  export TEMPDIR=$WORK/_ham
+fi
 
 # Detect the default number of jobs
 if [[ -z $HAM_NUM_JOBS ]]; then
