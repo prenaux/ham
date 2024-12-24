@@ -9,9 +9,8 @@ fi
 find_remedybg() {
   local path
   for path in \
-    "c:/Utils/Apps/remedybg/remedybg.exe" \
-    "$WORK/Playground/data/_tools/remedybg/remedybg.exe" \
-    "$SHARED_WORK/../bin/nt-x64/remedybg.exe"; do
+    "$HAM_HOME/toolsets/remedybg/nt-x64/remedybg.exe" \
+    "c:/Utils/Apps/remedybg/remedybg.exe"; do
     if [ -f "$path" ]; then
       echo "$path"
       return 0
@@ -20,13 +19,22 @@ find_remedybg() {
   echo ""
 }
 
+find_msvc_ide() {
+  if [ -e "$HAM_HOME/toolsets/msvc_19_x64/msvc-find-ide-dir" ]; then
+    "$HAM_HOME/toolsets/msvc_19_x64/msvc-find-ide-dir"
+  else
+    echo ""
+  fi
+}
+
 usage() {
   echo "usage:"
   echo "  ${0##*/} EXE [ARGS]"
-  echo "  ${0##*/} bring-to-front"
   echo "  ${0##*/} open-file filename [line-number]"
   echo "  ${0##*/} add-breakpoint filename line-number"
   echo "  ${0##*/} remove-breakpoint filename line-number"
+  echo "  ${0##*/} bring-to-front"
+  echo "  ${0##*/} gui"
   echo ""
   echo "Supported platforms:"
   echo "  Windows:"
@@ -40,7 +48,7 @@ usage() {
   case $HAM_OS in
     NT*)
       REMEDYBG_PATH=$(find_remedybg)
-      MSVC_IDE_DIR=$(msvc-find-ide-dir)
+      MSVC_IDE_DIR=$(find_msvc_ide)
       echo "Local environment:"
       echo "  REMEDYBG_PATH: $REMEDYBG_PATH"
       echo "  MSVC_IDE_DIR: $MSVC_IDE_DIR"
@@ -71,14 +79,24 @@ command_open_file() {
     NT*)
       REMEDYBG_PATH=$(find_remedybg)
       if [ -n "$REMEDYBG_PATH" ]; then
-        (set -x ; "$REMEDYBG_PATH" open-file "$FILENAME" $LINE_NUMBER)
+        (
+          set -x
+          # shellcheck disable=SC2086
+          "$REMEDYBG_PATH" open-file "$FILENAME" $LINE_NUMBER
+        )
       else
-        IDE_DIR=$(msvc-find-ide-dir)
+        IDE_DIR=$(find_msvc_ide)
         if [ -n "$IDE_DIR" ]; then
           if [ -n "$LINE_NUMBER" ]; then
-            (set -x ; "$IDE_DIR/Common7/IDE/devenv.exe" -Edit "$FILENAME" -Command "GotoLine $LINE_NUMBER")
+            (
+              set -x
+              "$IDE_DIR/devenv.exe" -Edit "$FILENAME" -Command "edit.goto $LINE_NUMBER"
+            )
           else
-            (set -x ; "$IDE_DIR/Common7/IDE/devenv.exe" -Edit "$FILENAME")
+            (
+              set -x
+              "$IDE_DIR/devenv.exe" -Edit "$FILENAME"
+            )
           fi
         else
           log_error "Neither RemedyBG nor Visual Studio found"
@@ -86,7 +104,6 @@ command_open_file() {
         fi
       fi
       ;;
-
     *)
       log_error "open-file command not supported on this platform"
       exit 1
@@ -99,13 +116,17 @@ command_bring_to_front() {
     NT*)
       REMEDYBG_PATH=$(find_remedybg)
       if [ -n "$REMEDYBG_PATH" ]; then
-        (set -x ; "$REMEDYBG_PATH" bring-debugger-to-foreground)
+        (
+          set -x
+          "$REMEDYBG_PATH" bring-debugger-to-foreground
+        )
       else
-        log_warning "bring-to-front not supported for Visual Studio."
+        log_warning "bring-to-front not supported for Visual Studio"
       fi
       ;;
+
     *)
-      log_error "bring-to-front command not supported on this platform."
+      log_error "bring-to-front command not supported on this platform"
       exit 1
       ;;
   esac
@@ -124,9 +145,10 @@ command_add_breakpoint() {
     NT*)
       REMEDYBG_PATH=$(find_remedybg)
       if [ -n "$REMEDYBG_PATH" ]; then
-        (set -x ;
-         "$REMEDYBG_PATH" add-breakpoint-at-file "$FILENAME" "$LINE_NUMBER"
-         "$REMEDYBG_PATH" open-file "$FILENAME" "$LINE_NUMBER"
+        (
+          set -x
+          "$REMEDYBG_PATH" add-breakpoint-at-file "$FILENAME" "$LINE_NUMBER"
+          "$REMEDYBG_PATH" open-file "$FILENAME" "$LINE_NUMBER"
         )
       else
         log_warning "add-breakpoint not supported for Visual Studio"
@@ -153,9 +175,10 @@ command_remove_breakpoint() {
     NT*)
       REMEDYBG_PATH=$(find_remedybg)
       if [ -n "$REMEDYBG_PATH" ]; then
-        (set -x ;
-         "$REMEDYBG_PATH" remove-breakpoint-at-file "$FILENAME" "$LINE_NUMBER"
-         "$REMEDYBG_PATH" open-file "$FILENAME" "$LINE_NUMBER"
+        (
+          set -x
+          "$REMEDYBG_PATH" remove-breakpoint-at-file "$FILENAME" "$LINE_NUMBER"
+          "$REMEDYBG_PATH" open-file "$FILENAME" "$LINE_NUMBER"
         )
       else
         log_warning "remove-breakpoint not supported for Visual Studio"
@@ -164,6 +187,47 @@ command_remove_breakpoint() {
 
     *)
       log_error "remove-breakpoint command not supported on this platform"
+      exit 1
+      ;;
+  esac
+}
+
+command_gui() {
+  case $HAM_OS in
+    NT*)
+      REMEDYBG_PATH=$(find_remedybg)
+      if [ -n "$REMEDYBG_PATH" ]; then
+        (
+          set -x
+          "$REMEDYBG_PATH" "$@"
+        )
+      else
+        IDE_DIR=$(find_msvc_ide)
+        if [ -n "$IDE_DIR" ]; then
+          (
+            set -x
+            "$IDE_DIR/devenv.exe" "$@"
+          )
+        else
+          log_error "Neither RemedyBG nor Visual Studio found"
+          exit 1
+        fi
+      fi
+      ;;
+    LINUX*)
+      (
+        set -x
+        gdb "$@"
+      )
+      ;;
+    OSX*)
+      (
+        set -x
+        lldb "$@"
+      )
+      ;;
+    *)
+      log_error "gui command not supported on '$HAM_OS'."
       exit 1
       ;;
   esac
@@ -191,6 +255,11 @@ case "$1" in
   remove-breakpoint)
     shift
     command_remove_breakpoint "$@"
+    exit 0
+    ;;
+  gui)
+    shift
+    command_gui "$@"
     exit 0
     ;;
   *)
@@ -229,41 +298,39 @@ case $HAM_OS in
   ## Windows: Use RemedyBG if available otherwise try to use devenv.exe
   ########################################################################
   NT*)
-    if [ -z "$REMEDYBG_PATH" ]; then
-      REMEDYBG_PATH=$(find_remedybg)
-    fi
-
+    REMEDYBG_PATH=$(find_remedybg)
     if [ -n "$REMEDYBG_PATH" ]; then
       RDBG_SESSION_FILE="${OUT_DIR}/${OUT_BASENAME}.rdbg"
+      RDBG_GEN_EXE="$(dirname "$REMEDYBG_PATH")/rdbg_gen.exe"
       log_info "REMEDYBG_PATH: $REMEDYBG_PATH"
       log_info "RDBG_SESSION_FILE: $RDBG_SESSION_FILE"
-      mkdir -p "$(dirname "$RDBG_SESSION_FILE")"
 
-      if [ ! -e "$EXE_PATH" ]; then
-        log_error "Can't find the exe at '$EXE_PATH'."
-        usage
+      if [ ! -e "$RDBG_SESSION_FILE" ]; then
+        log_info "Generating the session file."
+        (
+          mkdir -p "$(dirname "$RDBG_SESSION_FILE")"
+          "$RDBG_GEN_EXE" "$RDBG_SESSION_FILE" "$EXE_DIR" "$EXE_PATH" "${EXE_ARGS[@]}"
+        )
       fi
 
       if [ -e "$RDBG_SESSION_FILE" ]; then
-        log_info "Found the session file so opening that."
+        log_info "Opening the existing session file."
         (
           set -x
-          "$REMEDYBG_PATH" -g -q "$RDBG_SESSION_FILE" &
-          true
+          "$REMEDYBG_PATH" -g -q "$RDBG_SESSION_FILE"
         )
       else
         log_info "No session file, opening the exe directly."
         (
           set -x
-          "$REMEDYBG_PATH" -g -q "$EXE_PATH" "${EXE_ARGS[@]}" &
-          true
+          "$REMEDYBG_PATH" -g -q "$EXE_PATH" "${EXE_ARGS[@]}"
         )
       fi
     else
       if [ -z "$MSVC_DEVENV_PATH" ]; then
-        MSVC_IDE_DIR=$(msvc-find-ide-dir)
+        MSVC_IDE_DIR=$(find_msvc_ide)
         if [ -n "$MSVC_IDE_DIR" ]; then
-          MSVC_DEVENV_PATH="$MSVC_IDE_DIR/Common7/IDE/devenv.exe"
+          MSVC_DEVENV_PATH="$MSVC_IDE_DIR/devenv.exe"
         else
           log_error "Neither RemedyBG nor Visual Studio found"
           usage
@@ -279,7 +346,7 @@ case $HAM_OS in
     ;;
 
   ########################################################################
-  ## macOS: Use gdb with a decent setup
+  ## Linux: Use gdb with a decent setup
   ########################################################################
   LINUX*)
     GDB_FILE="${OUT_DIR}/${OUT_BASENAME}.gdb"
