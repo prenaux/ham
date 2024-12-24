@@ -1,3 +1,53 @@
+#
+# See https://alacritty.org/config-alacritty.html
+#
+# Run alacritty in a shortcut:
+#   c:\Utils\Alacritty.exe --config-file c:/Utils/alacritty-ham-shell.toml
+#
+# Run alacritty from bash:
+#   ./Alacritty.exe --config-file /c/Utils/alacritty-ham-shell.toml
+#
+
+# live_config_reload = true
+
+#
+# NOTE: Alacritty's config import is just unhinged, it only supports absolute
+# paths or paths relative to the home folder starting with ~/. The doc seems
+# to imply that paths relative to the config file work, but they just dont so
+# in practise there's no sane way to split the config in separate files.
+#
+# import = [
+#  "alacritty-input.toml"
+# ]
+#
+
+[window]
+dimensions = { columns = 88, lines = 40 }
+padding = { x = 2, y = 2 }
+startup_mode = "Windowed"
+title = "ham-shell"
+dynamic_title = true
+decorations_theme_variant = "None"
+decorations = "Full"
+opacity = 1
+blur = false
+
+[scrolling]
+history = 100000
+multiplier = 3
+
+[cursor]
+style = { shape = "Block", blinking = "Off" }
+unfocused_hollow = true
+thickness = 0.15
+
+[font]
+normal.family = "Consolas"
+bold.family = "Consolas"
+italic.family = "Consolas"
+bold_italic.family = "Consolas"
+size = 11.0
+
 [selection]
 save_to_clipboard = false
 
