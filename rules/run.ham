@@ -63,7 +63,7 @@ else {
     # Unless specified otherwise we can run binaries that have the same host and
     # target cpu architecture
     TARGET_FEATURE_RUN_EXE ?= 1 ;
-    Import run-$(OS)-$(TARGET_OS).ham ;
+    Import run-ham-gdb.ham ;
   }
   else {
     # Unless specified otherwise we cant run binaries that have different host

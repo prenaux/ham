@@ -6,10 +6,43 @@ if [[ -z "$HAM_HOME" ]]; then
 fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
+find_remedybg() {
+  local path
+  for path in \
+    "c:/Utils/Apps/remedybg/remedybg.exe" \
+    "$WORK/Playground/data/_tools/remedybg/remedybg.exe" \
+    "$SHARED_WORK/../bin/nt-x64/remedybg.exe"; do
+    if [ -f "$path" ]; then
+      echo "$path"
+      return 0
+    fi
+  done
+  echo ""
+}
+
 usage() {
   echo "usage:"
   echo "  ${0##*/} EXE [ARGS]"
   echo ""
+  echo "Supported platforms:"
+  echo "  Windows:"
+  echo "  - If available use RemedyBG and loads a specific .rdbg session file for persistence."
+  echo "  - Otherwise try to the Visual Studio debugger."
+  echo "  Linux:"
+  echo "  - Use GDB and creates/loads a .gdb config file for persistence."
+  echo "  macOS:"
+  echo "  - Use LLDB direct launch with the run command."
+  echo ""
+  case $HAM_OS in
+    NT*)
+      REMEDYBG_PATH=$(find_remedybg)
+      MSVC_IDE_DIR=$(msvc-find-ide-dir)
+      echo "Local environment:"
+      echo "  REMEDYBG_PATH: $REMEDYBG_PATH"
+      echo "  MSVC_IDE_DIR: $MSVC_IDE_DIR"
+      echo ""
+      ;;
+  esac
   exit 1
 }
 
@@ -22,10 +55,11 @@ shift
 
 EXE_BASENAME=$(basename "${EXE_PATH}")
 EXE_ARGS=("$@")
-
+EXE_DIR=$(dirname "$EXE_PATH")
+EXE_PARENT_DIR=$(basename "$EXE_DIR")
 NAME_ARGS=$(printf "_%s" "${EXE_ARGS[@]}")
 
-OUT_DIR="${SHARED_WORK:-$WORK}/gdb_sessions/${EXE_BASENAME}"
+OUT_DIR="${SHARED_WORK:-$WORK}/ham_gdb_sessions_${EXE_PARENT_DIR}"
 OUT_DIR=$(echo "$OUT_DIR" | tr ' ,-.+=' '_')
 OUT_BASENAME="${EXE_BASENAME}${NAME_ARGS}"
 OUT_BASENAME=$(echo "$OUT_BASENAME" | tr ' ,-.+=' '_')
@@ -38,22 +72,62 @@ log_info "OUT_DIR: $OUT_DIR"
 log_info "OUT_BASENAME: $OUT_BASENAME"
 
 case $HAM_OS in
+  ########################################################################
+  ## Windows: Use RemedyBG if available otherwise try to use devenv.exe
+  ########################################################################
   NT*)
-    # RUN_DEBUGGER could have been already set
-    # by the user or by a toolset.
-    if [ ! -f "$RUN_DEBUGGER" ]; then
-      RUN_DEBUGGER=$(toolset_find_msvc_devenv)
-      export RUN_DEBUGGER
-      if [ ! -f "$RUN_DEBUGGER" ]; then
-        echo "E/Can't find RUN_DEBUGGER (devenv.exe)"
-        return 1
-      fi
+    if [ -z "$REMEDYBG_PATH" ]; then
+      REMEDYBG_PATH=$(find_remedybg)
     fi
-    "$RUN_DEBUGGER" -debugexe "$EXE_PATH" "${EXE_ARGS[@]}"
+
+    if [ -n "$REMEDYBG_PATH" ]; then
+      RDBG_SESSION_FILE="${OUT_DIR}/${OUT_BASENAME}.rdbg"
+      log_info "REMEDYBG_PATH: $REMEDYBG_PATH"
+      log_info "RDBG_SESSION_FILE: $RDBG_SESSION_FILE"
+      mkdir -p "$(dirname "$RDBG_SESSION_FILE")"
+
+      if [ ! -e "$EXE_PATH" ]; then
+        log_error "Can't find the exe at '$EXE_PATH'."
+        usage
+      fi
+
+      if [ -e "$RDBG_SESSION_FILE" ]; then
+        log_info "Found the session file so opening that."
+        (
+          set -x
+          "$REMEDYBG_PATH" -g -q "$RDBG_SESSION_FILE" &
+          true
+        )
+      else
+        log_info "No session file, opening the exe directly."
+        (
+          set -x
+          "$REMEDYBG_PATH" -g -q "$EXE_PATH" "${EXE_ARGS[@]}" &
+          true
+        )
+      fi
+    else
+      if [ -z "$MSVC_DEVENV_PATH" ]; then
+        MSVC_IDE_DIR=$(msvc-find-ide-dir)
+        if [ -n "$MSVC_IDE_DIR" ]; then
+          MSVC_DEVENV_PATH="$MSVC_IDE_DIR/Common7/IDE/devenv.exe"
+        else
+          log_error "Neither RemedyBG nor Visual Studio found"
+          usage
+        fi
+      fi
+      log_info "MSVC_DEVENV_PATH: $MSVC_DEVENV_PATH"
+      (
+        set -x
+        "$MSVC_DEVENV_PATH" -debugexe "$EXE_PATH" "${EXE_ARGS[@]}" &
+        true
+      )
+    fi
     ;;
-  OSX*)
-    PATH="/usr/bin:$PATH" lldb --one-line "run" -- "$EXE_PATH" "${EXE_ARGS[@]}"
-    ;;
+
+  ########################################################################
+  ## macOS: Use gdb with a decent setup
+  ########################################################################
   LINUX*)
     GDB_FILE="${OUT_DIR}/${OUT_BASENAME}.gdb"
     log_info "GDB_FILE: $GDB_FILE"
@@ -86,8 +160,19 @@ case $HAM_OS in
       log_info "Done debugging: \"$EXE_PATH\" ${EXE_ARGS[*]}"
     fi
     ;;
+
+  ########################################################################
+  ## macOS: Use lldb
+  ########################################################################
+  OSX*)
+    PATH="/usr/bin:$PATH" lldb --one-line "run" -- "$EXE_PATH" "${EXE_ARGS[@]}"
+    ;;
+
+  ########################################################################
+  ## Others
+  ########################################################################
   *)
-    echo "E/Toolset: Unsupported host OS"
+    log_error "Toolset: Unsupported host OS"
     return 1
     ;;
 esac
