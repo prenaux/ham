@@ -27,6 +27,7 @@ if $(FLYMAKE) = 1 {
   CC_ADD_FLAGS += -WL ;
 }
 
+# Add errors
 CC_ADD_FLAGS +=
 # ERROR: warning C4172: returning address of local variable or temporary.
 -we4172
@@ -34,6 +35,10 @@ CC_ADD_FLAGS +=
 -we4715
 # ERROR: warning C6011: Dereferencing NULL pointer 'xxx'.
 -we6011
+;
+
+# Disable warnings
+CC_ADD_FLAGS +=
 # DISABLE: warning C4100: 'xxx' : unreferenced formal parameter.
 -wd4100
 # DISABLE: warning C4355: 'this' : used in base member initializer list.
@@ -81,6 +86,8 @@ CC_ADD_FLAGS +=
 -wd4458
 # DISABLE: warning C5055: operator '*': deprecated between enumerations and floating-point types
 -wd5055
+# DISABLE: warning C4471: 'eSomeEnum': a forward declaration of an unscoped enumeration must have an underlying type
+-wd4471
 ;
 
 if $(MSVC_VER) >= 15 {
