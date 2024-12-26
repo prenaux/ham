@@ -401,7 +401,9 @@ rawurlencode() {
 }
 
 ham_shell_set_title() {
-  echo -ne "\e]0;$1\007"
+  if [ -n "$ALACRITTY_LOG" ]; then
+    echo -ne "\e]0;$1\007"
+  fi
 }
 
 ########################################################################
