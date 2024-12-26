@@ -35,6 +35,9 @@ CC_ADD_FLAGS +=
 -we4715
 # ERROR: warning C6011: Dereferencing NULL pointer 'xxx'.
 -we6011
+# ERROR: warning C4471: 'eSomeEnum': a forward declaration of an unscoped enumeration must have an underlying type.
+# Note: Not allowed at all in Clang/GCC.
+-we4471
 ;
 
 # Disable warnings
@@ -86,8 +89,6 @@ CC_ADD_FLAGS +=
 -wd4458
 # DISABLE: warning C5055: operator '*': deprecated between enumerations and floating-point types
 -wd5055
-# DISABLE: warning C4471: 'eSomeEnum': a forward declaration of an unscoped enumeration must have an underlying type
--wd4471
 ;
 
 if $(MSVC_VER) >= 15 {
