@@ -791,7 +791,6 @@ rule tkBuildPackage
   local _ei = 0 ;
   local _pch = ;
   local _cpredist = 1 ;
-  local _pdb = 1 ;
   local _console = 0 ;
   local _jni = 0 ;
   local _exc = 0 ;
@@ -850,9 +849,6 @@ rule tkBuildPackage
         # Dont copy the output in the redist directory
       case noredist :
         _cpredist = 0 ;
-        # Dont copy the pdb in the redist directory
-      case nopdb :
-        _pdb = 0 ;
         # Enable RTTI
       case rtti :
         _rtti = 1 ;
@@ -997,26 +993,6 @@ rule tkBuildPackage
     if $(PKGTARGET_WASM) {
       f += $(PKGTARGET_WASM) ;
       DEPENDS $(PACKAGE)_wasm : $(PKGTARGET_WASM) ;
-    }
-  }
-
-  if $(SUFPDB) && $(_pdb) = 1 && ( $(PKGGROUP) != libs || $(MSVC_DEBUG_INFO) = stdpdb ) {
-    local srcPDB = [ FDirName $(LOCATE_TARGET) $(d:S=$(SUFPDB)) ] ;
-    local dstPDB = [ FDirName $(OUTDIR) $(d:B)$(_stamp)$(SUFPDB) ] ;
-    DEPENDS $(srcPDB) : $(d) ;
-    # Make sure that the PDB's date is more recent than the output
-    Touch $(srcPDB) ;
-    FilePreserve $(dstPDB) : $(srcPDB) ;
-    f += $(dstPDB) ;
-
-    if $(PKGTARGET_LIB) && ( $(MSVC_DEBUG_INFO) = stdpdb ) {
-      local p = $(PKGTARGET_LIB) ;
-      local srcPDB = [ FDirName $(LOCATE_TARGET) $(p:S=$(SUFPDB)) ] ;
-      local dstPDB = [ FDirName $(TK_DIR_LIBS) $(p:B)$(_stamp)$(SUFPDB) ] ;
-      DEPENDS $(srcPDB) : $(p) ;
-      Touch $(srcPDB) ; # Make sure that the PDB's date is more recent than the output
-      FilePreserve $(dstPDB) : $(srcPDB) ;
-      f += $(dstPDB) ;
     }
   }
 
