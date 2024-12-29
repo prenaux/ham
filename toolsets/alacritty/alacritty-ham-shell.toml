@@ -94,6 +94,7 @@ bindings = [
 { key = "C",         mods = "Control|Shift", action = "Copy" },
 { key = "F",         mods = "Control|Shift", action = "SearchForward" },
 { key = "B",         mods = "Control|Shift", action = "SearchBackward" },
+{ key = "K",         mods = "Control|Shift", chars = "clear\r" },
 
 # Special keys
 { key = "Insert",    mods = "Shift",        action = "Paste" },
@@ -135,5 +136,6 @@ bindings = [
 { key = "NumpadSubtract", mods = "Control", action = "DecreaseFontSize" },
 
 # Fullscreen toggle
-{ key = "Enter",    mods = "Alt",          action = "ToggleFullscreen" }
+{ key = "Enter",    mods = "Alt",   action = "ToggleFullscreen" },
+{ key = "F11",                      action = "ToggleFullscreen" },
 ]
