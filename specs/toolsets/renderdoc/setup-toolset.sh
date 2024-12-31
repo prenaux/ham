@@ -9,7 +9,7 @@ case $HAM_OS in
     pathenv_add "${HAM_TOOLSET_DIR}/$HAM_BIN_LOA/bin"
     ;;
   NT)
-    toolset_check_and_dl_ver renderdoc nt-x64 v1_35 || return 1
+    toolset_check_and_dl_ver renderdoc nt-x64 v1_36 || return 1
     pathenv_add "${HAM_TOOLSET_DIR}/nt-x64"
     ;;
   *)
