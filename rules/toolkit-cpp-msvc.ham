@@ -223,10 +223,31 @@ rule tkCC++Build
 
   # Set the optimization flags
   if ! $(DEBUG) {
-    ObjectOptimFlags $(<) : -GF ;
+    ObjectOptimFlags $(<) :
+      # String pooling
+      -GF
+      # Function-level linking
+      -Gy
+    ;
+    strOpt += "(StringPooling) " ;
+
+    ObjectOptimFlags $(<) :
+      # Disable buffer security check
+      -GS-
+    ;
+    strOpt += "(NoBufferSecurity) " ;
+
+    # Link time codegen
+    if $(OPT_LTCG) = 1 {
+      ObjectOptimFlags $(<) : -GL ;
+      LINKFLAGS on $(PKGTARGETF) += -LTCG ;
+      strOpt += "(LTCG) " ;
+    }
+
     if $(HAM_C99) = clang {
       ObjectC99Flags $(<) : -O2 ;
     }
+
     if $(OPT_NOOPT) = 1 {
       ObjectOptimFlags $(<) : -Od ;
       strOpt += "(OptNone) " ;
@@ -240,19 +261,17 @@ rule tkCC++Build
     }
     else {
       ObjectOptimFlags $(<) : -O2 -Ob2 -Oi ;
-      # if $(EMBEDDED) != 1 && ! ( $(PKGTYPE) = library ) {
-        # ObjectOptimFlags $(<) : -GL ;
-      # }
       strOpt += "(OptMaxSpeed) " ;
-      # if $(EMBEDDED) != 1 {
-        # LINKFLAGS on $(PKGTARGETF) += -LTCG ;
-      # }
       if $(MSVC_VER) >= 13 {
         ObjectOptimFlags $(<) : -Zo ; # /Zo (Enhance Optimized Debugging)
       }
     }
-    ObjectOptimFlags $(<) : -GS- ;  # Disable buffer security check
-    strOpt += "(NoBufferSecurity) " ;
+
+    # OPT:REF removes dead code and OPT:ICF does identical comdat folding
+    LINKFLAGS on $(PKGTARGETF) +=
+      -OPT:REF
+      -OPT:ICF
+    ;
   }
   # Set debug-only flags
   else {
@@ -289,7 +308,6 @@ rule tkCC++Build
       strOpt += "(CRT-STATIC-MT-REL) " ;
     }
   }
-  strOpt += "(StringPooling) " ;
   logVerbose "- CC++Build: " $(strOpt) ;
 }
 
