@@ -7,15 +7,23 @@ fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 find_remedybg() {
-  local path
-  for path in \
-    "$HAM_HOME/toolsets/remedybg/nt-x64/remedybg.exe" \
-    "c:/Utils/Apps/remedybg/remedybg.exe"; do
-    if [ -f "$path" ]; then
-      echo "$path"
-      return 0
+  if [ -n "$REMEDYBG_PATH" ]; then
+    if [ -e "$REMEDYBG_PATH" ]; then
+      echo "$REMEDYBG_PATH"
+    else
+      echo ""
     fi
-  done
+  else
+    local path
+    for path in \
+      "$HAM_HOME/toolsets/remedybg/nt-x64/remedybg.exe" \
+      "c:/Utils/Apps/remedybg/remedybg.exe"; do
+      if [ -f "$path" ]; then
+        echo "$path"
+        return 0
+      fi
+    done
+  fi
   echo ""
 }
 
@@ -78,11 +86,12 @@ command_open_file() {
   case $HAM_OS in
     NT*)
       REMEDYBG_PATH=$(find_remedybg)
-      if [ -n "$REMEDYBG_PATH" ]; then
+      if [ -n "$REMEDYBG_PATH" ] && tasklist | grep -i "remedybg.exe" >/dev/null; then
         (
           set -x
           # shellcheck disable=SC2086
           "$REMEDYBG_PATH" open-file "$FILENAME" $LINE_NUMBER
+          "$REMEDYBG_PATH" bring-debugger-to-foreground
         )
       else
         IDE_DIR=$(find_msvc_ide)
@@ -115,7 +124,7 @@ command_bring_to_front() {
   case $HAM_OS in
     NT*)
       REMEDYBG_PATH=$(find_remedybg)
-      if [ -n "$REMEDYBG_PATH" ]; then
+      if [ -n "$REMEDYBG_PATH" ] && tasklist | grep -i "remedybg.exe" >/dev/null; then
         (
           set -x
           "$REMEDYBG_PATH" bring-debugger-to-foreground
@@ -144,11 +153,12 @@ command_add_breakpoint() {
   case $HAM_OS in
     NT*)
       REMEDYBG_PATH=$(find_remedybg)
-      if [ -n "$REMEDYBG_PATH" ]; then
+      if [ -n "$REMEDYBG_PATH" ] && tasklist | grep -i "remedybg.exe" >/dev/null; then
         (
           set -x
           "$REMEDYBG_PATH" add-breakpoint-at-file "$FILENAME" "$LINE_NUMBER"
           "$REMEDYBG_PATH" open-file "$FILENAME" "$LINE_NUMBER"
+          "$REMEDYBG_PATH" bring-debugger-to-foreground
         )
       else
         log_warning "add-breakpoint not supported for Visual Studio"
@@ -300,11 +310,12 @@ case $HAM_OS in
   NT*)
     REMEDYBG_PATH=$(find_remedybg)
     if [ -n "$REMEDYBG_PATH" ]; then
-      RDBG_SESSION_FILE="${OUT_DIR}/${OUT_BASENAME}.rdbg"
-      RDBG_GEN_EXE="$(dirname "$REMEDYBG_PATH")/rdbg_gen.exe"
       log_info "REMEDYBG_PATH: $REMEDYBG_PATH"
+
+      RDBG_SESSION_FILE="${OUT_DIR}/${OUT_BASENAME}.rdbg"
       log_info "RDBG_SESSION_FILE: $RDBG_SESSION_FILE"
 
+      RDBG_GEN_EXE="$(dirname "$REMEDYBG_PATH")/rdbg_gen.exe"
       if [ ! -e "$RDBG_SESSION_FILE" ]; then
         log_info "Generating the session file."
         (
@@ -336,10 +347,33 @@ case $HAM_OS in
           usage
         fi
       fi
+
+      VCSLN_SESSION_FILE="${OUT_DIR}/${OUT_BASENAME}.sln"
+      log_info "VCSLN_SESSION_FILE: $VCSLN_SESSION_FILE"
+
+      if [ ! -e "$VCSLN_SESSION_FILE" ]; then
+        log_info "Generating the session file."
+        (
+          mkdir -p "$(dirname "$VCSLN_SESSION_FILE")"
+          export OUT_BASENAME
+          VCSLN_EXE_PATH="${EXE_PATH//\//\\}"
+          export VCSLN_EXE_PATH
+          VCSLN_EXE_DIR="${EXE_DIR//\//\\}"
+          export VCSLN_EXE_DIR
+          VCSLN_EXE_ARGS="$(printf '%q ' "${EXE_ARGS[@]}")"
+          export VCSLN_EXE_ARGS
+          VCSLN_PRJ_UUID=$(genuuid)
+          export VCSLN_PRJ_UUID
+          VCSLN_EXE_UUID=$(genuuid)
+          export VCSLN_EXE_UUID
+          envsubst <"$HAM_HOME/sources/templates/vcdbg_session_file.sln" | tee "${VCSLN_SESSION_FILE}"
+        )
+      fi
+
       log_info "MSVC_DEVENV_PATH: $MSVC_DEVENV_PATH"
       (
         set -x
-        "$MSVC_DEVENV_PATH" -debugexe "$EXE_PATH" "${EXE_ARGS[@]}" &
+        "$MSVC_DEVENV_PATH" "${VCSLN_SESSION_FILE}" &
         true
       )
     fi
