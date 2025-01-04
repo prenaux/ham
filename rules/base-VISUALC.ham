@@ -66,11 +66,11 @@ C++         ?= $(HAM_CL) -nologo ;
 LINK        ?= $(HAM_LINK) -nologo ;
 LINKFLAGS   ?= ;
 
-MSVC_DEBUG_INFO ?= c7 ; # c7, stdpdb, fastpdb
+MSVC_DEBUG_INFO ?= c7 ; # c7, stdpdb, fastpdb, none
 switch $(MSVC_DEBUG_INFO) {
   case c7 :
     LINKFLAGS += -DEBUG ;
-  case pdb :
+  case stdpdb :
     LINKFLAGS += -DEBUG ;
   case fastpdb :
     if $(MSVC_VER) >= 17 {
@@ -79,6 +79,8 @@ switch $(MSVC_DEBUG_INFO) {
     else {
       logFatal "fastpdb (DEBUG:FASTLINK) MSVC_DEBUG_INFO not supported with older MSVC_VER:" $(MSVC_VER) ;
     }
+  case none :
+    LINKFLAGS += -DEBUG:NONE ;
   case * :
     logFatal "Unknown MSVC_DEBUG_INFO:" $(MSVC_DEBUG_INFO) ;
 }
