@@ -697,6 +697,30 @@ fcd() {
 }
 
 #
+# history_cleanup <histfile>
+#
+# Clean up and deduplicate a history file, removing merge markers and empty lines.
+# Creates a backup as <histfile>.bak before modifying.
+#
+# Returns:
+#   0 on success
+#   1 if history file does not exist
+#
+history_cleanup() {
+  local filepath="$1"
+
+  if [ ! -f "${filepath}" ]; then
+    log_warning "history_cleanup: History file does not exist: ${filepath}"
+  else
+    sed '/^<<</{d;};/^>>>/{d;};/^===/{d;}' "${filepath}" |
+      sort -f -u |
+      sed '/^[[:space:]]*$/d' >"${filepath}.new" &&
+      mv "${filepath}" "${filepath}.bak" &&
+      mv "${filepath}.new" "${filepath}"
+  fi
+}
+
+#
 # fhh (print)
 #
 # Note: Can't be in an external script because each bash script has an
