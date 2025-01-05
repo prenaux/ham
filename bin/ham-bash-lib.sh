@@ -713,7 +713,7 @@ history_cleanup() {
     log_warning "history_cleanup: History file does not exist: ${filepath}"
   else
     sed '/^<<</{d;};/^>>>/{d;};/^===/{d;}' "${filepath}" |
-      sort -f -u |
+      coreutils sort -u |
       sed '/^[[:space:]]*$/d' >"${filepath}.new" &&
       mv "${filepath}" "${filepath}.bak" &&
       mv "${filepath}.new" "${filepath}"
