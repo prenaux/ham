@@ -34,7 +34,7 @@ install_linux_pacman_packages() {
   (
     set -ex
     sudo pacman -Syu
-    sudo pacman --noconfirm -S base-devel gcc clang lld curl ffmpeg file git glibc mesa libglvnd freeglut linux-api-headers sdl2 xorgproto libx11 htop jq openssl mc net-tools openbsd-netcat ntp p7zip procps pkg-config python python-pip wget libxslt autossh tcpdump
+    sudo pacman --noconfirm -S base-devel gcc clang lld curl ffmpeg file git glibc mesa libglvnd freeglut linux-api-headers sdl2 xorgproto libx11 htop jq openssl mc net-tools openbsd-netcat ntp p7zip procps pkg-config python python-pip wget libxslt autossh tcpdump inetutils
   )
 }
 
