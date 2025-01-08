@@ -13,7 +13,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/zig"
 case $HAM_BIN_LOA in
   nt-x86 | lin-x64 | osx-arm64 | osx-x64)
     export ZIG_DIR="${HAM_TOOLSET_DIR}/$HAM_BIN_LOA"
-    toolset_check_and_dl_ver zig "$HAM_BIN_LOA" v0_10_0 || return 1
+    toolset_check_and_dl_ver zig "$HAM_BIN_LOA" v0_14_0 || return 1
     ;;
   *)
     echo "E/Toolset: Unsupported host OS"
@@ -43,8 +43,13 @@ export BUILD_BIN_LOA=$HAM_BIN_LOA
 VER="--- zig ${HAM_TARGET_BIN_LOA} -------------------------------"
 if [ "$HAM_NO_VER_CHECK" != "1" ]; then
   if ! VER="$VER
-$(zig version)"; then
+zig: $(zig version)"; then
     echo "E/Can't get zig version."
+    return 1
+  fi
+  if ! VER="$VER
+zig cc: $(zig cc --version | grep version)"; then
+    echo "E/Can't get zig cc version."
     return 1
   fi
 fi
