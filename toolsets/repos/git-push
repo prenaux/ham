@@ -33,7 +33,7 @@ BRANCH=$(git-get-branch-name "$BRANCH")
 
 log_info "Status"
 git-status short
-log_info "Pushing branch '$BRANCH'."
+log_info "Pushing branch '$BRANCH' of '$REPO_NAME'."
 (
   set -x
   git push --force-with-lease "$ORIGIN" "$BRANCH"
