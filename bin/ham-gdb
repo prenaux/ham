@@ -6,6 +6,10 @@ if [[ -z "$HAM_HOME" ]]; then
 fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
+if [[ -e "$HOME/_ham_gdb" ]]; then
+  . "$HOME/_ham_gdb"
+fi
+
 find_remedybg() {
   if [ -n "$REMEDYBG_PATH" ]; then
     if [ -e "$REMEDYBG_PATH" ]; then
