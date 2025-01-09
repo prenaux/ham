@@ -39,7 +39,7 @@ fi
 
 # Short log of the current branch
 if [ -z "$1" ]; then
-  LOG_COUNT=${LOG_COUNT:-5}
+  LOG_COUNT=${LOG_COUNT:-3}
   log_info "Changes: $(git-head-info branch_changes)"
   # shellcheck disable=SC2086
   git --no-pager log -${LOG_COUNT} --first-parent '--pretty=format:%Creset[%Cblue%an%Creset %Cred%ad%Creset %C(yellow)%h%Creset]%Cgreen%d %Creset%s' --date=short
