@@ -4,10 +4,9 @@
 help() {
   echo "usage: git-ensure-branch (nofetch) BRANCH (REMOTE_NAME)"
   echo ""
-  echo "  If branch exists locally or remotely, updates it using git-update."
-  echo "  Otherwise creates a new branch using git-new-branch."
-  echo ""
-  echo "  Designed for use with repos-exec to align multiple repos to same branch state."
+  echo "  If BRANCH exists locally or remotely, updates it using git-update"
+  echo "  and then git-rebase it on main_branch. Otherwise creates a new"
+  echo "  branch using git-new-branch."
   echo ""
   exit 1
 }
@@ -32,11 +31,12 @@ if [ "$DO_FETCH" = "1" ]; then
   )
 fi
 
-if git rev-parse --verify "$BRANCH" >/dev/null 2>&1 || \
-   git rev-parse --verify "$REMOTE_NAME/$BRANCH" >/dev/null 2>&1; then
+if git rev-parse --verify "$BRANCH" >/dev/null 2>&1 ||
+  git rev-parse --verify "$REMOTE_NAME/$BRANCH" >/dev/null 2>&1; then
   (
     set -x
     git-update nofetch "$BRANCH"
+    git-rebase main_branch
   )
 else
   (

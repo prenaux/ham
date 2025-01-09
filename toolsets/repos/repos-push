@@ -1,0 +1,15 @@
+#!/bin/bash -e
+. ham-bash-lib.sh
+
+BRANCH="$1"
+if [ -z "$BRANCH" ]; then
+  echo "I/BRANCH not specified, using current_branch"
+  BRANCH=current_branch
+else
+  shift
+fi
+
+(
+  set -x
+  repos-exec git-push "$BRANCH"
+)

@@ -23,7 +23,6 @@ if [[ -n "$GIT_LOG_CUSTOM_FORMAT" ]]; then
 else
   FORMAT=(--pretty=format:'%C(yellow)%h%Cgreen%d %Creset%s (%Cblue%an%Creset - %Cred%ad%Creset)' --date=short)
 fi
-LOG_COUNT=${LOG_COUNT:-10}
 
 if [ "${1:0:1}" = "-" ]; then
   if echo "$1" | grep -qE '^-[0-9]+$'; then
@@ -38,9 +37,17 @@ if [ "$LOG_COUNT" == "0" ]; then
   LOG_COUNT=100000
 fi
 
-# Simple log of the current branch
+# Short log of the current branch
 if [ -z "$1" ]; then
-  log_info "Changes:" $(git-head-info branch_changes)
+  LOG_COUNT=${LOG_COUNT:-5}
+  log_info "Changes: $(git-head-info branch_changes)"
+  # shellcheck disable=SC2086
+  git --no-pager log -${LOG_COUNT} --first-parent '--pretty=format:%Creset[%Cblue%an%Creset %Cred%ad%Creset %C(yellow)%h%Creset]%Cgreen%d %Creset%s' --date=short
+
+# Graph log of the current branch
+elif [[ "$1" == "graph" ]]; then
+  LOG_COUNT=${LOG_COUNT:-10}
+  log_info "Changes: $(git-head-info branch_changes)"
   log_info "Last ${LOG_COUNT} commits:"
   # shellcheck disable=SC2086
   (
@@ -50,6 +57,7 @@ if [ -z "$1" ]; then
 
 # Log between the current branch and its first parent
 elif [[ "$1" == "parent" || "$1" == "parent_branch" || "$1" == "parent-branch" ]]; then
+  LOG_COUNT=${LOG_COUNT:-10}
   BRANCH=$(git-get-branch-name current_branch)
   PARENT_BRANCH=$(git-get-branch-name parent_branch)
   if [[ "$PARENT_BRANCH" == "get_branch_error__"* ]]; then
@@ -79,8 +87,9 @@ elif [[ "$1" == "parent" || "$1" == "parent_branch" || "$1" == "parent-branch" ]
     )
   fi
 else
+  LOG_COUNT=${LOG_COUNT:-10}
   BRANCH=$(git-get-branch-name "$1")
-  log_info "Changes:" $(git-head-info branch_changes)
+  log_info "Changes: $(git-head-info branch_changes)"
   log_info "Logging branch '$BRANCH'."
   shift
   ORIGIN="$1"

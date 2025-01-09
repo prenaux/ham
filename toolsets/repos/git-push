@@ -1,4 +1,6 @@
 #!/bin/bash -e
+. ham-bash-lib.sh
+
 usage() {
   echo "usage: git-push (origin) BRANCH"
   echo ""
@@ -16,6 +18,9 @@ if [ -z "$1" ]; then
   usage
 fi
 
+REPO_NAME=$(basename "$(git rev-parse --show-toplevel)")
+trap 'log_error "Repo '"'"'$REPO_NAME'"'"' git-push failed."' ERR
+
 if [ $# = 1 ]; then
   ORIGIN=origin
   BRANCH=$1
@@ -26,10 +31,11 @@ fi
 
 BRANCH=$(git-get-branch-name "$BRANCH")
 
-echo "I/Status"
+log_info "Status"
 git-status short
-echo "I/Pushing branch '$BRANCH'."
+log_info "Pushing branch '$BRANCH'."
 (
   set -x
   git push --force-with-lease "$ORIGIN" "$BRANCH"
 )
+log_success "Repo '$REPO_NAME' git-push succeeded."
