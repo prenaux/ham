@@ -1,0 +1,46 @@
+#!/bin/bash -e
+. ham-bash-lib.sh
+
+help() {
+  echo "usage: git-ensure-branch (nofetch) BRANCH (REMOTE_NAME)"
+  echo ""
+  echo "  If branch exists locally or remotely, updates it using git-update."
+  echo "  Otherwise creates a new branch using git-new-branch."
+  echo ""
+  echo "  Designed for use with repos-exec to align multiple repos to same branch state."
+  echo ""
+  exit 1
+}
+
+DO_FETCH=1
+if [ "$1" = "nofetch" ]; then
+  shift
+  DO_FETCH=0
+fi
+
+if [ -z "$1" ]; then
+  help
+fi
+
+BRANCH=$(git-get-branch-name "$1")
+REMOTE_NAME="${2:-origin}"
+
+if [ "$DO_FETCH" = "1" ]; then
+  (
+    set -x
+    git fetch --prune --all
+  )
+fi
+
+if git rev-parse --verify "$BRANCH" >/dev/null 2>&1 || \
+   git rev-parse --verify "$REMOTE_NAME/$BRANCH" >/dev/null 2>&1; then
+  (
+    set -x
+    git-update nofetch "$BRANCH"
+  )
+else
+  (
+    set -x
+    git-new-branch nofetch "$BRANCH" "$REMOTE_NAME"
+  )
+fi

@@ -1,0 +1,28 @@
+#!/bin/bash -e
+. ham-bash-lib.sh
+
+BRANCH="$1"
+if [ -z "$BRANCH" ]; then
+  echo "I/BRANCH not specified, using current_branch"
+  BRANCH=current_branch
+else
+  shift
+fi
+
+log_info "Fetching..."
+(
+  set -x
+  repos-exec -x git fetch --all --prune
+)
+
+log_info "Updating..."
+(
+  set -x
+  repos-exec -x git-ensure-branch nofetch "$BRANCH"
+)
+
+log_info "Status..."
+(
+  set -x
+  repos-exec -s git-log -3 current_branch
+)

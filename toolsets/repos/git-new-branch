@@ -1,20 +1,51 @@
-#!/bin/bash
+#!/bin/bash -e
+. ham-bash-lib.sh
+
 help() {
-  echo "usage: git-new-branch branch_name"
+  echo "usage: git-new-branch (nofetch) BRANCH (REMOTE_NAME)"
   echo ""
-  echo "  Creates a new branch, makes it active, make sure there's a remote"
-  echo "  tracking branch on origin for it and push the initial version."
+  echo "  Creates a new branch and makes it active. Makes sure there's a remote"
+  echo "  tracking branch on the remote (defaults to origin) and pushes the initial version."
+  echo ""
+  echo "  Fails if the branch already exists locally or remotely."
+  echo ""
   exit 1
 }
+
+DO_FETCH=1
+if [ "$1" = "nofetch" ]; then
+  shift
+  DO_FETCH=0
+fi
+
 if [ -z "$1" ]; then
   help
 fi
 
-BRANCH_NAME="$1"
-REMOTE_NAME="$2"
-if [ -z "$REMOTE_NAME" ]; then
-  REMOTE_NAME=origin
+BRANCH=$(git-get-branch-name "$1")
+REMOTE_NAME="${2:-origin}"
+
+if [ "$DO_FETCH" = "1" ]; then
+  (
+    set -x
+    git fetch --prune --all
+  )
 fi
 
-git checkout -b "$BRANCH_NAME" &&
-  git push -u "$REMOTE_NAME" "$BRANCH_NAME"
+# Check local existence
+if git rev-parse --verify "$BRANCH" >/dev/null 2>&1; then
+  log_error "Branch '$BRANCH' already exists locally"
+  exit 1
+fi
+
+# Check remote existence
+if git rev-parse --verify "$REMOTE_NAME/$BRANCH" >/dev/null 2>&1; then
+  log_error "Branch '$BRANCH' already exists in remote '$REMOTE_NAME'"
+  exit 1
+fi
+
+(
+  set -x
+  git checkout -b "$BRANCH"
+  git push -u "$REMOTE_NAME" "$BRANCH"
+)
