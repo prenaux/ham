@@ -40,8 +40,7 @@ fi
 
 # Simple log of the current branch
 if [ -z "$1" ]; then
-  log_info "Status:"
-  git-status short
+  log_info "Changes:" $(git-head-info branch_changes)
   log_info "Last ${LOG_COUNT} commits:"
   # shellcheck disable=SC2086
   (
@@ -81,8 +80,7 @@ elif [[ "$1" == "parent" || "$1" == "parent_branch" || "$1" == "parent-branch" ]
   fi
 else
   BRANCH=$(git-get-branch-name "$1")
-  log_info "Status:"
-  git-status short
+  log_info "Changes:" $(git-head-info branch_changes)
   log_info "Logging branch '$BRANCH'."
   shift
   ORIGIN="$1"
