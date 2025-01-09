@@ -21,6 +21,11 @@ if [ -z "$1" ]; then
   help
 fi
 
+if [[ "$1" == "master" || "$1" == "main" ]]; then
+  log_error "Cannot be used 'master' or 'main' as BRANCH, use 'main_branch' if you want to switch to the main or master branch so that we can detect which one your repo is actually using."
+  help
+fi
+
 BRANCH=$(git-get-branch-name "$1")
 REMOTE_NAME="${2:-origin}"
 
