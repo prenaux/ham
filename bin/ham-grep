@@ -18,6 +18,9 @@ CMD=("${CMD[@]}" --line-number)
 CMD=("${CMD[@]}" --no-ignore)
 CMD=("${CMD[@]}" --smart-case)
 CMD=("${CMD[@]}" --hidden)
+if [ "$HAM_OS" == "NT" ]; then
+  CMD=("${CMD[@]}" --path-separator '//')
+fi
 
 HAMGREP_IGNORE="$(ham-find-file-up _hamgrep_ignore)"
 if [[ -e "$HAMGREP_IGNORE" ]]; then

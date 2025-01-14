@@ -1,2 +1,10 @@
 #!/bin/bash
-ham-grep --no-heading --color never "$@"
+HAM_OS=${HAM_OS:-$OS}
+case "$HAM_OS" in
+  NT*|Windows*)
+    ham-grep --no-heading --color never "$@" | sed 's/^[a-zA-Z]://'
+    ;;
+  *)
+    ham-grep --no-heading --color never "$@"
+    ;;
+esac
