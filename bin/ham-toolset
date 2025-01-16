@@ -98,6 +98,9 @@ if [ ${#HAM_PROJECT_FILES[@]} -gt 0 ]; then
     log_info "Import _ham_project: '$PROJECT_FILE'."
     HAM_PROJECT_DIR=$(dirname "$PROJECT_FILE")
     export HAM_PROJECT_DIR
+    WORK=$(nativedir "$HAM_PROJECT_DIR/..")
+    export WORK
+    log_info "Set WORK to '$WORK'."
     pushd "$HAM_PROJECT_DIR" || return 1
     # shellcheck disable=SC1090
     . "$PROJECT_FILE"
