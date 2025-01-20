@@ -16,6 +16,10 @@ JSCC_WARN_ARGS =
 -Wno-trigraphs
 -Wno-narrowing
 -Wno-sign-compare
+
+-Wno-nontrivial-memaccess
+-Wno-deprecated-literal-operator
+
 # -Wno-warn-absolute-paths
 -Wno-unused-value
 -Wno-unused-variable
