@@ -1,4 +1,5 @@
-HAM_HOME=K:/Work/ham
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+HAM_HOME=$SCRIPT_DIR/../..
 export HAM_HOME
 if [ -e "$HOME/_alacritty_last_cwd.txt" ]; then
     ALACRITTY_LAST_CWD=$(cat "$HOME/_alacritty_last_cwd.txt")

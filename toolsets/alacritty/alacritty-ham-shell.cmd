@@ -16,6 +16,6 @@ del "%USERPROFILE%\_alacritty_last_cwd.txt"
 set "HAM_HOME_FWD=%HAM_HOME:\=/%"
 
 start "" /b /min "C:\Utils\Alacritty.exe" --config-file "%HAM_HOME_FWD%/toolsets/alacritty/alacritty-ham-shell.toml" ^
-    -o "shell={program=\"K:/Work/ham/toolsets/repos/nt-x86/git/bin/bash.exe\",args=[\"--rcfile\",\"%HAM_HOME_FWD%/toolsets/alacritty/alacritty-ham-shell-start.sh\",\"-i\"]}"
+    -o "shell={program=\"%HAM_HOME_FWD%/toolsets/repos/nt-x86/git/bin/bash.exe\",args=[\"--rcfile\",\"%HAM_HOME_FWD%/toolsets/alacritty/alacritty-ham-shell-start.sh\",\"-i\"]}"
 
 exit
