@@ -156,7 +156,7 @@ if [ "${#_ARG_TOOLSETS[@]}" -gt 0 ]; then
   done
   . ham-toolset "${_ARG_TOOLSETS[@]}"
   # shellcheck disable=SC2145
-  errcheck $? ham "Can't setup the '${_ARG_TOOLSETS[@]}' toolset(s)."
+  errcheck $? ham "Can't setup the '${_ARG_TOOLSETS[*]}' toolset(s)."
 fi
 
 if [[ -z "$HAM_TOOLSET" ]]; then
