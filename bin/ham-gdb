@@ -10,6 +10,11 @@ if [[ -e "$HOME/_ham_gdb" ]]; then
   . "$HOME/_ham_gdb"
 fi
 
+if [[ -z "$SHARED_WORK" ]]; then
+  log_error "SHARED_WORK not set !"
+  exit 1
+fi
+
 find_remedybg() {
   if [ -n "$REMEDYBG_PATH" ]; then
     if [ -e "$REMEDYBG_PATH" ]; then
@@ -295,7 +300,7 @@ EXE_DIR=$(dirname "$EXE_PATH")
 EXE_PARENT_DIR=$(basename "$EXE_DIR")
 NAME_ARGS=$(printf "_%s" "${EXE_ARGS[@]}")
 
-OUT_DIR="${SHARED_WORK:-$WORK}/ham_gdb_sessions_${EXE_PARENT_DIR}"
+OUT_DIR="${SHARED_WORK}/ham_gdb_sessions_${EXE_PARENT_DIR}"
 OUT_DIR=$(echo "$OUT_DIR" | tr ' ,-.+=' '_')
 OUT_BASENAME="${EXE_BASENAME}${NAME_ARGS}"
 OUT_BASENAME=$(echo "$OUT_BASENAME" | tr ' ,-.+=' '_')

@@ -47,6 +47,11 @@ if [ -z "$EXE_PATH" ]; then
 fi
 shift
 
+if [[ -z "$SHARED_WORK" ]]; then
+  log_error "SHARED_WORK not set !"
+  exit 1
+fi
+
 if [ "$EXE_PATH" == "gui" ]; then
   (
     set -x
@@ -58,7 +63,7 @@ else
 
   NAME_ARGS=$(printf "_%s" "${EXE_ARGS[@]}")
 
-  OUT_DIR="${SHARED_WORK:-$WORK}/renderdoc_captures/${EXE_BASENAME}"
+  OUT_DIR="${SHARED_WORK}/renderdoc_captures/${EXE_BASENAME}"
   OUT_DIR=$(echo "$OUT_DIR" | tr ' ,-.' '_')
   OUT_BASENAME="${EXE_BASENAME}${NAME_ARGS}"
   OUT_BASENAME=$(echo "$OUT_BASENAME" | tr ' ,-.' '_')
