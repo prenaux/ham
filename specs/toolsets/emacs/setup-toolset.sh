@@ -12,10 +12,10 @@ case $HAM_OS in
   NT*)
     export EMACS_EXE=emacs.exe
     export EMACS_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-    # toolset_check_and_dl_ver emacs nt-x86 v28_2|| return 1
-    # NOTE: 29.3 crashes a lot :(
+    toolset_check_and_dl_ver emacs nt-x86 v28_2|| return 1
+    # NOTE: 29.3 (and .4) crashes a lot :(
     # toolset_check_and_dl_ver emacs nt-x86 v29_3 || return 1
-    toolset_check_and_dl_ver emacs nt-x86 v29_4 || return 1
+    # toolset_check_and_dl_ver emacs nt-x86 v29_4 || return 1
     if [ ! -e "$EMACS_DIR" ]; then
       echo "E/nt-x86 folder doesn't exist in the toolset"
       return 1
