@@ -369,7 +369,7 @@ case $HAM_OS in
           export VCSLN_EXE_PATH
           VCSLN_EXE_DIR="${EXE_DIR//\//\\}"
           export VCSLN_EXE_DIR
-          VCSLN_EXE_ARGS="$(printf '%q ' "${EXE_ARGS[@]}")"
+          VCSLN_EXE_ARGS="$(echo ${EXE_ARGS[*]})"
           export VCSLN_EXE_ARGS
           VCSLN_PRJ_UUID=$(genuuid)
           export VCSLN_PRJ_UUID
