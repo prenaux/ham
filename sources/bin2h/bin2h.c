@@ -7,7 +7,7 @@
 #  define _MAX_PATH (PATH_MAX-1)
 #endif
 
-#define BIN2H_VER "v2"
+#define BIN2H_VER "v3"
 #define BUF_SIZE 1024
 
 static const int NUM_COLS = 16;
@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 
   if (argc < 3) {
     printf("BIN2H (" BIN2H_VER "): input output (variable_name)\n");
-    printf("  If variable_name ends with _RSTR a C++ multiline string is output.\n");
+    printf("  If variable_name ends with _STR a multiline string is output.\n");
     printf("\n");
     printf("error: Invalid number of parameters !\n");
     goto _error;
@@ -59,10 +59,26 @@ int main(int argc, char** argv) {
     isRawString = 1;
   }
 
+  fprintf(fpOut, "#ifndef BIN2H_DECL\n", varName);
+  fprintf(fpOut, "#  define BIN2H_DECL static\n", varName);
+  fprintf(fpOut, "#endif\n", varName);
+
   if (isRawString) {
+    fprintf(fpOut, "#ifndef BIN2H_DECL_STR_BEGIN\n", varName);
+    fprintf(fpOut, "#  define BIN2H_DECL_STR_BEGIN(NAME) BIN2H_DECL const char* NAME = R\"\"\"(\n", varName);
+    fprintf(fpOut, "#endif\n", varName);
+
+    fprintf(fpOut, "#ifndef BIN2H_DECL_STR_END\n", varName);
+    fprintf(fpOut, "#  define BIN2H_DECL_STR_END(NAME) )\"\"\";\n", varName);
+    fprintf(fpOut, "#endif\n", varName);
+
+    fprintf(fpOut, "#ifndef BIN2H_DECL_STR_LEN\n", varName);
+    fprintf(fpOut, "#  define BIN2H_DECL_STR_LEN(NAME,SIZE) BIN2H_DECL int NAME##_LEN = SIZE;\n", varName);
+    fprintf(fpOut, "#endif\n", varName);
+
     char buf[BUF_SIZE];
     int size = 0;
-    fprintf(fpOut, "const char* %s = R\"\"\"(\n", varName);
+    fprintf(fpOut, "\nBIN2H_DECL_STR_BEGIN(%s)\n", varName);
     while (1) {
       int n = fread(buf,1,BUF_SIZE,fpIn);
       if (n > 0) {
@@ -73,24 +89,36 @@ int main(int argc, char** argv) {
         break;
       }
     }
-    fprintf(fpOut, "\n)\"\"\";\n");
-    fprintf(fpOut, "int %s_LEN = %d;\n", varName, size);
+    fprintf(fpOut, "\nBIN2H_DECL_STR_END(%s)\n", varName);
+    fprintf(fpOut, "BIN2H_DECL_STR_LEN(%s,%d);\n", varName, size);
   }
   else {
+    fprintf(fpOut, "#ifndef BIN2H_DECL_DATA_BEGIN\n", varName);
+    fprintf(fpOut, "#  define BIN2H_DECL_DATA_BEGIN(NAME) BIN2H_DECL unsigned char NAME##_DATA[] = {\n", varName);
+    fprintf(fpOut, "#endif\n", varName);
+
+    fprintf(fpOut, "#ifndef BIN2H_DECL_DATA_END\n", varName);
+    fprintf(fpOut, "#  define BIN2H_DECL_DATA_END(NAME) };\n", varName);
+    fprintf(fpOut, "#endif\n", varName);
+
+    fprintf(fpOut, "#ifndef BIN2H_DECL_DATA_SIZE\n", varName);
+    fprintf(fpOut, "#  define BIN2H_DECL_DATA_SIZE(NAME,SIZE) BIN2H_DECL int NAME##_DATA_SIZE = SIZE;\n", varName);
+    fprintf(fpOut, "#endif\n", varName);
+
     unsigned char buf[BUF_SIZE];
     int size = 0;
-    fprintf(fpOut, "unsigned char %s_DATA[] = {", varName);
+    fprintf(fpOut, "\nBIN2H_DECL_DATA_BEGIN(%s)\n", varName);
     while (1) {
       int n = fread(buf,1,BUF_SIZE,fpIn);
       for (int i = 0; i < n; ++i) {
         unsigned char byte = buf[i];
-        if ((size % NUM_COLS) == 0) {
-          fprintf(fpOut, "\n ");
-        }
         if (size == 0) {
-          fprintf(fpOut, "0x%02x", byte);
+          fprintf(fpOut, " 0x%02x", byte);
         }
         else {
+          if ((size % NUM_COLS) == 0) {
+            fprintf(fpOut, "\n ");
+          }
           fprintf(fpOut, ",0x%02x", byte);
         }
         ++size;
@@ -98,8 +126,8 @@ int main(int argc, char** argv) {
       if (n != BUF_SIZE)
         break;
     }
-    fprintf(fpOut, "\n};\n");
-    fprintf(fpOut, "int %s_DATA_SIZE = %d;\n", varName, size);
+    fprintf(fpOut, "\nBIN2H_DECL_DATA_END(%s)\n", varName);
+    fprintf(fpOut, "BIN2H_DECL_DATA_SIZE(%s,%d);\n", varName, size);
   }
 
 	return 0;
