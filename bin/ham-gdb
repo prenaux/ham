@@ -303,8 +303,8 @@ NAME_ARGS=$(printf "_%s" "${EXE_ARGS[@]}")
 OUT_DIR="${SHARED_WORK}/ham_gdb_sessions_${EXE_PARENT_DIR}"
 OUT_DIR=$(echo "$OUT_DIR" | tr ' ,-.+=' '_')
 OUT_BASENAME="${EXE_BASENAME}${NAME_ARGS}"
-OUT_BASENAME=$(echo "$OUT_BASENAME" | tr ' ,-.+=' '_')
-WORKING_DIR="$(pwd)"
+OUT_BASENAME=$(echo "$OUT_BASENAME" | tr ' ,-.+=/:' '_')
+WORKING_DIR=$(nativedir $(pwd))
 
 log_info "WORKING_DIR: $WORKING_DIR"
 log_info "EXE_PATH: $EXE_PATH"
@@ -329,7 +329,7 @@ case $HAM_OS in
         log_info "Generating the session file."
         (
           mkdir -p "$(dirname "$RDBG_SESSION_FILE")"
-          "$RDBG_GEN_EXE" "$RDBG_SESSION_FILE" "$EXE_DIR" "$EXE_PATH" "${EXE_ARGS[@]}"
+          "$RDBG_GEN_EXE" "$RDBG_SESSION_FILE" "$WORKING_DIR" "$EXE_PATH" "${EXE_ARGS[@]}"
         )
       fi
 
@@ -369,6 +369,8 @@ case $HAM_OS in
           export VCSLN_EXE_PATH
           VCSLN_EXE_DIR="${EXE_DIR//\//\\}"
           export VCSLN_EXE_DIR
+          VCSLN_WORKING_DIR="${WORKING_DIR//\//\\}"
+          export VCSLN_WORKING_DIR
           VCSLN_EXE_ARGS="$(echo ${EXE_ARGS[*]})"
           export VCSLN_EXE_ARGS
           VCSLN_PRJ_UUID=$(genuuid)
