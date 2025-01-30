@@ -1,10 +1,5 @@
 #!/bin/bash
 toolset_import_once xslt_tools || return 1
-case $HAM_OS in
-  NT)
-    toolset_import_once msvc_19_x64 || return 1
-    ;;
-esac
 
 # Use clang
 export HAM_TOOLSET=CLANG
