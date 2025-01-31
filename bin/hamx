@@ -59,12 +59,12 @@ function hamx() {
 
   if [[ ${#flags[@]} -eq 0 ]]; then
     (
-      set -x
+      set -ex
       ham "${envs[@]}" "${toolkits[@]}" "${scripts[@]}" "${targets[@]}"
     )
   else
     (
-      set -x
+      set -ex
       ham "${envs[@]}" "${toolkits[@]}" "${scripts[@]}" -- "${flags[@]}" "${targets[@]}"
     )
   fi
