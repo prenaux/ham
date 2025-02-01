@@ -26,25 +26,3 @@ actions Link bind NEEDLIBS {
 actions DllLink bind NEEDLIBS {
   $(LINK) $(LINKFLAGS) -DLL -out:"$(<)" -IMPLIB:"$(IMPLIBNAME)" $(UNDEFS) "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS)
 }
-
-# No C99 support
-if ! $(HAM_C99) {
-  ECHO "I/MSVC: No C99 support" ;
-  NO_C99 = 1 ;
-  actions C99 {
-    echo "E/MSVC: No C99 compiler, can't compile $(>)."
-    exit -1
-  }
-}
-# C99 using clang
-else if $(HAM_C99) = clang {
-  ECHO "I/MSVC: Using Clang for C99 code." ;
-
-  actions C99 {
-    $(HAM_C99) $(HAM_C99_FLAGS) -x c -I"$(STDHDRS)" -c -o "$(<)" $(C99FLAGS) -D__C99__ -D__MSVC_CLANG__ $(CCDEFS) $(CCHDRS) "$(>)"
-  }
-}
-# Unknown C99
-else {
-  EXIT "E/MSVC: Unknown HAM_C99 compiler:" $(HAM_C99) ;
-}

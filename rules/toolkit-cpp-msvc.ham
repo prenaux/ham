@@ -105,18 +105,6 @@ if $(MSVC_VER) >= 19 {
   ;
 }
 
-if $(HAM_C99) = clang {
-  C99FLAGS +=
-    -Wno-microsoft
-    -Wno-incompatible-pointer-types
-    -Wno-pointer-sign
-    -Wno-switch
-    -Wno-static-in-inline
-    -Wno-deprecated-declarations
-    -Wno-shift-negative-value
-  ;
-}
-
 CCFLAGS += $(CC_ADD_FLAGS) ;
 C++FLAGS += $(CC_ADD_FLAGS) ;
 
@@ -181,8 +169,6 @@ rule tkCC++Build
   # Clean the .ilk file...
   local ILK = [ FDirName $(LOCATE_TARGET) $(PKGBUILD:S=.ilk) ] ;
   Clean clean : $(ILK) ;
-  # Enable string pooling
-  ObjectOptimFlags $(<) : -Gy- ;
   # Make sure link flags are set...
   LINKFLAGS on $(PKGTARGETF) ?= $(LINKFLAGS) ;
   # No Win98
@@ -237,30 +223,19 @@ rule tkCC++Build
     ;
     strOpt += "(NoBufferSecurity) " ;
 
-    # Link time codegen
-    if $(OPT_LTCG) = 1 {
-      ObjectOptimFlags $(<) : -GL ;
-      LINKFLAGS on $(PKGTARGETF) += -LTCG ;
-      strOpt += "(LTCG) " ;
-    }
-
-    if $(HAM_C99) = clang {
-      ObjectC99Flags $(<) : -O2 ;
-    }
-
     if $(OPT_NOOPT) = 1 {
       ObjectOptimFlags $(<) : -Od ;
       strOpt += "(OptNone) " ;
     }
     else if $(OPT_MINSIZE) = 1 {
-      ObjectOptimFlags $(<) : -O1 ;
+      ObjectOptimFlags $(<) : -O1 -Os ;
       strOpt += "(OptMinSize) " ;
       if $(MSVC_VER) >= 13 {
         ObjectOptimFlags $(<) : -Zo ; # /Zo (Enhance Optimized Debugging)
       }
     }
     else {
-      ObjectOptimFlags $(<) : -O2 -Ob2 -Oi ;
+      ObjectOptimFlags $(<) : -O2 -Ob2 -Oi -Ot ;
       strOpt += "(OptMaxSpeed) " ;
       if $(MSVC_VER) >= 13 {
         ObjectOptimFlags $(<) : -Zo ; # /Zo (Enhance Optimized Debugging)
@@ -275,9 +250,6 @@ rule tkCC++Build
   }
   # Set debug-only flags
   else {
-    if $(HAM_C99) = clang {
-      ObjectC99Flags $(<) : -O0 ;
-    }
     ObjectOptimFlags $(<) : -Od -RTC1 -GS ;
     # ObjectOptimFlags $(<) : -RTCc ; # Checks invalid cast to smaller type
     strOpt += "(DebugOnly) " ;
