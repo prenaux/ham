@@ -410,7 +410,7 @@ rule tkPkgSrcSubDirNoHdrs {
 # tkPkgDataSubDirBin2H d1..dn : exts ;
 rule tkPkgDataSubDirBin2H {
   local dir = $(1) ;
-  local data = [ DataSubDirBin2H $(PACKAGE) : $(dir) : [ FDirName $(SUBDIR) $(dir) ] : $(2) ] ;
+  local data = [ DataSubDirBin2H $(PACKAGE) : $(dir) : $(2) ] ;
   DEPENDS data : $(data) ;
   DEPENDS pass1 : data ;
   return $(data) ;
