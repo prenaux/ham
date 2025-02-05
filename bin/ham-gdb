@@ -11,7 +11,7 @@ if [[ -e "$HOME/_ham_gdb" ]]; then
 fi
 
 if [[ -z "$SHARED_WORK" ]]; then
-  log_error "SHARED_WORK not set !"
+  log_error "ham-gdb: SHARED_WORK not set !"
   exit 1
 fi
 
@@ -72,7 +72,7 @@ usage() {
 }
 
 if [ -z "$1" ]; then
-  log_error "No executable or command specified."
+  log_error "ham-gdb: No executable or command specified."
   usage
 fi
 
@@ -81,7 +81,7 @@ fi
 ########################################################################
 command_open_file() {
   if [ -z "$1" ]; then
-    log_error "No filename specified"
+    log_error "ham-gdb: No filename specified"
     usage
   fi
 
@@ -113,13 +113,13 @@ command_open_file() {
             )
           fi
         else
-          log_error "Neither RemedyBG nor Visual Studio found"
+          log_error "ham-gdb: Neither RemedyBG nor Visual Studio found"
           exit 1
         fi
       fi
       ;;
     *)
-      log_error "open-file command not supported on this platform"
+      log_error "ham-gdb: open-file command not supported on this platform"
       exit 1
       ;;
   esac
@@ -140,7 +140,7 @@ command_bring_to_front() {
       ;;
 
     *)
-      log_error "bring-to-front command not supported on this platform"
+      log_error "ham-gdb: bring-to-front command not supported on this platform"
       exit 1
       ;;
   esac
@@ -148,7 +148,7 @@ command_bring_to_front() {
 
 command_add_breakpoint() {
   if [ -z "$1" ] || [ -z "$2" ]; then
-    log_error "Filename and line number required"
+    log_error "ham-gdb: Filename and line number required"
     usage
   fi
 
@@ -171,7 +171,7 @@ command_add_breakpoint() {
       ;;
 
     *)
-      log_error "add-breakpoint command not supported on this platform"
+      log_error "ham-gdb: add-breakpoint command not supported on this platform"
       exit 1
       ;;
   esac
@@ -179,7 +179,7 @@ command_add_breakpoint() {
 
 command_remove_breakpoint() {
   if [ -z "$1" ] || [ -z "$2" ]; then
-    log_error "Filename and line number required"
+    log_error "ham-gdb: Filename and line number required"
     usage
   fi
 
@@ -201,7 +201,7 @@ command_remove_breakpoint() {
       ;;
 
     *)
-      log_error "remove-breakpoint command not supported on this platform"
+      log_error "ham-gdb: remove-breakpoint command not supported on this platform"
       exit 1
       ;;
   esac
@@ -224,7 +224,7 @@ command_gui() {
             "$IDE_DIR/devenv.exe" "$@"
           )
         else
-          log_error "Neither RemedyBG nor Visual Studio found"
+          log_error "ham-gdb: Neither RemedyBG nor Visual Studio found"
           exit 1
         fi
       fi
@@ -242,7 +242,7 @@ command_gui() {
       )
       ;;
     *)
-      log_error "gui command not supported on '$HAM_OS'."
+      log_error "ham-gdb: gui command not supported on '$HAM_OS'."
       exit 1
       ;;
   esac
@@ -280,7 +280,7 @@ case "$1" in
   *)
     EXE_PATH="$1"
     if [ ! -e "$EXE_PATH" ]; then
-      log_error "Can't find the exe at '$EXE_PATH' and not a valid command."
+      log_error "ham-gdb: Can't find the exe at '$EXE_PATH' and not a valid command."
       usage
     fi
     ;;
@@ -348,7 +348,7 @@ case $HAM_OS in
         if [ -n "$MSVC_IDE_DIR" ]; then
           MSVC_DEVENV_PATH="$MSVC_IDE_DIR/devenv.exe"
         else
-          log_error "Neither RemedyBG nor Visual Studio found"
+          log_error "ham-gdb: Neither RemedyBG nor Visual Studio found"
           usage
         fi
       fi
@@ -433,7 +433,7 @@ case $HAM_OS in
   ## Others
   ########################################################################
   *)
-    log_error "Toolset: Unsupported host OS"
+    log_error "ham-gdb: Toolset: Unsupported host OS"
     return 1
     ;;
 esac
