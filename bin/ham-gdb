@@ -23,15 +23,11 @@ find_remedybg() {
       echo ""
     fi
   else
-    local path
-    for path in \
-      "$HAM_HOME/toolsets/remedybg/nt-x64/remedybg.exe" \
-      "c:/Utils/Apps/remedybg/remedybg.exe"; do
-      if [ -f "$path" ]; then
-        echo "$path"
-        return 0
-      fi
-    done
+    local path="c:/Utils/Apps/remedybg/remedybg.exe"
+    if [ -f "$path" ]; then
+      echo "$path"
+      return 0
+    fi
   fi
   echo ""
 }
