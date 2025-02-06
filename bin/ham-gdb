@@ -20,7 +20,7 @@ find_remedybg() {
     if [ -e "$REMEDYBG_PATH" ]; then
       echo "$REMEDYBG_PATH"
     else
-      echo ""
+      log_warning "Cant find REMEDYBG_PATH '$REMEDYBG_PATH'."
     fi
   else
     local path="c:/Utils/Apps/remedybg/remedybg.exe"
@@ -298,8 +298,12 @@ NAME_ARGS=$(printf "_%s" "${EXE_ARGS[@]}")
 
 OUT_DIR="${SHARED_WORK}/ham_gdb_sessions_${EXE_PARENT_DIR}"
 OUT_DIR=$(echo "$OUT_DIR" | tr ' ,-.+=' '_')
-OUT_BASENAME="${EXE_BASENAME}${NAME_ARGS}"
-OUT_BASENAME=$(echo "$OUT_BASENAME" | tr ' ,-.+=/:' '_')
+if [ -n "$HAM_GDB_OUT_BASENAME" ]; then
+  OUT_BASENAME="${HAM_GDB_OUT_BASENAME}"
+else
+  OUT_BASENAME="${EXE_BASENAME}${NAME_ARGS}"
+  OUT_BASENAME=$(echo "$OUT_BASENAME" | tr ' ,-.+=/:' '_')
+fi
 WORKING_DIR=$(nativedir $(pwd))
 
 log_info "WORKING_DIR: $WORKING_DIR"
@@ -317,7 +321,7 @@ case $HAM_OS in
     if [ -n "$REMEDYBG_PATH" ]; then
       log_info "REMEDYBG_PATH: $REMEDYBG_PATH"
 
-      RDBG_SESSION_FILE="${OUT_DIR}/${OUT_BASENAME}.rdbg"
+      RDBG_SESSION_FILE="$(nativedir "${OUT_DIR}")/${OUT_BASENAME}.rdbg"
       log_info "RDBG_SESSION_FILE: $RDBG_SESSION_FILE"
 
       RDBG_GEN_EXE="$(dirname "$REMEDYBG_PATH")/rdbg_gen.exe"
@@ -353,7 +357,7 @@ case $HAM_OS in
         fi
       fi
 
-      VCSLN_SESSION_FILE="${OUT_DIR}/${OUT_BASENAME}.sln"
+      VCSLN_SESSION_FILE="$(nativedir "${OUT_DIR}")/${OUT_BASENAME}.sln"
       log_info "VCSLN_SESSION_FILE: $VCSLN_SESSION_FILE"
 
       if [ ! -e "$VCSLN_SESSION_FILE" ]; then
@@ -361,13 +365,18 @@ case $HAM_OS in
         (
           mkdir -p "$(dirname "$VCSLN_SESSION_FILE")"
           export OUT_BASENAME
-          VCSLN_EXE_PATH="${EXE_PATH//\//\\}"
+          VCSLN_EXE_PATH=$(abspath "${EXE_PATH}")
+          VCSLN_EXE_PATH="${VCSLN_EXE_PATH//\//\\}"
           export VCSLN_EXE_PATH
-          VCSLN_EXE_DIR="${EXE_DIR//\//\\}"
+          VCSLN_EXE_DIR=$(abspath "${VCSLN_EXE_DIR}")
+          VCSLN_EXE_DIR="${VCSLN_EXE_DIR//\//\\}"
           export VCSLN_EXE_DIR
-          VCSLN_WORKING_DIR="${WORKING_DIR//\//\\}"
+          VCSLN_WORKING_DIR=$(abspath "${WORKING_DIR}")
+          VCSLN_WORKING_DIR="${VCSLN_WORKING_DIR//\//\\}"
           export VCSLN_WORKING_DIR
-          VCSLN_EXE_ARGS="$(echo ${EXE_ARGS[*]})"
+          VCSLN_EXE_ARGS="${EXE_ARGS[@]}"
+          VCSLN_EXE_ARGS="$(echo ${VCSLN_EXE_ARGS[*]})"
+          VCSLN_EXE_ARGS=$(echo "$VCSLN_EXE_ARGS" | sed -E 's|/([a-zA-Z])/|\1:/|g')
           export VCSLN_EXE_ARGS
           VCSLN_PRJ_UUID=$(genuuid)
           export VCSLN_PRJ_UUID
