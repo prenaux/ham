@@ -1,6 +1,4 @@
 #!/bin/bash
-toolset_import_once xslt_tools || return 1
-
 case $HAM_OS in
   OSX*)
     # Added system sdk path using the xcode command line tool..

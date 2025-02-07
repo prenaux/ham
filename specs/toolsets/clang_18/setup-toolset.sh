@@ -1,7 +1,6 @@
 #!/bin/bash
-toolset_import_once xslt_tools || return 1
 
-# Use clang
+# toolset
 export HAM_TOOLSET=CLANG
 export HAM_TOOLSET_NAME=clang_18
 export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/${HAM_TOOLSET_NAME}"

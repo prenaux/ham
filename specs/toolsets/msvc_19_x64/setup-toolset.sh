@@ -1,6 +1,4 @@
 #!/bin/bash
-toolset_import_once xslt_tools || return 1
-
 if [ -z "$HAM_MSVC_ARCH" ]; then
   export HAM_MSVC_ARCH=x64
 fi
