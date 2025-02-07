@@ -7,7 +7,6 @@ rule tkImport {
     EXIT "F/Toolkit $(1) already imported." ;
   }
 
-  local doCopy = 0 ;
   local dirBase = [ FDirName $(TOP) node_modules $(1) ] ;
   if ! [ FExists $(dirBase) ] {
     dirBase = [ FDirName $(TOP) .. node_modules $(1) ] ;
@@ -20,16 +19,7 @@ rule tkImport {
           if ! [ FExists $(dirBase) ] {
             EXIT "F/Could not find toolkit $(1) to import." ;
           }
-          else {
-            doCopy = 1 ;
-          }
         }
-        else {
-          doCopy = 1 ;
-        }
-      }
-      else {
-        doCopy = 1 ;
       }
     }
   }
@@ -53,24 +43,9 @@ rule tkImport {
   TK_IMPORTED += $(1) ;
 
   if ! ( $(NO_DLL) = 1 ) {
-    # import/copy the dlls
+    # import the dlls
     for _i in $(2) {
-      if ( $(doCopy) = 1 ) {
-        tkImportDll $(1) : $(_i) ;
-      }
-      else {
-        tkImportDepDll $(_i) : $(1) : $(_i) ;
-      }
-    }
-  }
-  if ! ( $(NO_EXE) = 1 ) {
-    # import/copy the executables
-    for _i in $(3) {
-      if ( $(doCopy) = 1 ) {
-        tkImportExe $(1) : $(_i) ;
-      }
-      else {
-      }
+      tkImportDepDll $(_i) : $(1) : $(_i) ;
     }
   }
 
@@ -98,7 +73,6 @@ rule tkImportDoCopy {
   }
   DEPENDS $(1) : $(p) ;
   DEPENDS tkimport : $(p) ;
-  DEPENDS pass1 : tkimport ;
   # TODO: Commented because regular binaries aren't cleaned. I think
   # everything should ideally.
   # Clean clean : $(p) ;
@@ -152,44 +126,6 @@ rule tkImportExe {
     : $(TK_DIR_BIN) ] ;
     DEPENDS $(>) : $(r) ;
   }
-}
-
-# tkImportDll SrcToolkit : DllName : BUILDEXT ;
-# imports a dll from another toolkit
-rule tkImportDll {
-  if ! $(NO_DLL) {
-    local srcPath = [ tkImportGetDllPath $(<) : $(>) : $(3) ] ;
-    local r = [ tkImportDoCopy tkimport_dll
-    : $(srcPath)
-    : $(TK_DIR_BIN) ] ;
-    DEPENDS $(>) : $(r) ;
-
-    # Has a .pdb attached to it ?
-    if [ FExists $(srcPath:S=.pdb) ] {
-      local r [ tkImportDoCopy tkimport_dll
-      : $(srcPath:S=.pdb)
-      : $(TK_DIR_BIN) ] ;
-      DEPENDS $(>) : $(r) ;
-    }
-  }
-}
-
-# tkImportJar SrcToolkit : JarName : BUILDEXT ;
-# imports a jar from another toolkit
-rule tkImportJar {
-  if $(BUILD_JNI) {
-    local srcPath = [ tkImportGetJarPath $(<) : $(>) : $(3) ] ;
-    local r = [ tkImportDoCopy tkimport_jar
-    : $(srcPath)
-    : $(TK_DIR_JARS) ] ;
-    DEPENDS $(>) : $(r) ;
-  }
-}
-
-# tkImportJar SrcToolkit : BaseName ;
-rule tkImportDllAndJar {
-  tkImportDll $(<) : $(>) ;
-  tkImportJar $(<) : $(>)_jvm ;
 }
 
 # tkImportDepDll TARGET : TOOLKIT : MODULENAME

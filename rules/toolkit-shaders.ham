@@ -301,7 +301,6 @@ if $(OSX) = 1 || $(IOSMAC) = 1 {
 
     shaderMetalLibraryFromObjects $(LIB_METAL) : $(OBJ_METAL) ;
     DEPENDS shaders : $(LIB_METAL).h ;
-    DEPENDS pass1 : shaders ;
 
     return $(LIB_METAL) ;
   }
