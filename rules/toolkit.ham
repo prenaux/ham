@@ -481,15 +481,47 @@ rule tkPkgLinkFlags {
   TargetLinkFlags $(PKGTARGETF) : $(<) ;
 }
 
-# tkDepDll TARGET : MODULENAME : DLLDIR
-rule tkDepDll {
+# tkDepExe TARGET : MODULENAME : DLLDIR : EXT
+rule tkDepExe {
+  local moduleName = $(2) ;
   local dir = $(3) ;
-  dir ?= $(TK_DIR_DLL) ;
-  if ! ( $(NO_DEPS) = 1 ) {
-    local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFDLL) ] ;
-    if ( ! ( $(NO_DEPS_DLL) = 1 ) ) || ( ! [ FExists $(l) ] ) {
-      DEPENDS $(<) : $(l) ;
-    }
+  local ext = $(4) ;
+  ext ?= "_$(BUILDEXT)$(SUFEXE)" ;
+  if $(dir) && ( $(dir) != $(TK_NAME) ) {
+    local l = [ FDirName $(WORK) $(dir) bin $(BIN_LOA) $(moduleName)$(ext) ] ;
+    # Must exist in the other toolkit before we can go on
+    AssertFExists "tkDepExe with dir '$(dir)'" : $(l) ;
+    return $(l) ;
+  }
+  else {
+    local l = [ FDirName $(TK_DIR_BIN) $(moduleName)$(ext) ] ;
+    # ECHO "... tkDepDll: nodir, l:" $(l) ;
+    # Add a dependency instead of checking for existance since these might not
+    # be built yet
+    DEPENDS $(<) : $(moduleName) ;
+    return $(l) ;
+  }
+}
+
+# tkDepDll TARGET : MODULENAME : DLLDIR : EXT
+rule tkDepDll {
+  local moduleName = $(2) ;
+  local dir = $(3) ;
+  local ext = $(4) ;
+  ext ?= "_$(BUILDEXT)$(SUFDLL)" ;
+  if $(dir) {
+    local l = [ FDirName $(WORK) $(dir) bin $(BIN_LOA) $(PREFIXDLL)$(moduleName)$(ext) ] ;
+    # Must exist in the other toolkit before we can go on
+    AssertFExists "tkDepDll with dir '$(dir)'" : $(l) ;
+    return $(l) ;
+  }
+  else {
+    local l = [ FDirName $(TK_DIR_BIN) $(PREFIXDLL)$(moduleName)$(ext) ] ;
+    # ECHO "... tkDepDll: nodir, l:" $(l) ;
+    # Add a dependency instead of checking for existance since these might not
+    # be built yet
+    DEPENDS $(<) : $(moduleName) ;
+    return $(l) ;
   }
 }
 
@@ -518,12 +550,8 @@ rule tkLinkDll {
   }
 }
 
-rule tkPkgDepDll {
-  tkDepDll $(PKGTARGET) : $(<) ;
-}
-
 rule tkPkgLinkDll {
-  tkLinkDll $(PKGTARGET) : $(<) : : $(2) ;
+  tkLinkDll $(PKGTARGET) : $(<) : $(2) : $(2) ;
 }
 
 # tkDefPackage name : version : type : output/final directory : customsuffix ;

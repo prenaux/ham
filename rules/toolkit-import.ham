@@ -1,25 +1,19 @@
 TK_SRC_WORK_DIR ?= $(WORK) ;
 TK_IMPORTED ?= ;
 
-# tkImport TOOLKIT : DLLS : EXES ;
+# tkImport TOOLKIT ;
 rule tkImport {
   if [ ListContains $(TK_IMPORTED) : $(1) ] {
     EXIT "F/Toolkit $(1) already imported." ;
   }
 
-  local dirBase = [ FDirName $(TOP) node_modules $(1) ] ;
+  local dirBase = [ FDirName $(TOP) .. $(1) ] ;
   if ! [ FExists $(dirBase) ] {
-    dirBase = [ FDirName $(TOP) .. node_modules $(1) ] ;
+    dirBase = [ FDirName $(TOP) .. .. $(1) ] ;
     if ! [ FExists $(dirBase) ] {
-      dirBase = [ FDirName $(TOP) .. $(1) ] ;
+      dirBase = [ FDirName $(WORK) $(1) ] ;
       if ! [ FExists $(dirBase) ] {
-        dirBase = [ FDirName $(TOP) .. .. $(1) ] ;
-        if ! [ FExists $(dirBase) ] {
-          dirBase = [ FDirName $(WORK) $(1) ] ;
-          if ! [ FExists $(dirBase) ] {
-            EXIT "F/Could not find toolkit $(1) to import." ;
-          }
-        }
+        EXIT "F/Could not find toolkit $(1) to import." ;
       }
     }
   }
@@ -40,149 +34,5 @@ rule tkImport {
   # add to the list of imported toolkits
   TK_IMPORTED += $(1) ;
 
-  if ! ( $(NO_DLL) = 1 ) {
-    # import the dlls
-    for _i in $(2) {
-      tkImportDepDll $(_i) : $(1) : $(_i) ;
-    }
-  }
-
   return $(dirBase) ;
-}
-
-# tkImportDoCopy TKIMPORT_TARGET : SRCPATH : DIR : MODE
-rule tkImportDoCopy {
-  if ! [ FExists $(2) ] {
-    local destFile = [ FDirName $(3) $(2:BS) ] ;
-    if [ FExists $(destFile) ] {
-      ECHO "W/Import: cannot import, using existing $(destFile)." ;
-      return $(destFile) ;
-    }
-    else {
-      EXIT "F/Cannot import $(2) to $(3)." ;
-    }
-  }
-  local p ;
-  if $(4) = EXE {
-    p = [ tkFileEXE $(2:BS) : $(2) : $(3) ] ;
-  }
-  else {
-    p = [ tkFile $(2:BS) : $(2) : $(3) ] ;
-  }
-  DEPENDS $(1) : $(p) ;
-  DEPENDS tkimport : $(p) ;
-  # TODO: Commented because regular binaries aren't cleaned. I think
-  # everything should ideally.
-  # Clean clean : $(p) ;
-  return $(p) ;
-}
-
-rule tkImportGetExePath {
-  local buildExt = $(3) ;
-  if ! $(buildExt) {
-    buildExt = $(BUILDEXT) ;
-  }
-  local srcTkDirBin = [ FDirName $(TK_SRC_WORK_DIR) $(<) bin $(BIN_LOA) ] ;
-  local srcPath = [ FDirName $(srcTkDirBin) $(>)_$(buildExt)$(SUFEXE) ] ;
-  return $(srcPath) ;
-}
-
-rule tkImportGetDllPath {
-  local buildExt = $(3) ;
-  if ! $(buildExt) {
-    buildExt = $(BUILDEXT) ;
-  }
-  local srcTkDirBin = [ FDirName $(TK_SRC_WORK_DIR) $(<) bin $(BIN_LOA) ] ;
-  local srcPath = [ FDirName $(srcTkDirBin) $(PREFIXDLL)$(>)_$(buildExt)$(SUFDLL) ] ;
-  return $(srcPath) ;
-}
-
-rule tkImportGetJarPath {
-  local buildExt = $(3) ;
-  if ! $(buildExt) {
-    buildExt = $(BUILDEXT) ;
-  }
-  local srcTkDirJar = [ FDirName $(TK_SRC_WORK_DIR) $(<) libs jars ] ;
-  local srcPath = [ FDirName $(srcTkDirJar) $(>).jar ] ;
-  return $(srcPath) ;
-}
-
-# tkImportExe SrcToolkit : ExeName : BUILDEXT ;
-# imports an executable program from another toolkit
-rule tkImportExe {
-  local srcPath = [ tkImportGetExePath $(<) : $(>) : $(3) ] ;
-  local r = [ tkImportDoCopy tkimport_exe
-  : $(srcPath)
-  : $(TK_DIR_BIN)
-  : EXE ] ;
-  DEPENDS $(>) : $(r) ;
-
-  # Has a .pdb attached to it ?
-  if [ FExists $(srcPath:S=.pdb) ] {
-    local r [ tkImportDoCopy tkimport_exe
-    : $(srcPath:S=.pdb)
-    : $(TK_DIR_BIN) ] ;
-    DEPENDS $(>) : $(r) ;
-  }
-}
-
-# tkImportDepDll TARGET : TOOLKIT : MODULENAME
-rule tkImportDepDll {
-  local tkBinDir = [ FDirName [ tkFindToolkitDir $(2) ] bin $(BIN_LOA) ] ;
-  tkDepDll $(1) : $(3) : $(tkBinDir) ;
-}
-
-# tkImportLinkDll TARGET : TOOLKIT : MODULENAME
-rule tkImportLinkDll {
-  local tkBinDir = [ FDirName [ tkFindToolkitDir $(2) ] bin $(BIN_LOA) ] ;
-  tkLinkDll $(1) : $(3) : $(tkBinDir) ;
-}
-
-#
-# tkImportNodeModule TKDIRNAME : MODULENAME
-#
-# MODULENAME is optional if TKDIRNAME is the same as the module's name
-#
-# This rule updates the node module's code, the module should still be added
-# in the package.json as a local module first.
-#
-rule tkImportNodeModule {
-  local moduleName = $(>) ;
-  if ! $(moduleName) {
-    moduleName = $(<) ;
-  }
-
-  local DSTDIR = [ FDirName $(TK_DIR) node_modules $(moduleName) ] ;
-  if ! [ FExists $(DSTDIR) ] {
-    EXIT "F/Can't find node_module '$(moduleName)', run 'npm install --save ../$(moduleName)' first." ;
-  }
-
-  local SRCFILES, SRCDIR ;
-  local COUNT = 0 ;
-
-  # root dir
-  SRCDIR = [ FDirName $(WORK) $(<) ] ;
-  SRCFILES = [ ListFiles $(SRCDIR) : *.js ] ;
-  for _i in $(SRCFILES) {
-    local A = [ StrAfterI $(_i:D) : $(SRCDIR) ] ;
-    local C = [ FDirName $(DSTDIR) ] ;
-    local D = $(C)$(A) ;
-    tkImportDoCopy tkimport_nodejs : $(_i) : $(D) ;
-    COUNT = COUNT + 1 ;
-  }
-
-  # sources dir
-  SRCDIR = [ FDirName $(WORK) $(<) sources ] ;
-  SRCFILES = [ ListFilesR $(SRCDIR) : *.js ] ;
-  for _i in $(SRCFILES) {
-    local A = [ StrAfterI $(_i:D) : $(SRCDIR) ] ;
-    local C = [ FDirName $(DSTDIR) sources ] ;
-    local D = $(C)$(A) ;
-    tkImportDoCopy tkimport_nodejs : $(_i) : $(D) ;
-    COUNT = COUNT + 1 ;
-  }
-  if $(COUNT) = 0 {
-    SRCDIR = [ FDirName $(WORK) $(<) ] ;
-    ECHO "W/tkImportNodeModule, no source found for '$(moduleName)' at '$(SRCDIR)'." ;
-  }
 }
