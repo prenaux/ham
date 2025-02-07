@@ -12,13 +12,12 @@ if ! [ FExists $(TOP_DIR) ] {
   EXIT "E/TOP_DIR doesn't exist:" $(TOP_DIR) ;
 }
 
-NOTFILE pass1 ;
 NOTFILE build_tools ;
 NOTFILE tools ;
 NOTFILE modlibs ;
 NOTFILE tests ;
 NOTFILE data ;
-DEPENDS all : pass1 build_tools tools modlibs tests data ;
+DEPENDS all : build_tools tools modlibs tests data ;
 
 AssertVarDefined HAM_CPP_TOOLSET_NAME ;
 
@@ -386,7 +385,6 @@ rule tkPkgDataSubDirBin2H {
   local dir = $(1) ;
   local data = [ DataSubDirBin2H $(PACKAGE) : $(dir) : $(2) ] ;
   DEPENDS data : $(data) ;
-  DEPENDS pass1 : data ;
   return $(data) ;
 }
 
