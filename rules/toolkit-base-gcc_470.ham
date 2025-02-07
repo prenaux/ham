@@ -30,7 +30,4 @@ if ( $(OS) = MACOSX ) || ( $(OS) = LINUX ) || ( $(OS) = NT ) {
   TARGET_FEATURE_EXE = 1 ;
   TARGET_FEATURE_DLL = 1 ;
   TARGET_FEATURE_CONSOLE = 1 ;
-  if $(BUILD_JNI) = 1 {
-    TARGET_FEATURE_JNI = 1 ;
-  }
 }

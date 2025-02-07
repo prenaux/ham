@@ -73,9 +73,6 @@ if $(TARGET_FEATURE_CONSOLE) && ! $(TARGET_FEATURE_EXE) {
   EXIT "F/TARGET_FEATURE_CONSOLE set but not TARGET_FEATURE_EXE." ;
 }
 
-# Whether the target can/should build JNI interop
-logVar TARGET_FEATURE_JNI ;
-
 #----------------------------------------------------------------------
 #     LOA
 #----------------------------------------------------------------------
@@ -86,14 +83,6 @@ AssertVarDefined LOA_ARCH ;
 # CPU_ARCH always keeps the raw CPU architecture
 CPU_ARCH = $(LOA_ARCH) ;
 
-if $(TARGET_FEATURE_JNI) {
-  BUILD_JNI = 1 ;
-  LOA_ARCH = $(LOA_ARCH)j ;
-  DEFINES += _BUILD_JNI ;
-}
-else {
-  BUILD_JNI = ;
-}
 if $(RTCPP) = 1 {
   DEFINES += _RTCPP ;
 }
@@ -210,8 +199,6 @@ logVar TK_DIR_SHADER_GLSL_INCLUDE ;
 TK_DIR_LIBS ?= [ FDirName $(TK_DIR) libs $(LIBS_LOA) ] ;
 logVar TK_DIR_LIBS ;
 MakeLocate tkdir : $(TK_DIR_LIBS) ;
-
-TK_DIR_JARS ?= [ FDirName $(TK_DIR) libs jars ] ;
 
 TK_DIR_OBJS ?= [ FDirName $(BASEOBJDIR) $(TK_NAME:L)-$(TK_NONCE:L) ] ;
 
@@ -578,82 +565,69 @@ rule tkDefPackage
   PKGTARGET_LIB = ;
   PKGTARGET_JS = ;
   PKGTARGET_WASM = ;
-  if $(PKGGROUP) = jar || $(PKGGROUP) = apk {
-    OBJDIR = [ FDirName $(TK_DIR_OBJS) jvm $(PACKAGE) ] ;
-    PKGBUILD = $(PACKAGE) ;
-    PKGTARGET = $(PKGBUILD:S=.jar) ;
-    PKGTYPE = jar ;
-    if $(PKGGROUP) = apk {
-      DEPENDS apps : $(PKGGROUP) ;
+
+  # Use the C++ toolset name rather than the linker name so that multiple
+  # compilers can be used safely on the same platform.
+  local LINKER_OS = $(HAM_CPP_TOOLSET_NAME:L) ;
+  if $(LINKER_OS) != $(LOA_OS) {
+    LINKER_OS = $(LOA_OS)-$(LINKER_OS) ;
+  }
+  OBJDIR = [ FDirName
+  $(TK_DIR_OBJS)
+  $(LINKER_OS)-$(LOA_ARCH)-$(BUILD)
+  $(PACKAGE) ] ;
+  PKGBUILD = $(PACKAGE)_$(BUILDEXT) ;
+  if $(PKGGROUP) = modules || $(PKGGROUP) = modulelibs || $(PKGGROUP) = dll || $(PKGGROUP) = tooldll {
+    if ( $(PKGGROUP) = tooldll ) {
+      DEPENDS tools : tooldll ;
+      PKGTYPE = tooldll ;
     }
     else {
       DEPENDS modlibs : $(PKGGROUP) ;
+      PKGTYPE = dll ;
     }
-  }
-  else {
-    # Use the C++ toolset name rather than the linker name so that multiple
-    # compilers can be used safely on the same platform.
-    local LINKER_OS = $(HAM_CPP_TOOLSET_NAME:L) ;
-    if $(LINKER_OS) != $(LOA_OS) {
-      LINKER_OS = $(LOA_OS)-$(LINKER_OS) ;
-    }
-    OBJDIR = [ FDirName
-      $(TK_DIR_OBJS)
-      $(LINKER_OS)-$(LOA_ARCH)-$(BUILD)
-      $(PACKAGE) ] ;
-    PKGBUILD = $(PACKAGE)_$(BUILDEXT) ;
-    if $(PKGGROUP) = modules || $(PKGGROUP) = modulelibs || $(PKGGROUP) = dll || $(PKGGROUP) = tooldll {
-      if ( $(PKGGROUP) = tooldll ) {
-        DEPENDS tools : tooldll ;
-        PKGTYPE = tooldll ;
-      }
-      else {
-        DEPENDS modlibs : $(PKGGROUP) ;
-        PKGTYPE = dll ;
-      }
-      if $(NO_DLL) {
-        PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
-        PKGTARGET = $(PKGBUILD:S=$(SUFLIB)) ;
-        PKGTYPE = library ;
-        OUTDIR = $(TK_DIR_LIBS) ;
-      }
-      else {
-        PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
-        PKGTARGET = $(PKGBUILD:S=$(SUFDLL)) ;
-        if ( $(BUILD_PKGTARGET_LIB) = 1 ) && ( $(PKGGROUP) = modulelibs ) {
-          PKGTARGET_LIB = $(PKGBUILD:S=$(SUFLIB)) ;
-        }
-      }
-    }
-    else if $(PKGGROUP) = libs {
+    if $(NO_DLL) {
       PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
       PKGTARGET = $(PKGBUILD:S=$(SUFLIB)) ;
       PKGTYPE = library ;
-      DEPENDS modlibs : $(PKGGROUP) ;
-    }
-    else if $(PKGGROUP) = rawbin || $(PKGGROUP) = tools || $(PKGGROUP) = tests {
-      PKGTARGET = $(PKGBUILD:S=$(SUFEXE)) ;
-      PKGTYPE = binary ;
-      if $(PKGGROUP) = rawbin {
-        FilePreserve [ FDirName $(OUTDIR:/) $(PACKAGE:S=$(SUFEXE)) ] : $(PKGTARGET:/) ;
-      }
-      if $(SUFEXE) = .html {
-        PKGTARGET_JS = $(PKGBUILD:S=.js) ;
-        FilePreserve [ FDirName $(OUTDIR:/) $(PKGTARGET_JS) ] : $(PKGTARGET_JS:/) ;
-        PKGTARGET_WASM = $(PKGBUILD:S=.wasm) ;
-        FilePreserve [ FDirName $(OUTDIR:/) $(PKGTARGET_WASM) ] : $(PKGTARGET_WASM:/) ;
-      }
+      OUTDIR = $(TK_DIR_LIBS) ;
     }
     else {
-      EXIT "E/Package '"$(PACKAGE)"', unknown package group '"$(PKGGROUP)"', should be one of: modules, modulelibs, dll, tooldll, libs, rawbin, tools or tests." ;
+      PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
+      PKGTARGET = $(PKGBUILD:S=$(SUFDLL)) ;
+      if ( $(BUILD_PKGTARGET_LIB) = 1 ) && ( $(PKGGROUP) = modulelibs ) {
+        PKGTARGET_LIB = $(PKGBUILD:S=$(SUFLIB)) ;
+      }
     }
+  }
+  else if $(PKGGROUP) = libs {
+    PKGBUILD = $(PREFIXDLL)$(PKGBUILD) ;
+    PKGTARGET = $(PKGBUILD:S=$(SUFLIB)) ;
+    PKGTYPE = library ;
+    DEPENDS modlibs : $(PKGGROUP) ;
+  }
+  else if $(PKGGROUP) = rawbin || $(PKGGROUP) = tools || $(PKGGROUP) = tests {
+    PKGTARGET = $(PKGBUILD:S=$(SUFEXE)) ;
+    PKGTYPE = binary ;
+    if $(PKGGROUP) = rawbin {
+      FilePreserve [ FDirName $(OUTDIR:/) $(PACKAGE:S=$(SUFEXE)) ] : $(PKGTARGET:/) ;
+    }
+    if $(SUFEXE) = .html {
+      PKGTARGET_JS = $(PKGBUILD:S=.js) ;
+      FilePreserve [ FDirName $(OUTDIR:/) $(PKGTARGET_JS) ] : $(PKGTARGET_JS:/) ;
+      PKGTARGET_WASM = $(PKGBUILD:S=.wasm) ;
+      FilePreserve [ FDirName $(OUTDIR:/) $(PKGTARGET_WASM) ] : $(PKGTARGET_WASM:/) ;
+    }
+  }
+  else {
+    EXIT "E/Package '"$(PACKAGE)"', unknown package group '"$(PKGGROUP)"', should be one of: modules, modulelibs, dll, tooldll, libs, rawbin, tools or tests." ;
+  }
 
-    LINKFLAGS on $(PKGTARGET) ?= $(LINKFLAGS) ;
-    LINKLIBS on $(PKGTARGET) ?= $(LINKLIBS) ;
-    if $(PKGTARGET_LIB) {
-      LINKFLAGS on $(PKGTARGET_LIB) ?= $(LINKFLAGS) ;
-      LINKLIBS on $(PKGTARGET_LIB) ?= $(LINKLIBS) ;
-    }
+  LINKFLAGS on $(PKGTARGET) ?= $(LINKFLAGS) ;
+  LINKLIBS on $(PKGTARGET) ?= $(LINKLIBS) ;
+  if $(PKGTARGET_LIB) {
+    LINKFLAGS on $(PKGTARGET_LIB) ?= $(LINKFLAGS) ;
+    LINKLIBS on $(PKGTARGET_LIB) ?= $(LINKLIBS) ;
   }
 
   if $(5) {
@@ -740,20 +714,6 @@ rule tkDefTool {
   tkDefPackage $(1) : $(2) : tools : $(destDir) ;
 }
 
-if $(BUILD_JNI) {
-  # tkDefJar lib_name : version ;
-  rule tkDefJar {
-    tkDefPackage $(1) : $(2) : jar : $(TK_DIR_JARS) ;
-  }
-}
-
-if $(ANDROID) {
-  # tkDefJar lib_name : version ;
-  rule tkDefApk {
-    tkDefPackage $(1) : $(2) : apk : $(TK_DIR_JARS) ;
-  }
-}
-
 # tkIncludeDep dira dirb
 rule tkIncludeDep {
   if $(NO_DEPS) = 1 { return ; }
@@ -795,17 +755,12 @@ rule tkBuildPackage
   local _pch = ;
   local _cpredist = 1 ;
   local _console = 0 ;
-  local _jni = 0 ;
   local _exc = 0 ;
   local _rtti = 0 ;
   local _unicode = 0 ;
   local _stamp = "" ;
   local _shaders = 0 ;
   local _data = 0 ;
-
-  if $(BUILD_JNI) {
-    _jni = 1 ;
-  }
 
   if $(ALL_SRC_USE_PCH) = 1 {
     # We include all files as 'pch' if not using GCC
