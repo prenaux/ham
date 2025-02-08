@@ -1,5 +1,6 @@
 if $(WINDOWS) = 1 {
   LINKLIBS += winmm.lib gdi32.lib user32.lib shell32.lib ;
+  LINKFLAGS += -ignore:4199 ;
 }
 SUFPCH = .pch ;
 

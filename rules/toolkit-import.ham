@@ -1,5 +1,4 @@
 TK_SRC_WORK_DIR ?= $(WORK) ;
-TK_IMPORTED ?= ;
 
 # tkImport TOOLKIT ;
 rule tkImport {

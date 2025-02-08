@@ -44,6 +44,8 @@ else {
 TK_ENV_FILE = toolkit-base-$(HAM_CPP_TOOLSET_NAME).ham ;
 Import $(TK_ENV_FILE) : "E/Can't find toolkit's configuration for toolset:" $(TK_ENV_FILE:B:S) ;
 
+TK_IMPORTED ?= ;
+
 #----------------------------------------------------------------------
 #     TARGET FEATURES
 #----------------------------------------------------------------------
@@ -465,10 +467,9 @@ rule tkLinkImpLibs {
       }
     }
     VarOnAddToFront LINKLIBS : $(<) : [ FQuote $(l) ] ;
-    if $(DELAY_LOAD_IMPLIBS_DLLS) = 1 {
-      local DELAY_LOAD = $(l:B) ;
-      TargetLinkFlags $(<) : -DELAYLOAD:$(DELAY_LOAD) ;
-    }
+
+    local DELAYLOAD = $(l:B) ;
+    TargetLinkFlags $(<) : -DELAYLOAD:$(DELAYLOAD) ;
   }
 }
 
@@ -924,6 +925,9 @@ rule tkBuildPackage
     ObjectDefines $(_allsrc) : _TARGET_EXE ;
     Main $(t) : $(_src) : $(_extra_objs) ;
   }
+
+  local DLLLOAD_SEARCH_PATHS = ".;$(TK_NAME:E);$(TK_IMPORTED:EJ=;)" ;
+  ObjectDefines $(_allsrc) : DLLLOAD_SEARCH_PATHS="\"$(DLLLOAD_SEARCH_PATHS)\"" ;
 
   ### Copy into the redist/output directory ###
   local d = $(PKGTARGET) ;
