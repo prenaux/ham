@@ -420,6 +420,13 @@ rule tkPkgHdrs {
   return [ GlobSrc $(d) : .h ] ;
 }
 
+# tkFindImportedLib TK : FILE NAME ;
+rule tkFindBinFile {
+  # local l = [ FDirName $(WORK) $(1) $(2) ] ;
+  local l = [ FDirName $(WORK) $(2) ] ;
+  return $(l) ;
+}
+
 # tkFindImportedLib LIB : BASE_DIR : EXT ;
 rule tkFindImportedLib {
   # ECHO "... tkFindImportedLib:" $(1) ":" $(2) ":" $(3) ;
@@ -428,7 +435,7 @@ rule tkFindImportedLib {
   local ext = $(3) ;
   ext ?= "_$(BUILDEXT)$(SUFLIB)" ;
   if $(dir) {
-    local l = [ FDirName $(WORK) $(dir) libs $(LIBS_LOA) $(PREFIXDLL)$(1)$(ext) ] ;
+    local l = [ tkFindBinFile $(dir) : libs $(LIBS_LOA) $(PREFIXDLL)$(1)$(ext) ] ;
     # Must exist in the other toolkit before we can go on
     AssertFExists "tkFindImportedLib with dir '$(dir)'" : $(l) ;
     return $(l) ;
@@ -484,7 +491,7 @@ rule tkDepExe {
   local ext = $(4) ;
   ext ?= "_$(BUILDEXT)$(SUFEXE)" ;
   if $(dir) && ( $(dir) != $(TK_NAME) ) {
-    local l = [ FDirName $(WORK) $(dir) bin $(BIN_LOA) $(moduleName)$(ext) ] ;
+    local l = [ tkFindBinFile $(dir) : bin $(BIN_LOA) $(moduleName)$(ext) ] ;
     # Must exist in the other toolkit before we can go on
     AssertFExists "tkDepExe with dir '$(dir)'" : $(l) ;
     return $(l) ;
@@ -506,7 +513,7 @@ rule tkDepDll {
   local ext = $(4) ;
   ext ?= "_$(BUILDEXT)$(SUFDLL)" ;
   if $(dir) {
-    local l = [ FDirName $(WORK) $(dir) bin $(BIN_LOA) $(PREFIXDLL)$(moduleName)$(ext) ] ;
+    local l = [ tkFindBinFile $(dir) : bin $(BIN_LOA) $(PREFIXDLL)$(moduleName)$(ext) ] ;
     # Must exist in the other toolkit before we can go on
     AssertFExists "tkDepDll with dir '$(dir)'" : $(l) ;
     return $(l) ;
