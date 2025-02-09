@@ -43,8 +43,7 @@ if $(OS) = MACOSX
   C++FLAGS += $(CLANG_BASE_FLAGS) ;
   LINKFLAGS += $(CLANG_BASE_FLAGS) ;
 
-  LINKFLAGS_DLL = -rpath "@loader_path/." ;
-  LINKFLAGS_EXE = -rpath "@loader_path/." ;
+  LINKFLAGS += -rpath "@loader_path/." ;
   actions DllLink
   {
     $(LINK) -install_name @rpath/"$(<:B:S)" $(LINKFLAGS) $(LINKFLAGS_DLL) -dynamiclib "$(>)" $(NEEDLIBS) $(LINKLIBS) $(SYSTEM_LINKLIBS) -o "$(<)"

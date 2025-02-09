@@ -319,13 +319,7 @@ rule tkCopyDataToObjDir {
 }
 
 rule tkFindToolkitDir {
-  local dirBase = [ FDirName $(TOP) node_modules $(1) ] ;
-  if ! [ FExists $(dirBase) ] {
-    dirBase = [ FDirName $(TOP) .. node_modules $(1) ] ;
-    if ! [ FExists $(dirBase) ] {
-      dirBase = [ FDirName $(WORK) $(1) ] ;
-    }
-  }
+  local dirBase = [ FDirName $(WORK) $(1) ] ;
   return $(dirBase) ;
 }
 
@@ -536,16 +530,7 @@ rule tkLinkDll {
       tkLinkImpLibs $(<) : $(>)_$(BUILDEXT) : $(4) : .dll.lib ;
     }
     else {
-      local dir = $(3) ;
-      dir ?= $(TK_DIR_DLL) ;
-      if $(ANDROID) = 1 {
-        local qdir = [ FQuote $(dir) ] ;
-        VarOnAddToFront LINKLIBS : $(<) : -L$(qdir) -l$(>)_$(BUILDEXT) ;
-      }
-      else {
-        local l = [ FDirName $(dir) $(PREFIXDLL)$(>)_$(BUILDEXT)$(SUFDLL) ] ;
-        VarOnAddToFront LINKLIBS : $(<) : [ FQuote $(l) ] ;
-      }
+      VarOnAddToFront LINKLIBS : $(<) : -l$(>)_$(BUILDEXT) ;
     }
     tkDepDll $(<) : $(>) : $(3) ;
   }
@@ -926,8 +911,24 @@ rule tkBuildPackage
     Main $(t) : $(_src) : $(_extra_objs) ;
   }
 
-  local DLLLOAD_SEARCH_PATHS = ".;$(TK_NAME:E);$(TK_IMPORTED:EJ=;)" ;
-  ObjectDefines $(_allsrc) : DLLLOAD_SEARCH_PATHS="\"$(DLLLOAD_SEARCH_PATHS)\"" ;
+  ### Set RPath and the DLL search paths ###
+  if ( $(PKGTYPE) != library ) && ( $(TARGET_FEATURE_DLL) = 1 ) {
+    if $(LOA_OS) = nt {
+      local DLLLOAD_SEARCH_PATHS = ".;$(TK_NAME:E);$(TK_IMPORTED:EJ=;)" ;
+      ObjectDefines $(_allsrc) : DLLLOAD_SEARCH_PATHS="\"$(DLLLOAD_SEARCH_PATHS)\"" ;
+    }
+    else if $(LOA_OS) = osx {
+      local toolkits = $(TK_NAME) $(TK_IMPORTED) ;
+      for _t in $(toolkits) {
+        local lpath = [ tkFindToolkitDir $(_t) bin $(BIN_LOA) ] ;
+        local rpath = [ FDirName .. .. .. $(_t) bin $(BIN_LOA) ] ;
+        LINKFLAGS on $(PKGTARGET) += -L $(lpath) -rpath @loader_path/$(rpath) ;
+      }
+    }
+    else {
+      logFatal "Dont know how to link DLL to current target:" $(PKGTARGET) "LOA_OS:" $(LOA_OS) "LOA_LINKER" $(LOA_LINKER) ;
+    }
+  }
 
   ### Copy into the redist/output directory ###
   local d = $(PKGTARGET) ;
