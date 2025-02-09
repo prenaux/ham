@@ -1,10 +1,15 @@
 if ! $(TK_NAME) {
   EXIT "E/TK_NAME not set." ;
 }
+
 if ! $(TK_NONCE) {
-  ECHO "W/TK_NONCE not set please set it in your _rules.ham, defaulted to 0. TK_NONCE is an arbitrary string that is added of every build target. It provides a way to force a rebuild of everything when it's changed. A good value is a incrementing number or commit hash that is updated when core must rebuild interface change." ;
+  ECHO "W/TK_NONCE not set please set it in your _rules.ham, defaulted to 0. TK_NONCE is an arbitrary string that is added of every build target temporary outputs. It provides a way to force a rebuild of everything when it's changed. A good value is a incrementing number or commit hash that is updated when core must rebuild interface change." ;
 }
 TK_NONCE ?= 0 ;
+
+if ! [ FExists $(WORK) ] {
+  EXIT "E/WORK doesn't exist:" $(WORK) ;
+}
 if ! [ FExists $(TK_DIR) ] {
   EXIT "E/TK_DIR doesn't exist:" $(TK_DIR) ;
 }
@@ -180,15 +185,11 @@ if ! ( $(FLYMAKE) = 1 ) {
 AssertVarDefined TK_DIR ;
 AssertVarDefined TOP_DIR ;
 
-TK_DIR_DOCS ?= [ FDirName $(TK_DIR) docs ] ;
-logVar TK_DIR_DOCS ;
-MakeLocate tkdir : $(TK_DIR_DOCS) ;
-
-TK_DIR_BIN ?= [ FDirName $(TK_DIR) bin $(BIN_LOA) ] ;
+TK_DIR_BIN ?= [ FDirName $(WORK) bin $(BIN_LOA) ] ;
 logVar TK_DIR_BIN ;
 MakeLocate tkdir : $(TK_DIR_BIN) ;
 
-TK_DIR_LIBS ?= [ FDirName $(TK_DIR) libs $(LIBS_LOA) ] ;
+TK_DIR_LIBS ?= [ FDirName $(WORK) libs $(LIBS_LOA) ] ;
 logVar TK_DIR_LIBS ;
 MakeLocate tkdir : $(TK_DIR_LIBS) ;
 
@@ -914,11 +915,13 @@ rule tkBuildPackage
   ### Set RPath and the DLL search paths ###
   if ( $(PKGTYPE) != library ) && ( $(TARGET_FEATURE_DLL) = 1 ) {
     if $(LOA_OS) = nt {
-      local DLLLOAD_SEARCH_PATHS = ".;$(TK_NAME:E);$(TK_IMPORTED:EJ=;)" ;
+      # local DLLLOAD_SEARCH_PATHS = ".;$(TK_NAME:E);$(TK_IMPORTED:EJ=;)" ;
+      local DLLLOAD_SEARCH_PATHS = ".;" ;
       ObjectDefines $(_allsrc) : DLLLOAD_SEARCH_PATHS="\"$(DLLLOAD_SEARCH_PATHS)\"" ;
     }
     else if $(LOA_OS) = osx {
-      local toolkits = $(TK_NAME) $(TK_IMPORTED) ;
+      local toolkits = ; # $(TK_NAME) $(TK_IMPORTED) ;
+      LINKFLAGS on $(PKGTARGET) += -L [ FDirName $(WORK) bin $(BIN_LOA) ] ;
       for _t in $(toolkits) {
         local lpath = [ tkFindToolkitDir $(_t) bin $(BIN_LOA) ] ;
         local rpath = [ FDirName .. .. .. $(_t) bin $(BIN_LOA) ] ;
