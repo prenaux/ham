@@ -666,7 +666,7 @@ static void make1bind(TARGET *t, int warn) {
   /* targets. */
 
   if (warn) {
-    fputs("warning: using independent target", stdout);
+    fputs("warning: using independent target: ", stdout);
     fputs(t->name, stdout);
     fputs("\n", stdout);
     puts(
