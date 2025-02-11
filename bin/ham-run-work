@@ -1,0 +1,34 @@
+#!/bin/bash -e
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+usage() {
+  echo ""
+  echo "usage: ham-run-work EXE PARAMS"
+  echo ""
+  echo "  Search for an EXE or Bash script relative to the WORK directory and run it in the WORK directory."
+  exit 1
+}
+
+if [ -z "$1" ]; then
+  log_error "Script or exe to run not specified."
+  usage
+fi
+
+WORK=$(nativedir "$WORK")
+EXE_PATH="$WORK/$1"
+if [ ! -e "$EXE_PATH" ]; then
+  log_error "Script or exe '$1' cant be found at '$EXE_PATH'."
+  usage
+fi
+shift
+
+log_info "Running '$EXE_PATH' in '$WORK'..."
+(
+  set -ex
+  cd "$WORK"
+  "$EXE_PATH" "$@"
+)
