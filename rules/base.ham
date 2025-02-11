@@ -463,6 +463,10 @@ rule logVar {
   logDebug $(<) "=" $($(<)) ;
 }
 
+rule logInfoVar {
+  logInfo $(<) "=" $($(<)) ;
+}
+
 #----------------------------------------------------------------------
 #     Asserts
 #----------------------------------------------------------------------
@@ -827,7 +831,7 @@ rule Cc
   CCHDRS on $(<) = [ on $(<) FIncludes $(HDRS) ] ;
   CCDEFS on $(<) = [ on $(<) FDefines $(DEFINES) ] ;
 
-  # NOTE: this only works under GENERATE_CMD_JSON flag to create command json only, on impact with other build setup
+  # NOTE: this only works under GENERATE_CMD_JSON flag to create command json only, no impact with other build setup
   if $(GENERATE_CMD_JSON) {
     if ! [ FExists $(GENERATE_CMD_JSON) ] {
       FEcho $(GENERATE_CMD_JSON) : "" : create nl ;
@@ -870,7 +874,7 @@ rule C++
   CCHDRS on $(<) = [ on $(<) FIncludes $(HDRS) ] ;
   CCDEFS on $(<) = [ on $(<) FDefines $(DEFINES) ] ;
 
-  # NOTE: this only works under GENERATE_CMD_JSON flag to create command json only, on impact with other build setup
+  # NOTE: this only works under GENERATE_CMD_JSON flag to create command json only, no impact with other build setup
   if $(GENERATE_CMD_JSON) {
     if ! [ FExists $(GENERATE_CMD_JSON) ] {
       FEcho $(GENERATE_CMD_JSON) : "" : create nl ;

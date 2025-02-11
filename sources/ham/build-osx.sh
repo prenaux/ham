@@ -1,5 +1,6 @@
 #!/bin/bash -e
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$SCRIPT_DIR/src"
 HAM_NO_VER_CHECK=1 . "$SCRIPT_DIR/../../_env.sh"
 
 BIN_LOA=$(toolset_get_target_bin_loa)
@@ -15,8 +16,6 @@ case $BIN_LOA in
         exit 1
         ;;
 esac
-
-cd src
 
 echo "I/Create output unix folder"
 (set -x ;

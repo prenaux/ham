@@ -1,10 +1,9 @@
 #!/bin/bash -e
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$SCRIPT_DIR/src"
 HAM_NO_VER_CHECK=1 . "$SCRIPT_DIR/../../_env.sh"
 HAM_NO_VER_CHECK=1 . ham-toolset default
 errcheck $? build-ham-lin-x64 "Can't setup toolset"
-
-cd src
 
 if [[ -e "./Makefile" ]]; then
   echo "I/Already configured"

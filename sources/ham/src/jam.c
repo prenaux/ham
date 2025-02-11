@@ -196,7 +196,7 @@ int main(int argc, char **argv, char **arg_environ) {
   char *targets[N_TARGETS];
   const char *all = "all";
   int anyhow = 0;
-  int status;
+  int status = 0;
 
   unsigned int numProcessors = 1;
 #ifdef OS_NT
@@ -472,7 +472,10 @@ int main(int argc, char **argv, char **arg_environ) {
   if (!n)
     parse_file("+");
 
-  status = yyanyerrors();
+  if (yyanyerrors()) {
+    printf("ham: Parsing errors.\n");
+    exit(EXITBAD);
+  }
 
   /* Manually touch -t targets */
 

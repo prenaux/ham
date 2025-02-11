@@ -1,10 +1,9 @@
 #!/bin/bash -e
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$SCRIPT_DIR/src"
 HAM_NO_VER_CHECK=1 . "$SCRIPT_DIR/../../_env.sh"
 HAM_NO_VER_CHECK=1 . ham-toolset msvc_19_x86
 errcheck $? build-ham-nt-x86 "Can't setup msvc_19_x86 toolset"
-
-cd src
 
 echo "I/Create output ntx86 folder"
 (set -x ;
