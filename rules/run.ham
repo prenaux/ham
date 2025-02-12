@@ -49,8 +49,10 @@ rule runInDir {
   }
   local exePath = [ FDirName $(TK_DIR_BIN) $(baseName)$(RUN_EXE_SUFFIX) ] ;
   runInDir_ Run_$(<) : $(exePath) : $(2) : $(3) : $(4) ;
+  DEPENDS Run_$(<) : $(1) ;
   runInDebugger_ Debug_$(<) : $(exePath) : $(2) : $(3) ;
-  return $(t) ;
+  DEPENDS Debug_$(<) : $(1) ;
+  return Run_$(<) ;
 }
 
 if $(RUN_IMPORT) {

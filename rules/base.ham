@@ -364,7 +364,7 @@
 #
 
 #----------------------------------------------------------------------
-#     OS Specific
+# Section: OS Specific
 #----------------------------------------------------------------------
 
 # the OS envvar is declared by Xcode in OSX, so we override it here
@@ -373,8 +373,9 @@ if $(OS) = MACOS {
 }
 
 #----------------------------------------------------------------------
-#     Basic variables
+# Section: Basic variables
 #----------------------------------------------------------------------
+
 # Logging level
 # 0 - Debug
 # 1 - Verbose
@@ -399,7 +400,7 @@ if ( $(FLYMAKE) = 1 ) && ( $(CAN_LINT) = 1 ) {
 }
 
 #----------------------------------------------------------------------
-#     Logging
+# Section: Logging
 #----------------------------------------------------------------------
 rule logGetLoc {
   if ! $(SUBDIR_TOKENS) {
@@ -467,8 +468,13 @@ rule logInfoVar {
   logInfo $(<) "=" $($(<)) ;
 }
 
+rule logExit {
+  local _loc = [ logGetLoc ] ;
+  EXIT "F/$(_loc):" $(<) ;
+}
+
 #----------------------------------------------------------------------
-#     Asserts
+# Section: Asserts
 #----------------------------------------------------------------------
 rule AssertEq {
   if $(<) != $(>) {
@@ -530,7 +536,7 @@ rule AssertFDirName {
 }
 
 #----------------------------------------------------------------------
-#     Import rules
+# Section: Import rules
 #----------------------------------------------------------------------
 rule ImportBuildPath {
   if [ FExists $(<) ] {
@@ -578,7 +584,7 @@ rule Import {
 }
 
 #----------------------------------------------------------------------
-#     Pre-requisit utilities
+# Section: Pre-requisit utilities
 #----------------------------------------------------------------------
 rule FDirName
 {
@@ -628,7 +634,7 @@ rule FQuoteDirName {
 }
 
 #----------------------------------------------------------------------
-#     Toolset
+# Section: Toolset
 #----------------------------------------------------------------------
 HAM_TARGET_BIN_LOA ?= $(HAM_BIN_LOA) ;
 # ECHO "I/HAM_TARGET_BIN_LOA:" $(HAM_TARGET_BIN_LOA) ;
@@ -655,7 +661,7 @@ if ! $(TEMPDIR) {
 TEMPDIR = $(TEMPDIR:/) ;
 
 #----------------------------------------------------------------------
-#     General defaults; a lot like UNIX
+# Section: General defaults; a lot like UNIX
 #----------------------------------------------------------------------
 PREFIXDLL ?= "" ;
 DLLIMPLIB ?= ;
@@ -892,6 +898,22 @@ rule C++
     FEcho $(GENERATE_CMD_JSON) : "  \"file\": \"$(INPUT)\"" : nl ;
     FEcho $(GENERATE_CMD_JSON) : "}," : nl ;
   }
+}
+
+rule Coalesce {
+  if $(1) {
+    return $(1) ;
+  }
+  if $(2) {
+    return $(2) ;
+  }
+  if $(3) {
+    return $(3) ;
+  }
+  if $(4) {
+    return $(4) ;
+  }
+  logExit "Coalesce cant have more than 4 parameters." ;
 }
 
 # /Chmod target ;
@@ -2591,7 +2613,7 @@ rule TestFileExists
     f = $(f:B)$(f:S) ;
     if ! ( $(f) = $(t) ) {
       # 	  Echo "FF: [$(f)] = [$(t)]" ;
-      Exit "Test Failed : $(1) : Can't find '$(3)' in '$(d)'." ;
+      EXIT "Test Failed : $(1) : Can't find '$(3)' in '$(d)'." ;
     }
   }
 }
@@ -2761,7 +2783,7 @@ rule ListGetFirst {
 }
 
 #----------------------------------------------------------------------
-#     File generation rules
+# Section: File generation rules
 #----------------------------------------------------------------------
 actions EmptyFile {
   echo "" > "$(<)"
@@ -2795,7 +2817,7 @@ rule FileEchoList {
 }
 
 #----------------------------------------------------------------------
-#     Bin2H rules
+# Section: Bin2H rules
 #----------------------------------------------------------------------
 
 # Bin2H DEST : SRC : VARNAME ;
@@ -2851,7 +2873,7 @@ rule DataSubDirBin2H {
 }
 
 #----------------------------------------------------------------------
-#     VarOn
+# Section: VarOn
 #----------------------------------------------------------------------
 # VarOnGet VARNAME ONWHAT
 rule VarOnGet_ {
@@ -2870,7 +2892,34 @@ rule VarOnAddToFront {
 }
 
 #----------------------------------------------------------------------
-#     Run
+# Section: Multi-output rules
+#----------------------------------------------------------------------
+
+# GeneratedWith DEST : SRC : CONTEXT ;
+rule GeneratedWith {
+  # ECHO "GENERATED WITH: '$(<)' WITH '$(>)'." ;
+  DEPENDS $(<) : $(>) ;
+  local context = GeneratedWith $(3) ;
+  _CONTEXT on $(<) = $(context:J=" ") ;
+  if ! [ FExists $(<) ] {
+    # ECHO "GENERATED WITH: '$(<)' DOESNT EXIST, ALWAYS '$(>)'." ;
+    ALWAYS $(>) ;
+  }
+}
+actions quietly GeneratedWith {
+  . "$HAM_HOME/bin/ham-bash-setenv.sh"
+  if [ ! -e "$(>)" ]; then
+    log_error "$(_CONTEXT): Cant find expected source file '$(>)' generated with '$(<)'."
+    exit 1
+  fi
+  if [ ! -e "$(<)" ]; then
+    log_error "$(_CONTEXT): Cant find expected output file '$(<)' generated with '$(>)'"
+    exit 1
+  fi
+}
+
+#----------------------------------------------------------------------
+# Section: Run
 #----------------------------------------------------------------------
 rule RunExe {
   DEPENDS $(<) : $(>) ;
@@ -2892,9 +2941,9 @@ actions RunExe {
 }
 
 #----------------------------------------------------------------------
-#     Flymake
+# Section: Flymake
 #----------------------------------------------------------------------
-# FlyMakeSetup TARGET : CHK_SOURCES : (noremovetemp) ;
+# Section: FlyMakeSetup TARGET : CHK_SOURCES : (noremovetemp) ;
 rule FlyMakeSetup
 {
   if $(FLYMAKE_DONE) { return ; }
@@ -2919,17 +2968,17 @@ rule FlyMakeSetup
 }
 
 #----------------------------------------------------------------------
-#     Standard directories and the cache file
+# Section: Standard directories and the cache file
 #----------------------------------------------------------------------
 BASEOBJDIR ?= [ FDirName $(TEMPDIR) obj ] ;
 HCACHEFILE ?= [ FDirName $(TEMPDIR) _cache.ham ] ;
 
 #----------------------------------------------------------------------
-#     Include the toolset's base rules
+# Section: Include the toolset's base rules
 #----------------------------------------------------------------------
 Import base-$(HAM_CPP_TOOLSET)-rules.ham ;
 
 #----------------------------------------------------------------------
-#     Include the user's Hamfile
+# Section: Include the user's Hamfile
 #----------------------------------------------------------------------
 include $(JAMFILE) ;
