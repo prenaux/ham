@@ -119,13 +119,13 @@ void touchtarget(const char *t) {
  * targetlist() - turn list of target names into a TARGET chain
  *
  * Inputs:
- *	chain	existing TARGETS to append to
- *	targets	list of target names
+ *  chain existing TARGETS to append to
+ *  targets list of target names
  */
 
-TARGETS *targetlist(TARGETS *chain, LIST *targets) {
+TARGETS *targetlist(TARGETS *chain, LIST *targets, char needs) {
   for (; targets; targets = list_next(targets))
-    chain = targetentry(chain, bindtarget(targets->string));
+    chain = targetentry(chain, bindtarget(targets->string), needs);
 
   return chain;
 }
@@ -134,15 +134,16 @@ TARGETS *targetlist(TARGETS *chain, LIST *targets) {
  * targetentry() - add a TARGET to a chain of TARGETS
  *
  * Inputs:
- *	chain	exisitng TARGETS to append to
- *	target	new target to append
+ *  chain exisitng TARGETS to append to
+ *  target  new target to append
  */
 
-TARGETS *targetentry(TARGETS *chain, TARGET *target) {
+TARGETS *targetentry(TARGETS *chain, TARGET *target, char needs) {
   TARGETS *c;
 
   c = (TARGETS *)malloc(sizeof(TARGETS));
   c->target = target;
+  c->needs = needs;
 
   if (!chain)
     chain = c;
@@ -158,8 +159,8 @@ TARGETS *targetentry(TARGETS *chain, TARGET *target) {
  * targetchain() - append two TARGET chains
  *
  * Inputs:
- *	chain	exisitng TARGETS to append to
- *	target	new target to append
+ *  chain exisitng TARGETS to append to
+ *  target  new target to append
  */
 
 TARGETS *targetchain(TARGETS *chain, TARGETS *targets) {
@@ -255,8 +256,8 @@ SETTINGS *addsettings(
  * When target-specific variables are pushed into place with pushsettings(),
  * any global variables with the same name are swapped onto the target's
  * SETTINGS chain.  If that chain gets modified (by using the "on target"
- * syntax), popsettings() would wrongly swap those modified values back 
- * as the new global values.  
+ * syntax), popsettings() would wrongly swap those modified values back
+ * as the new global values.
  *
  * copysettings() protects the target's SETTINGS chain by providing a
  * copy of the chain to pass to pushsettings() and popsettings(), so that

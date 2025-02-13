@@ -62,6 +62,7 @@
 #include "command.h"
 #include "execcmd.h"
 #include "buffer.h"
+#include "filesys.h"
 
 #if defined OS_MACOSX || (defined(__clang__) && defined(OS_LINUX))
   #include <unistd.h>
@@ -157,7 +158,7 @@ static void make1a(TARGET *t, TARGET *parent) {
       case T_MAKE_INIT:
       case T_MAKE_ACTIVE:
       case T_MAKE_RUNNING:
-        t->parents = targetentry(t->parents, parent);
+        t->parents = targetentry(t->parents, parent, 0);
         parent->asynccnt++;
     }
 
@@ -195,6 +196,8 @@ static void make1a(TARGET *t, TARGET *parent) {
 static void make1b(TARGET *t) {
   TARGETS *c;
   const char *failed = "dependents";
+  int childmightnotupdate = 0;
+  int childupdated = 0;
 
   /* If any dependents are still outstanding, wait until they */
   /* call make1b() to signal their completion. */
@@ -206,21 +209,48 @@ static void make1b(TARGET *t) {
 
   /* Collect status from dependents */
 
-  for (c = t->depends; c; c = c->next)
+  for (c = t->depends; c; c = c->next) {
+
+    /* Skip checking MightNotUpdate children if the target is bound to a missing file, */
+    /* as in this case it should be built anyway */
+    if ((c->target->flags & T_FLAG_MIGHTNOTUPDATE) && t->binding != T_BIND_MISSING) {
+      time_t timestamp;
+
+      /* Mark that we've seen a MightNotUpdate flag in this set of children. */
+      childmightnotupdate = 1;
+
+      /* Grab the generated target's timestamp. */
+      if (file_time(c->target->boundname,&timestamp) == 0) {
+        /* If the child's timestamp is greater that the target's timestamp, then it updated. */
+        if (timestamp > t->time) {
+          childupdated = 1;
+        }
+      }
+    }
+    /* If it didn't have the MightNotUpdate flag but did update, mark it. */
+    else if (c->target->fate > T_FATE_STABLE && !c->needs) {
+      childupdated = 1;
+    }
+
     if (c->target->status > t->status) {
       failed = c->target->name;
       t->status = c->target->status;
     }
+  }
+
+  /* If we found a MightNotUpdate flag and there was an update, mark the fate as updated. */
+  if (childmightnotupdate && childupdated && t->fate == T_FATE_STABLE) {
+    t->fate = T_FATE_UPDATE;
+  }
 
   /* If actions on deps have failed, bail. */
   /* Otherwise, execute all actions to make target */
-
   if (t->status == EXEC_CMD_FAIL && t->actions) {
     ++counts->skipped;
     printf("...skipped %s for lack of %s...\n", t->name, failed);
   }
 
-  if (t->status == EXEC_CMD_OK)
+  if (t->status == EXEC_CMD_OK) {
     switch (t->fate) {
       case T_FATE_INIT:
       case T_FATE_MAKING:
@@ -264,6 +294,7 @@ static void make1b(TARGET *t) {
 
         break;
     }
+  }
 
   /* Call make1c() to begin the execution of the chain of commands */
   /* needed to build target.  If we're not going to build target */

@@ -102,12 +102,34 @@
 #   existing - refers to currently existing sources ($(>)) only
 #   bind vars - subject to binding before expanding in actions
 #
-# Special rules:
+# Special rules (RULE targets1 : targets2 ...):
 #   Always - always build a target
-#   Depends - builds the dependency graph
+#   Depends - Builds a direct dependency: makes each of targets1 depend on
+#     each of targets2. Generally, targets1 will be rebuilt if targets2 are
+#     themselves rebuilt are or are newer than targets1.
+#   Includes - Builds a sibling dependency: makes any target that depends on
+#     any of targets1 also depend on each of targets2. This reflects the
+#     dependencies that arise when one source file includes another: the
+#     object built from the source file depends both on the original and
+#     included source file, but the two sources files don't depend on each
+#     other.
+#   Needs - Like Depends, targets1 are dependent on targets2 having been built
+#     first. Unlike Depends, if targets2 are updated, targets1 do not build. A
+#     common use case is DLL dependencies - when a DLL is rebuilt with only
+#     implementation changes, dependent targets don't need to rebuild since
+#     they link dynamically. If the DLL's interface changes, the header
+#     changes will trigger the necessary rebuilds automatically. Using 'Needs'
+#     instead of 'Depends' make it so we dont unnecessarly relink when a DLL's
+#     implementation changes.
+#   MightNotUpdate - Some targets may or may not update when their action is
+#     executed, such as export libraries for a Windows DLL. In order for Jam
+#     to process this behavior appropriately, the targets must be marked so
+#     their timestamps will be evaluated at the latest possible time during
+#     the Updating Phase. Be aware that the MightNotUpdate calculation happens
+#     during the Updating Phase. This results in Jam possibly reporting target
+#     counts improperly.
 #   Echo - blurt out targets on stdout
 #   Exit - blurt out targets and exit
-#   Includes - marks sources as headers for target (a codependency)
 #   NoCare - don't panic if the target can't be built
 #   NoUpdate - create the target if needed but never update it
 #   NotFile - ignore the timestamp of the target (it's not a file)
@@ -131,7 +153,6 @@
 # Special targets:
 #   all - default if none given on command line
 #
-
 
 #========================================================================
 # rule Split STRINGS : SPLIT_CHARACTERS

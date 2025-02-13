@@ -13,12 +13,12 @@
  *
  * The following are defined:
  *
- *	RULE - a generic jam rule, the product of RULE and ACTIONS 
- *	ACTIONS - a chain of ACTIONs 
- *	ACTION - a RULE instance with targets and sources 
- *	SETTINGS - variables to set when executing a TARGET's ACTIONS 
- *	TARGETS - a chain of TARGETs 
- *	TARGET - a file or "thing" that can be built 
+ *  RULE - a generic jam rule, the product of RULE and ACTIONS
+ *  ACTIONS - a chain of ACTIONs
+ *  ACTION - a RULE instance with targets and sources
+ *  SETTINGS - variables to set when executing a TARGET's ACTIONS
+ *  TARGETS - a chain of TARGETs
+ *  TARGET - a file or "thing" that can be built
  *
  * 04/11/94 (seiwald) - Combined deps & headers into deps[2] in TARGET.
  * 04/12/94 (seiwald) - actionlist() now just appends a single action.
@@ -27,7 +27,7 @@
  * 01/19/95 (seiwald) - split DONTKNOW into CANTFIND/CANTMAKE.
  * 02/02/95 (seiwald) - new LEAVES modifier on targets.
  * 02/14/95 (seiwald) - new NOUPDATE modifier on targets.
- * 02/28/02 (seiwald) - merge EXEC_xxx flags in with RULE_xxx 
+ * 02/28/02 (seiwald) - merge EXEC_xxx flags in with RULE_xxx
  * 06/21/02 (seiwald) - support for named parameters
  * 07/17/02 (seiwald) - TEMPORARY sources for headers now get built
  * 11/04/02 (seiwald) - const-ing for string literals
@@ -94,6 +94,7 @@ struct _targets {
   TARGETS *next;
   TARGETS *tail; /* valid only for head */
   TARGET *target;
+  char needs;
 };
 
 /* TARGET - a file or "thing" that can be built */
@@ -113,6 +114,7 @@ struct _target {
 #define T_FLAG_LEAVES 0x10   /* LEAVES applied */
 #define T_FLAG_NOUPDATE 0x20 /* NOUPDATE applied */
 #define T_FLAG_INTERNAL 0x40 /* internal INCLUDES node */
+#define T_FLAG_MIGHTNOTUPDATE 0x80 /* MightNotUpdate applied */
 
   char binding; /* how target relates to real file */
 
@@ -163,12 +165,16 @@ struct _target {
   char *cmds;       /* type-punned command list */
 };
 
+#define T_DEPENDS_PARSE_NUM_DEPENDS 0
+#define T_DEPENDS_PARSE_NUM_INCLUDES 1
+#define T_DEPENDS_PARSE_NUM_NEEDS 2
+
 RULE *bindrule(const char *rulename);
 TARGET *bindtarget(const char *targetname);
 TARGET *copytarget(const TARGET *t);
 void touchtarget(const char *t);
-TARGETS *targetlist(TARGETS *chain, LIST *targets);
-TARGETS *targetentry(TARGETS *chain, TARGET *target);
+TARGETS *targetlist(TARGETS *chain, LIST *targets, char needs);
+TARGETS *targetentry(TARGETS *chain, TARGET *target, char needs);
 TARGETS *targetchain(TARGETS *chain, TARGETS *targets);
 ACTIONS *actionlist(ACTIONS *chain, ACTION *action);
 SETTINGS *addsettings(SETTINGS *v, int setflag, const char *sym, LIST *val);

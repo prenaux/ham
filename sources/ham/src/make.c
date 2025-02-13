@@ -17,11 +17,11 @@
  * execution, is in make1.c.
  *
  * External routines:
- *	make() - make a target, given its name
+ *  make() - make a target, given its name
  *
  * Internal routines:
- * 	make0() - bind and scan everything to make a TARGET
- * 	make0sort() - reorder TARGETS chain by their time (newest to oldest)
+ *  make0() - bind and scan everything to make a TARGET
+ *  make0sort() - reorder TARGETS chain by their time (newest to oldest)
  *
  * 12/26/93 (seiwald) - allow NOTIME targets to be expanded via $(<), $(>)
  * 01/04/94 (seiwald) - print all targets, bounded, when tracing commands
@@ -29,7 +29,7 @@
  * 04/11/94 (seiwald) - Combined deps & headers into deps[2] in TARGET.
  * 12/20/94 (seiwald) - NOTIME renamed NOTFILE.
  * 12/20/94 (seiwald) - make0() headers after determining fate of target, so
- *			that headers aren't seen as dependents on themselves.
+ *      that headers aren't seen as dependents on themselves.
  * 01/19/95 (seiwald) - distinguish between CANTFIND/CANTMAKE targets.
  * 02/02/95 (seiwald) - propagate leaf source time for new LEAVES rule.
  * 02/14/95 (seiwald) - NOUPDATE rule means don't update existing target.
@@ -274,8 +274,8 @@ static void make0(
   SETTINGS *s;
 
   /*
-	 * Step 1: initialize
-	 */
+   * Step 1: initialize
+   */
 
   if (DEBUG_MAKEPROG)
     printf("make\t--\t%s%s\n", spaces(depth), t->name);
@@ -283,9 +283,9 @@ static void make0(
   t->fate = T_FATE_MAKING;
 
   /*
-	 * Step 2: under the influence of "on target" variables,
-	 * bind the target and search for headers.
-	 */
+   * Step 2: under the influence of "on target" variables,
+   * bind the target and search for headers.
+   */
 
   /* Step 2a: set "on target" variables. */
 
@@ -324,8 +324,8 @@ static void make0(
   freesettings(s);
 
   /*
-	 * Pause for a little progress reporting
-	 */
+   * Pause for a little progress reporting
+   */
 
   if (DEBUG_MAKEPROG) {
     if (strcmp(t->name, t->boundname)) {
@@ -350,8 +350,8 @@ static void make0(
   }
 
   /*
-	 * Step 3: recursively make0() dependents & headers
-	 */
+   * Step 3: recursively make0() dependents & headers
+   */
 
   /* Step 3a: recursively make0() dependents */
 
@@ -361,7 +361,7 @@ static void make0(
     if (DEBUG_DEPENDS)
       printf(
         "%s \"%s\" : \"%s\" ;\n",
-        internal ? "Includes" : "Depends",
+        internal ? "Includes" : (c->needs ? "Needs" : "Depends"),
         t->name,
         c->target->name);
 
@@ -383,21 +383,27 @@ static void make0(
 
   incs = 0;
 
-  for (c = t->depends; c; c = c->next)
+  for (c = t->depends; c; c = c->next) {
+    if (c->needs || (t->flags & T_FLAG_MIGHTNOTUPDATE)) {
+      continue;
+    }
+
     if (c->target->includes) {
-      incs = targetentry(incs, c->target->includes);
+      incs = targetentry(incs, c->target->includes, 0);
       /* If the includes are newer than we are their original target
                also needs to be marked newer. This is needed so that 'updated'
                correctly will include the original target in the $(<) variable. */
-      if (c->target->includes->time > t->time)
+      if (c->target->includes->time > t->time) {
         c->target->fate = max(T_FATE_NEWER, c->target->fate);
+      }
     }
+  }
 
   t->depends = targetchain(t->depends, incs);
 
   /*
-	 * Step 4: compute time & fate
-	 */
+   * Step 4: compute time & fate
+   */
 
   /* Step 4a: pick up dependents' time and fate */
 
@@ -406,6 +412,11 @@ static void make0(
   fate = T_FATE_STABLE;
 
   for (c = t->depends; c; c = c->next) {
+    /* If this is a "Needs" dependency, don't care about its timestamp. */
+    if (c->needs || (t->flags & T_FLAG_MIGHTNOTUPDATE)) {
+      continue;
+    }
+
     /* If LEAVES has been applied, we only heed the timestamps of */
     /* the leaf source nodes. */
 
@@ -423,19 +434,19 @@ static void make0(
   /* Step 4b: pick up included headers time */
 
   /*
-	 * If a header is newer than a temp source that includes it,
-	 * the temp source will need building.
-	 */
+   * If a header is newer than a temp source that includes it,
+   * the temp source will need building.
+   */
 
   hlast = t->includes ? t->includes->time : 0;
 
   /* Step 4c: handle NOUPDATE oddity */
 
   /*
-	 * If a NOUPDATE file exists, make dependents eternally old.
-	     * Don't inherit our fate from our dependents.  Decide fate
-	     * based only upon other flags and our binding (done later).
-	     */
+   * If a NOUPDATE file exists, make dependents eternally old.
+       * Don't inherit our fate from our dependents.  Decide fate
+       * based only upon other flags and our binding (done later).
+       */
 
   if (t->flags & T_FLAG_NOUPDATE) {
     last = 0;
@@ -446,22 +457,22 @@ static void make0(
   /* Step 4d: determine fate: rebuild target or what? */
 
   /*
-	    In English:
-		If can't find or make child, can't make target.
-		If children changed, make target.
-		If target missing, make it.
-		If children newer, make target.
-		If temp's children newer than parent, make temp.
-		If temp's headers newer than parent, make temp.
-		If deliberately touched, make it.
-		If up-to-date temp file present, use it.
-		If target newer than non-notfile parent, mark target newer.
-		Otherwise, stable!
+      In English:
+    If can't find or make child, can't make target.
+    If children changed, make target.
+    If target missing, make it.
+    If children newer, make target.
+    If temp's children newer than parent, make temp.
+    If temp's headers newer than parent, make temp.
+    If deliberately touched, make it.
+    If up-to-date temp file present, use it.
+    If target newer than non-notfile parent, mark target newer.
+    Otherwise, stable!
 
-		Note this block runs from least to most stable:
-		as we make it further down the list, the target's
-		fate is getting stabler.
-	*/
+    Note this block runs from least to most stable:
+    as we make it further down the list, the target's
+    fate is getting stabler.
+  */
 
   if (fate >= T_FATE_BROKEN) {
     fate = T_FATE_CANTMAKE;
@@ -491,9 +502,13 @@ static void make0(
     fate = T_FATE_ISTMP;
   }
   else if (
-    t->binding == T_BIND_EXISTS && p && p->binding != T_BIND_UNBOUND &&
-    t->time > p->time) {
-    fate = T_FATE_NEWER;
+    t->binding == T_BIND_EXISTS &&
+    p && p->binding != T_BIND_UNBOUND &&
+    t->time > p->time)
+  {
+    if (!(p->flags & T_FLAG_MIGHTNOTUPDATE)) {
+      fate = T_FATE_NEWER;
+    }
   }
   else {
     fate = T_FATE_STABLE;
@@ -524,15 +539,15 @@ static void make0(
   t->fate = fate;
 
   /*
-	 * Step 5: sort dependents by their update time.
-	 */
+   * Step 5: sort dependents by their update time.
+   */
 
   if (globs.newestfirst)
     t->depends = make0sort(t->depends);
 
   /*
-	 * Step 6: a little harmless tabulating for tracing purposes
-	 */
+   * Step 6: a little harmless tabulating for tracing purposes
+   */
 
   /* Don't count or report interal includes nodes. */
 

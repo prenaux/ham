@@ -490,7 +490,7 @@ void execcmd(
     argv[0],
     serialOutput ? &child_fd_actions : NULL,
     NULL,
-    argv,
+    (char**)argv,
     environ);
   if (rspawn == 0) {
     #ifdef _TRACE_EXECCMD

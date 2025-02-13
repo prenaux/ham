@@ -523,7 +523,7 @@ rule tkDepDll {
     # ECHO "... tkDepDll: nodir, l:" $(l) ;
     # Add a dependency instead of checking for existance since these might not
     # be built yet
-    DEPENDS $(<) : $(moduleName) ;
+    NEEDS $(<) : $(moduleName) ;
     return $(l) ;
   }
 }

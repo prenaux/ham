@@ -96,7 +96,16 @@ void load_builtins() {
     parse_make(builtin_flags, P0, P0, P0, C0, C0, T_FLAG_TOUCHED);
 
   bindrule("Depends")->procedure = bindrule("DEPENDS")->procedure =
-    parse_make(builtin_depends, P0, P0, P0, C0, C0, 0);
+    parse_make(builtin_depends, P0, P0, P0, C0, C0, T_DEPENDS_PARSE_NUM_DEPENDS);
+
+  bindrule("Includes")->procedure = bindrule("INCLUDES")->procedure =
+    parse_make(builtin_depends, P0, P0, P0, C0, C0, T_DEPENDS_PARSE_NUM_INCLUDES);
+
+  bindrule("Needs")->procedure = bindrule("NEEDS")->procedure =
+    parse_make(builtin_depends, P0, P0, P0, C0, C0, T_DEPENDS_PARSE_NUM_NEEDS);
+
+  bindrule("MightNotUpdate")->procedure = bindrule("MIGHTNOTUPDATE")->procedure =
+    parse_make(builtin_flags, P0, P0, P0, C0, C0, T_FLAG_MIGHTNOTUPDATE);
 
   bindrule("echo")->procedure = bindrule("Echo")->procedure =
     bindrule("ECHO")->procedure =
@@ -123,9 +132,6 @@ void load_builtins() {
 
   bindrule("GlobString")->procedure = bindrule("GLOBSTRING")->procedure =
     parse_make(builtin_globstring, P0, P0, P0, C0, C0, 0);
-
-  bindrule("Includes")->procedure = bindrule("INCLUDES")->procedure =
-    parse_make(builtin_depends, P0, P0, P0, C0, C0, 1);
 
   bindrule("Leaves")->procedure = bindrule("LEAVES")->procedure =
     parse_make(builtin_flags, P0, P0, P0, C0, C0, T_FLAG_LEAVES);
@@ -212,13 +218,14 @@ LIST *builtin_depends(PARSE *parse, LOL *args, int *jmp) {
     /* TARGET, creating it if needed.  The internal include */
     /* TARGET shares the name of its parent. */
 
-    if (parse->num) {
+    if (parse->num == T_DEPENDS_PARSE_NUM_INCLUDES) {
       if (!t->includes)
         t->includes = copytarget(t);
       t = t->includes;
     }
 
-    t->depends = targetlist(t->depends, sources);
+    t->depends = targetlist(
+      t->depends, sources, (char)(parse->num==T_DEPENDS_PARSE_NUM_NEEDS));
   }
 
   return L0;
