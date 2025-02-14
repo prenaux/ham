@@ -465,7 +465,7 @@ rule tkLinkImpLibs {
     local l = [ tkFindImportedLib $(>) : $(3) : $(4) ] ;
     if ! ( $(NO_DEPS) = 1 ) {
       if ( ! ( $(NO_DEPS_DLL) = 1 ) ) || ( ! [ FExists $(l) ] ) {
-        DEPENDS $(<) : $(l) ;
+        NEEDS $(<) : $(l) ;
       }
     }
     VarOnAddToFront LINKLIBS : $(<) : [ FQuote $(l) ] ;
