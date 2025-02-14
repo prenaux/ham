@@ -405,7 +405,9 @@ case $HAM_OS in
       log_info "MSVC_DEVENV_PATH: $MSVC_DEVENV_PATH"
       (
         set -x
-        "$MSVC_DEVENV_PATH" "${VCSLN_SESSION_FILE}" &
+        # '</dev/null >/dev/null 2>&1 &' as for side effect to detach the
+        # process from the caller
+        "$MSVC_DEVENV_PATH" "${VCSLN_SESSION_FILE}" </dev/null >/dev/null 2>&1 &
         true
       )
     fi
