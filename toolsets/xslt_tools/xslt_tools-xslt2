@@ -1,4 +1,0 @@
-#!/bin/bash
-. ham-bash-lib.sh
-xslt_tools-saxon "$1" "$2" "$3"
-exit $?

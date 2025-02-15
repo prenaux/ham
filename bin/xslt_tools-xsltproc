@@ -8,5 +8,12 @@ for PARAM in "$@"; do
     args+=(\""${PARAM}"\")
   fi
 done
-echo xsltproc "${args[@]}" | bash -
+XSLTPROC_EXE="xsltproc"
+case $HAM_OS in
+  NT*)
+    XSLTPROC_EXE="$HAM_HOME/bin/nt-x86/xsltproc/xsltproc.exe"
+    ;;
+esac
+
+echo "${XSLTPROC_EXE}" "${args[@]}" | bash -
 exit $?
