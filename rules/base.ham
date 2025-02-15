@@ -428,7 +428,7 @@ if ( $(FLYMAKE) = 1 ) && ( $(CAN_LINT) = 1 ) {
 rule logGetLoc {
   if ! $(SUBDIR_TOKENS) {
     if $(TK_NAME) {
-      return "$(TK_NAME)/UNKNOWN_LOC" ;
+      return "$(TK_NAME)" ;
     }
     else {
       return "UNKNOWN_LOC" ;
@@ -440,35 +440,35 @@ rule logGetLoc {
 rule logDebug {
   if $(LOG) <= 0 {
     local _loc = [ logGetLoc ] ;
-    ECHO "D/$(_loc):" $(<) ;
+    CECHO DEBUG "D/$(_loc):" $(<) ;
   }
 }
 
 rule logVerbose {
   if $(LOG) <= 1 {
     local _loc = [ logGetLoc ] ;
-    ECHO "V/$(_loc):" $(<) ;
+    CECHO VERBOSE "V/$(_loc):" $(<) ;
   }
 }
 
 rule logInfo {
   if $(LOG) <= 2 {
     local _loc = [ logGetLoc ] ;
-    ECHO "I/$(_loc):" $(<) ;
+    CECHO INFO "I/$(_loc):" $(<) ;
   }
 }
 
-rule logWarn {
+rule logWarning {
   if $(LOG) <= 3 {
     local _loc = [ logGetLoc ] ;
-    ECHO "W/$(_loc):" $(<) ;
+    CECHO WARNING "W/$(_loc):" $(<) ;
   }
 }
 
 rule logError {
   if $(LOG) <= 4 {
     local _loc = [ logGetLoc ] ;
-    ECHO "E/$(_loc):" $(<) ;
+    CECHO ERROR "E/$(_loc):" $(<) ;
   }
 }
 
@@ -479,8 +479,13 @@ rule logFatal {
     EXIT "F/$(_loc):" $(<) ;
   }
   else {
-    ECHO "F/$(_loc):" $(<) ;
+    CECHO FATAL "F/$(_loc):" $(<) ;
   }
+}
+
+rule logSuccess {
+  local _loc = [ logGetLoc ] ;
+  CECHO SUCCESS "S/$(_loc):" $(<) ;
 }
 
 rule logVar {

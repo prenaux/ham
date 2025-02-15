@@ -65,6 +65,7 @@
 
 LIST *builtin_depends(PARSE *parse, LOL *args, int *jmp);
 LIST *builtin_echo(PARSE *parse, LOL *args, int *jmp);
+LIST *builtin_echo_colored(PARSE *parse, LOL *args, int *jmp);
 LIST *builtin_fecho(PARSE *parse, LOL *args, int *jmp);
 LIST *builtin_fexists(PARSE *parse, LOL *args, int *jmp);
 LIST *builtin_fisdir(PARSE *parse, LOL *args, int *jmp);
@@ -90,6 +91,9 @@ LIST *builtin_sha256_128(PARSE *parse, LOL *args, int *jmp);
 LIST *builtin_sha256_64(PARSE *parse, LOL *args, int *jmp);
 
 int glob(const char *s, const char *c);
+int get_tty_use_colors();
+static const char* resetColorCode = "\033[0m";
+const char* get_color_code(const char* colorStr);
 
 void load_builtins() {
   bindrule("Always")->procedure = bindrule("ALWAYS")->procedure =
@@ -113,6 +117,9 @@ void load_builtins() {
   bindrule("echo")->procedure = bindrule("Echo")->procedure =
     bindrule("ECHO")->procedure =
       parse_make(builtin_echo, P0, P0, P0, C0, C0, 0);
+
+  bindrule("CEcho")->procedure = bindrule("CECHO")->procedure =
+      parse_make(builtin_echo_colored, P0, P0, P0, C0, C0, 0);
 
   bindrule("fecho")->procedure = bindrule("FEcho")->procedure =
     bindrule("FECHO")->procedure =
@@ -247,6 +254,110 @@ LIST *builtin_echo(PARSE *parse, LOL *args, int *jmp) {
   return L0;
 }
 
+int get_tty_use_colors() {
+  // Determine if we can use colors
+  static int initDone = 0;
+  static int useColors = 0;
+  if (!initDone) {
+    initDone = 1;
+    const char* noColor = getenv("NO_COLOR");
+    // Don't use colors if NO_COLOR is set
+    if (!noColor || !*noColor) {
+      // Check if stdout is a TTY
+      if (isatty(fileno(stdout))) {
+        useColors = 1;
+      } else {
+        // Special case for emacs and similar environments
+        const char* insideEmacs = getenv("INSIDE_EMACS");
+        if (insideEmacs && *insideEmacs) {
+          useColors = 1;
+        }
+      }
+    }
+  }
+  return useColors;
+}
+
+const char* get_color_code(const char* colorStr) {
+  if (!colorStr || !*colorStr)
+    return NULL;
+
+  const char* colorCode = NULL;
+  if (!stricmp(colorStr, "red") ||
+      !stricmp(colorStr, "error")) {
+    colorCode = "\033[31m";
+  }
+  else if (!stricmp(colorStr, "brightred") ||
+      !stricmp(colorStr, "fatal")) {
+    colorCode = "\033[91m";
+  }
+  else if (!stricmp(colorStr, "green") ||
+           !stricmp(colorStr, "debug")) {
+    colorCode = "\033[32m";
+  }
+  else if (!stricmp(colorStr, "brightgreen") ||
+           !stricmp(colorStr, "success")) {
+    colorCode = "\033[92m";
+  }
+  else if (!stricmp(colorStr, "yellow") ||
+           !stricmp(colorStr, "warning")) {
+    colorCode = "\033[33m";
+  }
+  else if (!stricmp(colorStr, "brightyellow")) {
+    colorCode = "\033[93m";
+  }
+  else if (!stricmp(colorStr, "blue")) {
+    colorCode = "\033[34m";
+  }
+  else if (!stricmp(colorStr, "brightblue")) {
+    colorCode = "\033[94m";
+  }
+  else if (!stricmp(colorStr, "magenta")) {
+    colorCode = "\033[35m";
+  }
+  else if (!stricmp(colorStr, "brightmagenta")) {
+    colorCode = "\033[95m";
+  }
+  else if (!stricmp(colorStr, "cyan") ||
+           !stricmp(colorStr, "info")) {
+    colorCode = "\033[36m";
+  }
+  else if (!stricmp(colorStr, "brightcyan")) {
+    colorCode = "\033[96m";
+  }
+  else if (!stricmp(colorStr, "white")) {
+    colorCode = "\033[37m";
+  }
+  else if (!stricmp(colorStr, "grey") ||
+           !stricmp(colorStr, "verbose")) {
+    colorCode = "\033[90m";
+  }
+  else if (!stricmp(colorStr, "brightwhite")) {
+    colorCode = "\033[97m";
+  }
+  return colorCode;
+}
+
+LIST* builtin_echo_colored(PARSE* parse, LOL* args, int* jmp) {
+  LIST* color = lol_get(args, 0);
+  LIST* message = list_next(color);
+
+  const int useColors = get_tty_use_colors();
+  const char* colorCode = get_color_code(color ? color->string : NULL);
+  if (message) {
+    if (useColors && colorCode) {
+      printf(colorCode);
+    }
+    list_print(message);
+    if (useColors && colorCode) {
+      printf(resetColorCode);
+    }
+  }
+
+  printf("\n");
+  return L0;
+}
+
 /*
  * builtin_fecho() - FECHO file : TEXT : [create|append(default)|nl]
  *
@@ -345,7 +456,18 @@ LIST *builtin_fisdir(PARSE *parse, LOL *args, int *jmp) {
  */
 
 LIST *builtin_exit(PARSE *parse, LOL *args, int *jmp) {
-  list_print(lol_get(args, 0));
+  LIST* message = lol_get(args, 0);
+  const int useColors = get_tty_use_colors();
+  const char* colorCode = get_color_code("FATAL");
+  if (message) {
+    if (useColors && colorCode) {
+      printf(colorCode);
+    }
+    list_print(lol_get(args, 0));
+    if (useColors && colorCode) {
+      printf(resetColorCode);
+    }
+  }
   printf("\n");
   exit(EXITBAD); /* yeech */
   return L0;

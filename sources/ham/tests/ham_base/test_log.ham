@@ -1,6 +1,10 @@
+LOG = 0 ;
 logDebug "Hello logDebug" ;
+logVerbose "Hello logVerbose" ;
 logInfo "Hello logInfo" ;
-logWarn "Hello logWarn" ;
+logWarning "Hello logWarn" ;
 logError "Hello logError" ;
+LOG_FATAL_EXIT = 0 ;
 # Yeah, we can't do this, cause it terminates ham...
-# logFatal "Hello logFatal" ;
+logFatal "Hello logFatal" ;
+logSuccess "Hello logSuccess" ;
