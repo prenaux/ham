@@ -4,13 +4,13 @@
 
 # Let clang-format detect based on the extension
 # Language: Cpp
-Standard: c++17
+Standard: c++20
 BasedOnStyle: Google
 SortIncludes: false
 IndentWidth: 2
 ContinuationIndentWidth: 2
 PPIndentWidth: 2
-IndentPPDirectives: BeforeHash
+IndentPPDirectives: AfterHash
 ColumnLimit: 80
 MaxEmptyLinesToKeep: 1
 IndentGotoLabels: false
