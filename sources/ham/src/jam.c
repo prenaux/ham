@@ -472,19 +472,25 @@ int main(int argc, char **argv, char **arg_environ) {
     }
   }
 
-  /* Set HAMDATE first */
+  /* Set HAMCMDARGS */
   {
-    char buf[128];
-    time_t clock;
-    time(&clock);
-    strcpy(buf, ctime(&clock));
+    LIST *l = L0;
+    for (n = 0; n < num_targets; n++) {
+      l = list_new(l, targets[n], 0);
+    }
+    var_set("HAMCMDARGS", l, VAR_SET);
+  }
 
-    /* Trim newline from date */
+  {
+    char buf[64] = {0};
 
-    if (strlen(buf) == 25)
-      buf[24] = 0;
+    /* Set HAMCMDNUMPASS */
+    snprintf(buf, sizeof(buf), "%d", globs.numpass);
+    var_set("HAMCMDNUMPASS", list_new(L0, buf, 0), VAR_SET);
 
-    var_set("HAMDATE", list_new(L0, buf, 0), VAR_SET);
+    /* Set HAMCMDJOBS */
+    snprintf(buf, sizeof(buf), "%d", globs.jobs);
+    var_set("HAMCMDJOBS", list_new(L0, buf, 0), VAR_SET);
   }
 
   /*
@@ -493,11 +499,9 @@ int main(int argc, char **argv, char **arg_environ) {
   var_defines(othersyms);
 
   /* load up environment variables */
-
   var_defines((const char **)use_environ);
 
   /* Load up variables set on command line. */
-
   for (n = 0; (s = getoptval(optv, 's', n)) != 0; n++) {
     const char *symv[2];
     symv[0] = s;
@@ -531,16 +535,6 @@ int main(int argc, char **argv, char **arg_environ) {
       exit(EXITBAD);
     }
     globs.noexec++;
-  }
-
-  /* Add HAMCMDARGS
-   */
-  {
-    LIST *l = L0;
-    for (n = 0; n < num_targets; n++) {
-      l = list_new(l, targets[n], 0);
-    }
-    var_set("HAMCMDARGS", l, VAR_SET);
   }
 
   /* Now make target */
