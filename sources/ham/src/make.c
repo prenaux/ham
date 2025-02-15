@@ -81,6 +81,7 @@ typedef struct {
   int cantmake;
   int targets;
   int made;
+  int generating;
 } COUNTS;
 
 static void make0(TARGET *t, TARGET *p, int depth, COUNTS *counts, int anyhow);
@@ -115,7 +116,7 @@ static const char *target_bind[] = {
  * make() - make a target, given its name
  */
 
-int make(int n_targets, const char **targets, int anyhow) {
+int make(int n_targets, const char **targets, int anyhow, int* generated) {
   int i;
   COUNTS counts[1];
   int status = 0; /* 1 if anything fails */
@@ -138,6 +139,8 @@ int make(int n_targets, const char **targets, int anyhow) {
       printf("...found %d target(s)...\n", counts->targets);
     if (counts->temp)
       printf("...using %d temp target(s)...\n", counts->temp);
+    if (counts->generating)
+      printf("...generating %d target(s)...\n", counts->generating);
     if (counts->updating)
       printf("...updating %d target(s)...\n", counts->updating);
     if (counts->cantfind)
@@ -153,7 +156,7 @@ int make(int n_targets, const char **targets, int anyhow) {
   status = counts->cantfind || counts->cantmake;
 
   for (i = 0; i < n_targets; i++)
-    status |= make1(bindtarget(targets[i]));
+    status |= make1(bindtarget(targets[i]),generated);
 
   return status;
 }
@@ -301,14 +304,15 @@ static void make0(
 
   /* INTERNAL, NOTFILE header nodes have the time of their parents */
 
-  if (p && t->flags & T_FLAG_INTERNAL)
+  if (p && (t->flags & T_FLAG_INTERNAL))
     ptime = p;
 
   /* If temp file doesn't exist but parent does, use parent */
 
-  if (
-    p && t->flags & T_FLAG_TEMP && t->binding == T_BIND_MISSING &&
-    p->binding != T_BIND_MISSING) {
+  if (p && (t->flags & T_FLAG_TEMP) &&
+    (t->binding == T_BIND_MISSING) &&
+    (p->binding != T_BIND_MISSING))
+  {
     t->binding = T_BIND_PARENTS;
     ptime = p;
   }
@@ -565,8 +569,15 @@ static void make0(
     counts->cantfind++;
   else if (fate == T_FATE_CANTMAKE && t->actions)
     counts->cantmake++;
-  else if (fate >= T_FATE_BUILD && fate < T_FATE_BROKEN && t->actions)
+  else if (fate >= T_FATE_BUILD && fate < T_FATE_BROKEN && t->actions) {
+    if (t->flags & T_FLAG_GENERATED) {
+      if (DEBUG_GENERATED) {
+        printf("... Generating: %s\n", t->name);
+      }
+      ++counts->generating;
+    }
     counts->updating++;
+  }
 
   if (!(t->flags & T_FLAG_NOTFILE) && fate >= T_FATE_SPOIL)
     flag = "+";

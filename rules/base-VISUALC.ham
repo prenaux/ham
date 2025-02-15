@@ -84,7 +84,7 @@ switch $(MSVC_DEBUG_INFO) {
   case * :
     logFatal "Unknown MSVC_DEBUG_INFO:" $(MSVC_DEBUG_INFO) ;
 }
-ECHO "I/MSVC_DEBUG_INFO:" $(MSVC_DEBUG_INFO) ;
+logVar MSVC_DEBUG_INFO ;
 
 LINKLIBS    ?= kernel32.lib ;
 OPTIM       ?= "" ;

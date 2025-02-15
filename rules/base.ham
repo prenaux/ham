@@ -134,13 +134,15 @@
 #   NoUpdate - create the target if needed but never update it
 #   NotFile - ignore the timestamp of the target (it's not a file)
 #   Temporary - target need not be present if sources haven't changed
+#   Generated - The target has been generated a should trigger another ham
+#               pass. This is necessary generating targets that are
+#               dependencies of other targets, such as generating headers.
 #
 # Special variables set by jam:
 #   $(<) - targets of a rule (to the left of the :)
 #   $(>) - sources of a rule (to the right of the :)
 #   $(xxx) - true on xxx (UNIX, VMS, NT, OS2, MAC)
 #   $(OS) - name of OS - varies wildly
-#   $(JAMVERSION) - version number (3.0)
 #
 # Special variables used by jam:
 #   SEARCH - where to find something (used during binding and actions)
@@ -2916,25 +2918,25 @@ rule VarOnAddToFront {
 # Section: Multi-output rules
 #----------------------------------------------------------------------
 
-# GeneratedWith DEST : SRC : CONTEXT ;
-rule GeneratedWith {
-  # ECHO "GENERATED WITH: '$(<)' WITH '$(>)'." ;
+# OutputWith DEST : SRC : CONTEXT ;
+rule OutputWith {
+  # ECHO "OUTPUT WITH: '$(<)' WITH '$(>)'." ;
   DEPENDS $(<) : $(>) ;
-  local context = GeneratedWith $(3) ;
+  local context = OutputWith $(3) ;
   _CONTEXT on $(<) = $(context:J=" ") ;
   if ! [ FExists $(<) ] {
-    # ECHO "GENERATED WITH: '$(<)' DOESNT EXIST, ALWAYS '$(>)'." ;
+    # ECHO "OUTPUT WITH: '$(<)' DOESNT EXIST, ALWAYS '$(>)'." ;
     ALWAYS $(>) ;
   }
 }
-actions quietly GeneratedWith {
+actions quietly OutputWith {
   . "$HAM_HOME/bin/ham-bash-setenv.sh"
   if [ ! -e "$(>)" ]; then
-    log_error "$(_CONTEXT): Cant find expected source file '$(>)' generated with '$(<)'."
+    log_error "$(_CONTEXT): Cant find expected source file '$(>)' output with '$(<)'."
     exit 1
   fi
   if [ ! -e "$(<)" ]; then
-    log_error "$(_CONTEXT): Cant find expected output file '$(<)' generated with '$(>)'"
+    log_error "$(_CONTEXT): Cant find expected output file '$(<)' output with '$(>)'"
     exit 1
   fi
 }

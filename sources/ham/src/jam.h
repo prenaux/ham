@@ -471,7 +471,7 @@
 
 /* Jam private definitions below. */
 
-#define DEBUG_MAX 15
+#define DEBUG_MAX 16
 
 struct globs {
   int noexec;
@@ -480,6 +480,7 @@ struct globs {
   int newestfirst; /* build newest sources first */
   char debug[DEBUG_MAX];
   FILE *cmdout; /* print cmds, not run them */
+  int numpass;
 };
 
 extern struct globs globs;
@@ -507,5 +508,6 @@ extern struct globs globs;
 #define DEBUG_EXEC (globs.debug[12])    /* -dx show text of actions */
 #define DEBUG_DEPENDS (globs.debug[13]) /* -dd show dependency graph */
 #define DEBUG_CAUSES (globs.debug[14])  /* -dc show dependency graph */
+#define DEBUG_GENERATED (globs.debug[15]) /* -dg show generated targets */
 
 #define OPT_HEADER_CACHE_EXT

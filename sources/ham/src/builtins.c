@@ -107,6 +107,9 @@ void load_builtins() {
   bindrule("MightNotUpdate")->procedure = bindrule("MIGHTNOTUPDATE")->procedure =
     parse_make(builtin_flags, P0, P0, P0, C0, C0, T_FLAG_MIGHTNOTUPDATE);
 
+  bindrule("Generated")->procedure = bindrule("GENERATED")->procedure =
+    parse_make(builtin_flags, P0, P0, P0, C0, C0, T_FLAG_GENERATED);
+
   bindrule("echo")->procedure = bindrule("Echo")->procedure =
     bindrule("ECHO")->procedure =
       parse_make(builtin_echo, P0, P0, P0, C0, C0, 0);

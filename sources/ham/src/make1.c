@@ -85,6 +85,7 @@ static struct {
   int skipped;
   int total;
   int made;
+  int generated;
 } counts[1];
 
 static int _final_text_addcount = 0;
@@ -111,7 +112,7 @@ void _add_final_text(const char *aText) {
 
 static int intr = 0;
 
-int make1(TARGET *t) {
+int make1(TARGET *t, int* generated) {
   memset((char *)counts, 0, sizeof(*counts));
 
   exec_init();
@@ -132,6 +133,9 @@ int make1(TARGET *t) {
   if (DEBUG_MAKE && counts->skipped)
     printf("...skipped %d target(s)...\n", counts->skipped);
 
+  if (DEBUG_MAKE && counts->generated)
+    printf("...generated %d target(s)...\n", counts->generated);
+
   if (DEBUG_MAKE && counts->made)
     printf("...updated %d target(s)...\n", counts->made);
 
@@ -139,6 +143,9 @@ int make1(TARGET *t) {
     fputs(buffer_ptr(&_final_text), stdout);
   }
 
+  if (generated) {
+    *generated += counts->generated;
+  }
   return counts->total != counts->made;
 }
 
@@ -463,6 +470,14 @@ static void make1d(void *closure, int status, const char *output) {
     for (; targets; targets = list_next(targets))
       if (!unlink(targets->string))
         printf("...removing %s\n", targets->string);
+  }
+
+
+  if (status == EXEC_CMD_OK && (t->flags & T_FLAG_GENERATED)) {
+    if (DEBUG_GENERATED) {
+      printf("-> Generated: %s\n", t->name);
+    }
+    ++counts->generated;
   }
 
   /* Free this command and call make1c() to move onto next command. */

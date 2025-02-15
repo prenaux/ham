@@ -105,7 +105,7 @@ struct _target {
   ACTIONS *actions;      /* rules to execute, if any */
   SETTINGS *settings;    /* variables to define */
 
-  char flags; /* status info */
+  unsigned int flags; /* status info */
 
 #define T_FLAG_TEMP 0x01     /* TEMPORARY applied */
 #define T_FLAG_NOCARE 0x02   /* NOCARE applied */
@@ -115,6 +115,7 @@ struct _target {
 #define T_FLAG_NOUPDATE 0x20 /* NOUPDATE applied */
 #define T_FLAG_INTERNAL 0x40 /* internal INCLUDES node */
 #define T_FLAG_MIGHTNOTUPDATE 0x80 /* MightNotUpdate applied */
+#define T_FLAG_GENERATED 0x100 /* Generated target will trigger the nextpass */
 
   char binding; /* how target relates to real file */
 

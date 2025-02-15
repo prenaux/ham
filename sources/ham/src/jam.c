@@ -144,21 +144,18 @@
 #endif
 
 struct globs globs = {
-  0, /* noexec */
-  1, /* jobs */
-  0, /* quitquick */
-  0, /* newestfirst */
-#ifdef OS_MAC
-  {0}, /* display - suppress actions output */
-#else
-  {0, 1}, /* display actions  */
-#endif
-  0 /* output commands, not run them */
+  .noexec = 0,
+  .jobs = 1,
+  .quitquick = 1,
+  .newestfirst = 0,
+  .debug = {},
+  .cmdout = 0,
+  .numpass = 1,
 };
 
 /* Symbols to be defined as true for use in Jambase */
 
-static const char *othersyms[] = {OSMAJOR, OSMINOR, OSPLAT, JAMVERSYM, 0};
+static const char *othersyms[] = {OSMAJOR, OSMINOR, OSPLAT, HAMVERSYM, 0};
 
 /* Known for sure:
  *      mac needs arg_enviro
@@ -188,6 +185,67 @@ char g_bash_path[2048] = "bash";
     OSMINOR,                   \
     numProcessors,             \
     numProcessors > 1 ? "s" : "");
+
+static int run_ham_pass(int argc, char **argv, int numpassleft) {
+  char passleftbuf[64] = {0};
+  snprintf(passleftbuf, sizeof(passleftbuf), "%d", numpassleft);
+
+  char **new_argv = malloc((argc + 3) * sizeof(char*));
+  int i;
+  new_argv[0] = argv[0];
+  new_argv[1] = "-p";
+  new_argv[2] = passleftbuf;
+  for (i = 1; i < argc; i++) {
+    new_argv[i + 2] = argv[i];
+  }
+  new_argv[argc + 2] = NULL;
+
+#ifdef OS_NT
+  STARTUPINFO si = { sizeof(si) };
+  PROCESS_INFORMATION pi;
+
+  // Build command line string
+  char cmdline[4096] = "";
+  for (i = 0; new_argv[i]; i++) {
+    if (i > 0) strcat(cmdline, " ");
+    strcat_s(cmdline, sizeof(cmdline), new_argv[i]);
+  }
+
+  if (!CreateProcess(NULL, cmdline, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
+    printf("error: CreateProcess failed: %lu\n", GetLastError());
+    return EXITBAD;
+  }
+
+  // Wait for process to complete
+  WaitForSingleObject(pi.hProcess, INFINITE);
+
+  DWORD exit_code;
+  GetExitCodeProcess(pi.hProcess, &exit_code);
+
+  CloseHandle(pi.hProcess);
+  CloseHandle(pi.hThread);
+
+  return exit_code;
+#else
+  pid_t child = fork();
+  if (child == -1) {
+    printf("error: fork failed: %s\n", strerror(errno));
+    return EXITBAD;
+  }
+
+  if (child == 0) {
+    // Child process - exec the new pass
+    execvp(argv[0], new_argv);
+    printf("error: failed to launch pass '%d'\n", pass);
+    exit(EXITBAD);
+  }
+
+  // Parent process - wait for child to complete
+  int child_status;
+  waitpid(child, &child_status, 0);
+  return WEXITSTATUS(child_status);
+#endif
+}
 
 int main(int argc, char **argv, char **arg_environ) {
   int n, num_targets;
@@ -232,27 +290,24 @@ int main(int argc, char **argv, char **arg_environ) {
   InitGraf(&qd.thePort);
 #endif
 
-  argc--, argv++;
-
-  if (
-    (num_targets =
-       getoptions(argc, argv, "d:j:f:gs:t:ano:qve", optv, targets)) < 0) {
+  num_targets = getoptions(argc-1, argv+1, "d:j:f:gs:t:ano:qvep:", optv, targets);
+  if (num_targets < 0) {
     printf("\nusage: ham [ options ] targets...\n\n");
 
     printf("-a      Build all targets, even if they are current.\n");
-    printf("-dx     Display (a)actions (c)causes (d)dependencies\n");
-    printf("        (m)make tree (x)commands (0-9) debug levels.\n");
+    printf("-dx     Display (a)quiet actions (c)causes (d)dependencies\n");
+    printf("        (m)make tree (x)commands (g)generated (0-9) debug levels.\n");
     printf("-fx     Read x instead of Hambase.\n");
     printf("-g      Build from newest sources first.\n");
     printf("-jx     Run up to x shell commands concurrently.\n");
     printf("-n      Don't actually execute the updating actions.\n");
     printf("-ox     Write the updating actions to file x.\n");
+    printf("-px     Passes that can run after targets have been generated.\n");
     printf("-q      Try to continue building even if a target fails.\n");
     printf("-sx=y   Set variable x=y, overriding environment.\n");
     printf("-tx     Rebuild x, even if it is up-to-date.\n");
     printf("-v      Print the version of ham and exit.\n");
-    printf(
-      "-e      Print the value of the relevant environment variables.\n\n");
+    printf("-e      Print the value of the relevant environment variables.\n\n");
 
     exit(EXITBAD);
   }
@@ -354,6 +409,11 @@ int main(int argc, char **argv, char **arg_environ) {
   else {
     globs.jobs = numProcessors;
   }
+
+  if ((s = getoptval(optv, 'p', 0))) {
+    globs.numpass = atoi(s);
+  }
+
   // make sure the number of jobs are in reasonable limits...
   if (globs.jobs < 1 || globs.jobs > (numProcessors * 8))
     globs.jobs = numProcessors;
@@ -362,6 +422,7 @@ int main(int argc, char **argv, char **arg_environ) {
     globs.newestfirst = 1;
 
   /* Turn on/off debugging */
+  DEBUG_MAKE = 1; // Show actions when running
   for (n = 0; (s = getoptval(optv, 'd', n)) != 0; n++) {
     int i = atoi(s);
 
@@ -383,7 +444,7 @@ int main(int argc, char **argv, char **arg_environ) {
       while (*s) {
         switch (*s++) {
           case 'a':
-            DEBUG_MAKE = DEBUG_MAKEQ = 1;
+            DEBUG_MAKEQ = 1;
             break;
           case 'c':
             DEBUG_CAUSES = 1;
@@ -397,6 +458,9 @@ int main(int argc, char **argv, char **arg_environ) {
           case 'x':
             DEBUG_EXEC = 1;
             break;
+          case 'g':
+            DEBUG_GENERATED = 1;
+            break;
           case '0':
             break;
           default: {
@@ -409,7 +473,6 @@ int main(int argc, char **argv, char **arg_environ) {
   }
 
   /* Set HAMDATE first */
-
   {
     char buf[128];
     time_t clock;
@@ -424,27 +487,9 @@ int main(int argc, char **argv, char **arg_environ) {
     var_set("HAMDATE", list_new(L0, buf, 0), VAR_SET);
   }
 
-  /* And HAMUNAME */
-#ifdef unix
-  {
-    struct utsname u;
-
-    if (uname(&u) >= 0) {
-      LIST *l = L0;
-      l = list_new(l, u.machine, 0);
-      l = list_new(l, u.version, 0);
-      l = list_new(l, u.release, 0);
-      l = list_new(l, u.nodename, 0);
-      l = list_new(l, u.sysname, 0);
-      var_set("HAMUNAME", l, VAR_SET);
-    }
-  }
-#endif /* unix */
-
   /*
    * Ham defined variables OS, OSPLAT
    */
-
   var_defines(othersyms);
 
   /* load up environment variables */
@@ -461,11 +506,9 @@ int main(int argc, char **argv, char **arg_environ) {
   }
 
   /* Initialize built-in rules */
-
   load_builtins();
 
   /* Parse ruleset */
-
   for (n = 0; (s = getoptval(optv, 'f', n)) != 0; n++)
     parse_file(s);
 
@@ -478,12 +521,10 @@ int main(int argc, char **argv, char **arg_environ) {
   }
 
   /* Manually touch -t targets */
-
   for (n = 0; (s = getoptval(optv, 't', n)) != 0; n++)
     touchtarget(s);
 
   /* If an output file is specified, set globs.cmdout to that */
-
   if ((s = getoptval(optv, 'o', 0)) != 0) {
     if (!(globs.cmdout = fopen(s, "w"))) {
       printf("Failed to write to '%s'\n", s);
@@ -503,40 +544,52 @@ int main(int argc, char **argv, char **arg_environ) {
   }
 
   /* Now make target */
-
-  if (!num_targets)
-    status |= make(1, &all, anyhow);
-  else
-    status |= make(num_targets, (const char **)targets, anyhow);
+  int generated = 0;
+  if (!num_targets) {
+    status |= make(1, &all, anyhow, &generated);
+  }
+  else {
+    status |= make(num_targets, (const char **)targets, anyhow, &generated);
+  }
 
   /* Widely scattered cleanup */
-
   var_done();
   donerules();
   donestamps();
   donestr();
 
   /* close cmdout */
-
   if (globs.cmdout)
     fclose(globs.cmdout);
 
   {
-    {
-      fputs("...targets", stdout);
-      if (!num_targets) {
-        fputs(" all", stdout);
-      }
-      else {
-        int i;
-        for (i = 0; i < num_targets; ++i) {
-          fputs(" ", stdout);
-          fputs(targets[i], stdout);
-        }
-      }
-      fputs("...\n", stdout);
+    fputs("...targets", stdout);
+    if (!num_targets) {
+      fputs(" all", stdout);
     }
+    else {
+      int i;
+      for (i = 0; i < num_targets; ++i) {
+        fputs(" ", stdout);
+        fputs(targets[i], stdout);
+      }
+    }
+    fputs("...\n", stdout);
     fflush(stdout);
+  }
+
+  // Run the next pass
+  if ((status == 0) && (generated > 0)) {
+    if (globs.numpass > 0) {
+      int passleft = globs.numpass-1;
+      printf("...running next pass after %d target(s) were generated, %d pass left afterwards...\n", generated, passleft);
+      fflush(stdout);
+      return run_ham_pass(argc, argv, passleft);
+    }
+    else {
+      printf("warning: exhausted all passes but %d target(s) were generated.\n", generated);
+      fflush(stdout);
+    }
   }
 
   return status ? EXITBAD : EXITOK;
