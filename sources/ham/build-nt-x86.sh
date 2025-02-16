@@ -1,7 +1,7 @@
 #!/bin/bash -e
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
 cd "$SCRIPT_DIR/src"
-HAM_NO_VER_CHECK=1 . "$SCRIPT_DIR/../../_env.sh"
 HAM_NO_VER_CHECK=1 . ham-toolset msvc_19_x86
 errcheck $? build-ham-nt-x86 "Can't setup msvc_19_x86 toolset"
 
@@ -25,5 +25,13 @@ echo "I/Cleaning up temporary build files"
 (set -x ;
  rm -f *.obj *.lib *.exe ham ham0 *.pdb ;
  rm -Rf bin.ntx86/)
+
+echo "I/Run tests"
+(set -x ;
+ "$SCRIPT_DIR/run-tests.sh")
+
+echo "I/New ham version"
+(set -x ;
+ ham -v)
 
 echo "I/Done."
