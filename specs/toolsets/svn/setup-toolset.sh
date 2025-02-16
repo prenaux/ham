@@ -18,7 +18,7 @@ case $HAM_OS in
     ;;
   LINUX*)
     if [ -z "$(which svn)" ]; then
-      ham-apt-get-install subversion || return 1
+      ham_os_package_syslib_check_and_install bin svn subversion || return 1
     fi
     ;;
   *)
