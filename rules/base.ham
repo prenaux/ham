@@ -1675,13 +1675,9 @@ rule ObjectCompiler
 rule ObjectDefines
 {
   # must reformat CCDEFS according to current defines
-
   local s = [ FGristFiles $(<:S=$(SUFOBJ)) ] ;
-
-  DEFINES on $(s) ?= $(DEFINES) ;
-  CCDEFS on $(s) ?= $(CCDEFS) ;
   DEFINES on $(s) += $(>) ;
-  CCDEFS on $(s) += [ on $(s) FDefines $(DEFINES) ] ;
+  CCDEFS on $(s) = [ on $(s) FDefines $(DEFINES) ] ;
 }
 
 # /ObjectHdrs  sources : paths ;
@@ -1693,9 +1689,7 @@ rule ObjectHdrs
 {
   # Add to HDRS for HdrScan's benefit.
   # must reformat CCHDRS according to headers
-
   local s = [ FGristFiles $(<:S=$(SUFOBJ)) ] ;
-
   HDRS on $(s) += $(>) ;
   CCHDRS on $(s) = [ on $(s) FIncludes $(HDRS) ] ;
 }
