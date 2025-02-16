@@ -1,9 +1,9 @@
 #!/bin/bash -e
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
 cd "$SCRIPT_DIR/src"
-HAM_NO_VER_CHECK=1 . "$SCRIPT_DIR/../../_env.sh"
-HAM_NO_VER_CHECK=1 . ham-toolset default
-errcheck $? build-ham-lin-x64 "Can't setup toolset"
+
+HAM_NO_VER_CHECK=1 . ham-toolset linux_x64 || exit 1
 
 if [[ -e "./Makefile" ]]; then
   echo "I/Already configured"
@@ -35,5 +35,13 @@ echo "I/Cleaning up temporary build files"
  rm -f ham0 ;
  rm -Rf bin.unix/ ;
  rm -Rf ham0.dSYM/)
+
+echo "I/Run tests"
+(set -x ;
+ "$SCRIPT_DIR/run-tests.sh")
+
+echo "I/New ham version"
+(set -x ;
+ ham -v)
 
 echo "I/Done."
