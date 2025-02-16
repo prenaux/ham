@@ -218,7 +218,6 @@ void load_builtins() {
 LIST *builtin_depends(PARSE *parse, LOL *args, int *jmp) {
   LIST *targets = lol_get(args, 0);
   LIST *sources = lol_get(args, 1);
-  int which = parse->num;
   LIST *l;
 
   for (l = targets; l; l = list_next(l)) {
@@ -283,56 +282,56 @@ const char* get_color_code(const char* colorStr) {
     return NULL;
 
   const char* colorCode = NULL;
-  if (!stricmp(colorStr, "red") ||
-      !stricmp(colorStr, "error")) {
+  if (!ham_stricmp(colorStr, "red") ||
+      !ham_stricmp(colorStr, "error")) {
     colorCode = "\033[31m";
   }
-  else if (!stricmp(colorStr, "brightred") ||
-      !stricmp(colorStr, "fatal")) {
+  else if (!ham_stricmp(colorStr, "brightred") ||
+      !ham_stricmp(colorStr, "fatal")) {
     colorCode = "\033[91m";
   }
-  else if (!stricmp(colorStr, "green") ||
-           !stricmp(colorStr, "debug")) {
+  else if (!ham_stricmp(colorStr, "green") ||
+           !ham_stricmp(colorStr, "debug")) {
     colorCode = "\033[32m";
   }
-  else if (!stricmp(colorStr, "brightgreen") ||
-           !stricmp(colorStr, "success")) {
+  else if (!ham_stricmp(colorStr, "brightgreen") ||
+           !ham_stricmp(colorStr, "success")) {
     colorCode = "\033[92m";
   }
-  else if (!stricmp(colorStr, "yellow") ||
-           !stricmp(colorStr, "warning")) {
+  else if (!ham_stricmp(colorStr, "yellow") ||
+           !ham_stricmp(colorStr, "warning")) {
     colorCode = "\033[33m";
   }
-  else if (!stricmp(colorStr, "brightyellow")) {
+  else if (!ham_stricmp(colorStr, "brightyellow")) {
     colorCode = "\033[93m";
   }
-  else if (!stricmp(colorStr, "blue")) {
+  else if (!ham_stricmp(colorStr, "blue")) {
     colorCode = "\033[34m";
   }
-  else if (!stricmp(colorStr, "brightblue")) {
+  else if (!ham_stricmp(colorStr, "brightblue")) {
     colorCode = "\033[94m";
   }
-  else if (!stricmp(colorStr, "magenta")) {
+  else if (!ham_stricmp(colorStr, "magenta")) {
     colorCode = "\033[35m";
   }
-  else if (!stricmp(colorStr, "brightmagenta")) {
+  else if (!ham_stricmp(colorStr, "brightmagenta")) {
     colorCode = "\033[95m";
   }
-  else if (!stricmp(colorStr, "cyan") ||
-           !stricmp(colorStr, "info")) {
+  else if (!ham_stricmp(colorStr, "cyan") ||
+           !ham_stricmp(colorStr, "info")) {
     colorCode = "\033[36m";
   }
-  else if (!stricmp(colorStr, "brightcyan")) {
+  else if (!ham_stricmp(colorStr, "brightcyan")) {
     colorCode = "\033[96m";
   }
-  else if (!stricmp(colorStr, "white")) {
+  else if (!ham_stricmp(colorStr, "white")) {
     colorCode = "\033[37m";
   }
-  else if (!stricmp(colorStr, "grey") ||
-           !stricmp(colorStr, "verbose")) {
+  else if (!ham_stricmp(colorStr, "grey") ||
+           !ham_stricmp(colorStr, "verbose")) {
     colorCode = "\033[90m";
   }
-  else if (!stricmp(colorStr, "brightwhite")) {
+  else if (!ham_stricmp(colorStr, "brightwhite")) {
     colorCode = "\033[97m";
   }
   return colorCode;
@@ -346,11 +345,11 @@ LIST* builtin_echo_colored(PARSE* parse, LOL* args, int* jmp) {
   const char* colorCode = get_color_code(color ? color->string : NULL);
   if (message) {
     if (useColors && colorCode) {
-      printf(colorCode);
+      printf("%s",colorCode);
     }
     list_print(message);
     if (useColors && colorCode) {
-      printf(resetColorCode);
+      printf("%s",resetColorCode);
     }
   }
 
@@ -434,7 +433,6 @@ LIST *builtin_fexists(PARSE *parse, LOL *args, int *jmp) {
 LIST *builtin_fisdir(PARSE *parse, LOL *args, int *jmp) {
   LIST *targets = lol_get(args, 0);
   LIST *l;
-  time_t time;
   for (l = targets; l; l = list_next(l)) {
     struct stat statbuf;
     TARGET *t = bindtarget(l->string);
@@ -461,11 +459,11 @@ LIST *builtin_exit(PARSE *parse, LOL *args, int *jmp) {
   const char* colorCode = get_color_code("FATAL");
   if (message) {
     if (useColors && colorCode) {
-      printf(colorCode);
+      printf("%s",colorCode);
     }
     list_print(lol_get(args, 0));
     if (useColors && colorCode) {
-      printf(resetColorCode);
+      printf("%s",resetColorCode);
     }
   }
   printf("\n");
@@ -544,9 +542,7 @@ LIST *builtin_glob(PARSE *parse, LOL *args, int *jmp) {
 LIST *builtin_globstring(PARSE *parse, LOL *args, int *jmp) {
   LIST *targets = lol_get(args, 0);
   LIST *l, *r;
-  time_t time;
   for (l = targets; l; l = list_next(l)) {
-    struct stat statbuf;
     TARGET *t = bindtarget(l->string);
     int hasOneMatch = 0;
     for (r = lol_get(args, 1); r; r = r->next) {
@@ -893,12 +889,10 @@ static int _GetAbsolutePath(const char *input, BUFFER *buff) {
 LIST *builtin_absolutepath(PARSE *parse, LOL *args, int *jmp) {
   LIST *input = lol_get(args, 0);
   LIST *result = L0;
-  char token[256];
   BUFFER buff;
   buffer_init(&buff);
 
   for (; input; input = input->next) {
-    const char *ptr = input->string;
     if (_GetAbsolutePath(input->string, &buff)) {
       result = list_new(result, buffer_ptr(&buff), 0);
     }
@@ -964,11 +958,7 @@ LIST *builtin_strafteri(PARSE *parse, LOL *args, int *jmp) {
     stringLen = strlen(liststring->string);
     if (
       stringLen >= patternLen &&
-#ifdef OS_NT
-      strnicmp(liststring->string, pattern->string, patternLen) == 0
-#else
-      strncasecmp(liststring->string, pattern->string, patternLen) == 0
-#endif
+      ham_strnicmp(liststring->string, pattern->string, patternLen) == 0
     ) {
       buffer_addstring(
         &buff, liststring->string + patternLen, stringLen - patternLen);
@@ -995,7 +985,7 @@ static int builtin_sort_caseinsensitive(const void *a, const void *b) {
   const LIST *aa = *(const LIST **)a;
   const LIST *bb = *(const LIST **)b;
 #ifdef OS_NT
-  return stricmp(aa->string, bb->string);
+  return ham_stricmp(aa->string, bb->string);
 #else
   return strcasecmp(aa->string, bb->string);
 #endif
@@ -1038,7 +1028,6 @@ LIST *builtin_sorti(PARSE *parse, LOL *args, int *jmp) {
 LIST *builtin_sha256_ex(PARSE *parse, LOL *args, int *jmp, int keyLen) {
   LIST *input = lol_get(args, 0);
   LIST *result = L0;
-  char token[256];
   char hexDigest[65] = {0};
 
   for (; input; input = input->next) {

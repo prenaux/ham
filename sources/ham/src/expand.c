@@ -87,7 +87,6 @@ LIST *var_expand(
   const char *inp = in;
   int depth;
   size_t save_buffer_pos, ov_save_buffer_pos;
-  int literal = 0;
 
   if (DEBUG_VAREXP)
     printf("expand '%.*s'\n", (int)(end - in), in);

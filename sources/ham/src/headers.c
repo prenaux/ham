@@ -7,10 +7,10 @@
 /*
  * headers.c - handle #includes in source files
  *
- * Using regular expressions provided as the variable $(HDRSCAN), 
+ * Using regular expressions provided as the variable $(HDRSCAN),
  * headers() searches a file for #include files and phonies up a
  * rule invocation:
- * 
+ *
  *	$(HDRRULE) <target> : <include files> ;
  *
  * External routines:
@@ -55,7 +55,6 @@ static LIST *headers1(const char *file, LIST *hdrscan);
 void headers(TARGET *t) {
   LIST *hdrscan;
   LIST *hdrrule;
-  LIST *hdrcache;
   LOL lol;
 
   if (!(hdrscan = var_get("HDRSCAN")) || !(hdrrule = var_get("HDRRULE")))

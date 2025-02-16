@@ -30,7 +30,7 @@
  *    hcache_init() - read and parse the local .jamdeps file.
  *    hcache_done() - write a new .jamdeps file
  *    hcache() - return list of headers on target.  Use cache or do a scan.
- *    
+ *
  * The dependency file format is an ascii file with 1 line per target.
  * Each line has the following fields:
  * @boundname@ timestamp @file@ @file@ @file@ ... \n
@@ -255,7 +255,8 @@ void hcache_init() {
   }
 
   if (DEBUG_HEADER) {
-    printf("hcache read from file %s\n", hcachename);
+    printf("hcache read from file %s. %d dependencies.\n",
+           hcachename, header_count);
   }
 
 bail:
@@ -322,7 +323,7 @@ void hcache_done() {
 
   if (DEBUG_HEADER) {
     printf(
-      "hcache written to %s.   %d dependencies, %.0f%% hit rate\n",
+      "hcache written to %s. %d dependencies, %.0f%% hit rate\n",
       hcachename,
       header_count,
       queries ? 100.0 * hits / queries : 0);

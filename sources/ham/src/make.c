@@ -161,28 +161,6 @@ int make(int n_targets, const char **targets, int anyhow, int* generated) {
   return status;
 }
 
-// Returns 1 if we should skip the cause reporting. This is in a utility
-// function so that we can write it in a more readable manner.
-static int skip_cause(TARGET *t, TARGET *p)
-{
-  // No parent target, we dont skip.
-  if (!p)
-    return 0;
-
-  // We consider skipping reporting only if the target is marked as newer and exists
-  if (t->fate != T_FATE_NEWER)
-    return 0;
-
-  // Skip cause reporting if the target does not exist.
-  if (t->binding != T_BIND_EXISTS) return 1;
-
-  // Skip cause reporting if the parent is not missing or explicitly marked as missing.
-  if (p->fate != T_FATE_MISSING && p->binding != T_BIND_MISSING) return 1;
-
-  // Otherwise, do not skip cause reporting.
-  return 0;
-}
-
 /*
  * Should we show build causality information for this target?
  *
@@ -269,7 +247,7 @@ static void make0(
   COUNTS *counts, /* for reporting */
   int anyhow)     /* forcibly touch all (real) targets */
 {
-  TARGETS *c, *d, *incs;
+  TARGETS *c, *incs;
   TARGET *ptime = t;
   time_t last, leaf, hlast;
   int fate;

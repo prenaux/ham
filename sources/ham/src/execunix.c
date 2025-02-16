@@ -148,25 +148,6 @@ void onintr(int disp) {
   printf("...interrupted\n");
 }
 
-static int issplit(char c) {
-  if (isspace(c) || c == '\n' || c == '\r')
-    return 1;
-  return 0;
-}
-
-static char* get_fullpathname(char* prog) {
-  #ifdef USE_EXECNT
-  static char buffer[_MAX_PATH];
-  char* bufferFile;
-  if (GetFullPathName(prog, _MAX_PATH, buffer, &bufferFile)) {
-    return buffer;
-  }
-  return prog;
-  #else
-  return prog;
-  #endif
-}
-
 /*
  * execcmd() - launch an async command execution
  */

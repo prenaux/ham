@@ -20,7 +20,7 @@
  *              #include statements.
  *
  *  we look for lines like "#define MACRO  <....>" or '#define MACRO  "    "'
- *  in the target file. When found, we 
+ *  in the target file. When found, we
  *
  *  we then phony up a rule invocation like:
  *
@@ -39,8 +39,6 @@
  *		just to invoke a rule.
  */
 
-static LIST *header_macros1(LIST *l, char *file, int rec, regexp *re[]);
-
 /* this type is used to store a dictionary of file header macros */
 typedef struct header_macro {
   const char *symbol;
@@ -57,11 +55,9 @@ static struct hash *header_macros_hash = 0;
 #define MAXINC 10
 
 void macro_headers(TARGET *t) {
-  LIST *hdrrule;
   regexp *re;
   FILE *f;
   char buf[1024];
-  int i;
 
   if (DEBUG_HEADER)
     printf("macro header scan for %s\n", t->name);

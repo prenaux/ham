@@ -164,8 +164,6 @@ TARGETS *targetentry(TARGETS *chain, TARGET *target, char needs) {
  */
 
 TARGETS *targetchain(TARGETS *chain, TARGETS *targets) {
-  TARGETS *c;
-
   if (!targets)
     return chain;
   else if (!chain)
@@ -266,7 +264,7 @@ SETTINGS *addsettings(
  */
 
 SETTINGS *copysettings(SETTINGS *from) {
-  SETTINGS *head = 0, *v;
+  SETTINGS *head = 0;
 
   for (; from; from = from->next) {
     SETTINGS *v = (SETTINGS *)malloc(sizeof(*v));

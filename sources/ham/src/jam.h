@@ -511,3 +511,11 @@ extern struct globs globs;
 #define DEBUG_GENERATED (globs.debug[15]) /* -dg show generated targets */
 
 #define OPT_HEADER_CACHE_EXT
+
+#ifdef OS_NT
+#  define ham_strnicmp(l,r,len) strnicmp(l,r,len)
+#  define ham_stricmp(l,r) stricmp(l,r)
+#else
+#  define ham_strnicmp(l,r,len) strncasecmp(l,r,len)
+#  define ham_stricmp(l,r) strcasecmp(l,r)
+#endif

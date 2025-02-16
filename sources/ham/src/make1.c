@@ -512,7 +512,6 @@ static CMD *make1cmds(ACTIONS *a0) {
     SETTINGS *boundvars;
     LIST *nt, *ns;
     ACTIONS *a1;
-    CMD *cmd;
     int start, chunk, length, maxline;
 
     /* Only do rules with commands to execute. */

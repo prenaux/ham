@@ -134,13 +134,18 @@
 
 /* And Linux for those */
 #ifdef OS_LINUX
+  #include <errno.h>
   #include <unistd.h>
+  #include <sys/wait.h>
 #endif
 
 /* And OSX for these */
 #ifdef OS_MACOSX
+  #include <errno.h>
+  #include <unistd.h>
   #include <sys/param.h>
   #include <sys/sysctl.h>
+  #include <sys/wait.h>
 #endif
 
 struct globs globs = {
@@ -229,14 +234,14 @@ static int run_ham_pass(int argc, char **argv, int numpassleft) {
 #else
   pid_t child = fork();
   if (child == -1) {
-    printf("error: fork failed: %s\n", strerror(errno));
+    printf("error: fork failed: %s.\n", strerror(errno));
     return EXITBAD;
   }
 
   if (child == 0) {
     // Child process - exec the new pass
     execvp(argv[0], new_argv);
-    printf("error: failed to launch pass '%d'\n", pass);
+    printf("error: failed to launch pass (numpassleft: %d).\n", numpassleft);
     exit(EXITBAD);
   }
 
