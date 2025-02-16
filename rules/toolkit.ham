@@ -935,6 +935,15 @@ rule tkBuildPackage
         LINKFLAGS on $(PKGTARGET) += -L $(lpath) -rpath @loader_path/$(rpath) ;
       }
     }
+    else if $(LOA_OS) = lin {
+      local toolkits = ; # $(TK_NAME) $(TK_IMPORTED) ;
+      LINKFLAGS on $(PKGTARGET) += -L [ FDirName $(WORK) bin $(BIN_LOA) ] ;
+      for _t in $(toolkits) {
+        local lpath = [ tkFindToolkitDir $(_t) bin $(BIN_LOA) ] ;
+        local rpath = [ FDirName .. .. .. $(_t) bin $(BIN_LOA) ] ;
+        LINKFLAGS on $(PKGTARGET) += -L $(lpath) -Wl,-rpath=\$ORIGIN/$(rpath) ;
+      }
+    }
     else {
       logFatal "Dont know how to link DLL to current target:" $(PKGTARGET) "LOA_OS:" $(LOA_OS) "LOA_LINKER" $(LOA_LINKER) ;
     }
