@@ -552,6 +552,11 @@ static void make0(
       if (DEBUG_GENERATED) {
         printf("... Generating: %s\n", t->name);
       }
+      if (counts->generating == 0) {
+        /* Set HAMPASSGENERATING */
+        char buf[2] = {'1',0};
+        var_set("HAMPASSGENERATING", list_new(L0, buf, 0), VAR_SET);
+      }
       ++counts->generating;
     }
     counts->updating++;
