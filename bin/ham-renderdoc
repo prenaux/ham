@@ -71,7 +71,7 @@ else
 
   RDC_FILE="${OUT_DIR}/${OUT_BASENAME}.rdc"
 
-  WORKING_DIR="$(pwd)"
+  WORKING_DIR="$(nativedir $(pwd))"
 
   log_info "WORKING_DIR: $WORKING_DIR"
   log_info "EXE_PATH: $EXE_PATH"
