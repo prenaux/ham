@@ -115,23 +115,7 @@ CC_ADD_FLAGS +=
 -wd4018
 # DISABLE: warning C4267: 'argument': conversion from 'size_t' to 'ni::tU32', possible loss of data
 -wd4267
-# DISABLE: warning C4805: '==': unsafe mix of type ni::<unnamed-enum-eTrue> == bool
--wd4805
 ;
-
-if $(MSVC_VER) >= 15 {
-  CC_ADD_FLAGS +=
-  # DISABLE: warning C4312: 'type cast': conversion from 'const ni::tU32' to 'ni::iUnknown *' of greater size
-  -wd4312
-  ;
-}
-
-if $(MSVC_VER) >= 19 {
-  CC_ADD_FLAGS +=
-  # DISABLE: warning C5054: operator '|': deprecated between enumerations of different types
-  -wd5054
-  ;
-}
 
 CCFLAGS += $(CC_ADD_FLAGS) ;
 C++FLAGS += $(CC_ADD_FLAGS) ;
