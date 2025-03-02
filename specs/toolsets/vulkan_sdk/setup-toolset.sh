@@ -47,7 +47,7 @@ case "$HAM_BIN_LOA" in
     # Ok... its in Bin on Windows, why not I guess, making it different on
     # every OS keeps things interesting.
     export VK_LAYER_PATH="${VULKAN_SDK}/Bin"
-    toolset_check_and_dl_ver vulkan_sdk nt-x64 v1_3_296 || return 1
+    toolset_check_and_dl_ver vulkan_sdk nt-x64 v1_4_304 || return 1
     if [ ! -f "$VULKAN_SDK_INCDIR/vulkan/vulkan.h" ]; then
       log_error "Vulkan SDK install looks like it succeeded but the required file hasnt been found !"
       return 1
