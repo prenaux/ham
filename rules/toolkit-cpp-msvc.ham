@@ -197,7 +197,7 @@ rule tkCC++Build
   # Set the debug infos generation
   if ! ( $(REDIST) ) && ! ( $(FLYMAKE) = 1 ) {
     SUFPDB = .pdb ;
-    LINKER_PDB = [ FDirName $(LOCATE_TARGET) $(PKGBUILD:S=.pdb) ] ;
+    LINKER_PDB = [ FDirName $(LOCATE_TARGET) $(PKGBUILD:B)$(_stamp).pdb ] ;
     Clean clean : $(LINKER_PDB) ;
     if $(MSVC_DEBUG_INFO) = none {
       # Nothing to add...
