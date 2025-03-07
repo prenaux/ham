@@ -64,8 +64,15 @@ function ni_lint() {
     FILES=("$@")
   fi
 
+  local INCLUDE_PARAMS=()
+  for dir in "${NI_INCLUDE_DIRS[@]}"; do
+    if [ -d "$dir" ]; then
+      INCLUDE_PARAMS+=(-I"$dir")
+    fi
+  done
+
   for f in "${FILES[@]}"; do
-    ni -c "$DIR/$f"
+    ni-lint "${INCLUDE_PARAMS[@]}" "$f"
   done
 }
 

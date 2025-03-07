@@ -11,4 +11,16 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 . "$HAM_HOME/bin/ham-lint-fix-lib.sh"
 cd "$SCRIPT_DIR"
 #===== PRELUDE END =============
-ham_lint_sh "$@"
+
+NI_INCLUDE_DIRS=(
+  "$WORK/Vlk/scripts"
+  "$WORK/Vlk/sources"
+  "$SCRIPT_DIR/scripts"
+  "$SCRIPT_DIR/sources"
+)
+export NI_INCLUDE_DIRS
+
+if [ -z "$HAM_LINT_COMMAND" ]; then
+  HAM_LINT_COMMAND=ham_lint_sh
+fi
+"$HAM_LINT_COMMAND" "$@"

@@ -7,8 +7,8 @@ fi
 # shellcheck disable=SC2034
 SCRIPT_NAME=$(basename "$0")
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-. "$HAM_HOME/bin/ham-bash-setenv.sh"
-. "$HAM_HOME/bin/ham-lint-fix-lib.sh"
 cd "$SCRIPT_DIR"
 #===== PRELUDE END =============
-ham_fix_sh "$@"
+HAM_LINT_COMMAND=ham_fix_sh
+export HAM_LINT_COMMAND
+. _lint.sh
