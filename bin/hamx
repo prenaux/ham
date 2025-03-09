@@ -7,7 +7,10 @@ fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 function usage() {
-  echo "usage: hamx :toolkit ENV=value -ham-flag target script.sh ..."
+  echo "usage:"
+  echo "  hamx somescript.sh"
+  echo "  hamx some/_build.ham"
+  echo "  hamx :toolkit ENV=value -ham-flag target script.sh ..."
   echo ""
   echo "  :toolkit     Import a toolkit."
   echo "  ENV=value    Set an environment variable for the ham command."
@@ -22,6 +25,78 @@ function usage() {
   echo "  3. The bash scripts are executed"
   echo "  4. The ham targets are built using the specified ham flags if any"
   echo ""
+}
+
+function hamx_build_ham() {
+  local FILEPATH
+  FILEPATH=$(abspath "$1")
+  log_info "Building: $FILEPATH"
+
+  local DIRNAME
+  DIRNAME=$(dirname "$FILEPATH")
+
+  local BUILD_HAM_PATH
+  BUILD_HAM_PATH=$(ham-find-file-up "_build.ham" "$DIRNAME")
+  if [ ! -e "$BUILD_HAM_PATH" ]; then
+    log_error "Can't find _build.ham for '$FILEPATH'."
+    return 1
+  fi
+  log_info "BUILD_HAM_PATH: $BUILD_HAM_PATH"
+
+  HAM_PROJECT=$(ham-find-file-up _ham_project "$DIRNAME")
+  if [ ! -e "$HAM_PROJECT" ]; then
+    log_error "Can't find _ham_project for '$BUILD_HAM_PATH'."
+    return 1
+  fi
+  log_info "HAM_PROJECT: $HAM_PROJECT"
+
+  HAM_PROJECT_DIR=$(dirname "$HAM_PROJECT")
+
+  local TARGETS
+  TARGETS=$(rg --no-line-number --no-filename --color never -o "tkDef\w+\s+(\S+)\s*:" --replace '$1' "$BUILD_HAM_PATH" | coreutils tr '\n' ' ')
+  if [ -z "$TARGETS" ]; then
+    log_error "Can't find any targets in '$BUILD_HAM_PATH'."
+    return 1
+  fi
+  log_info "TARGETS: $TARGETS"
+
+  (
+    set -x
+    cd "$HAM_PROJECT_DIR"
+    # shellcheck disable=SC2086
+    ham -T "$HAM_PROJECT" $TARGETS
+  )
+}
+
+function hamx_run_bash() {
+  local SH_SCRIPT_PATH
+  if [ -e "$1" ]; then
+    SH_SCRIPT_PATH=$(abspath "$1")
+  else
+    SH_SCRIPT_PATH=$(ham-find-file-up "$1")
+  fi
+  if [ ! -e "$SH_SCRIPT_PATH" ]; then
+    log_error "Can't find bash script '$1'."
+    return 1
+  fi
+  log_info "SH_SCRIPT_PATH: $SH_SCRIPT_PATH"
+
+  DIRNAME=$(dirname "$SH_SCRIPT_PATH")
+
+  HAM_PROJECT=$(ham-find-file-up _ham_project "$DIRNAME")
+  if [ ! -e "$HAM_PROJECT" ]; then
+    log_error "Can't find _ham_project for '$SH_SCRIPT_PATH'."
+    return 1
+  fi
+  log_info "HAM_PROJECT: $HAM_PROJECT"
+
+  HAM_PROJECT_DIR=$(dirname "$HAM_PROJECT")
+
+  (
+    set -x
+    cd "$HAM_PROJECT_DIR"
+    ham -T "$HAM_PROJECT" "$SH_SCRIPT_PATH"
+  )
 }
 
 # Script to wrap 'ham' command according to your specifications
@@ -70,5 +145,11 @@ function hamx() {
   fi
 }
 
-# Invoke hamx with all passed arguments
-hamx "$@"
+if [[ $# -eq 1 && "$1" == *.sh ]]; then
+  hamx_run_bash "$1"
+elif [[ $# -eq 1 && -e "$1" ]]; then
+  hamx_build_ham "$1"
+else
+  # Invoke hamx with all passed arguments
+  hamx "$@"
+fi

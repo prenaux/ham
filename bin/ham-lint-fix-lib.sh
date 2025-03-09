@@ -17,10 +17,10 @@ function sh_lint() {
 
   if [[ "$LINT_FORMAT" == "yes" ]] || [[ "$LINT_CHECK_FORMAT" == "yes" ]]; then
     local SHFMT_PARAMS=(-i 2 -ci -bn -ln=bash -bn=false)
-    if [[ "$LINT_CHECK_FORMAT" == "yes" ]]; then
-      SHFMT_PARAMS=(-d "${SHFMT_PARAMS[@]}")
-    else
+    if [[ "$LINT_FORMAT" == "yes" ]]; then
       SHFMT_PARAMS=(-w "${SHFMT_PARAMS[@]}")
+    else
+      SHFMT_PARAMS=(-d "${SHFMT_PARAMS[@]}")
     fi
     (
       set -x
@@ -103,7 +103,7 @@ function ham_flymake_lint() {
   log_info "BUILD_HAM_DIR: $BUILD_HAM_DIR"
 
   local REL_FILEPATH
-  REL_FILEPATH=$(path_fwdslash $(coreutils realpath --relative-to="$BUILD_HAM_DIR" "$FILEPATH"))
+  REL_FILEPATH=$(path_fwdslash "$(coreutils realpath --relative-to="$BUILD_HAM_DIR" "$FILEPATH")")
   log_info "REL_FILEPATH: $REL_FILEPATH"
 
   # We can't just rename the file because Sublime/VScode won't be able to map
@@ -151,12 +151,16 @@ function cpp_lint() {
 
   if [ -z "$1" ]; then
     DIR=$(pwd)
-    cpp_clang_format_dir "$DIR" "${PARAMS[@]}"
+    if [ "$LINT_FORMAT" == "yes" ]; then
+      cpp_clang_format_dir "$DIR" "${PARAMS[@]}"
+    fi
   else
-    (
-       set -x
-       ham-clang-format-cpp "${PARAMS[@]}" "$1"
-    )
+    if [ "$LINT_FORMAT" == "yes" ]; then
+      (
+        set -x
+        ham-clang-format-cpp "${PARAMS[@]}" "$1"
+      )
+    fi
     ham_flymake_lint "$1"
   fi
 }
@@ -311,10 +315,18 @@ function lint_file() {
       sh_lint "$CMD"
       errcheck $? sh_lint "Single sh file lint failed in '$DIRNAME'."
       ;;
+    ham)
+      build_ham_lint "$CMD"
+      errcheck $? build_ham_lint "Single ham file lint failed in '$DIRNAME'."
+      ;;
     *)
       die "Unsupported extension '$EXT' for '$CMD' in '$DIRNAME'."
       ;;
   esac
+}
+
+function build_ham_lint() {
+  hamx "$1" || return 1
 }
 
 function lint_dir() {

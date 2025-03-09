@@ -210,7 +210,7 @@ ham_or_bash() {
   # Execute collected .sh files directly
   for SH_FILE in "${SH_FILES[@]}"; do
     echo "I/Excuting '${SH_FILE}' in '$(pwd)'."
-    bash "./$SH_FILE"
+    bash "$SH_FILE"
     errcheck $? ham "Script '${SH_FILE}' execution failed in '$(pwd)'."
   done
 

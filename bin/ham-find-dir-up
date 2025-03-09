@@ -1,8 +1,12 @@
 #!/bin/bash
+if [ -n "$2" ]; then
+  cd "$2"
+fi
+TOFIND="$1"
 while [[ "$PWD" != "/" ]]; do
   DIR="./$1"
   if [ -d "$DIR" ]; then
-    RET=$(find "$PWD" -maxdepth 1 -name "$@")
+    RET=$(find "$PWD" -maxdepth 1 -name "$TOFIND")
     if [ -d "$RET" ]; then
       echo "$RET"
       break
