@@ -991,7 +991,7 @@ rule tkBuildPackage
   DEPENDS $(PKGGROUP) : $(PACKAGE) ;  # Group's deps
 
   ### Flymake ###
-  FlyMakeSetup check-syntax : $(_exsrc) ;
+  FlyMakeSetup check-syntax : $(CHK_SOURCES) ;
 
   ### All files ###
   local _all = $(_src) $(_exsrc) $(_nopchsrc) ;

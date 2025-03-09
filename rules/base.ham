@@ -2761,7 +2761,8 @@ rule ListAddBackOnce {
   return [ ListAddBack $(<) : $(>) ] ;
 }
 
-rule ListFilter LIST : INCLUDE : EXCLUDE {
+# rule ListFilter LIST : INCLUDE : EXCLUDE
+rule ListFilter {
   local t = [ Match "("$(2)")" : $(1) ] ;
   if $(3) {
     local r = ;
@@ -2977,7 +2978,10 @@ rule FlyMakeSetup
     local ODIR = [ FDirName [ VarOnGet LOCATE_TARGET : $(>) ] $(>:D:G=) ] ;
     MkDir $(ODIR) ;
 
-    Objects $(>) ;
+    if [ GlobString $(>) : "*_aflymake*" ] = 1 {
+      #  ECHO "... is renamed flymake:" $(>) ;
+      Objects $(>) ;
+    }
 
     DEPENDS $(<) : $(ODIR) ;
     DEPENDS $(<) : $(s) ;

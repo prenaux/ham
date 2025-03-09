@@ -39,10 +39,8 @@ if $(MSVC_VER) >= 12 {
   HAM_CL = $(HAM_CL) -FS ;
 }
 
-if ! ( $(FLYMAKE) = 1 ) {
-  # Errors with absolute file path
-  HAM_CL = $(HAM_CL) -FC ;
-}
+# Errors with absolute file path
+HAM_CL = $(HAM_CL) -FC ;
 
 C++FLAGS += -source-charset:utf-8 -execution-charset:utf-8 ;
 CCFLAGS  += -source-charset:utf-8 -execution-charset:utf-8 ;

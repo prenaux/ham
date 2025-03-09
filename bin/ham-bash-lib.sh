@@ -306,6 +306,18 @@ path_unix_dirname() {
   echo "$dir"
 }
 
+path_fwdslash() {
+  FILEPATH="$1"
+  case $HAM_OS in
+    NT*)
+      echo ${FILEPATH//\\/\/}
+      ;;
+    *)
+      echo "$FILEPATH"
+      ;;
+  esac
+}
+
 pathenv_add() {
   if [ ! -d "$1" ]; then
     return 0

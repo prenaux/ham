@@ -81,23 +81,41 @@ function ham_flymake_lint() {
     return 0
   fi
 
+  local FILEPATH
+  FILEPATH=$(abspath "$1")
+
   # ham-flymake FLYMAKE=1 CHK_SOURCES=_Test_TiledWidget_aflymake.cpp FLYMAKE_BASEDIR=./ check-syntax
   local DIR
-  DIR=$(dirname "$1")
+  DIR=$(dirname "$FILEPATH")
   local FILENAME
-  FILENAME=$(basename "$1")
-  # We can't just rename the file because VScode won't be able to map the file
-  # to the original one. We could add a #line directive in the renamed file
-  # but it's not worth it as their's probably edge cases where it won't work
-  # and be a pain to track down.
+  FILENAME=$(basename "$FILEPATH")
+
+  local BUILD_HAM_PATH
+  BUILD_HAM_PATH=$(ham-find-file-up _build.ham "$DIR")
+  if [ -z "$BUILD_HAM_PATH" ]; then
+    log_error "Can't find _build.ham for '$FILENAME' in '$DIR'."
+    return 1
+  fi
+  log_info "BUILD_HAM_PATH: '$BUILD_HAM_PATH'"
+
+  local BUILD_HAM_DIR
+  BUILD_HAM_DIR=$(dirname "$BUILD_HAM_PATH")
+  log_info "BUILD_HAM_DIR: $BUILD_HAM_DIR"
+
+  local REL_FILEPATH
+  REL_FILEPATH=$(path_fwdslash $(coreutils realpath --relative-to="$BUILD_HAM_DIR" "$FILEPATH"))
+  log_info "REL_FILEPATH: $REL_FILEPATH"
+
+  # We can't just rename the file because Sublime/VScode won't be able to map
+  # the file to the original one. We could add a #line directive in the
+  # renamed file but it's not worth it as their's probably edge cases where
+  # it won't work and be a pain to track down.
+  #
   # FLYMAKE_FILENAME=_${FILENAME%.*}_aflymake.${FILENAME##*.}
   (
     set -ex
     cd "$DIR"
-    # cp "$FILENAME" "$FLYMAKE_FILENAME"
-    touch "$FILENAME"
-    ham-flymake FLYMAKE=1 CHK_SOURCES="$FILENAME" FLYMAKE_BASEDIR="./" check-syntax
-    # rm "$FLYMAKE_FILENAME"
+    ham-flymake FLYMAKE=1 CHK_SOURCES="$REL_FILEPATH" FLYMAKE_BASEDIR="$BUILD_HAM_DIR" check-syntax
   )
 }
 
@@ -136,10 +154,10 @@ function cpp_lint() {
     cpp_clang_format_dir "$DIR" "${PARAMS[@]}"
   else
     (
-      set -x
-      ham-clang-format-cpp "${PARAMS[@]}" "$1"
-      ham_flymake_lint "$1"
+       set -x
+       ham-clang-format-cpp "${PARAMS[@]}" "$1"
     )
+    ham_flymake_lint "$1"
   fi
 }
 
