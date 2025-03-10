@@ -53,7 +53,7 @@ function hamx_build_ham() {
   HAM_PROJECT_DIR=$(dirname "$HAM_PROJECT")
 
   local TARGETS
-  TARGETS=$(rg --no-line-number --no-filename --color never -o "tkDef\w+\s+(\S+)\s*:" --replace '$1' "$BUILD_HAM_PATH" | coreutils tr '\n' ' ')
+  TARGETS=$(rg --no-line-number --no-filename --color never -o "tkDef\w+\s+(\S+)\s*:?" --replace '$1' "$BUILD_HAM_PATH" | coreutils tr '\n' ' ')
   if [ -z "$TARGETS" ]; then
     log_error "Can't find any targets in '$BUILD_HAM_PATH'."
     return 1
