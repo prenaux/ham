@@ -5,7 +5,7 @@ if [[ -z "$HAM_HOME" ]]; then
   export HAM_HOME
   echo "W/HAM_HOME not set, set to: $HAM_HOME"
 fi
-. "$HAM_HOME/bin/ham-bash-setenv.sh"
+. "$HAM_HOME/bin/ham-env-clear"
 
 # the help
 usage() {
@@ -81,7 +81,6 @@ else
   fi
 fi
 
-. ham-env-clear
 if [ ${#HAM_PROJECT_FILES[@]} -gt 0 ]; then
   # We're potentially importing multiple toolsets we dont want to import the
   # same thing multiple times
