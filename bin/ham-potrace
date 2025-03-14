@@ -1,0 +1,17 @@
+#!/bin/bash -e
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+export HAM_NO_VER_CHECK=1
+toolset_check_and_dl_ver potrace "$HAM_BIN_LOA" v1_16
+
+POTRACE_BIN_DIR="${HAM_HOME}/toolsets/potrace/$HAM_BIN_LOA"
+if [ ! -f "$POTRACE_BIN_DIR/potrace" ]; then
+  log_error "'$POTRACE_BIN_DIR/potrace' not found."
+  exit 1
+fi
+
+"$POTRACE_BIN_DIR/potrace" "$@"

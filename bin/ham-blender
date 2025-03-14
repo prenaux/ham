@@ -1,0 +1,17 @@
+#!/bin/bash -e
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+
+export HAM_NO_VER_CHECK=1
+toolset_check_and_dl_ver blender "$HAM_BIN_LOA" v4_3_2
+
+BLENDER_BIN_DIR="${HAM_HOME}/toolsets/blender/$HAM_BIN_LOA"
+if [ ! -f "$BLENDER_BIN_DIR/blender" ]; then
+  log_error "'$BLENDER_BIN_DIR/blender' not found."
+  exit 1
+fi
+
+"$BLENDER_BIN_DIR/blender" "$@"
