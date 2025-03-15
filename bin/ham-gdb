@@ -29,12 +29,6 @@ find_remedybg() {
     else
       log_warning "Cant find REMEDYBG_PATH '$REMEDYBG_PATH'."
     fi
-  else
-    local path="c:/Utils/Apps/remedybg/remedybg.exe"
-    if [ -f "$path" ]; then
-      echo "$path"
-      return 0
-    fi
   fi
   echo ""
 }
