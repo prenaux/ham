@@ -27,7 +27,8 @@ find_remedybg() {
     if [ -e "$REMEDYBG_PATH" ]; then
       echo "$REMEDYBG_PATH"
     else
-      log_warning "Cant find REMEDYBG_PATH '$REMEDYBG_PATH'."
+      log_error "Cant find REMEDYBG_PATH '$REMEDYBG_PATH'."
+      usage
     fi
   fi
   echo ""
