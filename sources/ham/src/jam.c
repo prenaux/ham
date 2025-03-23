@@ -183,14 +183,6 @@ extern char **environ;
 
 char g_bash_path[2048] = "bash";
 
-#define PRINTF_VER()           \
-  printf(                      \
-    "Ham %s. %s. %d CPU%s.\n", \
-    VERSION,                   \
-    OSMINOR,                   \
-    numProcessors,             \
-    numProcessors > 1 ? "s" : "");
-
 static int run_ham_pass(int argc, char **argv, int numpassleft) {
   char passleftbuf[64] = {0};
   snprintf(passleftbuf, sizeof(passleftbuf), "%d", numpassleft);
@@ -252,6 +244,105 @@ static int run_ham_pass(int argc, char **argv, int numpassleft) {
 #endif
 }
 
+typedef struct {
+  unsigned int numProcessors;
+  unsigned int memoryKB;
+  unsigned int diskTotalGB;
+  unsigned int diskFreeGB;
+} sHostInfo;
+
+void detect_host_info(sHostInfo* info) {
+  // Initialize with defaults
+  info->numProcessors = 1;
+  info->memoryKB = 0;
+  info->diskTotalGB = 0;
+  info->diskFreeGB = 0;
+
+  // Get processor count
+#ifdef OS_NT
+  {
+    SYSTEM_INFO sysInfo;
+    ZeroMemory(&sysInfo, sizeof(SYSTEM_INFO));
+    GetSystemInfo(&sysInfo);
+    info->numProcessors = sysInfo.dwNumberOfProcessors;
+  }
+#endif
+#ifdef OS_LINUX
+  {
+    info->numProcessors = sysconf(_SC_NPROCESSORS_ONLN);
+  }
+#endif
+#ifdef OS_MACOSX
+  {
+    int mib[4];
+    size_t len = sizeof(info->numProcessors);
+    mib[0] = CTL_HW;
+    mib[1] = HW_AVAILCPU;
+    sysctl(mib, 2, &info->numProcessors, &len, NULL, 0);
+    if (info->numProcessors < 1) {
+      mib[1] = HW_NCPU;
+      sysctl(mib, 2, &info->numProcessors, &len, NULL, 0);
+      if (info->numProcessors < 1) {
+        info->numProcessors = 1;
+      }
+    }
+  }
+#endif
+
+// Get memory size
+#ifdef OS_NT
+  {
+    MEMORYSTATUSEX memInfo;
+    memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+    if (GlobalMemoryStatusEx(&memInfo)) {
+      info->memoryKB = (unsigned int)(memInfo.ullTotalPhys / (1024*1024));
+    }
+  }
+#endif
+#ifdef OS_LINUX
+  {
+    struct sysinfo sysInfo;
+    if (sysinfo(&sysInfo) == 0) {
+      info->memoryKB = (unsigned int)((sysInfo.totalram * sysInfo.mem_unit) / (1024*1024));
+    }
+  }
+#endif
+#ifdef OS_MACOSX
+  {
+    int mib[2] = {CTL_HW, HW_MEMSIZE};
+    uint64_t memsize;
+    size_t len = sizeof(memsize);
+    if (sysctl(mib, 2, &memsize, &len, NULL, 0) == 0) {
+      info->memoryKB = (unsigned int)(memsize / (1024*1024));
+    }
+  }
+#endif
+
+// Get disk space
+#ifdef OS_NT
+  {
+    char currentDir[MAX_PATH];
+    GetCurrentDirectory(MAX_PATH, currentDir);
+    char drive[4] = {currentDir[0], ':', '\\', '\0'};
+
+    ULARGE_INTEGER freeBytesAvailable, totalBytes, totalFreeBytes;
+    if (GetDiskFreeSpaceEx(drive, &freeBytesAvailable, &totalBytes, &totalFreeBytes)) {
+      info->diskFreeGB = (unsigned int)(freeBytesAvailable.QuadPart / (1024*1024*1024));
+      info->diskTotalGB = (unsigned int)(totalBytes.QuadPart / (1024*1024*1024));
+    }
+  }
+#endif
+#if defined(OS_LINUX) || defined(OS_MACOSX)
+  {
+    struct statvfs stat;
+    if (statvfs(".", &stat) == 0) {
+      info->diskFreeGB = (unsigned int)((uint64_t)stat.f_bsize * stat.f_bavail / (1024*1024*1024));
+      info->diskTotalGB = (unsigned int)((uint64_t)stat.f_bsize * stat.f_blocks / (1024*1024*1024));
+    }
+  }
+#endif
+}
+
 int main(int argc, char **argv, char **arg_environ) {
   int n, num_targets;
   const char *s;
@@ -261,41 +352,11 @@ int main(int argc, char **argv, char **arg_environ) {
   int anyhow = 0;
   int status = 0;
 
-  unsigned int numProcessors = 1;
-#ifdef OS_NT
-  {
-    SYSTEM_INFO SysInfo;
-    ZeroMemory(&SysInfo, sizeof(SYSTEM_INFO));
-    GetSystemInfo(&SysInfo);
-    numProcessors = SysInfo.dwNumberOfProcessors;
-  }
-#endif
-#ifdef OS_LINUX
-  { numProcessors = sysconf(_SC_NPROCESSORS_ONLN); }
-#endif
-#ifdef OS_MACOSX
-  {
-    int mib[4];
-    size_t len = sizeof(numProcessors);
-    /* set the mib for hw.ncpu */
-    mib[0] = CTL_HW;
-    mib[1] = HW_AVAILCPU;  // alternatively, try HW_NCPU;
-    /* get the number of CPUs from the system */
-    sysctl(mib, 2, &numProcessors, &len, NULL, 0);
-    if (numProcessors < 1) {
-      mib[1] = HW_NCPU;
-      sysctl(mib, 2, &numProcessors, &len, NULL, 0);
-      if (numProcessors < 1) {
-        numProcessors = 1;
-      }
-    }
-  }
-#endif
-#ifdef OS_MAC
-  InitGraf(&qd.thePort);
-#endif
+  sHostInfo hostInfo;
+  detect_host_info(&hostInfo);
+  unsigned int numProcessors = hostInfo.numProcessors;
 
-  num_targets = getoptions(argc-1, argv+1, "d:j:f:gs:t:ano:qvep:", optv, targets);
+  num_targets = getoptions(argc-1, argv+1, "d:j:f:gs:t:ano:qvp:", optv, targets);
   if (num_targets < 0) {
     printf("\nusage: ham [ options ] targets...\n\n");
 
@@ -312,7 +373,6 @@ int main(int argc, char **argv, char **arg_environ) {
     printf("-sx=y   Set variable x=y, overriding environment.\n");
     printf("-tx     Rebuild x, even if it is up-to-date.\n");
     printf("-v      Print the version of ham and exit.\n");
-    printf("-e      Print the value of the relevant environment variables.\n\n");
 
     exit(EXITBAD);
   }
@@ -367,10 +427,8 @@ int main(int argc, char **argv, char **arg_environ) {
     }
 #endif
     if (g_bash_path[0] == 0) {
-      PRINTF_VER();
       printf("-- Can't find the bash executable --\n");
-      printf(
-        "make sure that the environment variable HAMSHELL or AGLDEVENV is setup\n");
+      printf("Make sure its in the path or set the environment variable HAMSHELL to point to it.\n");
       exit(EXITBAD);
     }
   }
@@ -378,18 +436,14 @@ int main(int argc, char **argv, char **arg_environ) {
   /* Version info. */
 
   if ((s = getoptval(optv, 'v', 0))) {
-    PRINTF_VER();
-    return EXITOK;
-  }
-
-  /* Other infos */
-  if ((s = getoptval(optv, 'e', 0))) {
-    printf("--- Environment ----\n");
-    printf("NUM_PROCESSORS: %d\n", numProcessors);
-    printf("HAMSHELL: %s\n", g_bash_path);
-    printf("PATH: %s\n", getenv("PATH"));
-    printf("--- Environment ----\n");
-
+    printf(
+      "Ham v%s, %s, CPU=%d, MEM=%dKB, DISKFREE=%dGB, DISKSZ=%dGB.\n",
+      VERSION,
+      OSMINOR,
+      numProcessors,
+      hostInfo.memoryKB,
+      hostInfo.diskFreeGB,
+      hostInfo.diskTotalGB);
     return EXITOK;
   }
 
