@@ -44,7 +44,7 @@ ham_host_get_hostname() {
 get_ham_value() {
   local ham_info=$1
   local key=$2
-  echo "$ham_info" | grep -o "$key=[^,]*" | cut -d= -f2
+  echo "$ham_info" | grep -o "$key=[^,.]*" | cut -d= -f2
 }
 
 ham_host_get_loa() {
@@ -79,7 +79,7 @@ ham_host_get_memory_kb() {
 
 ham_host_get_disk() {
   local diskfree=$(get_ham_value "$ham_info" "DISKFREE" | tr -d 'GB')
-  local disksz=$(get_ham_value "$ham_info" "DISKSZ" | tr -d 'GB.')
+  local disksz=$(get_ham_value "$ham_info" "DISKSZ" | tr -d 'GB')
   echo "${disksz}|${diskfree}"
 }
 
