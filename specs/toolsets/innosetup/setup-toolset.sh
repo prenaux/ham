@@ -9,13 +9,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/innosetup"
 case $HAM_OS in
   NT*)
     export INNOSETUP_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
-    if [ ! -e "$INNOSETUP_DIR" ]; then
-      toolset_dl innosetup innosetup_nt-x86
-      if [ ! -e "$INNOSETUP_DIR" ]; then
-        echo "E/nt-x86 folder doesn't exist in the toolset"
-        return 1
-      fi
-    fi
+    toolset_check_and_dl_ver innosetup nt-x86 v6_4_2 || return 1
     pathenv_add "${INNOSETUP_DIR}"
     ;;
   *)
