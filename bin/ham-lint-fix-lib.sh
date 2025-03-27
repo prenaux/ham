@@ -119,11 +119,11 @@ function ham_flymake_lint() {
   )
 }
 
-function cpp_clang_format_dir() {
+function cpp_format_dir() {
   local DIR
   DIR=$1
   shift
-  log_info "cpp_clang_format_dir: '$DIR'"
+  log_info "cpp_format_dir: '$DIR'"
   (
     set -e
     find "$DIR" \
@@ -138,7 +138,7 @@ function cpp_clang_format_dir() {
       -o -name '*.inl' \
       ! -iname '*.idl.inl' \
       \) -print0 |
-      xargs -t -0 -n 10 -P "${HAM_NUM_JOBS:-8}" run-for-xargs ham-clang-format-cpp "$@"
+      xargs -t -0 -n 10 -P "${HAM_NUM_JOBS:-8}" run-for-xargs ham-format-cpp "$@"
   ) || return 1
 }
 
@@ -152,16 +152,20 @@ function cpp_lint() {
   if [ -z "$1" ]; then
     DIR=$(pwd)
     if [ "$LINT_FORMAT" == "yes" ]; then
-      cpp_clang_format_dir "$DIR" "${PARAMS[@]}"
+      cpp_format_dir "$DIR" "${PARAMS[@]}"
     fi
   else
     if [ "$LINT_FORMAT" == "yes" ]; then
       (
         set -x
-        ham-clang-format-cpp "${PARAMS[@]}" "$1"
+        ham-format-cpp "${PARAMS[@]}" "$1"
       )
     fi
-    ham_flymake_lint "$1"
+    if [[ "$1" == *.c* ]]; then
+      ham_flymake_lint "$1"
+    else
+      log_warning "Cant flymake header '$1'."
+    fi
   fi
 }
 
@@ -191,7 +195,7 @@ function java_lint() {
   else
     (
       set -x
-      ham-clang-format-cpp "${PARAMS[@]}" "$1"
+      ham-format-cpp "${PARAMS[@]}" "$1"
     )
   fi
 }

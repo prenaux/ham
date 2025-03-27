@@ -20,7 +20,7 @@ ham-brew-install
 ham-brew-installdir
 ham-check-file
 ham-clang-format
-ham-clang-format-cpp
+ham-format-cpp
 ham-cppm-bin-filepath
 ham-cppm-build
 ham-cppm-build-check
