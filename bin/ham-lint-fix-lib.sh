@@ -1,5 +1,6 @@
 #!/bin/bash
 export HAM_LINT_ALL_FILENAME="_lint_all_files.txt"
+export HAM_LINT_FIND_MAX_DEPTH=${HAM_LINT_FIND_MAX_DEPTH:-9999}
 
 function sh_lint() {
   toolset_import_once shell_linter >/dev/null
@@ -128,7 +129,7 @@ function cpp_format_dir() {
     set -e
     # Note we exclude extensions that are reserved for code
     # generation: .cxx, .hxx, .idl.inl
-    find "$DIR" \
+    find "$DIR" -maxdepth "${HAM_LINT_FIND_MAX_DEPTH}" \
       \( -name '*.c' \
       -o -name '*.cc' \
       -o -name '*.cpp' \
@@ -142,7 +143,7 @@ function cpp_format_dir() {
       ! -iname '*.hxx' \
       ! -iname '*.idl.inl' \
       \) -print0 |
-      xargs -t -0 -n 8 -P "${HAM_NUM_JOBS:-8}" run-for-xargs ham-format-cpp "$@"
+      xargs -t -0 -n 1 -P "${HAM_NUM_JOBS:-8}" run-for-xargs ham-format-cpp "$@"
   ) || return 1
 }
 
@@ -184,10 +185,10 @@ function java_clang_format_dir() {
   log_info "java_clang_format_dir: '$DIR'"
   (
     set -e
-    find "$DIR" \
+    find "$DIR" -maxdepth "${HAM_LINT_FIND_MAX_DEPTH}" \
       \( -name '*.java' \
       \) -print0 |
-      xargs -t -0 -n 10 -P "${HAM_NUM_JOBS:-8}" run-for-xargs ham-clang-format-cpp "$@"
+      xargs -t -0 -n 1 -P "${HAM_NUM_JOBS:-8}" run-for-xargs ham-clang-format-cpp "$@"
   ) || return 1
 }
 
@@ -345,13 +346,13 @@ function build_ham_lint() {
 
 function lint_dir() {
   LANG=$1
-  DIRNAME=$2
+  DIRNAME=$(path_fwdslash "$2")
   if [ ! -d "$DIRNAME" ]; then
     log_error "'$DIRNAME' is not a directory, after '${LANG}'."
     return 1
   fi
   shift
-  log_info "${LANG}_lint all in '$DIRNAME'."
+  log_info "${LANG}_lint dir all in '$DIRNAME', with maxdepth '${HAM_LINT_FIND_MAX_DEPTH}'."
   (
     cd "$DIRNAME"
     "${LANG}_lint"
@@ -361,7 +362,7 @@ function lint_dir() {
 
 function lint_dir_or_file() {
   LANG=$1
-  DIR_OR_FILENAME=$2
+  DIR_OR_FILENAME=$(path_fwdslash "$2")
   if [ -d "$DIR_OR_FILENAME" ]; then
     log_info "lint_dir_or_file: $LANG: formatting directory '$DIR_OR_FILENAME'."
     lint_dir "$LANG" "$DIR_OR_FILENAME"

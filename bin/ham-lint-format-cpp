@@ -1,0 +1,18 @@
+#!/bin/bash
+#===== PRELUDE BEGIN ===========
+SCRIPT_NAME=$(basename "$0")
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+#===== PRELUDE END =============
+
+function usage() {
+  echo "usage:"
+  echo "  ${SCRIPT_NAME} DIR"
+  exit 1
+}
+
+export HAM_LINT_FIND_MAX_DEPTH=1
+ham-lint --format cpp "$@"
