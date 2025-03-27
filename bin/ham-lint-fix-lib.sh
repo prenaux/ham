@@ -126,19 +126,23 @@ function cpp_format_dir() {
   log_info "cpp_format_dir: '$DIR'"
   (
     set -e
+    # Note we exclude extensions that are reserved for code
+    # generation: .cxx, .hxx, .idl.inl
     find "$DIR" \
       \( -name '*.c' \
       -o -name '*.cc' \
       -o -name '*.cpp' \
-      -o -name '*.cxx' \
+      -o -name '*.m' \
+      -o -name '*.mm' \
       -o -name '*.h' \
       -o -name '*.hh' \
       -o -name '*.hpp' \
-      -o -name '*.hxx' \
       -o -name '*.inl' \
+      ! -iname '*.cxx' \
+      ! -iname '*.hxx' \
       ! -iname '*.idl.inl' \
       \) -print0 |
-      xargs -t -0 -n 10 -P "${HAM_NUM_JOBS:-8}" run-for-xargs ham-format-cpp "$@"
+      xargs -t -0 -n 8 -P "${HAM_NUM_JOBS:-8}" run-for-xargs ham-format-cpp "$@"
   ) || return 1
 }
 
@@ -151,6 +155,11 @@ function cpp_lint() {
 
   if [ -z "$1" ]; then
     DIR=$(pwd)
+    if [ "$LINT_FORMAT" == "yes" ]; then
+      cpp_format_dir "$DIR" "${PARAMS[@]}"
+    fi
+  elif [ -d "$1" ]; then
+    DIR="$1"
     if [ "$LINT_FORMAT" == "yes" ]; then
       cpp_format_dir "$DIR" "${PARAMS[@]}"
     fi
@@ -284,47 +293,48 @@ function rust_lint() {
 function lint_file() {
   local CMD
   CMD="$1"
-  local EXT
-  EXT=$(path_extension "${CMD}")
-  case "$EXT" in
-    c | cc | cpp | cxx | h | hh | hpp | hxx | inl)
+  case "$CMD" in
+    *.cxx | *.hxx | *.idl.inl | *.idl.*)
+      log_warning "cxx, hxx & idl.* extensionsa are reserved for generated code and shouldnt be linted for '$CMD'."
+      ;;
+    *.c | *.cc | *.cpp | *.h | *.hh | *.hpp | *.inl | *.mm | *.m)
       cpp_lint "$CMD"
-      errcheck $? cpp_lint "Single cpp file lint failed in '$DIRNAME'."
+      errcheck $? cpp_lint "Single cpp file lint failed for '$CMD'."
       ;;
-    java)
-      java_lint "$CMD"
-      errcheck $? cpp_lint "Single java file lint failed in '$DIRNAME'."
-      ;;
-    cni | cpp2)
+    *.cni | *.cpp2)
       ham_flymake_lint "$CMD"
-      errcheck $? cpp_lint "Single cpp2 file lint failed in '$DIRNAME'."
+      errcheck $? cpp_lint "Single cpp2 file lint failed for '$CMD'."
       ;;
-    php)
+    *.java)
+      java_lint "$CMD"
+      errcheck $? cpp_lint "Single java file lint failed for '$CMD'."
+      ;;
+    *.php)
       php_lint "$CMD"
-      errcheck $? php_lint "Single php file lint failed in '$DIRNAME'."
+      errcheck $? php_lint "Single php file lint failed for '$CMD'."
       ;;
-    rs)
+    *.rs)
       rust_lint "$CMD"
-      errcheck $? rust_lint "Single rust file lint failed in '$DIRNAME'."
+      errcheck $? rust_lint "Single rust file lint failed for '$CMD'."
       ;;
-    js | jsx | mjs | cjs)
+    *.js | *.jsx | *.mjs | *.cjs)
       js_lint "$CMD"
-      errcheck $? js_lint "Single js file lint failed in '$DIRNAME'."
+      errcheck $? js_lint "Single js file lint failed for '$CMD'."
       ;;
-    ni | nip | niw)
+    *.ni | *.nip | *.niw)
       ni_lint "$CMD"
-      errcheck $? ni_lint "Single ni file lint failed in '$DIRNAME'."
+      errcheck $? ni_lint "Single ni file lint failed for '$CMD'."
       ;;
-    sh | "")
+    *.sh | *."")
       sh_lint "$CMD"
-      errcheck $? sh_lint "Single sh file lint failed in '$DIRNAME'."
+      errcheck $? sh_lint "Single sh file lint failed for '$CMD'."
       ;;
-    ham)
+    *.ham)
       build_ham_lint "$CMD"
-      errcheck $? build_ham_lint "Single ham file lint failed in '$DIRNAME'."
+      errcheck $? build_ham_lint "Single ham file lint failed for '$CMD'."
       ;;
     *)
-      die "Unsupported extension '$EXT' for '$CMD' in '$DIRNAME'."
+      die "Unsupported file type for '$CMD'."
       ;;
   esac
 }

@@ -37,7 +37,6 @@ WhitespaceSensitiveMacros:
 FixNamespaceComments: true
 
 # Misc stuff
-MaxEmptyLinesToKeep: 1
 PointerAlignment: Left
 BinPackParameters: true
 BinPackArguments: true
@@ -46,8 +45,9 @@ BinPackArguments: true
 ReflowComments: false
 BreakStringLiterals: false
 BreakBeforeBinaryOperators: None
-SeparateDefinitionBlocks: Always
 RequiresClausePosition: SingleLine
+# This would be useful but its broken in a bunch of scenarios
+SeparateDefinitionBlocks: Leave
 
 # Indents & Alignments
 IndentGotoLabels: false
@@ -84,4 +84,3 @@ BraceWrapping:
     AfterUnion: false
     BeforeCatch: false
     SplitEmptyFunction: true
-BreakStringLiterals: false
