@@ -3,7 +3,7 @@ notARepository: 'skip' # one of: 'prompt' | 'create' | 'skip'
 gui:
   windowSize: 'normal'
   mainPanelSplitMode: 'vertical'
-  enlargedSideViewLocation: 'top'
+  enlargedSideViewLocation: 'left'
   timeFormat: "20060102"
   scrollPastBottom: false
   scrollHeight: 10
