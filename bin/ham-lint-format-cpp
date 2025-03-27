@@ -14,5 +14,5 @@ function usage() {
   exit 1
 }
 
-export HAM_LINT_FIND_MAX_DEPTH=1
+export HAM_LINT_FIND_MAX_DEPTH=${HAM_LINT_FIND_MAX_DEPTH:-1}
 ham-lint --format cpp "$@"

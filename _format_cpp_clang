@@ -1,0 +1,111 @@
+#
+# Documentation at https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+#
+
+# Let clang-format detect based on the extension
+# Language: Cpp
+
+# C++ standard
+Standard: c++20
+BasedOnStyle: LLVM
+
+# Space indents, LF Line ending & 80 cols
+UseTab: false
+UseCRLF: false
+LineEnding: LF
+IndentWidth: 2
+ContinuationIndentWidth: 2
+MaxEmptyLinesToKeep: 1
+ColumnLimit: 80
+InsertNewlineAtEOF: true
+
+# Preprocessor
+PPIndentWidth: 2
+IndentPPDirectives: BeforeHash
+SortIncludes: false
+
+# niLang/niCC macros
+ForEachMacros: ["niLoop","niLoopr","niLoopit","niLooprit","niExec","niExec_","niSubmit","niSubmit_"]
+StatementAttributeLikeMacros: ["niAlignedType","niAligned","niDeprecated","niFn","niFnS","niFnV"]
+TypenameMacros: ["niExportFunc","niExportFuncCPP","niFn","niFnS","niFnV","niExportFn","niNamespace"]
+IfMacros: ["niCheckIfError","niIfConstructError","niCheckNNIfNull","niTry","niTryError","niCatch","niCatchAll","niCatchError"]
+WhitespaceSensitiveMacros:
+ - niDeclareInterfaceUUID
+ - niCAssert
+ - niNamespace
+ - niFourCC
+ - niMakeVersion
+ - niMessageID
+
+# Fixes
+FixNamespaceComments: true
+
+# Misc stuff
+PointerAlignment: Left
+ReferenceAlignment: Left
+BinPackParameters: true
+BinPackArguments: true
+BreakBeforeInlineASMColon: OnlyMultiline
+
+# Break/reflow
+ReflowComments: false
+BreakStringLiterals: false
+BreakBeforeBinaryOperators: None
+# This would be useful but its broken in a bunch of scenarios. Notably when
+# preprocessor macros are involved if the macro isnt in the list of macros it'll
+# often be seen a separate section and add incorrect empty lines.
+SeparateDefinitionBlocks: Leave
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortFunctionsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortBlocksOnASingleLine: Never
+AllowShortEnumsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLambdasOnASingleLine: Inline
+AllowShortLoopsOnASingleLine: false
+# AllowShortCompoundRequirementOnASingleLine: true # requires clang-format 18 and doesnt actually work, so commented out
+Cpp11BracedListStyle: false
+
+# Return type on its own line
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+PenaltyReturnTypeOnItsOwnLine: 1000
+
+# Indents & Alignments
+NamespaceIndentation: None
+IndentGotoLabels: false
+IndentWrappedFunctionNames: false
+AlignConsecutiveBitFields: true
+AlignEscapedNewlines: Left
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 0
+
+# Classes & Constructors
+BreakConstructorInitializers: BeforeComma
+PackConstructorInitializers: Never
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+AllowAllConstructorInitializersOnNextLine: true
+AccessModifierOffset: -1
+
+# Templates & Concepts
+BreakBeforeConceptDeclarations: Always
+SpaceAfterTemplateKeyword: Yes
+AlwaysBreakTemplateDeclarations: Yes
+RequiresClausePosition: OwnLine
+RequiresExpressionIndentation: OuterScope
+IndentRequiresClause: false
+
+# Brace/new line styling
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: true
+  BeforeElse: true
+  AfterClass: false
+  AfterControlStatement: MultiLine
+  AfterEnum: false
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  BeforeCatch: false
+  SplitEmptyFunction: true
