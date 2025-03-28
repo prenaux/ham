@@ -13,8 +13,6 @@ case $HAM_OS in
     pathenv_add "${HAM_TOOLSET_DIR}"
     ;;
   *)
-    echo "E/Toolset: Unsupported host OS"
-    return 1
     ;;
 esac
 
