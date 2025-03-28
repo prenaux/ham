@@ -21,9 +21,10 @@
 #include "scan.h"
 #include "newstr.h"
 
-static PARSE *yypsave;
+static PARSE* yypsave;
 
-void parse_file(const char *f) {
+void parse_file(const char* f)
+{
   /* Suspend scan of current file */
   /* and push this new file in the stream */
 
@@ -35,7 +36,7 @@ void parse_file(const char *f) {
 
   for (;;) {
     LOL l;
-    PARSE *p;
+    PARSE* p;
     int jmp = 0; /* JMP_NONE */
 
     /* $(<) and $(>) empty in outer scope. */
@@ -59,19 +60,16 @@ void parse_file(const char *f) {
   }
 }
 
-void parse_save(PARSE *p) {
+void parse_save(PARSE* p)
+{
   yypsave = p;
 }
 
-PARSE *parse_make(
-  LIST *(*func)(PARSE *p, LOL *args, int *jmp),
-  PARSE *left,
-  PARSE *right,
-  PARSE *third,
-  const char *string,
-  const char *string1,
-  int num) {
-  PARSE *p = (PARSE *)malloc(sizeof(PARSE));
+PARSE* parse_make(LIST* (*func)(PARSE* p, LOL* args, int* jmp), PARSE* left,
+                  PARSE* right, PARSE* third, const char* string,
+                  const char* string1, int num)
+{
+  PARSE* p = (PARSE*)malloc(sizeof(PARSE));
 
   p->func = func;
   p->left = left;
@@ -85,11 +83,13 @@ PARSE *parse_make(
   return p;
 }
 
-void parse_refer(PARSE *p) {
+void parse_refer(PARSE* p)
+{
   ++p->refs;
 }
 
-void parse_free(PARSE *p) {
+void parse_free(PARSE* p)
+{
   if (--p->refs)
     return;
 
@@ -104,5 +104,5 @@ void parse_free(PARSE *p) {
   if (p->third)
     parse_free(p->third);
 
-  free((char *)p);
+  free((char*)p);
 }

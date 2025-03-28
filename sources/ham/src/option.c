@@ -19,16 +19,17 @@
 #include "jam.h"
 #include "option.h"
 
-int getoptions(
-  int argc, char **argv, const char *opts, option *optv, char **targets) {
+int getoptions(int argc, char** argv, const char* opts, option* optv,
+               char** targets)
+{
   int i, n;
   int optc = N_OPTS;
 
-  memset((char *)optv, '\0', sizeof(*optv) * N_OPTS);
+  memset((char*)optv, '\0', sizeof(*optv) * N_OPTS);
 
   n = 0;
   for (i = 0; i < argc; i++) {
-    char *arg;
+    char* arg;
 
     if (argv[i][0] == '-') {
       if (!optc--) {
@@ -37,7 +38,7 @@ int getoptions(
       }
 
       for (arg = &argv[i][1]; *arg; arg++) {
-        const char *f;
+        const char* f;
 
         for (f = opts; *f; f++)
           if (*f == *arg)
@@ -95,7 +96,8 @@ int getoptions(
  * Name: getoptval() - find an option given its character
  */
 
-const char *getoptval(option *optv, char opt, int subopt) {
+const char* getoptval(option* optv, char opt, int subopt)
+{
   int i;
 
   for (i = 0; i < N_OPTS; i++, optv++)

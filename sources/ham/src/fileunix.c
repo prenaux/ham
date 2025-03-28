@@ -49,7 +49,8 @@
     #include <sys/stat.h>
   #endif
 
-  #if defined(OS_RHAPSODY) || defined(OS_MACOSX) || defined(OS_NEXT) || (defined(__clang__) && defined(OS_LINUX))
+  #if defined(OS_RHAPSODY) || defined(OS_MACOSX) || defined(OS_NEXT) || \
+    (defined(__clang__) && defined(OS_LINUX))
     /* need unistd for rhapsody's proper lseek */
     #include <sys/dir.h>
     #include <unistd.h>
@@ -101,15 +102,16 @@ struct ar_hdr /* archive file member header - printable ascii */
  * file_dirscan() - scan a directory for files
  */
 
-void file_dirscan(const char *dir, scanback func, void *closure) {
+void file_dirscan(const char* dir, scanback func, void* closure)
+{
   PATHNAME f;
-  DIR *d;
-  STRUCT_DIRENT *dirent;
+  DIR* d;
+  STRUCT_DIRENT* dirent;
   char filename[MAXJPATH];
 
   /* First enter directory itself */
 
-  memset((char *)&f, '\0', sizeof(f));
+  memset((char*)&f, '\0', sizeof(f));
 
   f.f_dir.ptr = dir;
   f.f_dir.len = strlen(dir);
@@ -150,7 +152,8 @@ void file_dirscan(const char *dir, scanback func, void *closure) {
  * file_time() - get timestamp of file, if not done by file_dirscan()
  */
 
-int file_time(const char *filename, time_t *time) {
+int file_time(const char* filename, time_t* time)
+{
   struct stat statbuf;
 
   if (stat(filename, &statbuf) < 0)
@@ -169,12 +172,13 @@ int file_time(const char *filename, time_t *time) {
     #define SARFMAG 2
     #define SARHDR sizeof(struct ar_hdr)
 
-void file_archscan(const char *archive, scanback func, void *closure) {
+void file_archscan(const char* archive, scanback func, void* closure)
+{
     #ifndef NO_AR
   struct ar_hdr ar_hdr;
   char buf[MAXJPATH];
   long offset;
-  char *string_table = 0;
+  char* string_table = 0;
   int fd;
 
   if ((fd = open(archive, O_RDONLY, 0)) < 0)
@@ -191,11 +195,12 @@ void file_archscan(const char *archive, scanback func, void *closure) {
     printf("scan archive %s\n", archive);
 
   while (read(fd, &ar_hdr, SARHDR) == SARHDR &&
-         !memcmp(ar_hdr.ar_fmag, ARFMAG, SARFMAG)) {
+         !memcmp(ar_hdr.ar_fmag, ARFMAG, SARFMAG))
+  {
     long lar_date;
     long lar_size;
     char lar_name[256];
-    char *dst = lar_name;
+    char* dst = lar_name;
 
     /* solaris sscanf() does strlen first, so terminate somewhere */
 
@@ -216,8 +221,8 @@ void file_archscan(const char *archive, scanback func, void *closure) {
 		** ends at the first space, /, or null.
 		*/
 
-      char *src = ar_hdr.ar_name;
-      const char *e = src + sizeof(ar_hdr.ar_name);
+      char* src = ar_hdr.ar_name;
+      const char* e = src + sizeof(ar_hdr.ar_name);
 
       while (src < e && *src && *src != ' ' && *src != '/')
         *dst++ = *src++;
@@ -228,7 +233,7 @@ void file_archscan(const char *archive, scanback func, void *closure) {
 		** 15 characters (ie. don't fit into a ar_name)
 		    */
 
-      string_table = (char *)malloc(lar_size);
+      string_table = (char*)malloc(lar_size);
 
       lseek(fd, offset + SARHDR, 0);
       if (read(fd, string_table, lar_size) != lar_size)
@@ -240,7 +245,7 @@ void file_archscan(const char *archive, scanback func, void *closure) {
 		    ** in ASCII decimals.
 		    */
 
-      char *src = string_table + atoi(ar_hdr.ar_name + 1);
+      char* src = string_table + atoi(ar_hdr.ar_name + 1);
 
       while (*src != '/')
         *dst++ = *src++;
@@ -288,7 +293,8 @@ void file_archscan(const char *archive, scanback func, void *closure) {
 
   #else /* AIAMAG - RS6000 AIX */
 
-void file_archscan(const char *archive, scanback func, void *closure) {
+void file_archscan(const char* archive, scanback func, void* closure)
+{
   struct fl_hdr fl_hdr;
 
   struct {
@@ -305,9 +311,9 @@ void file_archscan(const char *archive, scanback func, void *closure) {
 
     #ifdef __AR_BIG__
 
-  if (
-    read(fd, (char *)&fl_hdr, FL_HSZ) != FL_HSZ ||
-    strncmp(AIAMAGBIG, fl_hdr.fl_magic, SAIAMAG)) {
+  if (read(fd, (char*)&fl_hdr, FL_HSZ) != FL_HSZ ||
+      strncmp(AIAMAGBIG, fl_hdr.fl_magic, SAIAMAG))
+  {
     if (strncmp(AIAMAG, fl_hdr.fl_magic, SAIAMAG))
       printf("Can't read new archive %s before AIX 4.3.\n");
 
@@ -317,9 +323,9 @@ void file_archscan(const char *archive, scanback func, void *closure) {
 
     #else
 
-  if (
-    read(fd, (char *)&fl_hdr, FL_HSZ) != FL_HSZ ||
-    strncmp(AIAMAG, fl_hdr.fl_magic, SAIAMAG)) {
+  if (read(fd, (char*)&fl_hdr, FL_HSZ) != FL_HSZ ||
+      strncmp(AIAMAG, fl_hdr.fl_magic, SAIAMAG))
+  {
     close(fd);
     return;
   }
@@ -332,7 +338,8 @@ void file_archscan(const char *archive, scanback func, void *closure) {
     printf("scan archive %s\n", archive);
 
   while (offset > 0 && lseek(fd, offset, 0) >= 0 &&
-         read(fd, &ar_hdr, sizeof(ar_hdr)) >= sizeof(ar_hdr.hdr)) {
+         read(fd, &ar_hdr, sizeof(ar_hdr)) >= sizeof(ar_hdr.hdr))
+  {
     long lar_date;
     int lar_namlen;
 

@@ -33,18 +33,18 @@
 
 typedef struct _YYSTYPE {
   int type;
-  const char *string;
-  PARSE *parse;
-  LIST *list;
+  const char* string;
+  PARSE* parse;
+  LIST* list;
   int number;
 } YYSTYPE;
 
 extern YYSTYPE yylval;
 
 void yymode(int n);
-void yyerror(const char *s);
+void yyerror(const char* s);
 int yyanyerrors();
-void yyfparse(const char *s);
+void yyfparse(const char* s);
 int yyline();
 int yylex();
 int yyparse();

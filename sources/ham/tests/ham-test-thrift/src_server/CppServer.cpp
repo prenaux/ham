@@ -22,10 +22,10 @@
 #include <thrift/concurrency/ThreadManager.h>
 #include <thrift/concurrency/ThreadFactory.h>
 #ifdef USE_JSON_PROTOCOL
-#include <thrift/protocol/TJSONProtocol.h>
-#include <thrift/transport/THttpServer.h>
+  #include <thrift/protocol/TJSONProtocol.h>
+  #include <thrift/transport/THttpServer.h>
 #else
-#include <thrift/protocol/TBinaryProtocol.h>
+  #include <thrift/protocol/TBinaryProtocol.h>
 #endif
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/server/TThreadPoolServer.h>
@@ -54,30 +54,29 @@ using namespace shared;
 static constexpr int kPORT = 40990;
 
 class CalculatorHandler : public CalculatorIf {
-public:
+ public:
   CalculatorHandler() = default;
 
-  void ping() override { cout << "ping()" << endl; }
+  void ping() override
+  {
+    cout << "ping()" << endl;
+  }
 
-  int32_t add(const int32_t n1, const int32_t n2) override {
+  int32_t add(const int32_t n1, const int32_t n2) override
+  {
     cout << "add(" << n1 << ", " << n2 << ")" << endl;
     return n1 + n2;
   }
 
-  int32_t calculate(const int32_t logid, const Work& work) override {
+  int32_t calculate(const int32_t logid, const Work& work) override
+  {
     cout << "calculate(" << logid << ", " << work << ")" << endl;
     int32_t val;
 
     switch (work.op) {
-    case Operation::ADD:
-      val = work.num1 + work.num2;
-      break;
-    case Operation::SUBTRACT:
-      val = work.num1 - work.num2;
-      break;
-    case Operation::MULTIPLY:
-      val = work.num1 * work.num2;
-      break;
+    case Operation::ADD: val = work.num1 + work.num2; break;
+    case Operation::SUBTRACT: val = work.num1 - work.num2; break;
+    case Operation::MULTIPLY: val = work.num1 * work.num2; break;
     case Operation::DIVIDE:
       if (work.num2 == 0) {
         InvalidOperation io;
@@ -103,14 +102,18 @@ public:
     return val;
   }
 
-  void getStruct(SharedStruct& ret, const int32_t logid) override {
+  void getStruct(SharedStruct& ret, const int32_t logid) override
+  {
     cout << "getStruct(" << logid << ")" << endl;
     ret = log[logid];
   }
 
-  void zip() override { cout << "zip()" << endl; }
+  void zip() override
+  {
+    cout << "zip()" << endl;
+  }
 
-protected:
+ protected:
   map<int32_t, SharedStruct> log;
 };
 
@@ -123,31 +126,35 @@ protected:
 class CalculatorCloneFactory : virtual public CalculatorIfFactory {
  public:
   ~CalculatorCloneFactory() override = default;
-  CalculatorIf* getHandler(const ::apache::thrift::TConnectionInfo& connInfo) override
+  CalculatorIf* getHandler(
+    const ::apache::thrift::TConnectionInfo& connInfo) override
   {
-    std::shared_ptr<TSocket> sock = std::dynamic_pointer_cast<TSocket>(connInfo.transport);
+    std::shared_ptr<TSocket> sock =
+      std::dynamic_pointer_cast<TSocket>(connInfo.transport);
     cout << "Incoming connection\n";
-    cout << "\tSocketInfo: "  << sock->getSocketInfo() << "\n";
-    cout << "\tPeerHost: "    << sock->getPeerHost() << "\n";
+    cout << "\tSocketInfo: " << sock->getSocketInfo() << "\n";
+    cout << "\tPeerHost: " << sock->getPeerHost() << "\n";
     cout << "\tPeerAddress: " << sock->getPeerAddress() << "\n";
-    cout << "\tPeerPort: "    << sock->getPeerPort() << "\n";
+    cout << "\tPeerPort: " << sock->getPeerPort() << "\n";
     return new CalculatorHandler;
   }
-  void releaseHandler( ::shared::SharedServiceIf* handler) override {
+  void releaseHandler(::shared::SharedServiceIf* handler) override
+  {
     delete handler;
   }
 };
 
-int main() {
-  TThreadedServer server(
-    std::make_shared<CalculatorProcessorFactory>(std::make_shared<CalculatorCloneFactory>()),
-    std::make_shared<TServerSocket>(kPORT), //port
+int main()
+{
+  TThreadedServer server(std::make_shared<CalculatorProcessorFactory>(
+                           std::make_shared<CalculatorCloneFactory>()),
+                         std::make_shared<TServerSocket>(kPORT), //port
 #ifdef USE_JSON_PROTOCOL
-    std::make_shared<THttpServerTransportFactory>(),
-    std::make_shared<TJSONProtocolFactory>()
+                         std::make_shared<THttpServerTransportFactory>(),
+                         std::make_shared<TJSONProtocolFactory>()
 #else
-    std::make_shared<TBufferedTransportFactory>(),
-    std::make_shared<TBinaryProtocolFactory>()
+                         std::make_shared<TBufferedTransportFactory>(),
+                         std::make_shared<TBinaryProtocolFactory>()
 #endif
   );
 

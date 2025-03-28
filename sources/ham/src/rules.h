@@ -46,11 +46,11 @@ typedef struct _settings SETTINGS;
 /* RULE - a generic jam rule, the product of RULE and ACTIONS */
 
 struct _rule {
-  const char *name;
-  PARSE *procedure;    /* parse tree from RULE */
-  const char *actions; /* command string from ACTIONS */
-  LIST *bindlist;      /* variable to bind for actions */
-  LIST *params;        /* bind args to local vars */
+  const char* name;
+  PARSE* procedure;    /* parse tree from RULE */
+  const char* actions; /* command string from ACTIONS */
+  LIST* bindlist;      /* variable to bind for actions */
+  LIST* params;        /* bind args to local vars */
   int flags;           /* modifiers on ACTIONS */
 
 #define RULE_UPDATED 0x01   /* $(>) is updated sources only */
@@ -65,17 +65,17 @@ struct _rule {
 /* ACTIONS - a chain of ACTIONs */
 
 struct _actions {
-  ACTIONS *next;
-  ACTIONS *tail; /* valid only for head */
-  ACTION *action;
+  ACTIONS* next;
+  ACTIONS* tail; /* valid only for head */
+  ACTION* action;
 };
 
 /* ACTION - a RULE instance with targets and sources */
 
 struct _action {
-  RULE *rule;
-  TARGETS *targets;
-  TARGETS *sources; /* aka $(>) */
+  RULE* rule;
+  TARGETS* targets;
+  TARGETS* sources; /* aka $(>) */
   char running;     /* has been started */
   char status;      /* see TARGET status */
 };
@@ -83,37 +83,37 @@ struct _action {
 /* SETTINGS - variables to set when executing a TARGET's ACTIONS */
 
 struct _settings {
-  SETTINGS *next;
-  const char *symbol; /* symbol name for var_set() */
-  LIST *value;        /* symbol value for var_set() */
+  SETTINGS* next;
+  const char* symbol; /* symbol name for var_set() */
+  LIST* value;        /* symbol value for var_set() */
 };
 
 /* TARGETS - a chain of TARGETs */
 
 struct _targets {
-  TARGETS *next;
-  TARGETS *tail; /* valid only for head */
-  TARGET *target;
+  TARGETS* next;
+  TARGETS* tail; /* valid only for head */
+  TARGET* target;
   char needs;
 };
 
 /* TARGET - a file or "thing" that can be built */
 
 struct _target {
-  const char *name;
-  const char *boundname; /* if search() relocates target */
-  ACTIONS *actions;      /* rules to execute, if any */
-  SETTINGS *settings;    /* variables to define */
+  const char* name;
+  const char* boundname; /* if search() relocates target */
+  ACTIONS* actions;      /* rules to execute, if any */
+  SETTINGS* settings;    /* variables to define */
 
   unsigned int flags; /* status info */
 
-#define T_FLAG_TEMP 0x01     /* TEMPORARY applied */
-#define T_FLAG_NOCARE 0x02   /* NOCARE applied */
-#define T_FLAG_NOTFILE 0x04  /* NOTFILE applied */
-#define T_FLAG_TOUCHED 0x08  /* ALWAYS applied or -t target */
-#define T_FLAG_LEAVES 0x10   /* LEAVES applied */
-#define T_FLAG_NOUPDATE 0x20 /* NOUPDATE applied */
-#define T_FLAG_INTERNAL 0x40 /* internal INCLUDES node */
+#define T_FLAG_TEMP 0x01           /* TEMPORARY applied */
+#define T_FLAG_NOCARE 0x02         /* NOCARE applied */
+#define T_FLAG_NOTFILE 0x04        /* NOTFILE applied */
+#define T_FLAG_TOUCHED 0x08        /* ALWAYS applied or -t target */
+#define T_FLAG_LEAVES 0x10         /* LEAVES applied */
+#define T_FLAG_NOUPDATE 0x20       /* NOUPDATE applied */
+#define T_FLAG_INTERNAL 0x40       /* internal INCLUDES node */
 #define T_FLAG_MIGHTNOTUPDATE 0x80 /* MightNotUpdate applied */
 #define T_FLAG_GENERATED 0x100 /* Generated target will trigger the nextpass */
 
@@ -124,8 +124,8 @@ struct _target {
 #define T_BIND_PARENTS 2 /* using parent's timestamp */
 #define T_BIND_EXISTS 3  /* real file, timestamp valid */
 
-  TARGETS *depends; /* dependencies */
-  TARGET *includes; /* includes */
+  TARGETS* depends; /* dependencies */
+  TARGET* includes; /* includes */
 
   time_t time; /* update time */
   time_t leaf; /* update time of leaf sources */
@@ -162,25 +162,25 @@ struct _target {
   char status; /* execcmd() result */
 
   int asynccnt;     /* child deps outstanding */
-  TARGETS *parents; /* used by make1() for completion */
-  char *cmds;       /* type-punned command list */
+  TARGETS* parents; /* used by make1() for completion */
+  char* cmds;       /* type-punned command list */
 };
 
 #define T_DEPENDS_PARSE_NUM_DEPENDS 0
 #define T_DEPENDS_PARSE_NUM_INCLUDES 1
 #define T_DEPENDS_PARSE_NUM_NEEDS 2
 
-RULE *bindrule(const char *rulename);
-TARGET *bindtarget(const char *targetname);
-TARGET *copytarget(const TARGET *t);
-void touchtarget(const char *t);
-TARGETS *targetlist(TARGETS *chain, LIST *targets, char needs);
-TARGETS *targetentry(TARGETS *chain, TARGET *target, char needs);
-TARGETS *targetchain(TARGETS *chain, TARGETS *targets);
-ACTIONS *actionlist(ACTIONS *chain, ACTION *action);
-SETTINGS *addsettings(SETTINGS *v, int setflag, const char *sym, LIST *val);
-SETTINGS *copysettings(SETTINGS *v);
-void pushsettings(SETTINGS *v);
-void popsettings(SETTINGS *v);
-void freesettings(SETTINGS *v);
+RULE* bindrule(const char* rulename);
+TARGET* bindtarget(const char* targetname);
+TARGET* copytarget(const TARGET* t);
+void touchtarget(const char* t);
+TARGETS* targetlist(TARGETS* chain, LIST* targets, char needs);
+TARGETS* targetentry(TARGETS* chain, TARGET* target, char needs);
+TARGETS* targetchain(TARGETS* chain, TARGETS* targets);
+ACTIONS* actionlist(ACTIONS* chain, ACTION* action);
+SETTINGS* addsettings(SETTINGS* v, int setflag, const char* sym, LIST* val);
+SETTINGS* copysettings(SETTINGS* v);
+void pushsettings(SETTINGS* v);
+void popsettings(SETTINGS* v);
+void freesettings(SETTINGS* v);
 void donerules();

@@ -24,8 +24,9 @@
  * cmd_new() - return a new CMD or 0 if too many args
  */
 
-CMD *cmd_new(RULE *rule, LIST *targets, LIST *sources, int maxline) {
-  CMD *cmd = (CMD *)malloc(sizeof(CMD));
+CMD* cmd_new(RULE* rule, LIST* targets, LIST* sources, int maxline)
+{
+  CMD* cmd = (CMD*)malloc(sizeof(CMD));
 
   cmd->rule = rule;
   cmd->next = 0;
@@ -49,7 +50,8 @@ CMD *cmd_new(RULE *rule, LIST *targets, LIST *sources, int maxline) {
  * cmd_free() - free a CMD
  */
 
-void cmd_free(CMD *cmd) {
+void cmd_free(CMD* cmd)
+{
   lol_free(&cmd->args);
-  free((char *)cmd);
+  free((char*)cmd);
 }

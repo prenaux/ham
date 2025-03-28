@@ -2,8 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-void* buffer_DefaultAllocFunction(
-  void* userData, void* ptr, unsigned int size) {
+void* buffer_DefaultAllocFunction(void* userData, void* ptr, unsigned int size)
+{
   (void)userData;
 
   if (size == 0) {
@@ -15,11 +15,13 @@ void* buffer_DefaultAllocFunction(
   }
 }
 
-void buffer_init(BUFFER* buff) {
+void buffer_init(BUFFER* buff)
+{
   buffer_initwithalloc(buff, NULL, NULL);
 }
 
-void buffer_initwithalloc(BUFFER* buff, buffer_Alloc alloc, void* userData) {
+void buffer_initwithalloc(BUFFER* buff, buffer_Alloc alloc, void* userData)
+{
   buff->buffer = (char*)&buff->static_buffer;
   buff->pos = 0;
   buff->buffsize = BUFFER_STATIC_SIZE;
@@ -27,7 +29,8 @@ void buffer_initwithalloc(BUFFER* buff, buffer_Alloc alloc, void* userData) {
   buff->user_data = userData;
 }
 
-void buffer_resize(BUFFER* buff, size_t size) {
+void buffer_resize(BUFFER* buff, size_t size)
+{
   if (size == 0) {
     if (buff->buffer != (char*)&buff->static_buffer) {
       buff->alloc_function(buff->user_data, buff->buffer, 0);
@@ -58,7 +61,8 @@ void buffer_resize(BUFFER* buff, size_t size) {
   }
 }
 
-void buffer_openspacehelper(BUFFER* buff, size_t amount) {
+void buffer_openspacehelper(BUFFER* buff, size_t amount)
+{
   if (amount + buff->pos < BUFFER_STATIC_SIZE)
     buffer_resize(buff, BUFFER_STATIC_SIZE);
   else

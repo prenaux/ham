@@ -31,81 +31,81 @@
 #define CHECK_BIT(tab, bit) (tab[(bit) / 8] & (1 << ((bit) % 8)))
 #define BITLISTSIZE 16 /* bytes used for [chars] in compiled expr */
 
-static void globchars(const char *s, const char *e, char *b);
+static void globchars(const char* s, const char* e, char* b);
 
 /*
  * glob() - match a string against a simple pattern
  */
 
-int glob(const char *c, const char *s) {
+int glob(const char* c, const char* s)
+{
   char bitlist[BITLISTSIZE];
-  const char *here;
+  const char* here;
 
   for (;;)
     switch (*c++) {
-      case '\0':
-        return *s ? -1 : 0;
+    case '\0': return *s ? -1 : 0;
 
-      case '?':
-        if (!*s++)
+    case '?':
+      if (!*s++)
+        return 1;
+      break;
+
+    case '[':
+      /* scan for matching ] */
+
+      here = c;
+      do
+        if (!*c++)
           return 1;
-        break;
+      while (here == c || *c != ']');
+      c++;
 
-      case '[':
-        /* scan for matching ] */
+      /* build character class bitlist */
 
-        here = c;
-        do
-          if (!*c++)
-            return 1;
-        while (here == c || *c != ']');
-        c++;
+      globchars(here, c, bitlist);
 
-        /* build character class bitlist */
+      if (!CHECK_BIT(bitlist, *(unsigned char*)s))
+        return 1;
+      s++;
+      break;
 
-        globchars(here, c, bitlist);
+    case '*':
+      here = s;
 
-        if (!CHECK_BIT(bitlist, *(unsigned char *)s))
-          return 1;
+      while (*s)
         s++;
-        break;
 
-      case '*':
-        here = s;
+      /* Try to match the rest of the pattern in a recursive */
+      /* call.  If the match fails we'll back up chars, retrying. */
 
-        while (*s)
-          s++;
+      while (s != here) {
+        int r;
 
-        /* Try to match the rest of the pattern in a recursive */
-        /* call.  If the match fails we'll back up chars, retrying. */
+        /* A fast path for the last token in a pattern */
 
-        while (s != here) {
-          int r;
+        r = *c ? glob(c, s) : *s ? -1 : 0;
 
-          /* A fast path for the last token in a pattern */
-
-          r = *c ? glob(c, s) : *s ? -1 : 0;
-
-          if (!r)
-            return 0;
-          else if (r < 0)
-            return 1;
-
-          --s;
-        }
-        break;
-
-      case '\\':
-        /* Force literal match of next char. */
-
-        if (!*c || *s++ != *c++)
+        if (!r)
+          return 0;
+        else if (r < 0)
           return 1;
-        break;
 
-      default:
-        if (*s++ != c[-1])
-          return 1;
-        break;
+        --s;
+      }
+      break;
+
+    case '\\':
+      /* Force literal match of next char. */
+
+      if (!*c || *s++ != *c++)
+        return 1;
+      break;
+
+    default:
+      if (*s++ != c[-1])
+        return 1;
+      break;
     }
 }
 
@@ -113,7 +113,8 @@ int glob(const char *c, const char *s) {
  * globchars() - build a bitlist to check for character group match
  */
 
-static void globchars(const char *s, const char *e, char *b) {
+static void globchars(const char* s, const char* e, char* b)
+{
   int neg = 0;
 
   memset(b, '\0', BITLISTSIZE);

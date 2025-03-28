@@ -38,7 +38,7 @@
 #include "hash.h"
 #include "newstr.h"
 
-static struct hash *varhash = 0;
+static struct hash* varhash = 0;
 
 /*
  * VARIABLE - a user defined multi-value variable
@@ -47,12 +47,12 @@ static struct hash *varhash = 0;
 typedef struct _variable VARIABLE;
 
 struct _variable {
-  const char *symbol;
-  LIST *value;
+  const char* symbol;
+  LIST* value;
 };
 
-static VARIABLE *var_enter(const char *symbol);
-static void var_dump(const char *symbol, LIST *value, const char *what);
+static VARIABLE* var_enter(const char* symbol);
+static void var_dump(const char* symbol, LIST* value, const char* what);
 
 /*
  * var_defines() - load a bunch of variable=value settings
@@ -61,9 +61,10 @@ static void var_dump(const char *symbol, LIST *value, const char *what);
  * Otherwise, split at blanks.
  */
 
-void var_defines(const char **e) {
+void var_defines(const char** e)
+{
   for (; *e; e++) {
-    const char *val;
+    const char* val;
 
     /* Just say "no": windows defines this in the env, */
     /* but we don't want it to override our notion of OS. */
@@ -87,7 +88,7 @@ void var_defines(const char **e) {
 #endif
     {
       char buf[MAXSYM];
-      LIST *l = L0;
+      LIST* l = L0;
 
       l = list_new(l, val + 1, 0);
 
@@ -107,12 +108,13 @@ void var_defines(const char **e) {
  * Copies in to out; doesn't modify targets & sources.
  */
 
-int var_string(const char *in, char *out, int outsize, LOL *lol) {
-  char *out0 = out;
-  char *oute = out + outsize - 1;
+int var_string(const char* in, char* out, int outsize, LOL* lol)
+{
+  char* out0 = out;
+  char* oute = out + outsize - 1;
 
   while (*in) {
-    char *lastword;
+    char* lastword;
     int dollar = 0;
 
     /* Copy white space */
@@ -142,7 +144,7 @@ int var_string(const char *in, char *out, int outsize, LOL *lol) {
     /* space-separated members of the list in the output. */
 
     if (dollar) {
-      LIST *l = var_expand(L0, lastword, out, lol, 0);
+      LIST* l = var_expand(L0, lastword, out, lol, 0);
 
       out = lastword;
 
@@ -179,12 +181,13 @@ int var_string(const char *in, char *out, int outsize, LOL *lol) {
  * Returns NULL if symbol unset.
  */
 
-LIST *var_get(const char *symbol) {
+LIST* var_get(const char* symbol)
+{
   VARIABLE var, *v = &var;
 
   v->symbol = symbol;
 
-  if (varhash && hashcheck(varhash, (HASHDATA **)&v)) {
+  if (varhash && hashcheck(varhash, (HASHDATA**)&v)) {
     if (DEBUG_VARGET)
       var_dump(v->symbol, v->value, "get");
     return v->value;
@@ -204,31 +207,32 @@ LIST *var_get(const char *symbol) {
  * Copies symbol.  Takes ownership of value.
  */
 
-void var_set(const char *symbol, LIST *value, int flag) {
-  VARIABLE *v = var_enter(symbol);
+void var_set(const char* symbol, LIST* value, int flag)
+{
+  VARIABLE* v = var_enter(symbol);
 
   if (DEBUG_VARSET)
     var_dump(symbol, value, "set");
 
   switch (flag) {
-    case VAR_SET:
-      /* Replace value */
-      list_free(v->value);
+  case VAR_SET:
+    /* Replace value */
+    list_free(v->value);
+    v->value = value;
+    break;
+
+  case VAR_APPEND:
+    /* Append value */
+    v->value = list_append(v->value, value);
+    break;
+
+  case VAR_DEFAULT:
+    /* Set only if unset */
+    if (!v->value)
       v->value = value;
-      break;
-
-    case VAR_APPEND:
-      /* Append value */
-      v->value = list_append(v->value, value);
-      break;
-
-    case VAR_DEFAULT:
-      /* Set only if unset */
-      if (!v->value)
-        v->value = value;
-      else
-        list_free(value);
-      break;
+    else
+      list_free(value);
+    break;
   }
 }
 
@@ -236,9 +240,10 @@ void var_set(const char *symbol, LIST *value, int flag) {
  * var_swap() - swap a variable's value with the given one
  */
 
-LIST *var_swap(const char *symbol, LIST *value) {
-  VARIABLE *v = var_enter(symbol);
-  LIST *oldvalue = v->value;
+LIST* var_swap(const char* symbol, LIST* value)
+{
+  VARIABLE* v = var_enter(symbol);
+  LIST* oldvalue = v->value;
 
   if (DEBUG_VARSET)
     var_dump(symbol, value, "set");
@@ -252,7 +257,8 @@ LIST *var_swap(const char *symbol, LIST *value) {
  * var_enter() - make new var symbol table entry, returning var ptr
  */
 
-static VARIABLE *var_enter(const char *symbol) {
+static VARIABLE* var_enter(const char* symbol)
+{
   VARIABLE var, *v = &var;
 
   if (!varhash)
@@ -261,7 +267,7 @@ static VARIABLE *var_enter(const char *symbol) {
   v->symbol = symbol;
   v->value = 0;
 
-  if (hashenter(varhash, (HASHDATA **)&v))
+  if (hashenter(varhash, (HASHDATA**)&v))
     v->symbol = newstr(symbol); /* never freed */
 
   return v;
@@ -271,7 +277,8 @@ static VARIABLE *var_enter(const char *symbol) {
  * var_dump() - dump a variable to stdout
  */
 
-static void var_dump(const char *symbol, LIST *value, const char *what) {
+static void var_dump(const char* symbol, LIST* value, const char* what)
+{
   printf("%s %s = ", what, symbol);
   list_print(value);
   printf("\n");
@@ -281,6 +288,7 @@ static void var_dump(const char *symbol, LIST *value, const char *what) {
  * var_done() - free variable tables
  */
 
-void var_done() {
+void var_done()
+{
   hashdone(varhash);
 }

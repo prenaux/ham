@@ -24,11 +24,12 @@
 #include <stdio.h>
 #include <string.h>
 
-int main(int argc, char **argv, char **envp) {
+int main(int argc, char** argv, char** envp)
+{
   char buf[1024];
-  FILE *fin;
-  FILE *fout;
-  char *p;
+  FILE* fin;
+  FILE* fout;
+  char* p;
   int doDotC = 0;
 
   if (argc < 3) {
@@ -72,7 +73,7 @@ int main(int argc, char **argv, char **envp) {
 
     while (fgets(buf, sizeof(buf), fin)) {
       if (doDotC) {
-        char *p = buf;
+        char* p = buf;
 
         /* Strip leading whitespace. */
 
@@ -90,17 +91,15 @@ int main(int argc, char **argv, char **envp) {
 
         for (; *p && *p != '\n' && *p != '\r'; p++)
           switch (*p) {
-            case '\\':
-              putc('\\', fout);
-              putc('\\', fout);
-              break;
-            case '"':
-              putc('\\', fout);
-              putc('"', fout);
-              break;
-            default:
-              putc(*p, fout);
-              break;
+          case '\\':
+            putc('\\', fout);
+            putc('\\', fout);
+            break;
+          case '"':
+            putc('\\', fout);
+            putc('"', fout);
+            break;
+          default: putc(*p, fout); break;
           }
 
         fprintf(fout, "\\n\",\n");

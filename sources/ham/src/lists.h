@@ -47,9 +47,9 @@
 typedef struct _list LIST;
 
 struct _list {
-  LIST *next;
-  LIST *tail;         /* only valid in head node */
-  const char *string; /* private copy */
+  LIST* next;
+  LIST* tail;         /* only valid in head node */
+  const char* string; /* private copy */
 };
 
 /*
@@ -62,25 +62,25 @@ typedef struct _lol LOL;
 
 struct _lol {
   int count;
-  LIST *list[LOL_MAX];
+  LIST* list[LOL_MAX];
 };
 
-LIST *list_append(LIST *l, LIST *nl);
-LIST *list_copy(LIST *l, LIST *nl);
-void list_free(LIST *head);
-LIST *list_new(LIST *head, const char *string, int copy);
-void list_print(LIST *l);
-int list_length(LIST *l);
-LIST *list_sublist(LIST *l, int start, int count);
-void list_fprint(FILE *fp, LIST *l);
+LIST* list_append(LIST* l, LIST* nl);
+LIST* list_copy(LIST* l, LIST* nl);
+void list_free(LIST* head);
+LIST* list_new(LIST* head, const char* string, int copy);
+void list_print(LIST* l);
+int list_length(LIST* l);
+LIST* list_sublist(LIST* l, int start, int count);
+void list_fprint(FILE* fp, LIST* l);
 
 #define list_next(l) ((l)->next)
 
-#define L0 ((LIST *)0)
+#define L0 ((LIST*)0)
 
-void lol_add(LOL *lol, LIST *l);
-void lol_init(LOL *lol);
-void lol_free(LOL *lol);
-LIST *lol_get(LOL *lol, int i);
-void lol_print(LOL *lol);
-void lol_fprint(FILE *fp, LOL *lol);
+void lol_add(LOL* lol, LIST* l);
+void lol_init(LOL* lol);
+void lol_free(LOL* lol);
+LIST* lol_get(LOL* lol, int i);
+void lol_print(LOL* lol);
+void lol_fprint(FILE* fp, LOL* lol);

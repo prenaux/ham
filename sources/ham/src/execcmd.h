@@ -10,12 +10,9 @@
  * 05/04/94 (seiwald) - async multiprocess interface
  */
 
-void execcmd(
-  const char* string,
-  void (*func)(void* closure, int status, const char* outputname),
-  void* closure,
-  const char* shellPath,
-  int serialOutput);
+void execcmd(const char* string,
+             void (*func)(void* closure, int status, const char* outputname),
+             void* closure, const char* shellPath, int serialOutput);
 
 int execwait();
 

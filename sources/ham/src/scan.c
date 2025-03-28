@@ -28,27 +28,28 @@
 #include "newstr.h"
 
 struct keyword {
-  const char *word;
+  const char* word;
   int type;
 } keywords[] = {
 #include "jamgramtab.h"
-  {0, 0}};
+  { 0, 0 }
+};
 
 struct include {
-  struct include *next; /* next serial include file */
-  const char *string;   /* pointer into current line */
-  char **strings;       /* for yyfparse() -- text to parse */
-  FILE *file;           /* for yyfparse() -- file being read */
-  const char *fname;    /* for yyfparse() -- file name */
+  struct include* next; /* next serial include file */
+  const char* string;   /* pointer into current line */
+  char** strings;       /* for yyfparse() -- text to parse */
+  FILE* file;           /* for yyfparse() -- file being read */
+  const char* fname;    /* for yyfparse() -- file name */
   int line;             /* line counter for error messages */
   char buf[512];        /* for yyfparse() -- line buffer */
 };
 
-static struct include *incp = 0; /* current file; head of chain */
+static struct include* incp = 0; /* current file; head of chain */
 
 static int scanmode = SCAN_NORMAL;
 static int anyerrors = 0;
-static char *symdump(YYSTYPE *s);
+static char* symdump(YYSTYPE* s);
 
 #define BIGGEST_TOKEN 10240 /* no single token can be larger */
 
@@ -56,11 +57,13 @@ static char *symdump(YYSTYPE *s);
  * Set parser mode: normal, string, or keyword
  */
 
-void yymode(int n) {
+void yymode(int n)
+{
   scanmode = n;
 }
 
-void yyerror(const char *s) {
+void yyerror(const char* s)
+{
   if (incp)
     printf("%s:%d: ", incp->fname, incp->line);
 
@@ -69,12 +72,14 @@ void yyerror(const char *s) {
   ++anyerrors;
 }
 
-int yyanyerrors() {
+int yyanyerrors()
+{
   return anyerrors != 0;
 }
 
-void yyfparse(const char *s) {
-  struct include *i = (struct include *)malloc(sizeof(*i));
+void yyfparse(const char* s)
+{
+  struct include* i = (struct include*)malloc(sizeof(*i));
 
   /* Push this onto the incp chain. */
 
@@ -99,8 +104,9 @@ void yyfparse(const char *s) {
  * returning EOF at the bitter end.
  */
 
-int yyline() {
-  struct include *i = incp;
+int yyline()
+{
+  struct include* i = incp;
 
   if (!incp)
     return EOF;
@@ -129,12 +135,12 @@ int yyline() {
   /* If necessary, open the file */
 
   if (!i->file) {
-    FILE *f = stdin;
+    FILE* f = stdin;
 
     if (strcmp(i->fname, "-") && !(f = fopen(i->fname, "r"))) {
       perror(i->fname);
       yyerror("cant open input/include file");
-     }
+    }
 
     i->file = f;
   }
@@ -158,7 +164,7 @@ next:
   if (i->file && i->file != stdin)
     fclose(i->file);
   freestr(i->fname);
-  free((char *)i);
+  free((char*)i);
 
   return EOF;
 }
@@ -178,10 +184,11 @@ next:
 #define yychar() (*incp->string ? *incp->string++ : yyline())
 #define yyprev() (incp->string--)
 
-int yylex() {
+int yylex()
+{
   int c;
   char buf[BIGGEST_TOKEN];
-  char *b = buf;
+  char* b = buf;
 
   if (!incp)
     goto eof;
@@ -230,8 +237,8 @@ int yylex() {
     yylval.string = newstr(buf);
   }
   else {
-    char *b = buf;
-    struct keyword *k;
+    char* b = buf;
+    struct keyword* k;
     int inquote = 0;
     int notkeyword;
 
@@ -335,25 +342,16 @@ eof:
   return yylval.type;
 }
 
-static char *symdump(YYSTYPE *s) {
+static char* symdump(YYSTYPE* s)
+{
   static char buf[BIGGEST_TOKEN + 20];
 
   switch (s->type) {
-    case EOF:
-      sprintf(buf, "EOF");
-      break;
-    case 0:
-      sprintf(buf, "unknown symbol %s", s->string);
-      break;
-    case ARG:
-      sprintf(buf, "argument %s", s->string);
-      break;
-    case STRING:
-      sprintf(buf, "string \"%s\"", s->string);
-      break;
-    default:
-      sprintf(buf, "keyword %s", s->string);
-      break;
+  case EOF: sprintf(buf, "EOF"); break;
+  case 0: sprintf(buf, "unknown symbol %s", s->string); break;
+  case ARG: sprintf(buf, "argument %s", s->string); break;
+  case STRING: sprintf(buf, "string \"%s\"", s->string); break;
+  default: sprintf(buf, "keyword %s", s->string); break;
   }
   return buf;
 }

@@ -28,7 +28,7 @@
 /* Header attached to all data items entered into a hash table. */
 
 struct hashhdr {
-  struct item *next;
+  struct item* next;
   unsigned int keyval; /* for quick comparisons */
 };
 
@@ -36,7 +36,7 @@ struct hashhdr {
 /* It's actual size is given to hashinit(). */
 
 struct hashdata {
-  char *key;
+  char* key;
   /* rest of user data */
 };
 
@@ -53,7 +53,7 @@ struct hash {
 	 */
   struct {
     int nel;
-    ITEM **base;
+    ITEM** base;
   } tab;
 
   int bloat; /* tab.nel / items.nel */
@@ -65,7 +65,7 @@ struct hash {
 	 */
   struct {
     int more;    /* how many more ITEMs fit in lists[ list ] */
-    char *next;  /* where to put more ITEMs in lists[ list ] */
+    char* next;  /* where to put more ITEMs in lists[ list ] */
     int datalen; /* length of records in this hash table */
     int size;    /* sizeof( ITEM ) + aligned datalen */
     int nel;     /* total ITEMs held by all lists[] */
@@ -73,24 +73,25 @@ struct hash {
 
     struct {
       int nel;    /* total ITEMs held by this list */
-      char *base; /* base of ITEMs array */
+      char* base; /* base of ITEMs array */
     } lists[MAX_LISTS];
   } items;
 
-  const char *name; /* just for hashstats() */
+  const char* name; /* just for hashstats() */
 };
 
-static void hashrehash(struct hash *hp);
-static void hashstat(struct hash *hp);
+static void hashrehash(struct hash* hp);
+static void hashstat(struct hash* hp);
 
 /*
  * hashitem() - find a record in the table, and optionally enter a new one
  */
 
-int hashitem(register struct hash *hp, HASHDATA **data, int enter) {
-  ITEM **base;
-  register ITEM *i;
-  unsigned char *b = (unsigned char *)(*data)->key;
+int hashitem(register struct hash* hp, HASHDATA** data, int enter)
+{
+  ITEM** base;
+  register ITEM* i;
+  unsigned char* b = (unsigned char*)(*data)->key;
   unsigned int keyval;
 
   if (enter && !hp->items.more)
@@ -113,10 +114,10 @@ int hashitem(register struct hash *hp, HASHDATA **data, int enter) {
     }
 
   if (enter) {
-    i = (ITEM *)hp->items.next;
+    i = (ITEM*)hp->items.next;
     hp->items.next += hp->items.size;
     hp->items.more--;
-    memcpy((char *)&i->data, (char *)*data, hp->items.datalen);
+    memcpy((char*)&i->data, (char*)*data, hp->items.datalen);
     i->hdr.keyval = keyval;
     i->hdr.next = *base;
     *base = i;
@@ -130,31 +131,32 @@ int hashitem(register struct hash *hp, HASHDATA **data, int enter) {
  * hashrehash() - resize and rebuild hp->tab, the hash table
  */
 
-static void hashrehash(register struct hash *hp) {
+static void hashrehash(register struct hash* hp)
+{
   int i = ++hp->items.list;
 
   hp->items.more = i ? 2 * hp->items.nel : hp->inel;
-  hp->items.next = (char *)malloc(hp->items.more * hp->items.size);
+  hp->items.next = (char*)malloc(hp->items.more * hp->items.size);
 
   hp->items.lists[i].nel = hp->items.more;
   hp->items.lists[i].base = hp->items.next;
   hp->items.nel += hp->items.more;
 
   if (hp->tab.base)
-    free((char *)hp->tab.base);
+    free((char*)hp->tab.base);
 
   hp->tab.nel = hp->items.nel * hp->bloat;
-  hp->tab.base = (ITEM **)malloc(hp->tab.nel * sizeof(ITEM **));
+  hp->tab.base = (ITEM**)malloc(hp->tab.nel * sizeof(ITEM**));
 
-  memset((char *)hp->tab.base, '\0', hp->tab.nel * sizeof(ITEM *));
+  memset((char*)hp->tab.base, '\0', hp->tab.nel * sizeof(ITEM*));
 
   for (i = 0; i < hp->items.list; i++) {
     int nel = hp->items.lists[i].nel;
-    char *next = hp->items.lists[i].base;
+    char* next = hp->items.lists[i].base;
 
     for (; nel--; next += hp->items.size) {
-      register ITEM *i = (ITEM *)next;
-      ITEM **ip = hp->tab.base + i->hdr.keyval % hp->tab.nel;
+      register ITEM* i = (ITEM*)next;
+      ITEM** ip = hp->tab.base + i->hdr.keyval % hp->tab.nel;
 
       i->hdr.next = *ip;
       *ip = i;
@@ -170,12 +172,13 @@ static void hashrehash(register struct hash *hp) {
  * hashinit() - initialize a hash table, returning a handle
  */
 
-struct hash *hashinit(int datalen, const char *name) {
-  struct hash *hp = (struct hash *)malloc(sizeof(*hp));
+struct hash* hashinit(int datalen, const char* name)
+{
+  struct hash* hp = (struct hash*)malloc(sizeof(*hp));
 
   hp->bloat = 3;
   hp->tab.nel = 0;
-  hp->tab.base = (ITEM **)0;
+  hp->tab.base = (ITEM**)0;
   hp->items.more = 0;
   hp->items.datalen = datalen;
   hp->items.size = sizeof(struct hashhdr) + ALIGNED(datalen);
@@ -191,7 +194,8 @@ struct hash *hashinit(int datalen, const char *name) {
  * hashdone() - free a hash table, given its handle
  */
 
-void hashdone(struct hash *hp) {
+void hashdone(struct hash* hp)
+{
   int i;
 
   if (!hp)
@@ -201,37 +205,34 @@ void hashdone(struct hash *hp) {
     hashstat(hp);
 
   if (hp->tab.base)
-    free((char *)hp->tab.base);
+    free((char*)hp->tab.base);
   for (i = 0; i <= hp->items.list; i++)
     free(hp->items.lists[i].base);
-  free((char *)hp);
+  free((char*)hp);
 }
 
 /* ---- */
 
-static void hashstat(struct hash *hp) {
-  ITEM **tab = hp->tab.base;
+static void hashstat(struct hash* hp)
+{
+  ITEM** tab = hp->tab.base;
   int nel = hp->tab.nel;
   int count = 0;
   int sets = 0;
-  int run = (tab[nel - 1] != (ITEM *)0);
+  int run = (tab[nel - 1] != (ITEM*)0);
   int i, here;
 
   for (i = nel; i > 0; i--) {
-    if (here = (*tab++ != (ITEM *)0))
+    if (here = (*tab++ != (ITEM*)0))
       count++;
     if (here && !run)
       sets++;
     run = here;
   }
 
-  printf(
-    "%s table: %d+%d+%d (%dK+%dK) items+table+hash, %f density\n",
-    hp->name,
-    (int)(count),
-    (int)(hp->items.nel),
-    (int)(hp->tab.nel),
-    (int)(hp->items.nel * hp->items.size / 1024),
-    (int)(hp->tab.nel * sizeof(ITEM **) / 1024),
-    (float)count / (float)sets);
+  printf("%s table: %d+%d+%d (%dK+%dK) items+table+hash, %f density\n",
+         hp->name, (int)(count), (int)(hp->items.nel), (int)(hp->tab.nel),
+         (int)(hp->items.nel * hp->items.size / 1024),
+         (int)(hp->tab.nel * sizeof(ITEM**) / 1024),
+         (float)count / (float)sets);
 }

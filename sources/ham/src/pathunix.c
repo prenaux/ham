@@ -42,11 +42,12 @@
  * path_parse() - split a file name into dir/base/suffix/member
  */
 
-void path_parse(const char *file, PATHNAME *f) {
+void path_parse(const char* file, PATHNAME* f)
+{
   const char *p, *q;
-  const char *end;
+  const char* end;
 
-  memset((char *)f, 0, sizeof(*f));
+  memset((char*)f, 0, sizeof(*f));
 
   /* Look for <grist> */
 
@@ -63,7 +64,7 @@ void path_parse(const char *file, PATHNAME *f) {
   #if PATH_DELIM == '\\'
   /* On NT, look for dir\ as well */
   {
-    char *p1 = strrchr(file, '\\');
+    char* p1 = strrchr(file, '\\');
     p = p1 > p ? p1 : p;
   }
   #endif
@@ -103,7 +104,7 @@ void path_parse(const char *file, PATHNAME *f) {
   p = 0;
   q = file;
 
-  while (q = (char *)memchr(q, '.', end - q))
+  while (q = (char*)memchr(q, '.', end - q))
     p = q++;
 
   if (p) {
@@ -122,7 +123,8 @@ void path_parse(const char *file, PATHNAME *f) {
  * path_build() - build a filename given dir/base/suffix/member
  */
 
-void path_build(PATHNAME *f, char *file, int binding) {
+void path_build(PATHNAME* f, char* file, int binding)
+{
   /* Start with the grist.  If the current grist isn't */
   /* surrounded by <>'s, add them. */
 
@@ -139,16 +141,14 @@ void path_build(PATHNAME *f, char *file, int binding) {
 
   #if PATH_DELIM == '/'
 
-  if (
-    f->f_root.len && !(f->f_root.len == 1 && f->f_root.ptr[0] == '.') &&
-    !(f->f_dir.len && f->f_dir.ptr[0] == '/'))
+  if (f->f_root.len && !(f->f_root.len == 1 && f->f_root.ptr[0] == '.') &&
+      !(f->f_dir.len && f->f_dir.ptr[0] == '/'))
   #else /* unix */
 
-  if (
-    f->f_root.len && !(f->f_root.len == 1 && f->f_root.ptr[0] == '.') &&
-    !(f->f_dir.len && f->f_dir.ptr[0] == '/') &&
-    !(f->f_dir.len && f->f_dir.ptr[0] == '\\') &&
-    !(f->f_dir.len && f->f_dir.ptr[1] == ':'))
+  if (f->f_root.len && !(f->f_root.len == 1 && f->f_root.ptr[0] == '.') &&
+      !(f->f_dir.len && f->f_dir.ptr[0] == '/') &&
+      !(f->f_dir.len && f->f_dir.ptr[0] == '\\') &&
+      !(f->f_dir.len && f->f_dir.ptr[1] == ':'))
 
   #endif /* unix */
 
@@ -200,7 +200,8 @@ void path_build(PATHNAME *f, char *file, int binding) {
  *	path_parent() - make a PATHNAME point to its parent dir
  */
 
-void path_parent(PATHNAME *f) {
+void path_parent(PATHNAME* f)
+{
   /* just set everything else to nothing */
 
   f->f_base.ptr = f->f_suffix.ptr = f->f_member.ptr = "";

@@ -160,7 +160,7 @@ struct globs globs = {
 
 /* Symbols to be defined as true for use in Jambase */
 
-static const char *othersyms[] = {OSMAJOR, OSMINOR, OSPLAT, HAMVERSYM, 0};
+static const char* othersyms[] = { OSMAJOR, OSMINOR, OSPLAT, HAMVERSYM, 0 };
 
 /* Known for sure:
  *      mac needs arg_enviro
@@ -177,17 +177,18 @@ QDGlobals qd;
 #ifndef use_environ
   #define use_environ environ
   #if !defined(__WATCOM__) && !defined(OS_OS2) && !defined(OS_NT)
-extern char **environ;
+extern char** environ;
   #endif
 #endif
 
 char g_bash_path[2048] = "bash";
 
-static int run_ham_pass(int argc, char **argv, int numpassleft) {
-  char passleftbuf[64] = {0};
+static int run_ham_pass(int argc, char** argv, int numpassleft)
+{
+  char passleftbuf[64] = { 0 };
   snprintf(passleftbuf, sizeof(passleftbuf), "%d", numpassleft);
 
-  char **new_argv = malloc((argc + 3) * sizeof(char*));
+  char** new_argv = malloc((argc + 3) * sizeof(char*));
   int i;
   new_argv[0] = argv[0];
   new_argv[1] = "-p";
@@ -204,11 +205,13 @@ static int run_ham_pass(int argc, char **argv, int numpassleft) {
   // Build command line string
   char cmdline[4096] = "";
   for (i = 0; new_argv[i]; i++) {
-    if (i > 0) strcat(cmdline, " ");
+    if (i > 0)
+      strcat(cmdline, " ");
     strcat_s(cmdline, sizeof(cmdline), new_argv[i]);
   }
 
-  if (!CreateProcess(NULL, cmdline, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
+  if (!CreateProcess(NULL, cmdline, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi))
+  {
     printf("error: CreateProcess failed: %lu\n", GetLastError());
     return EXITBAD;
   }
@@ -251,7 +254,8 @@ typedef struct {
   unsigned int diskFreeGB;
 } sHostInfo;
 
-void detect_host_info(sHostInfo* info) {
+void detect_host_info(sHostInfo* info)
+{
   // Initialize with defaults
   info->numProcessors = 1;
   info->memoryKB = 0;
@@ -295,7 +299,7 @@ void detect_host_info(sHostInfo* info) {
     MEMORYSTATUSEX memInfo;
     memInfo.dwLength = sizeof(MEMORYSTATUSEX);
     if (GlobalMemoryStatusEx(&memInfo)) {
-      info->memoryKB = (unsigned int)(memInfo.ullTotalPhys / (1024*1024));
+      info->memoryKB = (unsigned int)(memInfo.ullTotalPhys / (1024 * 1024));
     }
   }
 #endif
@@ -303,17 +307,18 @@ void detect_host_info(sHostInfo* info) {
   {
     struct sysinfo sysInfo;
     if (sysinfo(&sysInfo) == 0) {
-      info->memoryKB = (unsigned int)((sysInfo.totalram * sysInfo.mem_unit) / (1024*1024));
+      info->memoryKB =
+        (unsigned int)((sysInfo.totalram * sysInfo.mem_unit) / (1024 * 1024));
     }
   }
 #endif
 #ifdef OS_MACOSX
   {
-    int mib[2] = {CTL_HW, HW_MEMSIZE};
+    int mib[2] = { CTL_HW, HW_MEMSIZE };
     uint64_t memsize;
     size_t len = sizeof(memsize);
     if (sysctl(mib, 2, &memsize, &len, NULL, 0) == 0) {
-      info->memoryKB = (unsigned int)(memsize / (1024*1024));
+      info->memoryKB = (unsigned int)(memsize / (1024 * 1024));
     }
   }
 #endif
@@ -323,12 +328,16 @@ void detect_host_info(sHostInfo* info) {
   {
     char currentDir[MAX_PATH];
     GetCurrentDirectory(MAX_PATH, currentDir);
-    char drive[4] = {currentDir[0], ':', '\\', '\0'};
+    char drive[4] = { currentDir[0], ':', '\\', '\0' };
 
     ULARGE_INTEGER freeBytesAvailable, totalBytes, totalFreeBytes;
-    if (GetDiskFreeSpaceEx(drive, &freeBytesAvailable, &totalBytes, &totalFreeBytes)) {
-      info->diskFreeGB = (unsigned int)(freeBytesAvailable.QuadPart / (1024*1024*1024));
-      info->diskTotalGB = (unsigned int)(totalBytes.QuadPart / (1024*1024*1024));
+    if (GetDiskFreeSpaceEx(drive, &freeBytesAvailable, &totalBytes,
+                           &totalFreeBytes))
+    {
+      info->diskFreeGB =
+        (unsigned int)(freeBytesAvailable.QuadPart / (1024 * 1024 * 1024));
+      info->diskTotalGB =
+        (unsigned int)(totalBytes.QuadPart / (1024 * 1024 * 1024));
     }
   }
 #endif
@@ -336,19 +345,22 @@ void detect_host_info(sHostInfo* info) {
   {
     struct statvfs stat;
     if (statvfs(".", &stat) == 0) {
-      info->diskFreeGB = (unsigned int)((uint64_t)stat.f_bsize * stat.f_bavail / (1024*1024*1024));
-      info->diskTotalGB = (unsigned int)((uint64_t)stat.f_bsize * stat.f_blocks / (1024*1024*1024));
+      info->diskFreeGB = (unsigned int)((uint64_t)stat.f_bsize * stat.f_bavail /
+                                        (1024 * 1024 * 1024));
+      info->diskTotalGB = (unsigned int)((uint64_t)stat.f_bsize *
+                                         stat.f_blocks / (1024 * 1024 * 1024));
     }
   }
 #endif
 }
 
-int main(int argc, char **argv, char **arg_environ) {
+int main(int argc, char** argv, char** arg_environ)
+{
   int n, num_targets;
-  const char *s;
+  const char* s;
   struct option optv[N_OPTS];
-  char *targets[N_TARGETS];
-  const char *all = "all";
+  char* targets[N_TARGETS];
+  const char* all = "all";
   int anyhow = 0;
   int status = 0;
 
@@ -356,13 +368,15 @@ int main(int argc, char **argv, char **arg_environ) {
   detect_host_info(&hostInfo);
   unsigned int numProcessors = hostInfo.numProcessors;
 
-  num_targets = getoptions(argc-1, argv+1, "d:j:f:gs:t:ano:qvp:", optv, targets);
+  num_targets =
+    getoptions(argc - 1, argv + 1, "d:j:f:gs:t:ano:qvp:", optv, targets);
   if (num_targets < 0) {
     printf("\nusage: ham [ options ] targets...\n\n");
 
     printf("-a      Build all targets, even if they are current.\n");
     printf("-dx     Display (a)quiet actions (c)causes (d)dependencies\n");
-    printf("        (m)make tree (x)commands (g)generated (0-9) debug levels.\n");
+    printf(
+      "        (m)make tree (x)commands (g)generated (0-9) debug levels.\n");
     printf("-fx     Read x instead of Hambase.\n");
     printf("-g      Build from newest sources first.\n");
     printf("-jx     Run up to x shell commands concurrently.\n");
@@ -379,13 +393,13 @@ int main(int argc, char **argv, char **arg_environ) {
 
   /* Check that bash is available */
   {
-    char *hamShell = getenv("HAMSHELL");
+    char* hamShell = getenv("HAMSHELL");
     if (hamShell && *hamShell) {
       strcpy(g_bash_path, hamShell);
     }
 #ifdef OS_NT
     else {
-      char *devEnvDir = getenv("AGLDEVENV");
+      char* devEnvDir = getenv("AGLDEVENV");
       if (devEnvDir) {
         // look for bash_ham
         strcpy(g_bash_path, devEnvDir);
@@ -418,7 +432,7 @@ int main(int argc, char **argv, char **arg_environ) {
     }
     // convert '/' to '\\'
     {
-      char *p = g_bash_path;
+      char* p = g_bash_path;
       while (*p) {
         if (*p == '/')
           *p = '\\';
@@ -428,7 +442,8 @@ int main(int argc, char **argv, char **arg_environ) {
 #endif
     if (g_bash_path[0] == 0) {
       printf("-- Can't find the bash executable --\n");
-      printf("Make sure its in the path or set the environment variable HAMSHELL to point to it.\n");
+      printf(
+        "Make sure its in the path or set the environment variable HAMSHELL to point to it.\n");
       exit(EXITBAD);
     }
   }
@@ -436,14 +451,9 @@ int main(int argc, char **argv, char **arg_environ) {
   /* Version info. */
 
   if ((s = getoptval(optv, 'v', 0))) {
-    printf(
-      "Ham v%s, %s, CPU=%d, MEM=%dKB, DISKFREE=%dGB, DISKSZ=%dGB.\n",
-      VERSION,
-      OSMINOR,
-      numProcessors,
-      hostInfo.memoryKB,
-      hostInfo.diskFreeGB,
-      hostInfo.diskTotalGB);
+    printf("Ham v%s, %s, CPU=%d, MEM=%dKB, DISKFREE=%dGB, DISKSZ=%dGB.\n",
+           VERSION, OSMINOR, numProcessors, hostInfo.memoryKB,
+           hostInfo.diskFreeGB, hostInfo.diskTotalGB);
     return EXITOK;
   }
 
@@ -502,30 +512,17 @@ int main(int argc, char **argv, char **arg_environ) {
     else {
       while (*s) {
         switch (*s++) {
-          case 'a':
-            DEBUG_MAKEQ = 1;
-            break;
-          case 'c':
-            DEBUG_CAUSES = 1;
-            break;
-          case 'd':
-            DEBUG_DEPENDS = 1;
-            break;
-          case 'm':
-            DEBUG_MAKEPROG = 1;
-            break;
-          case 'x':
-            DEBUG_EXEC = 1;
-            break;
-          case 'g':
-            DEBUG_GENERATED = 1;
-            break;
-          case '0':
-            break;
-          default: {
-            printf("Invalid debug flag '%c'.\n", s[-1]);
-            break;
-          }
+        case 'a': DEBUG_MAKEQ = 1; break;
+        case 'c': DEBUG_CAUSES = 1; break;
+        case 'd': DEBUG_DEPENDS = 1; break;
+        case 'm': DEBUG_MAKEPROG = 1; break;
+        case 'x': DEBUG_EXEC = 1; break;
+        case 'g': DEBUG_GENERATED = 1; break;
+        case '0': break;
+        default: {
+          printf("Invalid debug flag '%c'.\n", s[-1]);
+          break;
+        }
         }
       }
     }
@@ -533,7 +530,7 @@ int main(int argc, char **argv, char **arg_environ) {
 
   /* Set HAMCMDARGS */
   {
-    LIST *l = L0;
+    LIST* l = L0;
     for (n = 0; n < num_targets; n++) {
       l = list_new(l, targets[n], 0);
     }
@@ -541,7 +538,7 @@ int main(int argc, char **argv, char **arg_environ) {
   }
 
   {
-    char buf[64] = {0};
+    char buf[64] = { 0 };
 
     /* Set HAMCMDNUMPASS */
     snprintf(buf, sizeof(buf), "%d", globs.numpass);
@@ -558,11 +555,11 @@ int main(int argc, char **argv, char **arg_environ) {
   var_defines(othersyms);
 
   /* load up environment variables */
-  var_defines((const char **)use_environ);
+  var_defines((const char**)use_environ);
 
   /* Load up variables set on command line. */
   for (n = 0; (s = getoptval(optv, 's', n)) != 0; n++) {
-    const char *symv[2];
+    const char* symv[2];
     symv[0] = s;
     symv[1] = 0;
     var_defines(symv);
@@ -602,7 +599,7 @@ int main(int argc, char **argv, char **arg_environ) {
     status |= make(1, &all, anyhow, &generated);
   }
   else {
-    status |= make(num_targets, (const char **)targets, anyhow, &generated);
+    status |= make(num_targets, (const char**)targets, anyhow, &generated);
   }
 
   /* Widely scattered cleanup */
@@ -634,13 +631,16 @@ int main(int argc, char **argv, char **arg_environ) {
   // Run the next pass
   if ((status == 0) && (generated > 0)) {
     if (globs.numpass > 0) {
-      int passleft = globs.numpass-1;
-      printf("...running next pass after %d target(s) were generated, %d pass left afterwards...\n", generated, passleft);
+      int passleft = globs.numpass - 1;
+      printf(
+        "...running next pass after %d target(s) were generated, %d pass left afterwards...\n",
+        generated, passleft);
       fflush(stdout);
       return run_ham_pass(argc, argv, passleft);
     }
     else {
-      printf("warning: exhausted all passes but %d target(s) were generated.\n", generated);
+      printf("warning: exhausted all passes but %d target(s) were generated.\n",
+             generated);
       fflush(stdout);
     }
   }

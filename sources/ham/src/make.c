@@ -84,11 +84,11 @@ typedef struct {
   int generating;
 } COUNTS;
 
-static void make0(TARGET *t, TARGET *p, int depth, COUNTS *counts, int anyhow);
+static void make0(TARGET* t, TARGET* p, int depth, COUNTS* counts, int anyhow);
 
-static TARGETS *make0sort(TARGETS *c);
+static TARGETS* make0sort(TARGETS* c);
 
-static const char *target_fate[] = {
+static const char* target_fate[] = {
   "init",    /* T_FATE_INIT */
   "making",  /* T_FATE_MAKING */
   "stable",  /* T_FATE_STABLE */
@@ -103,7 +103,7 @@ static const char *target_fate[] = {
   "nomake"   /* T_FATE_CANTMAKE */
 };
 
-static const char *target_bind[] = {
+static const char* target_bind[] = {
   "unbound",
   "missing",
   "parents",
@@ -116,7 +116,8 @@ static const char *target_bind[] = {
  * make() - make a target, given its name
  */
 
-int make(int n_targets, const char **targets, int anyhow, int* generated) {
+int make(int n_targets, const char** targets, int anyhow, int* generated)
+{
   int i;
   COUNTS counts[1];
   int status = 0; /* 1 if anything fails */
@@ -124,10 +125,10 @@ int make(int n_targets, const char **targets, int anyhow, int* generated) {
   hcache_init();
 #endif
 
-  memset((char *)counts, 0, sizeof(*counts));
+  memset((char*)counts, 0, sizeof(*counts));
 
   for (i = 0; i < n_targets; i++) {
-    TARGET *t = bindtarget(targets[i]);
+    TARGET* t = bindtarget(targets[i]);
 
     make0(t, 0, 0, counts, anyhow);
   }
@@ -156,7 +157,7 @@ int make(int n_targets, const char **targets, int anyhow, int* generated) {
   status = counts->cantfind || counts->cantmake;
 
   for (i = 0; i < n_targets; i++)
-    status |= make1(bindtarget(targets[i]),generated);
+    status |= make1(bindtarget(targets[i]), generated);
 
   return status;
 }
@@ -169,7 +170,8 @@ int make(int n_targets, const char **targets, int anyhow, int* generated) {
  * 2. Except when it's an obvious case of a NEWER existing target with a MISSING parent
  *    since that's self-explanatory
  */
-static int should_show_causality(TARGET *t, TARGET *p) {
+static int should_show_causality(TARGET* t, TARGET* p)
+{
   /* Must be in the right fate range to show causality */
   if (!(t->fate >= T_FATE_NEWER && t->fate < T_FATE_BROKEN))
     return 0;
@@ -179,8 +181,7 @@ static int should_show_causality(TARGET *t, TARGET *p) {
     return 1;
 
   /* Skip obvious case: target exists but parent is missing */
-  if (t->fate == T_FATE_NEWER &&
-      t->binding == T_BIND_EXISTS &&
+  if (t->fate == T_FATE_NEWER && t->binding == T_BIND_EXISTS &&
       (p->fate == T_FATE_MISSING || p->binding == T_BIND_MISSING))
     return 0;
 
@@ -191,17 +192,15 @@ static int should_show_causality(TARGET *t, TARGET *p) {
  * Display build causality information for a target,
  * showing its state and why it needs to be updated
  */
-static void show_causality(TARGET *t) {
-  char buffer[32] = {0};
-  struct hash *seen = hashinit(sizeof(const char *), "seen_deps");
-  TARGETS *c;
+static void show_causality(TARGET* t)
+{
+  char buffer[32] = { 0 };
+  struct hash* seen = hashinit(sizeof(const char*), "seen_deps");
+  TARGETS* c;
 
-  printf(
-    "BECAUSE %s %s \"%s\" (%s)\n",
-    target_fate[t->fate],
-    target_bind[t->binding],
-    t->name,
-    format_timestamp(&t->time,buffer,sizeof(buffer)));
+  printf("BECAUSE %s %s \"%s\" (%s)\n", target_fate[t->fate],
+         target_bind[t->binding], t->name,
+         format_timestamp(&t->time, buffer, sizeof(buffer)));
 
   if (strcmp(t->name, t->boundname)) {
     printf("  binds to %s\n", t->boundname);
@@ -214,19 +213,16 @@ static void show_causality(TARGET *t) {
         continue;
 
       // Only show each dependency once
-      const char *name = c->target->name;
-      const char **entry = &name;
-      if (!hashenter(seen, (HASHDATA **)&entry)) {
-        continue;  // Skip if we've already seen this dependency
+      const char* name = c->target->name;
+      const char** entry = &name;
+      if (!hashenter(seen, (HASHDATA**)&entry)) {
+        continue; // Skip if we've already seen this dependency
       }
 
       int internal = t->flags & T_FLAG_INTERNAL;
-      printf(
-        "  %s %s \"%s\" (%s)\n",
-        internal ? "Includes" : "Depends",
-        target_fate[c->target->fate],
-        c->target->name,
-        format_timestamp(&t->time,buffer,sizeof(buffer)));
+      printf("  %s %s \"%s\" (%s)\n", internal ? "Includes" : "Depends",
+             target_fate[c->target->fate], c->target->name,
+             format_timestamp(&t->time, buffer, sizeof(buffer)));
     }
   }
   hashdone(seen);
@@ -240,19 +236,17 @@ static void show_causality(TARGET *t) {
  * calls itself on those headers, and calls itself on any dependents.
  */
 
-static void make0(
-  TARGET *t,
-  TARGET *p,      /* parent */
-  int depth,      /* for display purposes */
-  COUNTS *counts, /* for reporting */
-  int anyhow)     /* forcibly touch all (real) targets */
+static void make0(TARGET* t, TARGET* p, /* parent */
+                  int depth,            /* for display purposes */
+                  COUNTS* counts,       /* for reporting */
+                  int anyhow)           /* forcibly touch all (real) targets */
 {
   TARGETS *c, *incs;
-  TARGET *ptime = t;
+  TARGET* ptime = t;
   time_t last, leaf, hlast;
   int fate;
-  const char *flag = "";
-  SETTINGS *s;
+  const char* flag = "";
+  SETTINGS* s;
 
   /*
    * Step 1: initialize
@@ -287,9 +281,8 @@ static void make0(
 
   /* If temp file doesn't exist but parent does, use parent */
 
-  if (p && (t->flags & T_FLAG_TEMP) &&
-    (t->binding == T_BIND_MISSING) &&
-    (p->binding != T_BIND_MISSING))
+  if (p && (t->flags & T_FLAG_TEMP) && (t->binding == T_BIND_MISSING) &&
+      (p->binding != T_BIND_MISSING))
   {
     t->binding = T_BIND_PARENTS;
     ptime = p;
@@ -315,19 +308,16 @@ static void make0(
     }
 
     switch (t->binding) {
-      case T_BIND_UNBOUND:
-      case T_BIND_MISSING:
-      case T_BIND_PARENTS:
-        printf(
-          "time\t--\t%s%s: %s\n",
-          spaces(depth),
-          t->name,
-          target_bind[t->binding]);
-        break;
+    case T_BIND_UNBOUND:
+    case T_BIND_MISSING:
+    case T_BIND_PARENTS:
+      printf("time\t--\t%s%s: %s\n", spaces(depth), t->name,
+             target_bind[t->binding]);
+      break;
 
-      case T_BIND_EXISTS:
-        printf("time\t--\t%s%s: %s", spaces(depth), t->name, ctime(&t->time));
-        break;
+    case T_BIND_EXISTS:
+      printf("time\t--\t%s%s: %s", spaces(depth), t->name, ctime(&t->time));
+      break;
     }
   }
 
@@ -341,11 +331,9 @@ static void make0(
     int internal = t->flags & T_FLAG_INTERNAL;
 
     if (DEBUG_DEPENDS)
-      printf(
-        "%s \"%s\" : \"%s\" ;\n",
-        internal ? "Includes" : (c->needs ? "Needs" : "Depends"),
-        t->name,
-        c->target->name);
+      printf("%s \"%s\" : \"%s\" ;\n",
+             internal ? "Includes" : (c->needs ? "Needs" : "Depends"), t->name,
+             c->target->name);
 
     /* Warn about circular deps, except for includes, */
     /* which include each other alot. */
@@ -483,10 +471,8 @@ static void make0(
   else if (t->binding == T_BIND_EXISTS && t->flags & T_FLAG_TEMP) {
     fate = T_FATE_ISTMP;
   }
-  else if (
-    t->binding == T_BIND_EXISTS &&
-    p && p->binding != T_BIND_UNBOUND &&
-    t->time > p->time)
+  else if (t->binding == T_BIND_EXISTS && p && p->binding != T_BIND_UNBOUND &&
+           t->time > p->time)
   {
     if (!(p->flags & T_FLAG_MIGHTNOTUPDATE)) {
       fate = T_FATE_NEWER;
@@ -554,7 +540,7 @@ static void make0(
       }
       if (counts->generating == 0) {
         /* Set HAMPASSGENERATING */
-        char buf[2] = {'1',0};
+        char buf[2] = { '1', 0 };
         var_set("HAMPASSGENERATING", list_new(L0, buf, 0), VAR_SET);
       }
       ++counts->generating;
@@ -568,7 +554,8 @@ static void make0(
     flag = "*";
 
   if (DEBUG_MAKEPROG) {
-    printf("made%s\t%s\t%s%s\n", flag, target_fate[t->fate], spaces(depth), t->name);
+    printf("made%s\t%s\t%s%s\n", flag, target_fate[t->fate], spaces(depth),
+           t->name);
   }
 
   if (DEBUG_CAUSES && should_show_causality(t, p)) {
@@ -580,8 +567,9 @@ static void make0(
  * make0sort() - reorder TARGETS chain by their time (newest to oldest)
  */
 
-static TARGETS *make0sort(TARGETS *chain) {
-  TARGETS *result = 0;
+static TARGETS* make0sort(TARGETS* chain)
+{
+  TARGETS* result = 0;
 
   /* We walk chain, taking each item and inserting it on the */
   /* sorted result, with newest items at the front.  This involves */
@@ -593,8 +581,8 @@ static TARGETS *make0sort(TARGETS *chain) {
   /* Walk current target list */
 
   while (chain) {
-    TARGETS *c = chain;
-    TARGETS *s = result;
+    TARGETS* c = chain;
+    TARGETS* s = result;
 
     chain = chain->next;
 

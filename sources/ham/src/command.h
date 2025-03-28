@@ -38,19 +38,18 @@
 typedef struct _cmd CMD;
 
 struct _cmd {
-  CMD *next;
-  CMD *tail;         /* valid on in head */
-  RULE *rule;        /* rule->actions contains shell script */
+  CMD* next;
+  CMD* tail;         /* valid on in head */
+  RULE* rule;        /* rule->actions contains shell script */
   LOL args;          /* LISTs for $(<), $(>) */
   char buf[MAXLINE]; /* actual commands */
 };
 
-CMD *cmd_new(
-  RULE *rule,    /* rule (referenced) */
-  LIST *targets, /* $(<) (freed) */
-  LIST *sources, /* $(>) (freed) */
-  int maxline);  /* max line length */
+CMD* cmd_new(RULE* rule,    /* rule (referenced) */
+             LIST* targets, /* $(<) (freed) */
+             LIST* sources, /* $(>) (freed) */
+             int maxline);  /* max line length */
 
-void cmd_free(CMD *cmd);
+void cmd_free(CMD* cmd);
 
 #define cmd_next(c) ((c)->next)

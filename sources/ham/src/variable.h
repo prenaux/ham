@@ -10,11 +10,11 @@
  * 11/04/02 (seiwald) - const-ing for string literals
  */
 
-void var_defines(const char **e);
-int var_string(const char *in, char *out, int outsize, LOL *lol);
-LIST *var_get(const char *symbol);
-void var_set(const char *symbol, LIST *value, int flag);
-LIST *var_swap(const char *symbol, LIST *value);
+void var_defines(const char** e);
+int var_string(const char* in, char* out, int outsize, LOL* lol);
+LIST* var_get(const char* symbol);
+void var_set(const char* symbol, LIST* value, int flag);
+LIST* var_swap(const char* symbol, LIST* value);
 void var_done();
 
 /*

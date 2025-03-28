@@ -28,13 +28,14 @@
 #include "newstr.h"
 #include "lists.h"
 
-static LIST *freelist = 0; /* junkpile for list_free() */
+static LIST* freelist = 0; /* junkpile for list_free() */
 
 /*
  * list_append() - append a list onto another one, returning total
  */
 
-LIST *list_append(LIST *l, LIST *nl) {
+LIST* list_append(LIST* l, LIST* nl)
+{
   if (!nl) {
     /* Just return l */
   }
@@ -54,8 +55,9 @@ LIST *list_append(LIST *l, LIST *nl) {
  * list_new() - tack a string onto the end of a list of strings
  */
 
-LIST *list_new(LIST *head, const char *string, int copy) {
-  LIST *l;
+LIST* list_new(LIST* head, const char* string, int copy)
+{
+  LIST* l;
 
   if (DEBUG_LISTS)
     printf("list > %s <\n", string);
@@ -74,7 +76,7 @@ LIST *list_new(LIST *head, const char *string, int copy) {
     freelist = freelist->next;
   }
   else {
-    l = (LIST *)malloc(sizeof(*l));
+    l = (LIST*)malloc(sizeof(*l));
   }
 
   /* If first on chain, head points here. */
@@ -97,7 +99,8 @@ LIST *list_new(LIST *head, const char *string, int copy) {
  * list_copy() - copy a whole list of strings (nl) onto end of another (l)
  */
 
-LIST *list_copy(LIST *l, LIST *nl) {
+LIST* list_copy(LIST* l, LIST* nl)
+{
   for (; nl; nl = list_next(nl))
     l = list_new(l, nl->string, 1);
 
@@ -108,8 +111,9 @@ LIST *list_copy(LIST *l, LIST *nl) {
  * list_sublist() - copy a subset of a list of strings
  */
 
-LIST *list_sublist(LIST *l, int start, int count) {
-  LIST *nl = 0;
+LIST* list_sublist(LIST* l, int start, int count)
+{
+  LIST* nl = 0;
 
   for (; l && start--; l = list_next(l))
     ;
@@ -124,7 +128,8 @@ LIST *list_sublist(LIST *l, int start, int count) {
  * list_free() - free a list of strings
  */
 
-void list_free(LIST *head) {
+void list_free(LIST* head)
+{
   /* Just tack onto freelist. */
 
   if (head) {
@@ -137,7 +142,8 @@ void list_free(LIST *head) {
  * list_print() - print a list of strings to stdout
  */
 
-void list_print(LIST *l) {
+void list_print(LIST* l)
+{
   for (; l; l = list_next(l))
     printf("%s ", l->string);
 }
@@ -146,9 +152,10 @@ void list_print(LIST *l) {
  * list_print() - print a list of strings to the specified file
  */
 
-void list_fprint(FILE *fp, LIST *l) {
+void list_fprint(FILE* fp, LIST* l)
+{
   while (l) {
-    LIST *n = list_next(l);
+    LIST* n = list_next(l);
     fprintf(fp, n ? "%s " : "%s", l->string);
     l = n;
   }
@@ -158,14 +165,15 @@ void list_fprint(FILE *fp, LIST *l) {
  * list_printq() - print a list of safely quoted strings to a file
  */
 
-void list_printq(FILE *out, LIST *l) {
+void list_printq(FILE* out, LIST* l)
+{
   /* Dump each word, enclosed in "s */
   /* Suitable for Jambase use. */
 
   for (; l; l = list_next(l)) {
-    const char *p = l->string;
-    const char *ep = p + strlen(p);
-    const char *op = p;
+    const char* p = l->string;
+    const char* ep = p + strlen(p);
+    const char* op = p;
 
     fputc('\n', out);
     fputc('\t', out);
@@ -173,7 +181,7 @@ void list_printq(FILE *out, LIST *l) {
 
     /* Any embedded "'s?  Escape them */
 
-    while (p = (char *)memchr(op, '"', ep - op)) {
+    while (p = (char*)memchr(op, '"', ep - op)) {
       fwrite(op, p - op, 1, out);
       fputc('\\', out);
       fputc('"', out);
@@ -192,7 +200,8 @@ void list_printq(FILE *out, LIST *l) {
  * list_length() - return the number of items in the list
  */
 
-int list_length(LIST *l) {
+int list_length(LIST* l)
+{
   int n = 0;
 
   for (; l; l = list_next(l), ++n)
@@ -205,7 +214,8 @@ int list_length(LIST *l) {
  * lol_init() - initialize a LOL (list of lists)
  */
 
-void lol_init(LOL *lol) {
+void lol_init(LOL* lol)
+{
   lol->count = 0;
 }
 
@@ -213,7 +223,8 @@ void lol_init(LOL *lol) {
  * lol_add() - append a LIST onto an LOL
  */
 
-void lol_add(LOL *lol, LIST *l) {
+void lol_add(LOL* lol, LIST* l)
+{
   if (lol->count < LOL_MAX)
     lol->list[lol->count++] = l;
 }
@@ -222,7 +233,8 @@ void lol_add(LOL *lol, LIST *l) {
  * lol_free() - free the LOL and its LISTs
  */
 
-void lol_free(LOL *lol) {
+void lol_free(LOL* lol)
+{
   int i;
 
   for (i = 0; i < lol->count; i++)
@@ -235,7 +247,8 @@ void lol_free(LOL *lol) {
  * lol_get() - return one of the LISTs in the LOL
  */
 
-LIST *lol_get(LOL *lol, int i) {
+LIST* lol_get(LOL* lol, int i)
+{
   return i < lol->count ? lol->list[i] : 0;
 }
 
@@ -243,7 +256,8 @@ LIST *lol_get(LOL *lol, int i) {
  * lol_print() - debug print LISTS separated by ":"
  */
 
-void lol_print(LOL *lol) {
+void lol_print(LOL* lol)
+{
   int i;
 
   for (i = 0; i < lol->count; i++) {

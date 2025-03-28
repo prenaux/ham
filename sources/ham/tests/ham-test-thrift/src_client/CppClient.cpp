@@ -22,10 +22,10 @@
 #include <iostream>
 
 #ifdef USE_JSON_PROTOCOL
-#include <thrift/protocol/TJSONProtocol.h>
-#include <thrift/transport/THttpClient.h>
+  #include <thrift/protocol/TJSONProtocol.h>
+  #include <thrift/transport/THttpClient.h>
 #else
-#include <thrift/protocol/TBinaryProtocol.h>
+  #include <thrift/protocol/TBinaryProtocol.h>
 #endif
 #include <thrift/transport/TSocket.h>
 #include <thrift/transport/TTransportUtils.h>
@@ -42,10 +42,12 @@ using namespace shared;
 
 static constexpr int kPORT = 40990;
 
-int main() {
+int main()
+{
   std::shared_ptr<TTransport> socket(new TSocket("localhost", kPORT));
 #ifdef USE_JSON_PROTOCOL
-  std::shared_ptr<TTransport> transport(new THttpClient(socket, "localhost", "/service"));
+  std::shared_ptr<TTransport> transport(
+    new THttpClient(socket, "localhost", "/service"));
   std::shared_ptr<TProtocol> protocol(new TJSONProtocol(transport));
 #else
   std::shared_ptr<TTransport> transport(new TBufferedTransport(socket));

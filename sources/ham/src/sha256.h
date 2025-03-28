@@ -72,15 +72,18 @@ class SHA256 {
   struct sha256_buff buff;
 
  public:
-  SHA256() {
+  SHA256()
+  {
     sha256_init(&buff);
   }
 
-  void update(const void* data, std::size_t size) {
+  void update(const void* data, std::size_t size)
+  {
     sha256_update(&buff, data, size);
   }
 
-  std::string hash() {
+  std::string hash()
+  {
     char hash[64];
     sha256_finalize(&buff);
     sha256_read_hex(&buff, hash);
@@ -88,7 +91,8 @@ class SHA256 {
     return std::string(hash, 64);
   }
 
-  static std::string hashString(const std::string& str) {
+  static std::string hashString(const std::string& str)
+  {
     char hash[64];
     sha256_easy_hash_hex(str.c_str(), str.length(), hash);
     return std::string(hash, 64);

@@ -479,7 +479,7 @@ struct globs {
   int quitquick;
   int newestfirst; /* build newest sources first */
   char debug[DEBUG_MAX];
-  FILE *cmdout; /* print cmds, not run them */
+  FILE* cmdout; /* print cmds, not run them */
   int numpass;
 };
 
@@ -504,18 +504,18 @@ extern struct globs globs;
 #define DEBUG_SCAN (globs.debug[9])   /* show scanner tokens */
 #define DEBUG_MEM (globs.debug[9])    /* show memory use */
 
-#define DEBUG_MAKEQ (globs.debug[11])   /* -da show even quiet actions */
-#define DEBUG_EXEC (globs.debug[12])    /* -dx show text of actions */
-#define DEBUG_DEPENDS (globs.debug[13]) /* -dd show dependency graph */
-#define DEBUG_CAUSES (globs.debug[14])  /* -dc show dependency graph */
+#define DEBUG_MAKEQ (globs.debug[11])     /* -da show even quiet actions */
+#define DEBUG_EXEC (globs.debug[12])      /* -dx show text of actions */
+#define DEBUG_DEPENDS (globs.debug[13])   /* -dd show dependency graph */
+#define DEBUG_CAUSES (globs.debug[14])    /* -dc show dependency graph */
 #define DEBUG_GENERATED (globs.debug[15]) /* -dg show generated targets */
 
 #define OPT_HEADER_CACHE_EXT
 
 #ifdef OS_NT
-#  define ham_strnicmp(l,r,len) strnicmp(l,r,len)
-#  define ham_stricmp(l,r) stricmp(l,r)
+  #define ham_strnicmp(l, r, len) strnicmp(l, r, len)
+  #define ham_stricmp(l, r) stricmp(l, r)
 #else
-#  define ham_strnicmp(l,r,len) strncasecmp(l,r,len)
-#  define ham_stricmp(l,r) strcasecmp(l,r)
+  #define ham_strnicmp(l, r, len) strncasecmp(l, r, len)
+  #define ham_stricmp(l, r) strcasecmp(l, r)
 #endif

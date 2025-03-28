@@ -43,7 +43,7 @@
 #ifdef OPT_HEADER_CACHE_EXT
   #include "hcache.h"
 #else
-static LIST *headers1(const char *file, LIST *hdrscan);
+static LIST* headers1(const char* file, LIST* hdrscan);
 #endif
 
 /*
@@ -52,9 +52,10 @@ static LIST *headers1(const char *file, LIST *hdrscan);
 
 #define MAXINC 25
 
-void headers(TARGET *t) {
-  LIST *hdrscan;
-  LIST *hdrrule;
+void headers(TARGET* t)
+{
+  LIST* hdrscan;
+  LIST* hdrrule;
   LOL lol;
 
   if (!(hdrscan = var_get("HDRSCAN")) || !(hdrrule = var_get("HDRRULE")))
@@ -90,15 +91,16 @@ void headers(TARGET *t) {
 #ifdef OPT_HEADER_CACHE_EXT
 LIST *
 #else
-static LIST *
+static LIST*
 #endif
-headers1(const char *file, LIST *hdrscan) {
-  FILE *f;
+headers1(const char *file, LIST *hdrscan)
+{
+  FILE* f;
   int i;
   int rec = 0;
-  LIST *result = 0;
-  regexp *re[MAXINC];
-  regexp *re_macros;
+  LIST* result = 0;
+  regexp* re[MAXINC];
+  regexp* re_macros;
   char buf[1024];
 
   if (!(f = fopen(file, "r")))
@@ -133,7 +135,7 @@ headers1(const char *file, LIST *hdrscan) {
 
     /* special treatment for #include MACRO */
     if (regexec(re_macros, buf) && re_macros->startp[1]) {
-      const char *header_filename;
+      const char* header_filename;
       char buf2[MAXSYM];
       int l = re_macros->endp[1] - re_macros->startp[1];
 
@@ -159,7 +161,7 @@ headers1(const char *file, LIST *hdrscan) {
   free(re_macros);
 
   while (rec)
-    free((char *)re[--rec]);
+    free((char*)re[--rec]);
 
   fclose(f);
 

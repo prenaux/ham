@@ -86,9 +86,10 @@ static struct {
   #ifdef USE_EXECNT
   char* tempFile;
   #endif
-} cmdtab[MAXJOBS] = {{0}};
+} cmdtab[MAXJOBS] = { { 0 } };
 
-void exec_init() {
+void exec_init()
+{
   char* tempdir;
   int i;
 
@@ -108,27 +109,18 @@ void exec_init() {
   for (i = 0; i < globs.jobs; ++i) {
   #ifdef USE_EXECNT
     cmdtab[i].tempFile = malloc(strlen(tempdir) + 128);
-    sprintf(
-      cmdtab[i].tempFile,
-      "%s/jam_p%d_tmp%d_r%d.sh",
-      tempdir,
-      getpid(),
-      i,
-      rand());
+    sprintf(cmdtab[i].tempFile, "%s/jam_p%d_tmp%d_r%d.sh", tempdir, getpid(), i,
+            rand());
   #endif
     cmdtab[i].outputFileUsed = 0;
     cmdtab[i].outputFile = malloc(strlen(tempdir) + 128);
-    sprintf(
-      cmdtab[i].outputFile,
-      "%s/jam_p%d_out%d_r%d.out",
-      tempdir,
-      getpid(),
-      i,
-      rand());
+    sprintf(cmdtab[i].outputFile, "%s/jam_p%d_out%d_r%d.out", tempdir, getpid(),
+            i, rand());
   }
 }
 
-void exec_done() {
+void exec_done()
+{
   int i;
   for (i = 0; i < globs.jobs; ++i) {
   #ifdef USE_EXECNT
@@ -143,7 +135,8 @@ void exec_done() {
  * onintr() - bump intr to note command interruption
  */
 
-void onintr(int disp) {
+void onintr(int disp)
+{
   intr++;
   printf("...interrupted\n");
 }
@@ -160,11 +153,9 @@ static int _firstExec = 0;
 //! \param apArgvBuffer is the buffer where the command line will be copied, apArgv will point to location
 //!        in that buffer. It should be at least the same length as aaszCmdLine.
 //! \param apArgv will contain the arguments.
-int StrCommandLineToArgcArgv(
-  const char* aszCmdLine,
-  char* apArgvBuffer,
-  const char** apArgv,
-  int anArgv0) {
+int StrCommandLineToArgcArgv(const char* aszCmdLine, char* apArgvBuffer,
+                             const char** apArgv, int anArgv0)
+{
   int argc = 0;
 
   // Set to no argv elements, in case we have to bail out
@@ -173,29 +164,29 @@ int StrCommandLineToArgcArgv(
   // Copy the system version of the command line into our copy
   strcpy(apArgvBuffer, aszCmdLine);
 
-  if ('"' == *apArgvBuffer)  // If command line starts with a quote ("),
-  {                          // it's a quoted filename.  Skip to next quote.
+  if ('"' == *apArgvBuffer) // If command line starts with a quote ("),
+  {                         // it's a quoted filename.  Skip to next quote.
     apArgvBuffer++;
 
-    apArgv[anArgv0 + 0] = apArgvBuffer;  // argv[0] == executable name
+    apArgv[anArgv0 + 0] = apArgvBuffer; // argv[0] == executable name
 
     while (*apArgvBuffer && (*apArgvBuffer != '"'))
       apArgvBuffer++;
 
-    if (*apArgvBuffer)      // Did we see a non-NULL ending?
-      *apArgvBuffer++ = 0;  // Null terminate and advance to next char
+    if (*apArgvBuffer)     // Did we see a non-NULL ending?
+      *apArgvBuffer++ = 0; // Null terminate and advance to next char
     else
-      return 0;  // Oops!  We didn't see the end quote
+      return 0; // Oops!  We didn't see the end quote
   }
-  else  // A regular (non-quoted) filename
+  else // A regular (non-quoted) filename
   {
-    apArgv[anArgv0 + 0] = apArgvBuffer;  // argv[0] == executable name
+    apArgv[anArgv0 + 0] = apArgvBuffer; // argv[0] == executable name
 
     while (*apArgvBuffer && (' ' != *apArgvBuffer) && ('\t' != *apArgvBuffer))
       apArgvBuffer++;
 
     if (*apArgvBuffer)
-      *apArgvBuffer++ = 0;  // Null terminate and advance to next char
+      *apArgvBuffer++ = 0; // Null terminate and advance to next char
   }
 
   // Done processing argv[0] (i.e., the executable name).  Now do th
@@ -208,12 +199,12 @@ int StrCommandLineToArgcArgv(
     while (*apArgvBuffer && (' ' == *apArgvBuffer) || ('\t' == *apArgvBuffer))
       apArgvBuffer++;
 
-    if (0 == *apArgvBuffer)  // End of command line???
+    if (0 == *apArgvBuffer) // End of command line???
       return argc;
 
-    if ('"' == *apArgvBuffer)  // Argument starting with a quote???
+    if ('"' == *apArgvBuffer) // Argument starting with a quote???
     {
-      apArgvBuffer++;  // Advance past quote character
+      apArgvBuffer++; // Advance past quote character
 
       apArgv[anArgv0 + (argc++)] = apArgvBuffer;
       apArgv[anArgv0 + argc] = 0;
@@ -226,9 +217,9 @@ int StrCommandLineToArgcArgv(
         return argc;
 
       if (*apArgvBuffer)
-        *apArgvBuffer++ = 0;  // Null terminate and advance to next char
+        *apArgvBuffer++ = 0; // Null terminate and advance to next char
     }
-    else  // Non-quoted argument
+    else // Non-quoted argument
     {
       apArgv[anArgv0 + (argc++)] = apArgvBuffer;
       apArgv[anArgv0 + argc] = 0;
@@ -241,7 +232,7 @@ int StrCommandLineToArgcArgv(
         return argc;
 
       if (*apArgvBuffer)
-        *apArgvBuffer++ = 0;  // Null terminate and advance to next char
+        *apArgvBuffer++ = 0; // Null terminate and advance to next char
     }
 
     if (argc >= (_MAX_CMD_LINE_ARGS))
@@ -249,12 +240,10 @@ int StrCommandLineToArgcArgv(
   }
 }
 
-void execcmd(
-  const char* string,
-  void (*func)(void* closure, int status, const char* output),
-  void* closure,
-  const char* aShellPath,
-  int serialOutput) {
+void execcmd(const char* string,
+             void (*func)(void* closure, int status, const char* output),
+             void* closure, const char* aShellPath, int serialOutput)
+{
   int pid;
   int slot;
   char* buffer = NULL;
@@ -268,7 +257,7 @@ void execcmd(
   #ifdef USE_EXECNT
   if (globs.jobs > 1) {
     Sleep(
-      10);  // try to avoid have two process starting exactly at the same moment
+      10); // try to avoid have two process starting exactly at the same moment
     // which causes trouble for some programs
   }
   #endif
@@ -313,9 +302,9 @@ void execcmd(
     int i = 0;
   #ifdef USE_EXECNT
     extern char g_bash_path[_MAX_PATH];
-    if (
-      strstr(g_bash_path, "cygwin") == NULL &&
-      strstr(g_bash_path, "CYGWIN") == NULL) {
+    if (strstr(g_bash_path, "cygwin") == NULL &&
+        strstr(g_bash_path, "CYGWIN") == NULL)
+    {
       /* write to a temporary bash script */
       {
         int maxTry = 10;
@@ -406,7 +395,7 @@ void execcmd(
   else {
     if ((pid = MY_SPAWNVP(P_NOWAIT, argv[0], argv)) == -1) {
       int i = 0;
-      char tmp[8192] = {'\0'};
+      char tmp[8192] = { '\0' };
       /*    printf("EXEC-SPAWN-ERRL %d (%s)\n",pid); */
       strcat(tmp, "spawn-unix(");
       while (argv[i] && i < 10) {
@@ -448,13 +437,10 @@ void execcmd(
       perror("posix_spawn_file_actions_init");
       exit(EXITBAD);
     }
-    if (
-      ret = posix_spawn_file_actions_addopen(
-        &child_fd_actions,
-        1,
-        cmdtab[slot].outputFile,
-        O_WRONLY | O_CREAT | O_TRUNC,
-        0644)) {
+    if (ret = posix_spawn_file_actions_addopen(
+          &child_fd_actions, 1, cmdtab[slot].outputFile,
+          O_WRONLY | O_CREAT | O_TRUNC, 0644))
+    {
       perror("posix_spawn_file_actions_addopen");
       exit(EXITBAD);
     }
@@ -466,13 +452,9 @@ void execcmd(
 
   // Note: posix_spawn must be used with zigcc. vfork + exec doesn't work
   // correctly.
-  int rspawn = posix_spawn(
-    &pid,
-    argv[0],
-    serialOutput ? &child_fd_actions : NULL,
-    NULL,
-    (char**)argv,
-    environ);
+  int rspawn =
+    posix_spawn(&pid, argv[0], serialOutput ? &child_fd_actions : NULL, NULL,
+                (char**)argv, environ);
   if (rspawn == 0) {
     #ifdef _TRACE_EXECCMD
     printf("EXEC-POSIX-SPAWN pid: %d\n", pid);
@@ -505,7 +487,8 @@ void execcmd(
  * execwait() - wait and drive at most one execution completion
  */
 
-int execwait() {
+int execwait()
+{
   int i;
   int status, w;
   int rstat;
@@ -553,17 +536,16 @@ int execwait() {
 
   cmdtab[i].pid = 0;
 
-  (*cmdtab[i].func)(
-    cmdtab[i].closure,
-    rstat,
-    cmdtab[i].outputFileUsed ? cmdtab[i].outputFile : 0);
+  (*cmdtab[i].func)(cmdtab[i].closure, rstat,
+                    cmdtab[i].outputFileUsed ? cmdtab[i].outputFile : 0);
 
   return 1;
 }
 
   #ifdef USE_MYWAIT
 
-static intptr_t my_wait(int* status) {
+static intptr_t my_wait(int* status)
+{
   int i, num_active = 0;
   DWORD exitcode, waitcode;
   static HANDLE* active_handles = 0;
@@ -598,8 +580,8 @@ static intptr_t my_wait(int* status) {
   waitcode =
     WaitForMultipleObjects(num_active, active_handles, FALSE, INFINITE);
   if (waitcode != WAIT_FAILED) {
-    if (
-      waitcode >= WAIT_ABANDONED_0 && waitcode < WAIT_ABANDONED_0 + num_active)
+    if (waitcode >= WAIT_ABANDONED_0 &&
+        waitcode < WAIT_ABANDONED_0 + num_active)
       i = waitcode - WAIT_ABANDONED_0;
     else
       i = waitcode - WAIT_OBJECT_0;

@@ -27,7 +27,7 @@
 typedef struct _binding BINDING;
 
 struct _binding {
-  const char *name;
+  const char* name;
   short flags;
 
 #define BIND_SCANNED 0x01 /* if directory or arch, has been scanned */
@@ -43,24 +43,25 @@ struct _binding {
   time_t time; /* update time - 0 if not exist */
 };
 
-static struct hash *bindhash = 0;
-static void time_enter(void *, const char *, int, time_t);
+static struct hash* bindhash = 0;
+static void time_enter(void*, const char*, int, time_t);
 
-static const char *time_progress[] = {
-  "INIT", "NOENTRY", "SPOTTED", "MISSING", "FOUND"};
+static const char* time_progress[] = { "INIT", "NOENTRY", "SPOTTED", "MISSING",
+                                       "FOUND" };
 
 /*
  * timestamp() - return timestamp on a file, if present
  */
 
-void timestamp(char *target, time_t *time) {
+void timestamp(char* target, time_t* time)
+{
   PATHNAME f1, f2;
   BINDING binding, *b = &binding;
   char buf[MAXJPATH];
 
 #ifdef DOWNSHIFT_PATHS
   char path[MAXJPATH];
-  char *p = path;
+  char* p = path;
 
   do
     *p++ = tolower(*target);
@@ -78,7 +79,7 @@ void timestamp(char *target, time_t *time) {
   b->time = b->flags = 0;
   b->progress = BIND_INIT;
 
-  if (hashenter(bindhash, (HASHDATA **)&b))
+  if (hashenter(bindhash, (HASHDATA**)&b))
     b->name = newstr(target); /* never freed */
 
   if (b->progress != BIND_INIT)
@@ -104,7 +105,7 @@ void timestamp(char *target, time_t *time) {
     b->time = b->flags = 0;
     b->progress = BIND_INIT;
 
-    if (hashenter(bindhash, (HASHDATA **)&b))
+    if (hashenter(bindhash, (HASHDATA**)&b))
       b->name = newstr(buf); /* never freed */
 
     if (!(b->flags & BIND_SCANNED)) {
@@ -127,7 +128,7 @@ void timestamp(char *target, time_t *time) {
     b->time = b->flags = 0;
     b->progress = BIND_INIT;
 
-    if (hashenter(bindhash, (HASHDATA **)&b))
+    if (hashenter(bindhash, (HASHDATA**)&b))
       b->name = newstr(buf); /* never freed */
 
     if (!(b->flags & BIND_SCANNED)) {
@@ -148,14 +149,15 @@ afterscanning:
   *time = b->progress == BIND_FOUND ? b->time : 0;
 }
 
-static void time_enter(
-  void *closure, const char *target, int found, time_t time) {
+static void time_enter(void* closure, const char* target, int found,
+                       time_t time)
+{
   BINDING binding, *b = &binding;
-  struct hash *bindhash = (struct hash *)closure;
+  struct hash* bindhash = (struct hash*)closure;
 
 #ifdef DOWNSHIFT_PATHS
   char path[MAXJPATH];
-  char *p = path;
+  char* p = path;
 
   do
     *p++ = tolower(*target);
@@ -167,7 +169,7 @@ static void time_enter(
   b->name = target;
   b->flags = 0;
 
-  if (hashenter(bindhash, (HASHDATA **)&b))
+  if (hashenter(bindhash, (HASHDATA**)&b))
     b->name = newstr(target); /* never freed */
 
   b->time = time;
@@ -181,15 +183,19 @@ static void time_enter(
  * donestamps() - free timestamp tables
  */
 
-void donestamps() {
+void donestamps()
+{
   hashdone(bindhash);
 }
 
 #if defined(_WIN32) || defined(_WIN64)
-#define localtime_r(timep, result) (localtime_s(result, timep) == 0 ? result : NULL)
+  #define localtime_r(timep, result) \
+    (localtime_s(result, timep) == 0 ? result : NULL)
 #endif
 
-const char* format_timestamp(const time_t *time, char *buffer, size_t buffer_size) {
+const char* format_timestamp(const time_t* time, char* buffer,
+                             size_t buffer_size)
+{
   assert(buffer != NULL);
   assert(buffer_size >= 20);
   if (!time) {

@@ -18,9 +18,10 @@
 #include "variable.h"
 #include "newstr.h"
 
-const char *search(const char *target, time_t *time) {
+const char* search(const char* target, time_t* time)
+{
   PATHNAME f[1];
-  LIST *varlist;
+  LIST* varlist;
   char buf[MAXJPATH];
 
   /* Parse the filename */

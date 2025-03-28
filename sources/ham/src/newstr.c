@@ -30,16 +30,17 @@
 #include "newstr.h"
 #include "hash.h"
 
-typedef const char *STRING;
+typedef const char* STRING;
 
-static struct hash *strhash = 0;
+static struct hash* strhash = 0;
 static int strtotal = 0;
 
 /*
  * newstr() - return a malloc'ed copy of a string
  */
 
-const char *newstr(const char *string) {
+const char* newstr(const char* string)
+{
   STRING str, *s = &str;
 
   if (!strhash)
@@ -47,9 +48,9 @@ const char *newstr(const char *string) {
 
   *s = string;
 
-  if (hashenter(strhash, (HASHDATA **)&s)) {
+  if (hashenter(strhash, (HASHDATA**)&s)) {
     int l = strlen(string);
-    char *m = (char *)malloc(l + 1);
+    char* m = (char*)malloc(l + 1);
 
     if (DEBUG_MEM)
       printf("newstr: allocating %d bytes\n", l + 1);
@@ -66,7 +67,8 @@ const char *newstr(const char *string) {
  * copystr() - return a copy of a string previously returned by newstr()
  */
 
-const char *copystr(const char *s) {
+const char* copystr(const char* s)
+{
   return s;
 }
 
@@ -74,14 +76,16 @@ const char *copystr(const char *s) {
  * freestr() - free a string returned by newstr() or copystr()
  */
 
-void freestr(const char *s) {
+void freestr(const char* s)
+{
 }
 
 /*
  * donestr() - free string tables
  */
 
-void donestr() {
+void donestr()
+{
   hashdone(strhash);
 
   if (DEBUG_MEM)
