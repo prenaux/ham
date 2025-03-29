@@ -79,6 +79,11 @@ function ni_lint() {
 
 function ham_flymake_lint() {
   if [[ "$NO_LINT" == "yes" ]]; then
+    # log_info "Skipped ham_flymake_lint because NO_LINT=yes"
+    return 0
+  fi
+  if [[ -n "$HAM_LINT_NO_FLYMAKE" ]]; then
+    log_info "Skipped ham_flymake_lint for '$1' because HAM_LINT_NO_FLYMAKE is set."
     return 0
   fi
 
@@ -326,16 +331,21 @@ function lint_file() {
       ni_lint "$CMD"
       errcheck $? ni_lint "Single ni file lint failed for '$CMD'."
       ;;
-    *.sh | *."")
-      sh_lint "$CMD"
-      errcheck $? sh_lint "Single sh file lint failed for '$CMD'."
-      ;;
     *.ham)
       build_ham_lint "$CMD"
       errcheck $? build_ham_lint "Single ham file lint failed for '$CMD'."
       ;;
+    *.sh)
+      sh_lint "$CMD"
+      errcheck $? sh_lint "Single sh file lint failed for '$CMD'."
+      ;;
     *)
-      die "Unsupported file type for '$CMD'."
+      if [[ "$CMD" != *.* ]]; then
+        sh_lint "$CMD"
+        errcheck $? sh_lint "Single sh file lint failed for '$CMD'."
+      else
+        die lint_file "Unsupported file type for '$CMD'."
+      fi
       ;;
   esac
 }

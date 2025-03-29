@@ -58,6 +58,14 @@ log_info() {
   fi
 }
 
+log_progress() {
+  if [ "$HAM_TERMINAL_SUPPORTS_COLORS" = true ] && [ -z "$NO_COLOR" ]; then
+    echo -e "\033[35mP/$*\033[0m"
+  else
+    echo "P/$*"
+  fi
+}
+
 log_success() {
   if [ "$HAM_TERMINAL_SUPPORTS_COLORS" = true ] && [ -z "$NO_COLOR" ]; then
     echo -e "\033[32mS/$*\033[0m"
@@ -310,7 +318,7 @@ path_fwdslash() {
   FILEPATH="$1"
   case $HAM_OS in
     NT*)
-      echo ${FILEPATH//\\/\/}
+      echo "${FILEPATH//\\/\/}"
       ;;
     *)
       echo "$FILEPATH"

@@ -1,0 +1,56 @@
+#!/bin/bash -e
+#===== PRELUDE BEGIN ===========
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
+# shellcheck disable=SC2034
+SCRIPT_NAME=$(basename "$0")
+#SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+#===== PRELUDE TOOLSETS ========
+export HAM_NO_VER_CHECK=1
+toolset_import_once repos >/dev/null
+#===== PRELUDE END =============
+
+usage() {
+  echo "usage: ${SCRIPT_NAME} staged|all"
+  exit 1
+}
+
+MODE=$1
+if [[ -z "$MODE" ]]; then
+  log_error "No mode specified."
+  usage
+fi
+shift
+
+GIT_ROOT="$(git rev-parse --show-toplevel)" || {
+  log_error "Not in a git repository"
+  usage
+}
+cd "$GIT_ROOT"
+
+if [[ "$MODE" == "staged" ]]; then
+  FILES=$(git diff --name-only --cached)
+elif [[ "$MODE" == "all" ]]; then
+  FILES=$(git diff --name-only --cached)
+  FILES+=$'\n'$(git ls-files --modified --others --exclude-standard)
+  FILES=$(echo "$FILES" | sort -u)
+else
+  usage
+fi
+
+export HAM_LINT_NO_FLYMAKE=1
+echo "$FILES" | while IFS= read -r file; do
+  if [[ -n "$file" && -f "$file" ]]; then
+    ABSPATH=$(abspath "$file")
+    FILEDIR="$(dirname "$ABSPATH")"
+    log_progress "Linting '$ABSPATH'."
+    (
+      set -x
+      cd "$FILEDIR"
+      ham-lint --format "$ABSPATH" || die git-ham-format "Lint failed: '$file'"
+    )
+  fi
+done
