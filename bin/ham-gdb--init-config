@@ -20,8 +20,8 @@ define hook-stop
   end
 end
 
-# We always want to break when ni::sPanicException is thrown
-catch throw ni::sPanicException
+# We always want to break when ni::sPanicDesc is thrown
+catch throw ni::sPanicDesc
 
 python
 
