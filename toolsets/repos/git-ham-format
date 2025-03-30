@@ -42,6 +42,7 @@ else
 fi
 
 export HAM_LINT_NO_FLYMAKE=1
+export HAM_LINT_WARN_UNKNOWN_FILE_TYPE=1
 echo "$FILES" | while IFS= read -r file; do
   if [[ -n "$file" && -f "$file" ]]; then
     ABSPATH=$(abspath "$file")

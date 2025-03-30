@@ -344,7 +344,11 @@ function lint_file() {
         sh_lint "$CMD"
         errcheck $? sh_lint "Single sh file lint failed for '$CMD'."
       else
-        die lint_file "Unsupported file type for '$CMD'."
+        if [ -n "$HAM_LINT_WARN_UNKNOWN_FILE_TYPE" ]; then
+          log_warning "Unsupported file type '$CMD'."
+        else
+          die lint_file "Unsupported file type '$CMD'."
+        fi
       fi
       ;;
   esac
