@@ -8,9 +8,11 @@ fi
 
 function usage() {
   echo "usage:"
+  echo "  hamx :toolkit ENV=value -ham-flag target script.sh ..."
   echo "  hamx somescript.sh"
   echo "  hamx some/_build.ham"
-  echo "  hamx :toolkit ENV=value -ham-flag target script.sh ..."
+  echo "  hamx build_path some/_build.ham"
+  echo "  hamx build_path some/file.cpp codegen"
   echo ""
   echo "  :toolkit     Import a toolkit."
   echo "  ENV=value    Set an environment variable for the ham command."
@@ -31,6 +33,7 @@ function hamx_build_ham() {
   local FILEPATH
   FILEPATH=$(abspath "$1")
   log_info "Building: $FILEPATH"
+  shift
 
   local DIRNAME
   DIRNAME=$(dirname "$FILEPATH")
@@ -64,7 +67,7 @@ function hamx_build_ham() {
     set -x
     cd "$HAM_PROJECT_DIR"
     # shellcheck disable=SC2086
-    ham -T "$HAM_PROJECT" $TARGETS
+    ham -T "$HAM_PROJECT" "$@" $TARGETS
   )
 }
 
@@ -149,6 +152,9 @@ if [[ $# -eq 1 && "$1" == *.sh ]]; then
   hamx_run_bash "$1"
 elif [[ $# -eq 1 && -e "$1" ]]; then
   hamx_build_ham "$1"
+elif [[ "$1" == "build_path" ]]; then
+  shift
+  hamx_build_ham "$@"
 else
   # Invoke hamx with all passed arguments
   hamx "$@"
