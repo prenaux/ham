@@ -67,16 +67,25 @@ if $(CLANG_SANITIZE) = 1 {
 # https://github.com/emscripten-core/emscripten/blob/527b10e75c19db90a04feb65252d5e9cb2db4f1e/src/settings.js
 EMSCRIPTEN_LINKER_SETTINGS =
   -s MINIFY_HTML=0
+
   # ALLOW_MEMORY_GROWTH is documented as being efficient in wasm, so we enable
   # it since we only target wasm
   -s ALLOW_MEMORY_GROWTH=1
+
   # Great on paper, but its implemented by just lowercasing everything which
   # is not good enough...
   # -s CASE_INSENSITIVE_FS=1
-  -s WEBGL2_BACKWARDS_COMPATIBILITY_EMULATION=1
+
   # Set a more sane stack size of 512KB. The default was changed to 64K from 5MB previously.
   # https://www.mail-archive.com/emscripten-discuss%40googlegroups.com/msg10104.html
   -s STACK_SIZE=524288
+
+  # Needed to build successfully in Emscripten 4
+  -s MAX_WEBGL_VERSION=1
+
+  # We can't use this because it pulls in WebGL2 which doesnt seem to build
+  # correctly in emscripten 4
+  # -s WEBGL2_BACKWARDS_COMPATIBILITY_EMULATION=1
 ;
 
 ### "Debug" (da) build flags ###
