@@ -8,7 +8,7 @@ export HAM_TOOLSET_DIR="${HAM_HOME}/toolsets/texteditor"
 # path setup
 case $HAM_OS in
   NT*)
-    toolset_check_and_dl_ver texteditor nt-x86 v3 || return 1
+    toolset_check_and_dl_ver texteditor nt-x86 v5 || return 1
     export TEXTEDITOR_DIR="${HAM_TOOLSET_DIR}/nt-x86/"
     pathenv_add "${HAM_TOOLSET_DIR}"
     ;;
