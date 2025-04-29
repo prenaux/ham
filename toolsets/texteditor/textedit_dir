@@ -7,7 +7,12 @@ case $HAM_OS in
     "${DIR}/nt-x86/SciTE.exe" -check.if.already.open=1 "$2" &
     ;;
   OSX*)
-    open -e "$2"
+    SUBLIME_APP="/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl"
+    if [[ -e "$SUBLIME_APP" ]]; then
+      "$SUBLIME_APP" "$2"
+    else
+      open -e "$2"
+    fi
     ;;
   *)
     echo "E/Toolset: Unsupported host OS"
