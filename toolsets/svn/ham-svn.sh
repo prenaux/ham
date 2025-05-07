@@ -310,7 +310,7 @@ case $COMMAND in
     SVN_TAG_PATH=$(abspath "${HAM_SVN_LOCAL}/../_svn_tag.txt")
     (
       set -x
-      svn info "${HAM_SVN_LOCAL}" | tee "${SVN_TAG_PATH}"
+      svn info "${HAM_SVN_LOCAL}" | grep -v "Working Copy Root Path" | tee "${SVN_TAG_PATH}"
     )
     log_info "Updated svn tag '${SVN_TAG_PATH}'"
     ;;
