@@ -15,6 +15,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 usage() {
   echo "usage:"
   echo "  ham-svn.sh checkout"
+  echo "  ham-svn.sh info"
   echo "  ham-svn.sh update_svn_tag"
   echo "  ham-svn.sh ls_local DIRNAME"
   echo "  ham-svn.sh ls_remote DIRNAME"
@@ -304,6 +305,13 @@ case $COMMAND in
         echo "W/Skipped commit."
         ;;
     esac
+    ;;
+
+  info)
+    (
+      set -x
+      svn info "${HAM_SVN_LOCAL}"
+    )
     ;;
 
   update_svn_tag)
