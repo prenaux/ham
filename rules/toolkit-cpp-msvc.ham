@@ -90,8 +90,6 @@ CC_ADD_FLAGS +=
 # DISABLE: warning C6384: Dividing sizeof a pointer by another value.
 # COUNT_OF() generates the warning.
 -wd6384
-# DISABLE: warning C4996: 'xxx': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _xxx.
--wd4996
 # DISABLE: warning C6326: Potential comparison of a constant with another constant
 -wd6326
 # DISABLE: warning C6316: Incorrect operator: tested expression is constant and non-zero. Use bitwise-and to determine whether bits are set.

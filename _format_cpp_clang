@@ -26,8 +26,8 @@ SortIncludes: false
 
 # niLang/niCC macros
 ForEachMacros: ["niLoop","niLoopr","niLoopit","niLooprit","niExec","niExec_","niSubmit","niSubmit_"]
-StatementAttributeLikeMacros: ["niAlignedType","niAligned","niDeprecated","niFn","niFnS","niFnV"]
-TypenameMacros: ["niExportFunc","niExportFuncCPP","niFn","niFnS","niFnV","niExportFn","niNamespace"]
+StatementAttributeLikeMacros: ["niAlignedType","niAligned","niFn","niFnS","niFnV"]
+TypenameMacros: ["niExportFunc","niExportFuncCPP","niFn","niFnS","niFnV","niExportFn","niNamespace","niDeprecated"]
 IfMacros: ["niCheckIfError","niIfConstructError","niCheckNNIfNull","niTry","niTryError","niCatch","niCatchAll","niCatchError"]
 WhitespaceSensitiveMacros:
  - niDeclareInterfaceUUID
