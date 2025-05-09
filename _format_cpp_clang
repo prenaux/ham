@@ -36,6 +36,12 @@ WhitespaceSensitiveMacros:
  - niFourCC
  - niMakeVersion
  - niMessageID
+ - EA_DISABLE_GCC_WARNING
+ - EA_DISABLE_CLANG_WARNING
+ - EA_ENABLE_GCC_WARNING
+ - EA_ENABLE_GCC_WARNING_AS_ERROR
+ - EA_ENABLE_CLANG_WARNING
+ - EA_ENABLE_CLANG_WARNING_AS_ERROR
 
 # Fixes
 FixNamespaceComments: true
