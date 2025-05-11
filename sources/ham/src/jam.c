@@ -146,6 +146,7 @@
   #include <sys/param.h>
   #include <sys/sysctl.h>
   #include <sys/wait.h>
+  #include <sys/statvfs.h>
 #endif
 
 struct globs globs = {
