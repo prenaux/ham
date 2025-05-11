@@ -56,6 +56,7 @@ ham-ssh-ls
 ham-toolset
 ham-toolset-build
 ham-unpack
+ham-vcs
 hamx
 hash_md5
 hat

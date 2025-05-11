@@ -1,0 +1,214 @@
+#!/bin/bash -e
+#===== PRELUDE BEGIN ===========
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
+# shellcheck disable=SC2034
+SCRIPT_NAME=$(basename "$0")
+#SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+#===== PRELUDE TOOLSETS ========
+export HAM_NO_VER_CHECK=1
+#===== PRELUDE END =============
+
+usage() {
+  echo "usage: ham-vcs COMMAND [args]"
+  echo ""
+  echo "  Unified VCS commands for git and svn."
+  echo ""
+  echo "commands:"
+  echo "  clone URL [DIR]   - Clone a repository from URL"
+  echo "  info              - Show VCS type and repository info"
+  echo "  status            - Show working directory status"
+  echo "  get_latest        - Get latest changes from server"
+  echo "  submit COMMIT_MSG - Send changes to server with commit message"
+  echo "  log               - Show commit history"
+  echo "  diff              - Show uncommitted changes"
+  echo ""
+  if [[ "$1" == "help" ]]; then
+    exit 0
+  else
+    exit 1
+  fi
+}
+
+########################################################################
+##  Git
+########################################################################
+git_clone() {
+  if [ $# -eq 0 ]; then
+    log_error "Repository URL required"
+    usage
+  fi
+  git clone "$@"
+}
+
+git_info() {
+  log_info "VCS: git ($(pwd))"
+  log_info "Remote URLs:"
+  git remote -v
+  log_info "Current branch: $(git rev-parse --abbrev-ref HEAD)"
+}
+
+git_status() {
+  log_info "VCS: git ($(pwd))"
+  LOCAL_COMMITS=$(git rev-list --count '@{u}..HEAD' 2>/dev/null || echo "0")
+  if [ "$LOCAL_COMMITS" -gt 0 ]; then
+    log_info "$LOCAL_COMMITS local commit(s) not pushed:"
+    git log --oneline '@{u}..HEAD'
+    echo ""
+  fi
+
+  git status
+}
+
+git_get_latest() {
+  git fetch --all --prune
+  git pull --rebase
+}
+
+git_log() {
+  git log --oneline --graph -10 "$@"
+}
+
+git_diff() {
+  git diff "$@"
+}
+
+git_submit() {
+  if [ $# -eq 0 ]; then
+    log_error "Commit message required"
+    usage
+  fi
+  MESSAGE="$1"
+
+  # Check if there are staged changes
+  if ! git diff --cached --quiet; then
+    log_info "Committing staged changes..."
+    git commit -m "$MESSAGE"
+  else
+    log_info "No staged changes to commit"
+  fi
+
+  log_info "Pushing to remote..."
+  git push
+}
+
+########################################################################
+##  SVN
+########################################################################
+svn_clone() {
+  if [ $# -eq 0 ]; then
+    log_error "Repository URL required"
+    usage
+  fi
+  svn checkout "$@"
+}
+
+svn_info() {
+  log_info "VCS: svn ($(pwd))"
+  svn info
+}
+
+svn_status() {
+  log_info "VCS: svn ($(pwd))"
+  svn status
+}
+
+svn_get_latest() {
+  svn update
+}
+
+svn_log() {
+  svn log -l 10 "$@"
+}
+
+svn_diff() {
+  svn diff "$@"
+}
+
+svn_submit() {
+  if [ $# -eq 0 ]; then
+    log_error "Commit message required"
+    usage
+  fi
+
+  MESSAGE="$1"
+
+  svn commit -m "$MESSAGE"
+}
+
+########################################################################
+##  Main
+########################################################################
+COMMAND=$1
+if [[ -z "$COMMAND" ]]; then
+  log_error "No command specified"
+  usage
+fi
+shift
+
+# Detect VCS type
+case "$COMMAND" in
+  help)
+    usage help
+    ;;
+
+  clone)
+    # Detect VCS type from URL
+    if [ $# -eq 0 ]; then
+      log_error "Repository URL required"
+      usage
+    fi
+
+    URL="$1"
+    case "$URL" in
+      *.git | git*)
+        VCS_TYPE="git"
+        ;;
+      svn*)
+        VCS_TYPE="svn"
+        ;;
+      *)
+        log_error "Cannot determine VCS type from URL: $URL"
+        log_info "URL should end in .git or start with git for Git, or start with svn for Subversion"
+        usage
+        ;;
+    esac
+    ;;
+
+  *)
+    # All other commands need an existing repo
+    if [[ -d ".git" ]]; then
+      VCS_TYPE="git"
+    elif [[ -d ".svn" ]]; then
+      VCS_TYPE="svn"
+    else
+      log_error "No VCS repository found in current directory: $(pwd)"
+      usage
+    fi
+    ;;
+esac
+
+case "$VCS_TYPE" in
+  git)
+    toolset_import_once repos >/dev/null
+    ;;
+  svn)
+    toolset_import_once svn >/dev/null
+    ;;
+  *)
+    log_error "Unknown VCS: $VCS_TYPE"
+    usage
+    ;;
+esac
+
+# Execute command
+FUNC_NAME="${VCS_TYPE}_${COMMAND}"
+if type "$FUNC_NAME" &>/dev/null; then
+  "$FUNC_NAME" "$@"
+else
+  log_error "Unknown command: $COMMAND"
+  usage
+fi
