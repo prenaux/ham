@@ -1,0 +1,221 @@
+#!/bin/bash -e
+#===== PRELUDE BEGIN ===========
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
+# shellcheck disable=SC2034
+SCRIPT_NAME=$(basename "$0")
+. "$HAM_HOME/bin/ham-bash-setenv.sh"
+#===== PRELUDE TOOLSETS ========
+export HAM_NO_VER_CHECK=1
+#===== PRELUDE END =============
+
+usage() {
+  echo "usage: ham-work COMMAND [args]"
+  echo ""
+  echo "  Execute VCS commands across all repositories in a workspace."
+  echo "  Reads repositories from _ham_workspace file."
+  echo ""
+  echo "commands:"
+  echo "  init       - Initialize workspace by cloning missing repositories"
+  echo "  info       - Show VCS info for all repositories"
+  echo "  status     - Show status of all repositories"
+  echo "  diff       - Show uncommitted changes in all repositories"
+  echo "  get_latest - Update all repositories from server"
+  echo "  save [MSG] - Save changes locally in all repositories"
+  echo "  submit MSG - Send changes to server with commit message"
+  echo "  log        - Show commit history"
+  echo ""
+  echo "_ham_workspace format:"
+  echo "  LOCAL_FOLDER; REPO_URL"
+  echo "  # Comments and empty lines are ignored"
+  echo ""
+  exit 1
+}
+
+# Fallback log_progress for older ham compatibility
+if ! type "log_progress" &>/dev/null; then
+  log_progress() {
+    if [ "$HAM_TERMINAL_SUPPORTS_COLORS" = true ] && [ -z "$NO_COLOR" ]; then
+      echo -e "\033[35mP/$*\033[0m"
+    else
+      echo "P/$*"
+    fi
+  }
+fi
+
+# Initialize a repository if needed
+# Returns 0 on success, 1 on error
+init_repository() {
+  local REPO_PATH="$1"
+  local REPO_URL="$2"
+  local REPO_FOLDER="$3"
+
+  if [ ! -d "$REPO_PATH" ]; then
+    log_info "Directory doesn't exist, cloning from $REPO_URL"
+    (
+      cd "$WORKSPACE_ROOT"
+      ham-vcs clone "$REPO_URL" "$REPO_FOLDER"
+    )
+    return $?
+  fi
+
+  # Check if directory has a valid VCS
+  VCS_TYPE=$(ham-vcs check_vcs "$REPO_PATH")
+  if [ -z "$VCS_TYPE" ]; then
+    log_warning "Directory exists but no VCS found, cloning from $REPO_URL"
+    # Remove empty directory and clone
+    rm -rf "$REPO_PATH"
+    (
+      cd "$WORKSPACE_ROOT"
+      ham-vcs clone "$REPO_URL" "$REPO_FOLDER"
+    )
+    return $?
+  fi
+
+  log_info "Repository already initialized ($VCS_TYPE)"
+  return 0
+}
+
+COMMAND=$1
+if [[ -z "$COMMAND" ]]; then
+  log_error "No command specified"
+  usage
+fi
+shift
+
+# Find workspace file
+WORKSPACE_FILE=$(ham-find-file-up "_ham_workspace")
+if [ ! -e "$WORKSPACE_FILE" ]; then
+  log_error "No _ham_workspace file found in any parent directory"
+  exit 1
+fi
+
+# Get workspace root directory
+WORKSPACE_ROOT=$(dirname "$WORKSPACE_FILE")
+
+log_progress "=== Workspace: $(basename "$WORKSPACE_ROOT") ==="
+log_info "Workspace root: '$WORKSPACE_ROOT'"
+
+# Validate command
+case "$COMMAND" in
+  init | status | get_latest | diff | save | submit | info | log)
+    # Valid commands for bulk operation
+    ;;
+  *)
+    log_error "Command '$COMMAND' not supported for workspace operations"
+    usage
+    ;;
+esac
+
+# Read repositories from workspace file
+declare -a REPOS
+declare -a URLS
+REPO_COUNT=0
+
+while IFS= read -r line || [ -n "$line" ]; do
+  # Skip empty lines and comments
+  if [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]]; then
+    continue
+  fi
+
+  # Parse semicolon-separated values
+  FOLDER=$(echo "$line" | cut -d'=' -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+  URL=$(echo "$line" | cut -d'=' -f2- | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+  if [[ -z "$FOLDER" || -z "$URL" ]]; then
+    log_error "Invalid line in _ham_workspace: $line"
+    log_error "Expected format: LOCAL_FOLDER=REPO_URL"
+    exit 1
+  fi
+
+  REPOS[$REPO_COUNT]="$FOLDER"
+  URLS[$REPO_COUNT]="$URL"
+  ((REPO_COUNT++))
+done <"$WORKSPACE_FILE"
+
+if [ $REPO_COUNT -eq 0 ]; then
+  log_error "No repositories found in _ham_workspace file"
+  exit 1
+fi
+
+# Execute command for each repository
+ERROR_COUNT=0
+declare -a ERROR_REPOS
+
+if [[ "$COMMAND" == "info" ]]; then
+  log_info "Workspace file: '$WORKSPACE_FILE'"
+  log_info "$(ham-host-info)"
+fi
+log_info "Found $REPO_COUNT repositories in workspace"
+
+(
+  cd "$WORKSPACE_ROOT"
+  if [ -z "$(ham-vcs check_vcs .)" ]; then
+    log_warning "Workspace not in VCS, in local directory only."
+  else
+    ham-vcs "$COMMAND" "$@" || {
+      log_error "Command failed in workspace '$WORKSPACE_ROOT'"
+      exit 1
+    }
+  fi
+)
+
+for ((i = 0; i < REPO_COUNT; i++)); do
+  REPO_FOLDER="${REPOS[i]}"
+  REPO_URL="${URLS[i]}"
+  REPO_PATH="$WORKSPACE_ROOT/$REPO_FOLDER"
+
+  log_progress "=== Repository: $REPO_FOLDER ==="
+
+  if [[ "$COMMAND" == "init" ]]; then
+    init_repository "$REPO_PATH" "$REPO_URL" "$REPO_FOLDER" || {
+      ERROR_REPOS[ERROR_COUNT]="$REPO_FOLDER"
+      ((ERROR_COUNT++))
+    }
+  else
+    # For other commands, check if directory exists and has VCS
+    if [ ! -d "$REPO_PATH" ]; then
+      log_error "Repository directory not found: $REPO_PATH"
+      log_warning "Run 'ham-work init' to clone missing repositories"
+      ERROR_REPOS[ERROR_COUNT]="$REPO_FOLDER"
+      ((ERROR_COUNT++))
+      echo ""
+      continue
+    fi
+
+    # Check if directory has a valid VCS
+    VCS_TYPE=$(ham-vcs check_vcs "$REPO_PATH" 2>/dev/null || echo "")
+    if [ -z "$VCS_TYPE" ]; then
+      log_error "Directory exists but no VCS found: $REPO_PATH"
+      log_warning "Run 'ham-work init' to initialize this repository"
+      ERROR_REPOS[ERROR_COUNT]="$REPO_FOLDER"
+      ((ERROR_COUNT++))
+      echo ""
+      continue
+    fi
+
+    # Execute command in repository
+    (
+      cd "$REPO_PATH"
+      ham-vcs "$COMMAND" "$@" || {
+        log_error "Command failed in $REPO_FOLDER"
+        exit 1
+      }
+    ) || {
+      ERROR_REPOS[ERROR_COUNT]="$REPO_FOLDER"
+      ((ERROR_COUNT++))
+    }
+  fi
+done
+
+if [ $ERROR_COUNT -gt 0 ]; then
+  log_error "Errors occurred in $ERROR_COUNT repositories:"
+  for ((i = 0; i < ERROR_COUNT; i++)); do
+    log_error "- ${ERROR_REPOS[i]}"
+  done
+  exit 1
+else
+  log_success "Workspace operation completed successfully."
+fi

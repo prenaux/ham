@@ -47,11 +47,26 @@ if [ "$DO_FETCH" = "1" ]; then
   )
 fi
 
-(
-  set -x
-  git checkout "$BRANCH"
-  git-rebase "$ORIGIN_BRANCH"
-)
+# In git-update
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+ORIGIN_BRANCH="origin/$CURRENT_BRANCH"
+
+# Check if remote branch exists
+if git show-ref --verify --quiet "refs/remotes/$ORIGIN_BRANCH"; then
+  log_info "Updating '$REPO_NAME' by rebasing '$CURRENT_BRANCH' onto '$ORIGIN_BRANCH'."
+  (
+    set -x
+    git checkout "$CURRENT_BRANCH"
+    git-rebase "$ORIGIN_BRANCH"
+  )
+else
+  log_warning "Remote branch '$ORIGIN_BRANCH' doesn't exist. Skipping rebase."
+  log_info "Consider pushing your branch first with: git push -u origin $CURRENT_BRANCH"
+  (
+    set -x
+    git checkout "$CURRENT_BRANCH"
+  )
+fi
 
 function in_rebase() {
   g=$(git rev-parse --git-dir)

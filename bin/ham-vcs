@@ -19,14 +19,16 @@ usage() {
   echo ""
   echo "commands:"
   echo "  help              - Show the command usage"
+  echo "  check_vcs DIR     - Print the 'vsc: TYPE' if the folder is under VC"
   echo "  clone URL [DIR]   - Clone a repository from URL"
   echo "  info              - Show VCS type and repository info"
   echo "  status            - Show working directory status"
+  echo "  diff              - Show uncommitted changes"
   echo "  get_latest        - Get latest changes from server"
   echo "  save [MSG]        - Save changes locally (commits to local branch)"
-  echo "  submit COMMIT_MSG - Send changes to server with commit message"
+  echo "  submit COMMIT_MSG - Send changes to server with commit message."
+  echo "                      (Amends last commit/changelist msg if possible)"
   echo "  log               - Show commit history"
-  echo "  diff              - Show uncommitted changes"
   echo ""
   if [[ "$1" == "help" ]]; then
     exit 0
@@ -48,6 +50,7 @@ git_clone() {
 
 git_info() {
   log_info "VCS: git ($(pwd))"
+  git-head-info
   log_info "Remote URLs:"
   git remote -v
   log_info "Current branch: $(git rev-parse --abbrev-ref HEAD)"
@@ -59,15 +62,13 @@ git_status() {
   if [ "$LOCAL_COMMITS" -gt 0 ]; then
     log_info "$LOCAL_COMMITS local commit(s) not pushed:"
     git log --oneline '@{u}..HEAD'
-    echo ""
   fi
 
-  git status
+  git-status short
 }
 
 git_get_latest() {
-  git fetch --all --prune
-  git pull --rebase
+  git-update .
 }
 
 git_log() {
@@ -110,11 +111,25 @@ git_submit() {
     log_info "Committing staged changes..."
     git commit -m "$MESSAGE"
   else
-    log_info "No staged changes to commit"
+    # No staged changes, check if there's anything to push
+    UNPUSHED=$(git rev-list --count '@{u}..HEAD' 2>/dev/null || echo "0")
+
+    if [ "$UNPUSHED" -eq 0 ]; then
+      log_info "Nothing to push"
+      return 0
+    else
+      # There are commits to push, amend the last commit with new message
+      log_info "Amending last commit message..."
+      PREV_MESSAGE=$(git log -1 --pretty=%B)
+      COMBINED_MESSAGE="$MESSAGE
+
+$PREV_MESSAGE"
+      git commit --amend -m "$COMBINED_MESSAGE"
+    fi
   fi
 
   log_info "Pushing to remote..."
-  git push
+  git push --force-with-lease
 }
 
 ########################################################################
@@ -130,7 +145,7 @@ svn_clone() {
 
 svn_info() {
   log_info "VCS: svn ($(pwd))"
-  svn info
+  svn info | grep -v '^$'
 }
 
 svn_status() {
@@ -151,8 +166,7 @@ svn_diff() {
 }
 
 svn_save() {
-  log_info "SVN has no local commit concept - all commits go directly to server"
-  log_info "Use 'ham-vcs submit' to send changes to server"
+  log_info "SVN commits directly to the server - use 'ham-vcs submit'"
 }
 
 svn_submit() {
@@ -194,26 +208,47 @@ case "$COMMAND" in
       *.git | git*)
         VCS_TYPE="git"
         ;;
-      svn*)
+      svn:* | https://svn.*)
         VCS_TYPE="svn"
         ;;
       *)
         log_error "Cannot determine VCS type from URL: $URL"
         log_info "URL should end in .git or start with git for Git, or start with svn for Subversion"
-        usage
+        exit 1
         ;;
     esac
     ;;
 
   *)
+    if [ "$COMMAND" == "check_vcs" ]; then
+      if [ -z "$1" ]; then
+        log_error "check_vcs: DIR not specified."
+        usage
+      fi
+      if [ -d "$1" ]; then
+        cd "$1"
+        shift
+      else
+        exit 0
+      fi
+    fi
+
     # All other commands need an existing repo
     if [[ -d ".git" ]]; then
       VCS_TYPE="git"
     elif [[ -d ".svn" ]]; then
       VCS_TYPE="svn"
     else
+      if [ "$COMMAND" == "check_vcs" ]; then
+        exit 0
+      fi
       log_error "No VCS repository found in current directory: $(pwd)"
       usage
+    fi
+
+    if [ "$COMMAND" == "check_vcs" ]; then
+      echo "VCS: $VCS_TYPE"
+      exit 0
     fi
     ;;
 esac

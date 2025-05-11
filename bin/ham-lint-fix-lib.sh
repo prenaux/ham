@@ -32,7 +32,11 @@ function sh_lint() {
   if [[ "$NO_LINT" != "yes" ]]; then
     local SHELLCHECK_PARAMS=(--shell=bash)
 
-    SHELLCHECK_PARAMS=(-e SC1091) # 'Not following: ... was not specified as input'
+    # SC2004: $/${} is unnecessary on arithmetic variables
+    SHELLCHECK_PARAMS=(-e SC2004 "${SHELLCHECK_PARAMS[@]}")
+
+    # SC1091: 'Not following: ... was not specified as input'
+    SHELLCHECK_PARAMS=(-e SC1091 "${SHELLCHECK_PARAMS[@]}")
     # This is better than disabling SC1091, but oh so slowww :(
     # SHELLCHECK_PARAMS=(-x --source-path="$HAM_HOME" --source-path="$HAM_HOME/bin")
 
