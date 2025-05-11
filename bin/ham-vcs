@@ -18,10 +18,12 @@ usage() {
   echo "  Unified VCS commands for git and svn."
   echo ""
   echo "commands:"
+  echo "  help              - Show the command usage"
   echo "  clone URL [DIR]   - Clone a repository from URL"
   echo "  info              - Show VCS type and repository info"
   echo "  status            - Show working directory status"
   echo "  get_latest        - Get latest changes from server"
+  echo "  save [MSG]        - Save changes locally (commits to local branch)"
   echo "  submit COMMIT_MSG - Send changes to server with commit message"
   echo "  log               - Show commit history"
   echo "  diff              - Show uncommitted changes"
@@ -76,6 +78,26 @@ git_diff() {
   git diff "$@"
 }
 
+git_save() {
+  # Stage all changes
+  git add -A
+
+  # Check if there are changes to commit
+  if ! git diff --cached --quiet; then
+    # Use provided message or generate one
+    if [ $# -gt 0 ]; then
+      MESSAGE="$1"
+    else
+      MESSAGE="Save $(arch_date)"
+    fi
+
+    log_info "Saving changes locally..."
+    git commit -m "$MESSAGE"
+  else
+    log_info "No changes to save"
+  fi
+}
+
 git_submit() {
   if [ $# -eq 0 ]; then
     log_error "Commit message required"
@@ -126,6 +148,11 @@ svn_log() {
 
 svn_diff() {
   svn diff "$@"
+}
+
+svn_save() {
+  log_info "SVN has no local commit concept - all commits go directly to server"
+  log_info "Use 'ham-vcs submit' to send changes to server"
 }
 
 svn_submit() {
