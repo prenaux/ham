@@ -18,14 +18,15 @@ usage() {
   echo "  Reads repositories from _ham_workspace file."
   echo ""
   echo "commands:"
-  echo "  init       - Initialize workspace by cloning missing repositories"
-  echo "  info       - Show VCS info for all repositories"
-  echo "  status     - Show status of all repositories"
-  echo "  diff       - Show uncommitted changes in all repositories"
-  echo "  get_latest - Update all repositories from server"
-  echo "  save [MSG] - Save changes locally in all repositories"
-  echo "  submit MSG - Send changes to server with commit message"
-  echo "  log        - Show commit history"
+  echo "  init        - Initialize workspace by cloning missing repositories"
+  echo "  info        - Show VCS info for all repositories"
+  echo "  status      - Show status of all repositories"
+  echo "  diff        - Show uncommitted changes in all repositories"
+  echo "  get_latest  - Update all repositories from server"
+  echo "  save [MSG]  - Save changes locally in all repositories"
+  echo "  submit MSG  - Send changes to server with commit message"
+  echo "  log         - Show commit history"
+  echo "  deploy_info - Display info for the current deployment"
   echo ""
   echo "_ham_workspace format:"
   echo "  LOCAL_FOLDER; REPO_URL"
@@ -94,6 +95,14 @@ fi
 
 # Get workspace root directory
 WORKSPACE_ROOT=$(dirname "$WORKSPACE_FILE")
+
+# Note: A bit hackish, we print the deployment info header and then set the
+# command to 'info'
+if [[ "$COMMAND" == "deploy_info" ]]; then
+  log_progress "=== Deployment: $(basename "$WORKSPACE_ROOT")_$(arch_datez) ==="
+  log_info "Timestamp: $(iso_date)"
+  COMMAND="info"
+fi
 
 log_progress "=== Workspace: $(basename "$WORKSPACE_ROOT") ==="
 log_info "Workspace root: '$WORKSPACE_ROOT'"
