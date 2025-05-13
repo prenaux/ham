@@ -18,17 +18,17 @@ usage() {
   echo "  Unified VCS commands for git and svn."
   echo ""
   echo "commands:"
-  echo "  help              - Show the command usage"
-  echo "  check_vcs DIR     - Print the 'vsc: TYPE' if the folder is under VC"
-  echo "  clone URL [DIR]   - Clone a repository from URL"
-  echo "  info              - Show VCS type and repository info"
-  echo "  status            - Show working directory status"
-  echo "  diff              - Show uncommitted changes"
-  echo "  get_latest        - Get latest changes from server"
-  echo "  save [MSG]        - Save changes locally (commits to local branch)"
-  echo "  submit COMMIT_MSG - Send changes to server with commit message."
-  echo "                      (Amends last commit/changelist msg if possible)"
-  echo "  log               - Show commit history"
+  echo "  help                  - Show the command usage"
+  echo "  check_vcs DIR         - Print the 'vsc: TYPE' if the folder is under VC"
+  echo "  clone URL [DIR] [REV] - Clone a repository from URL, optionally check out REV"
+  echo "  info                  - Show VCS type and repository info"
+  echo "  status                - Show working directory status"
+  echo "  diff                  - Show uncommitted changes"
+  echo "  get_latest            - Get latest changes from server"
+  echo "  save [MSG]            - Save changes locally (commits to local branch)"
+  echo "  submit COMMIT_MSG     - Send changes to server with commit message."
+  echo "                          (Amends last commit/changelist msg if possible)"
+  echo "  log                   - Show commit history"
   echo ""
   if [[ "$1" == "help" ]]; then
     exit 0
@@ -42,10 +42,36 @@ usage() {
 ########################################################################
 git_clone() {
   if [ $# -eq 0 ]; then
-    log_error "Repository URL required"
+    log_error "ham-vcs: git_clone: Repository URL required"
     usage
   fi
-  git clone "$@"
+
+  # Parse arguments
+  URL="$1"
+  DIR=""
+  REV=""
+  if [ $# -gt 1 ]; then
+    DIR="$2"
+    if [ $# -gt 2 ]; then
+      REV="$3"
+    fi
+  fi
+
+  # Clone the repository
+  if [ -n "$DIR" ]; then
+    git clone "$URL" "$DIR"
+    if [ -n "$REV" ]; then
+      log_info "Checking out $REV..."
+      (cd "$DIR" && git checkout "$REV")
+    fi
+  else
+    git clone "$URL"
+    if [ -n "$REV" ]; then
+      local REPO_DIR=$(basename "$URL" .git)
+      log_info "Checking out $REV..."
+      (cd "$REPO_DIR" && git checkout "$REV")
+    fi
+  fi
 }
 
 git_info() {
@@ -140,7 +166,39 @@ svn_clone() {
     log_error "Repository URL required"
     usage
   fi
-  svn checkout "$@"
+
+  # Parse arguments
+  URL="$1"
+  DIR=""
+  REV=""
+  if [ $# -gt 1 ]; then
+    DIR="$2"
+    if [ $# -gt 2 ]; then
+      REV="$3"
+    fi
+  fi
+
+  # Add revision to URL if specified
+  if [ -n "$REV" ]; then
+    if [ "${REV:0:1}" = "r" ] && [ "${REV#r}" -eq "${REV#r}" ] 2>/dev/null; then
+      # It's a revision number
+      CHECKOUT_URL="$URL@${REV#r}"
+      log_info "Checking out revision $REV from $URL..."
+    else
+      # It's a branch path
+      CHECKOUT_URL="$URL/$REV"
+      log_info "Checking out branch $REV from $URL..."
+    fi
+  else
+    CHECKOUT_URL="$URL"
+  fi
+
+  # Execute checkout
+  if [ -n "$DIR" ]; then
+    svn checkout "$CHECKOUT_URL" "$DIR"
+  else
+    svn checkout "$CHECKOUT_URL"
+  fi
 }
 
 svn_info() {
@@ -271,6 +329,6 @@ FUNC_NAME="${VCS_TYPE}_${COMMAND}"
 if type "$FUNC_NAME" &>/dev/null; then
   "$FUNC_NAME" "$@"
 else
-  log_error "Unknown command: $COMMAND"
+  complain ham-vcs "Unknown command: $COMMAND"
   usage
 fi

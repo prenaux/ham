@@ -52,27 +52,30 @@ init_repository() {
   local REPO_PATH="$1"
   local REPO_URL="$2"
   local REPO_FOLDER="$3"
+  local REPO_BRANCH="$4"
 
   if [ ! -d "$REPO_PATH" ]; then
-    log_info "Directory doesn't exist, cloning from $REPO_URL"
-    (
-      cd "$WORKSPACE_ROOT"
-      ham-vcs clone "$REPO_URL" "$REPO_FOLDER"
-    )
+    if [ -n "$REPO_BRANCH" ]; then
+      log_info "Directory '$REPO_FOLDER' doesn't exist, cloning from '$REPO_URL' (ref: $REPO_BRANCH)"
+      (
+        cd "$WORKSPACE_ROOT"
+        ham-vcs clone "$REPO_URL" "$REPO_FOLDER" "$REPO_BRANCH"
+      )
+    else
+      log_info "Directory '$REPO_FOLDER' doesn't exist, cloning from '$REPO_URL' (ref: default)"
+      (
+        cd "$WORKSPACE_ROOT"
+        ham-vcs clone "$REPO_URL" "$REPO_FOLDER"
+      )
+    fi
     return $?
   fi
 
   # Check if directory has a valid VCS
   VCS_TYPE=$(ham-vcs check_vcs "$REPO_PATH")
   if [ -z "$VCS_TYPE" ]; then
-    log_warning "Directory exists but no VCS found, cloning from $REPO_URL"
-    # Remove empty directory and clone
-    rm -rf "$REPO_PATH"
-    (
-      cd "$WORKSPACE_ROOT"
-      ham-vcs clone "$REPO_URL" "$REPO_FOLDER"
-    )
-    return $?
+    complain ham-work "Directory exists but no VCS found."
+    usage
   fi
 
   log_info "Repository already initialized ($VCS_TYPE)"
@@ -121,6 +124,7 @@ esac
 # Read repositories from workspace file
 declare -a REPOS
 declare -a URLS
+declare -a BRANCHES
 REPO_COUNT=0
 
 while IFS= read -r line || [ -n "$line" ]; do
@@ -129,18 +133,23 @@ while IFS= read -r line || [ -n "$line" ]; do
     continue
   fi
 
-  # Parse semicolon-separated values
+  # Parse equals-separated values
   FOLDER=$(echo "$line" | cut -d'=' -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-  URL=$(echo "$line" | cut -d'=' -f2- | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+  REST=$(echo "$line" | cut -d'=' -f2- | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+  # Extract URL and optional branch/hash/tag
+  URL=$(echo "$REST" | awk '{print $1}')
+  BRANCH=$(echo "$REST" | awk '{if (NF>1) {$1=""; print substr($0,2)}}')
 
   if [[ -z "$FOLDER" || -z "$URL" ]]; then
     log_error "Invalid line in _ham_workspace: $line"
-    log_error "Expected format: LOCAL_FOLDER=REPO_URL"
+    log_error "Expected format: LOCAL_FOLDER = REPO_URL [BRANCH_OR_HASH_OR_TAG]"
     exit 1
   fi
 
   REPOS[$REPO_COUNT]="$FOLDER"
   URLS[$REPO_COUNT]="$URL"
+  BRANCHES[$REPO_COUNT]="$BRANCH"
   ((REPO_COUNT++))
 done <"$WORKSPACE_FILE"
 
@@ -163,7 +172,7 @@ log_info "Found $REPO_COUNT repositories in workspace"
   cd "$WORKSPACE_ROOT"
   if [ -z "$(ham-vcs check_vcs .)" ]; then
     log_warning "Workspace not in VCS, in local directory only."
-  else
+  elif [[ "$COMMAND" != "init" ]]; then
     ham-vcs "$COMMAND" "$@" || {
       log_error "Command failed in workspace '$WORKSPACE_ROOT'"
       exit 1
@@ -174,12 +183,13 @@ log_info "Found $REPO_COUNT repositories in workspace"
 for ((i = 0; i < REPO_COUNT; i++)); do
   REPO_FOLDER="${REPOS[i]}"
   REPO_URL="${URLS[i]}"
+  REPO_BRANCH="${BRANCHES[i]}"
   REPO_PATH="$WORKSPACE_ROOT/$REPO_FOLDER"
 
   log_progress "=== Repository: $REPO_FOLDER ==="
 
   if [[ "$COMMAND" == "init" ]]; then
-    init_repository "$REPO_PATH" "$REPO_URL" "$REPO_FOLDER" || {
+    init_repository "$REPO_PATH" "$REPO_URL" "$REPO_FOLDER" "$REPO_BRANCH" || {
       ERROR_REPOS[ERROR_COUNT]="$REPO_FOLDER"
       ((ERROR_COUNT++))
     }
