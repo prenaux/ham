@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 #===== PRELUDE BEGIN ===========
 if [[ -z "$HAM_HOME" ]]; then
   echo "E/HAM_HOME not set !"
