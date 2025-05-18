@@ -1,18 +1,5 @@
 #!/bin/bash
-JSON=compile_commands.json
-TMP_PATH=~/_ham/_temp_$JSON
-rm -f $JSON && rm -f $TMP_PATH && ham -- -n GENERATE_CMD_JSON=$TMP_PATH all
-
-# Add the missing brackets to make it valid json and output it in the project
-sed '
-1i\
-[
-$a\
-}]
-$ d' <$TMP_PATH 1<>$JSON
-
-# Get rid of the temp file
-rm $TMP_PATH
+ham -- -n -a -oactions.txt all >/dev/null && ni $HAM_HOME/scripts/gen_compile_commands.ni -f $(pwd)/sources/actions.txt && rm sources/actions.txt
 
 # Generate gtags.files, requires global to be installed
 if [ "$1" == gtags ]; then
