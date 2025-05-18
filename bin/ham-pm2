@@ -1,8 +1,19 @@
-#!/bin/bash
+#!/bin/bash -e
 . "$HAM_HOME/bin/ham-bash-lib.sh"
 
+HAM_PROJECT_PATH="$(ham-find-file-up _ham_project)"
+
+if [ -e "${HAM_PROJECT_PATH}" ]; then
+  PM2_ENV_FROM_HAM_PROJECT=$(awk -F '=' '/^export PM2_ENV_NAME=/ {print $2}' "${HAM_PROJECT_PATH}")
+fi
+
+if [ -n "$PM2_ENV_FROM_HAM_PROJECT" ] && [ "$PM2_ENV_FROM_HAM_PROJECT" != "$PM2_ENV_NAME" ]; then
+  log_warning "ham-pm2: Force sourcing _ham_project because we're into '$PM2_ENV_FROM_HAM_PROJECT' but the current pm2 env is '$PM2_ENV_NAME'."
+  export PM2_ENV_NAME=
+fi
+
 if [ -z "$PM2_ENV_NAME" ]; then
-  echo "I/ham-pm2: Sourcing _ham_project"
+  log_info "ham-pm2: Sourcing _ham_project"
 
   export HAM_NO_VER_CHECK=1
   WAS_ARGS=("$@") # push arguments
@@ -20,14 +31,14 @@ if [ -z "$PM2_ENV_NAME" ]; then
   fi
 
   export PM2_HOME=$TEMPDIR/pm2-${PM2_ENV_NAME}
-  echo "I/ham-pm2: PM2_ENV_NAME: $PM2_ENV_NAME"
+  log_info "ham-pm2: PM2_ENV_NAME: $PM2_ENV_NAME"
 fi
 
 export PM2_HOME=$TEMPDIR/pm2-${PM2_ENV_NAME}
-echo "I/ham-pm2: PM2_HOME: $PM2_HOME"
+log_info "ham-pm2: PM2_HOME: $PM2_HOME"
 
 usage() {
-  echo "I/ham-pm2: PM2_VERSION: $(pm2 -v)"
+  log_info "ham-pm2: PM2_VERSION: $(pm2 -v)"
   pm2 -h
   echo ""
   echo "  ham-pm2 commands:"
@@ -78,9 +89,9 @@ elif [ "$1" == start-once ]; then
 
   # shellcheck disable=SC2143
   if [[ -n "$(pm2 info "$PM2_APP_NAME" | grep 'status.*online')" ]]; then
-    echo "I/ham-pm2: '$PM2_APP_NAME' already started and online."
+    log_info "ham-pm2: '$PM2_APP_NAME' already started and online."
   else
-    echo "I/ham-pm2: '$PM2_APP_NAME' not online, starting cmd: $START_CMD $*"
+    log_info "ham-pm2: '$PM2_APP_NAME' not online, starting cmd: $START_CMD $*"
     do_pm2_start "$PM2_APP_NAME" "$START_CMD" "$@"
   fi
 elif [ "$1" == restart ]; then
@@ -100,10 +111,10 @@ elif [ "$1" == restart ]; then
 
   # shellcheck disable=SC2143
   if [[ -n "$(pm2 info "$PM2_APP_NAME" | grep 'status.*online')" ]]; then
-    echo "I/ham-pm2: '$PM2_APP_NAME' already started and online, stopping it first."
+    log_info "ham-pm2: '$PM2_APP_NAME' already started and online, stopping it first."
     pm2 stop "$PM2_APP_NAME"
   fi
-  echo "I/ham-pm2: '$PM2_APP_NAME' starting cmd: $START_CMD $*"
+  log_info "ham-pm2: '$PM2_APP_NAME' starting cmd: $START_CMD $*"
   do_pm2_start "$PM2_APP_NAME" "$START_CMD" "$@"
 else
   set -e
