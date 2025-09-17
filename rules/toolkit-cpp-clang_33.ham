@@ -144,7 +144,6 @@ else if $(OSX) {
   -framework Cocoa
   -framework IOKit
   -framework OpenGL
-  -framework AGL
   -framework Metal
   -framework MetalKit
   -framework QuartzCore
